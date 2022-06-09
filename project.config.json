@@ -44,17 +44,7 @@
   "projectname": "CarbonFootprint",
   "libVersion": "2.14.1",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "db guide",
-          "pathName": "pages/databaseGuide/databaseGuide",
-          "query": ""
-        }
-      ]
-    }
-  },
+  "condition": {},
   "compileType": "miniprogram",
   "srcMiniprogramRoot": "miniprogram/",
   "packOptions": {
