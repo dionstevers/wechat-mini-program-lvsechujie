@@ -1,0 +1,11 @@
+/* pages/test/test.wxss */
+.avatar{
+  width: 100rpx;
+  height: 100rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+button{
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+}

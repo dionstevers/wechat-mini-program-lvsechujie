@@ -1,0 +1,76 @@
+
+.wx-modal_mask{
+  width: 100%;  
+  height: 100%;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  z-index: 99;
+  background:rgba(0, 0, 0, .5);  
+  overflow: hidden;  
+}
+.wx-modal_dialog{
+  width: 80%;
+  max-width: 300px;
+  margin-bottom: 130rpx;
+  background: #fff;
+  color: #888888;
+  overflow: hidden;
+  padding-top: 25rpx;
+  border-radius: 10rpx;
+}
+.wx-modal_dialog .wx-modal_title{
+  color: #000;
+  font-size: 36rpx;
+  font-weight: bold; 
+  padding-top: 20rpx;
+  text-align: center;
+}
+.wx-modal_dialog .wx-modal_content{
+  font-size: 15px;
+  text-align: center;
+  padding: 35rpx 58rpx;
+  border-bottom: 1rpx solid #D2D3D5;
+}
+.wx-modal_dialog .wx-modal_prompt{
+  font-size: 15px;
+  text-align: left;
+  padding: 35rpx 58rpx;
+  border-bottom: 1rpx solid #D2D3D5;
+}
+.wx-modal_diaBtn{
+  display: flex;
+}
+.wx-modal_diaBtn .wx-modal_btn{
+  color: #000;
+  width: 100%;
+  border-radius: 0;
+  background: #fff;
+}
+.wx-modal_diaBtn .wx-modal_btn:nth-child(2){
+  border-left: 1rpx solid #D2D3D5;
+}
+.wx-modal_diaBtn .wx-modal_cfirbtn{
+  color: #09BB07;
+}
+.wx-modal_diaBtn .wx-modal_btn::after{
+  border: none;
+  outline: none; 
+} 
+.wx-modal_diaBtn .wx-modal_btnHover{
+  background: #EEE;
+}
+.wx-modal_input {
+  text-align: left;
+  height: 1.7rem;
+  padding-left: 20rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #ccc;
+  margin: 16rpx 0 20rpx;
+}
+.wx-modal_label{
+  color: #555;
+}

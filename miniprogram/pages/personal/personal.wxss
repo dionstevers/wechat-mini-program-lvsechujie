@@ -1,0 +1,29 @@
+/* pages/personal/personal.wxss */
+page {
+  background-color: #f6f6f6;
+  height: 100%;
+}
+.page__desc{
+    display: none;
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+    font-size: 26rpx;
+    color: #BBBBBB;
+}
+.avatar{
+  width: 100rpx;
+  height: 100rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+.text{
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+}
+.carbon{
+  font-size: 50rpx;
+}
+.achievement{
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+}

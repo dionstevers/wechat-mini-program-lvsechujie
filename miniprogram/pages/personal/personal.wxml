@@ -1,0 +1,18 @@
+<!--pages/personal/personal.wxml-->
+<view class="container">
+  <view class="avatar">
+    <open-data type="userAvatarUrl"></open-data>
+  </view>
+  <view class="text">
+    <open-data type="userNickName"></open-data>,
+  </view>
+  <view class="text">今日您在出行时已累计排放二氧化碳</view>
+  <view class="carbon">{{totalC}} kg</view>
+  <view wx:if="{{totalC == 0}}">
+    <view class="text">实现了碳中和</view>
+  </view>
+  <view wx:else class="container">
+    <view class="text">相当于{{totalC*0.0165}}棵树苗</view>
+    <view class="text">成长十年所吸收的二氧化碳</view>
+  </view>
+</view>
