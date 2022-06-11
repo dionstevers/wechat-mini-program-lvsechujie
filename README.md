@@ -22,3 +22,5 @@ June 9, 2022 by Hengyu Du
 June 11, 2022 by Hengyu Du
 
 - Test Git: clone / pull / push
+- Clean File Tree
+- Set tab bar and navigation bar
