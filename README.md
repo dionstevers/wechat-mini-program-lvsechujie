@@ -19,3 +19,6 @@ June 9, 2022 by Hengyu Du
 - Create dev branch based on master branch.
 - Push master & dev to Github.
 
+June 11, 2022 by Hengyu Du
+
+- Test Git: clone / pull / push
