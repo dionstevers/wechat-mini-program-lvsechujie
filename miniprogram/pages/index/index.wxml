@@ -11,24 +11,24 @@
  
   
   <!-- New Trace Tracking -->
-  <view class="uploader">
+  <!-- <view class="uploader">
     <navigator url="../track/track" open-type="navigate" class="uploader-text">
       <text>行程记录</text>
     </navigator>
-  </view>
+  </view> -->
 
   <!-- Personal Center -->
-  <view class="uploader">
+  <!-- <view class="uploader">
     <navigator url="../personal/personal" open-type="navigate" class="uploader-text">
       <text>个人中心</text>
     </navigator>
-  </view>
+  </view> -->
 
   <!-- Test -->
-  <view class="uploader">
+  <!-- <view class="uploader">
     <navigator url="../test/test" open-type="navigate" class="uploader-text">
       <text>AQI查询</text>
     </navigator>
-  </view>
+  </view> -->
 
 </view>

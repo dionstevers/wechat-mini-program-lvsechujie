@@ -1,17 +1,44 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/personal/personal",
     "pages/test/test",
     "pages/trace/trace",
-    "pages/track/track",
-    "pages/personal/personal"
+    "pages/track/track"
   ],
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "行程记录",
+        "iconPath": "",
+        "selectedIconPath": ""
+      },
+      {
+        "pagePath": "pages/track/track",
+        "text": "环境资讯",
+        "iconPath": "",
+        "selectedIconPath": ""
+      },
+      {
+        "pagePath": "pages/personal/personal",
+        "text": "个人中心",
+        "iconPath": "",
+        "selectedIconPath": ""
+      }
+    ],
+    "position": "bottom",
+    "color": "#FFFFFF",
+    "selectedColor": "#00ffb9",
+    "backgroundColor": "#002d3d",
+    "borderStyle": "black"
+  },
   "window": {
-    "backgroundColor": "#F6F6F6",
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#F6F6F6",
+    "navigationBarBackgroundColor": "#000220",
+    "navigationBarTextStyle": "white",
     "navigationBarTitleText": "低碳出街小助手",
-    "navigationBarTextStyle": "black"
+    "backgroundColor": "#002443",
+    "backgroundTextStyle": "dark"
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
