@@ -3,11 +3,11 @@
 
   <!-- Old Trace Tracking -->
   
-  <view class="uploader">
+  <!-- <view class="uploader">
     <navigator url="../trace/trace" open-type="navigate" class="uploader-text">
       <text>行程记录（旧）</text>
     </navigator>
-  </view>
+  </view> -->
  
   
   <!-- New Trace Tracking -->

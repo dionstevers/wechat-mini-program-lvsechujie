@@ -4,5 +4,5 @@
     <button class="btn1" bindtap="startTrack" disabled="{{isTracking}}">开始记录行程</button>
     <button class="btn2" bindtap="endTrack" disabled="{{!isTracking}}">结束记录行程</button>
   </view>
-  <mymodal type="prompt" title='行程结束' content='{{content}}' form-items="{{items}}" showStatus='{{showModal}}' showCancel='true' confirmText='提交反馈' cancelText='预测准确' bind:complete="onComplete"></mymodal>
+  <!-- <mymodal type="prompt" title='行程结束' content='{{content}}' form-items="{{items}}" showStatus='{{showModal}}' showCancel='true' confirmText='提交反馈' cancelText='预测准确' bind:complete="onComplete"></mymodal> -->
 </view>

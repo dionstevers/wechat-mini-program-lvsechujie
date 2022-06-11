@@ -2,10 +2,14 @@
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
+    "useCompilerPlugins": [
+      "typescript",
+      "less"
+    ],
     "urlCheck": true,
-    "es6": false,
+    "es6": true,
     "enhance": false,
-    "postcss": true,
+    "postcss": false,
     "preloadBackgroundData": false,
     "minified": true,
     "newFeature": true,
@@ -36,13 +40,12 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
-    "useCompilerPlugins": false,
     "lazyloadPlaceholderEnable": false,
     "useStaticServer": true
   },
   "appid": "wx0ebf2fad3f82999b",
   "projectname": "CarbonFootprint",
-  "libVersion": "2.14.1",
+  "libVersion": "2.19.3",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "condition": {},
   "compileType": "miniprogram",
