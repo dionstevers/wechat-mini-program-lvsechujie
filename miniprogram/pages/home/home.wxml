@@ -1,7 +1,7 @@
 <!--pages/home/home.wxml-->
 <wxs src="./home.wxs" module="m1"></wxs>
 
-<view class="page-background" style="background-image: url(../../asset/img/BCK_IMG_1.jpg);background-size: 100% 100%;">
+<view class="page-background">
   <view class="page-introduction">点击按钮，开始记录行程</view>
 
   <view class="{{btnClass}}" bindtap="onClickEvent">
