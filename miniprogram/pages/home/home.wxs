@@ -1,0 +1,25 @@
+var convertStamp = function(stamp,type){
+  if(type == 'duration'){
+    stamp = stamp - 28800000
+  }
+  var time = getDate(stamp)
+  var year = time.getFullYear()
+  var month = time.getMonth() + 1
+  var date = time.getDate()
+  var hour = time.getHours() < 10 ? "0" + time.getHours() : time.getHours()
+  var minutes = time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes()
+  var secondes = time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds()
+  if(type == 'duration')  return hour+":"+minutes+":"+secondes
+  // else return year+"年"+month+"月"+date+"日 "+hour+":"+minutes+":"+secondes
+  else return month+"月"+date+"日 "+hour+":"+minutes+":"+secondes
+}
+
+var classPicker = function(list,index){
+  if(index === list.length -1) {
+    return "new listItem"
+  } else {
+    return "old listItem"
+  }
+}
+module.exports.convertStamp = convertStamp
+module.exports.classPicker = classPicker

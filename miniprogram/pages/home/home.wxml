@@ -1,0 +1,28 @@
+<!--pages/home/home.wxml-->
+<wxs src="./home.wxs" module="m1"></wxs>
+
+<view class="page-background" style="background-image: url(../../asset/img/BCK_IMG_1.jpg);background-size: 100% 100%;">
+  <view class="page-introduction">点击按钮，开始记录行程</view>
+
+  <view class="{{btnClass}}" bindtap="onClickEvent">
+    <view wx:if="{{recordStatus === 'off'}}">开始</view>
+    <view wx:if="{{recordStatus === 'on'}}">
+      <text>{{ m1.convertStamp(duration, "duration") }}</text>
+      <text>停止记录</text>
+    </view>
+  </view>
+
+  <view class="list-summary">今日共有{{ recordCount }}条记录</view>
+
+  <view class="list">
+    <view wx:for="{{recordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(recordList,i)}}">
+      <view class="title">
+        记录 {{ i+1 }} | 时长 {{ m1.convertStamp(item.duration, "duration") }} | 距离 {{ item.distance}} km | {{ item.transport}}
+      </view>
+      <view class="content">起點：A</view>
+      <view class="content">終點：B</view>
+      <view class="content">时间：{{ m1.convertStamp(item.startTime) }} -
+        {{ m1.convertStamp(item.endTime) }}</view>
+    </view>
+  </view>
+</view>

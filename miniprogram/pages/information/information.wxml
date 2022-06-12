@@ -1,0 +1,6 @@
+<!--pages/information/information.wxml-->
+<view class="page-background" style="background-image: url(../../asset/img/BCK_IMG_1.jpg);background-size: 100% 100%;">
+  <view class="page-introduction">
+    为您提供最新的环境资讯和身边的环境信息
+  </view>
+</view>

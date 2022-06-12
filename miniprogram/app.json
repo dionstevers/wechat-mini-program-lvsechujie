@@ -1,5 +1,8 @@
 {
   "pages": [
+    "pages/home/home",
+    "pages/information/information",
+    "pages/center/center",
     "pages/index/index",
     "pages/personal/personal",
     "pages/test/test",
@@ -9,22 +12,22 @@
   "tabBar": {
     "list": [
       {
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/home/home",
         "text": "行程记录",
-        "iconPath": "",
-        "selectedIconPath": ""
+        "iconPath": "./asset/img/home.png",
+        "selectedIconPath": "./asset/img/home-highlight.png"
       },
       {
-        "pagePath": "pages/track/track",
+        "pagePath": "pages/information/information",
         "text": "环境资讯",
-        "iconPath": "",
-        "selectedIconPath": ""
+        "iconPath": "./asset/img/info.png",
+        "selectedIconPath": "./asset/img/info-highlight.png"
       },
       {
-        "pagePath": "pages/personal/personal",
+        "pagePath": "pages/center/center",
         "text": "个人中心",
-        "iconPath": "",
-        "selectedIconPath": ""
+        "iconPath": "./asset/img/center.png",
+        "selectedIconPath": "./asset/img/center-highlight.png"
       }
     ],
     "position": "bottom",

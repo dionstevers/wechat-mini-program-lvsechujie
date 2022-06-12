@@ -1,0 +1,6 @@
+<!--pages/center/center.wxml-->
+<view class="page-background" style="background-image: url(../../asset/img/BCK_IMG_1.jpg);background-size: 100% 100%;">
+  <view class="page-introduction">
+    个人中心
+  </view>
+</view>
