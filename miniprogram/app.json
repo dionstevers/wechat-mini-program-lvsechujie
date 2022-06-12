@@ -10,13 +10,13 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "行程记录",
+        "text": "环境资讯",
         "iconPath": "",
         "selectedIconPath": ""
       },
       {
         "pagePath": "pages/track/track",
-        "text": "环境资讯",
+        "text": "行程记录",
         "iconPath": "",
         "selectedIconPath": ""
       },
