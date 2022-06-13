@@ -2,8 +2,12 @@
 <wxs src="./home.wxs" module="m1"></wxs>
 
 <view class="page-background">
-  <view class="page-introduction">点击按钮，开始记录行程</view>
-
+  <picker bindchange="bindPickerChange" value="{{index}}" range="{{transportList}}" class="picker-con">
+    <view class="picker">
+      {{transportList[index]}}
+    </view>
+    <view class="triangle"></view>
+  </picker>
   <view class="{{btnClass}}" bindtap="onClickEvent">
     <view wx:if="{{recordStatus === 'off'}}">开始</view>
     <view wx:if="{{recordStatus === 'on'}}">
@@ -12,12 +16,13 @@
     </view>
   </view>
 
-  <view class="list-summary">今日共有{{ recordCount }}条记录</view>
+  <view class="list-summary">今日共有{{ recordCount }}条出行记录</view>
+  <view wx:if="{{recordList.length}}" class='notice'>累计排放二氧化碳 <text>0.5kg</text></view>
 
   <view class="list">
     <view wx:for="{{recordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(recordList,i)}}">
       <view class="title">
-        记录 {{ i+1 }} | 时长 {{ m1.convertStamp(item.duration, "duration") }} | 距离 {{ item.distance}} km | {{ item.transport}}
+         {{ i+1 }} | 时长 {{ m1.convertStamp(item.duration, "duration") }} |  {{ item.distance}} km | {{ item.transport}}
       </view>
       <view class="content">起點：A</view>
       <view class="content">終點：B</view>

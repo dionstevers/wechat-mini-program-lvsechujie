@@ -7,9 +7,9 @@
 
   <view class='name'>微信用户</view>
 
-  <view class='notice'>今日您在出行时已累计排放二氧化碳 0 kg</view>
 
-  <view class='menu-bar'>历史出行记录</view>
-  <view class='menu-bar'>个人信息</view>
+  <view class='menu-bar sta'>出行统计</view>
+  <view class='menu-bar'>我的信息</view>
   <view class='menu-bar'>授权管理</view>
+  <view class='menu-bar'>关于小程序</view>
 </view>

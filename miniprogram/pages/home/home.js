@@ -13,6 +13,11 @@ Page({
     transport: '步行',
     // 定时器：
     myTimer: null,
+
+    transportList: [
+      '步行','自行车','公交/地铁','我的汽车（京A88888）'
+    ],
+    index:0
   },
 
   onClickEvent() {
@@ -71,8 +76,17 @@ Page({
       duration: 0,
       distance: 0,
       transport: '步行',
+      index: 0,
       btnClass: 'btn btn-default',
       recordStatus: 'off'
+    })
+  },
+
+  bindPickerChange: function(e) {
+    console.log('picker发送选择改变，携带值为', e.detail.value)
+    this.setData({
+      index: e.detail.value,
+      transport: this.data.transportList[e.detail.value]
     })
   },
 

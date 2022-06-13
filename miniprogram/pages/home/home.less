@@ -1,9 +1,36 @@
 /* pages/home/home.wxss */
+
+.picker-con{
+  height: 70rpx;
+  width: 400rpx;
+  margin: 0 auto;
+  margin: 60rpx auto 10rpx;
+  border-radius: 20rpx;
+  line-height: 70rpx;
+  background-color: #002d3d;
+  padding-left: 30rpx;
+  box-sizing: border-box;
+  color: rgb(230, 230, 230);
+  font-size: 26rpx;
+  position: relative;
+  
+  .triangle{
+    width: 0;
+    height: 0;
+    border-top: 18rpx solid rgb(230, 230, 230);
+    border-right: 18rpx solid transparent;
+    border-left: 18rpx solid transparent;
+    position: absolute;
+    right: 25rpx;
+    top: 27rpx;
+  }
+}
+
 .btn {
   height: 400rpx;
   width: 400rpx;
   border-radius: 50%;
-  margin: 80rpx auto 40rpx;
+  margin: 70rpx auto 40rpx;
   box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.5);
   text-align: center;
   text-shadow: 0.2rpx 0.2rpx 1rpx grey;
@@ -49,14 +76,27 @@
   color: white;
   text-align: center;
   width: 600rpx;
-  height: 60rpx;
-  margin: 0 auto 20rpx;
+  height: 30rpx;
+  margin: 0 auto;
   font-size: 28rpx;
+}
+
+
+.notice {
+  color: #00ffb9;
+  font-size: 28rpx;
+  margin: 10rpx auto 30rpx;
+  text-align: center;
+
+  text {
+    font-size: 35rpx;
+    font-style: italic;
+  }
 }
 
 .list {
   width: 650rpx;
-  height: 37vh;
+  height: 33vh;
   overflow: auto;
   margin: 0 auto;
 
@@ -73,7 +113,8 @@
       text-align: center;
       font-size: 26rpx;
     }
-    .content{
+
+    .content {
       font-size: 24rpx;
       padding: 0 20rpx;
     }
@@ -83,11 +124,11 @@
     background-color: #0000005b;
   }
 
-  .new{
-    color: #00ffb9;
+  .new {
+    color: white;
   }
 
-  .old{
-    color: white;
+  .old {
+    color: rgba(197, 197, 197, 0.842);
   }
 }
