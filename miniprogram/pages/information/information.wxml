@@ -3,4 +3,20 @@
   <view class="page-introduction">
     为您提供最新的环境资讯和身边的环境信息
   </view>
+
+  <view>
+    <view wx:for="{{articleList}}" wx:key="" class="container">
+      <view class="image-con">
+        <image src="{{item.imgUrl}}" alt="des" mode="widthFix" class="img" />
+      </view>
+
+      <text class="info-con">{{item.date}} | {{item.author}}</text>
+
+      <view class="preview-con">
+        <view class="title">{{item.title}}</view>
+        <view class="ab">{{item.abstract}}</view>
+      </view>
+
+    </view>
+  </view>
 </view>

@@ -24,3 +24,11 @@ June 11, 2022 by Hengyu Du
 - Test Git: clone / pull / push
 - Clean File Tree
 - Set tab bar and navigation bar
+
+June 12, 2022 by Hengyu Du
+
+- Reconstruct the home page from Angular
+
+June 13, 2022 by Hengyu Du
+
+- Reconstruct the information page & user center page from Angular
