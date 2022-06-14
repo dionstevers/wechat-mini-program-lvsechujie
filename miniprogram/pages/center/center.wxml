@@ -1,14 +1,32 @@
 <!--pages/center/center.wxml-->
 <view class="page-background">
-  <view class="page-introduction">
-    个人中心
+
+  <view class="avatar-con">
+    <view class='avatar'>WX</view>
+    <view class='avatar-name'>微信用户</view>
+    <view class='avatar-info'>2022年07月开启低碳之旅</view>
   </view>
-  <view class='avatar'>WX</view>
 
-  <view class='name'>微信用户</view>
+  <view class='progress-con'>出行碳积分
+    <progress percent="40" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+    <view class="progress-notice">还差 60% 即可兑换现金</view>
+  </view>
 
 
-  <view class='menu-bar sta'>出行统计</view>
+
+  <view class='heat-con'>
+    <!-- <view class="heat-title">
+      低碳热力图 30天
+    </view> -->
+    <view class="image-con">
+      <image src="../../asset/img/heatmap-fake.png" mode="aspectFill" />
+    </view>
+  </view>
+  <view class='menu-bar sta'>出行统计
+    <!-- <text>
+      步行 骑行 公交车 地铁 汽车 网约车/出租车 飞机 火车
+    </text> -->
+  </view>
   <view class='menu-bar'>我的信息</view>
   <view class='menu-bar'>授权管理</view>
   <view class='menu-bar'>关于小程序</view>

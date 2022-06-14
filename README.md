@@ -32,3 +32,8 @@ June 12, 2022 by Hengyu Du
 June 13, 2022 by Hengyu Du
 
 - Reconstruct the information page & user center page from Angular
+
+June 14, 2022 by Hengyu Du
+
+- Add "feature" branch
+- Add "出行碳积分" in user center
