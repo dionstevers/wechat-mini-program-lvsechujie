@@ -1,0 +1,22 @@
+<!--pages/journal/journal.wxml-->
+<view class="page-background">
+  <view class="page-introduction" style="font-size: 42rpx; text-align: left;">
+    亲爱的自己，昨天过得怎样？
+  </view>
+  <form action="">
+    <view class="form-group-title">
+      LIFESTYLE
+    </view>
+    <view class="form-single-con">
+      <view>
+        Have any alcoholic drinks?
+      </view>
+
+      <radio-group>
+        <radio value="yes" checked="{{true}}" name="drink"></radio>
+        <radio value="yes" checked="{{false}}" name="drink"></radio>
+      </radio-group>
+    </view>
+
+  </form>
+</view>
