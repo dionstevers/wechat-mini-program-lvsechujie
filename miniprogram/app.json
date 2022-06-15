@@ -7,7 +7,8 @@
     "pages/personal/personal",
     "pages/test/test",
     "pages/trace/trace",
-    "pages/track/track"
+    "pages/track/track",
+    "pages/journal/journal"
   ],
   "tabBar": {
     "list": [

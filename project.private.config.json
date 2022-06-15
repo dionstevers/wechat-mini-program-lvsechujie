@@ -21,6 +21,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "journal",
+          "pathName": "pages/journal/journal",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

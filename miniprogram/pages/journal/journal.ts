@@ -1,34 +1,10 @@
-// pages/center/center.ts
+// pages/journal/journal.ts
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    functionList:[
-      {
-        functionSrc:'../../asset/img/note.png',
-        functionTitle:'低碳日记',
-        url:'../journal/journal'
-      },
-      {
-        functionSrc:'../../asset/img/history.png',
-        functionTitle:'出行历史'
-      },
-      {
-        functionSrc:'../../asset/img/exchange.png',
-        functionTitle:'兑换'
-      }
-    ]
-  },
-
-  onTapFunction(e){
-    let {url} = e.currentTarget.dataset
-    if(url){
-      wx.navigateTo({
-        url,
-      })
-    }
 
   },
 
@@ -36,7 +12,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    wx.setNavigationBarTitle({
+      title: '低碳日记'
+    })
   },
 
   /**
