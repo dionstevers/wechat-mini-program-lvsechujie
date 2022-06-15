@@ -9,25 +9,24 @@
     <view class="triangle"></view>
   </picker>
   <view class="{{btnClass}}" bindtap="onClickEvent">
-    <view wx:if="{{recordStatus === 'off'}}">开始</view>
-    <view wx:if="{{recordStatus === 'on'}}">
-      <text>{{ m1.convertStamp(duration, "duration") }}</text>
+    <view wx:if="{{!recordStatus}}">开始</view>
+    <view wx:if="{{recordStatus}}">
+      <!--<text>{{ m1.convertStamp(duration, "duration") }}</text>-->
       <text>停止记录</text>
     </view>
   </view>
 
-  <view class="list-summary">今日共有{{ recordCount }}条出行记录</view>
+  <view class="list-summary">今日共有{{ todayRecord.length }}条出行记录</view>
   <view wx:if="{{recordList.length}}" class='notice'>累计排放二氧化碳 <text>0.5kg</text></view>
 
   <view class="list">
-    <view wx:for="{{recordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(recordList,i)}}">
+    <view wx:for="{{todayRecord}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecord,i)}}">
       <view class="title">
-         {{ i+1 }} | 时长 {{ m1.convertStamp(item.duration, "duration") }} |  {{ item.distance}} km | {{ item.transport}}
+         {{ i+1 }} | 时长 {{ m1.convertStamp(item.endTime-item.date, "duration") }} |  {{ item.distance}} km | {{ item.transport}}
       </view>
-      <view class="content">起點：A</view>
-      <view class="content">終點：B</view>
-      <view class="content">时间：{{ m1.convertStamp(item.startTime) }} -
+      <view class="content">时间：{{ m1.convertStamp(item.date) }} -
         {{ m1.convertStamp(item.endTime) }}</view>
+      <view class="content">步数：{{item.endSteps-item.startSteps}}</view>
     </view>
   </view>
 </view>
