@@ -23,7 +23,7 @@
     <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
       <view class="title">
          {{ todayRecordList.length - i }} · 时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·  
-         <text>{{ item.distance? item.distance : '未知' }} </text> km · {{ item.transport}}
+         <text>{{ item.distance ? item.distance : '未知' }} </text> km · {{ item.transport}}
       </view>
       <view class="content">
         时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
