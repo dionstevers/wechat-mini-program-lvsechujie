@@ -43,3 +43,8 @@ June 15, 2022 by Hengyu Du
 - Add “低碳日记”、“出行历史”、“兑换” buttons in user center
 - Add "more" button in user center
 - Construct “低碳日记” test version
+
+July 4, 2022 by Hengyu Du
+
+- fix the Date display bug in home page (Unify the code of Tianshu and me, making it workable) 
+- add delete button to each record
