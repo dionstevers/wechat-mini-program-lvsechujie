@@ -60,6 +60,7 @@ Page({
         }).then(res => {
           console.log('[onGetWeRunData] 收到 echo 回包：', res)
           var stepList = res.result.info.data.stepInfoList
+          console.log('Step:')
           console.log(stepList[30].step)
           db.collection('track').add({
             data: {
@@ -228,18 +229,18 @@ Page({
                 if (j == 0) continue
                 dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
               }
+              db.collection('track').doc(_this.data.curID).update({
+                data: {
+                  endTime: new Date(),
+                  endSteps: stepList[30].step,
+                  distance: dist
+                },
+                success: function (res) {
+                  console.log(res)
+                }
+              })
             }
-          })
-          db.collection('track').doc(_this.data.curID).update({
-            data: {
-              endTime: new Date(),
-              endSteps: stepList[30].step,
-              distance: dist
-            },
-            success: function (res) {
-              console.log(res)
-            }
-          })
+          })          
           wx.stopLocationUpdate()
           wx.offLocationChange()
           _this.setList()
