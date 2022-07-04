@@ -43,7 +43,7 @@
     "lazyloadPlaceholderEnable": false,
     "useStaticServer": true
   },
-  "appid": "wx0ebf2fad3f82999b",
+  "appid": "wx241e2c0a850c812a",
   "projectname": "CarbonFootprint",
   "libVersion": "2.19.3",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",

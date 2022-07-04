@@ -1,9 +1,13 @@
+
 var convertStamp = function(stamp,type){
+  if(stamp !== 0 && !stamp){
+    return '（记录异常）'
+  }
   if(type == 'duration'){
     stamp = stamp - 28800000
   }
   var time = getDate(stamp)
-  var year = time.getFullYear()
+  // var year = time.getFullYear()
   var month = time.getMonth() + 1
   var date = time.getDate()
   var hour = time.getHours() < 10 ? "0" + time.getHours() : time.getHours()
@@ -15,7 +19,7 @@ var convertStamp = function(stamp,type){
 }
 
 var classPicker = function(list,index){
-  if(index === list.length -1) {
+  if(index === 0) {
     return "new listItem"
   } else {
     return "old listItem"
