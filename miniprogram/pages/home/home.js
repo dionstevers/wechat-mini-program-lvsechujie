@@ -59,8 +59,8 @@ Page({
 
             // 查询上次未结束的tracking？
             db.collection('track').orderBy('date', 'desc').limit(1).where({
-              _openid: _this.data.openID,
-            })
+                _openid: _this.data.openID,
+              })
               .get({
                 success: function (res) {
                   //console.log('Last entry:')
@@ -82,27 +82,33 @@ Page({
     })
   },
 
-  setList() {  // 更新列表
+  setList() { // 更新列表
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
     var now = new Date()
     now.setHours(0, 0, 0, 0)
     db.collection('track').where({
-      _openid: _this.data.openID,
-      date: _.gt(now)
-    })
+        _openid: _this.data.openID,
+        date: _.gt(now)
+      })
       .get({
         success: function (res) {
           let list = res.data
-          console.log('get list:',list);
-            list.forEach(item => {
-              if(item['date']) item['date'] = item.date.getTime()
-              if(item['endTime']) item['endTime'] = item.endTime.getTime() 
-            })
-            _this.setData({
-              todayRecordList: list.reverse(),
-            })
+          console.log('get list:', list);
+          list.forEach(item => {
+            if (item['date']) item['date'] = item.date.getTime()
+            if (item['endTime']) item['endTime'] = item.endTime.getTime()
+            var dist = 0
+            for (var j in item['points']) {
+              if (j == 0) continue
+              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
+            }
+            item['distance'] = dist.toFixed(2)
+          })
+          _this.setData({
+            todayRecordList: list.reverse(),
+          })
         }
       })
   },
@@ -168,9 +174,9 @@ Page({
           this.onTrack()
         } else {
           wx.showModal({
-            title: '提示',
-            content: '请开启后台定位权限'
-          })
+              title: '提示',
+              content: '请开启后台定位权限'
+            })
             .then(res => {
               if (res.confirm) {
                 wx.openSetting({
@@ -188,7 +194,7 @@ Page({
 
   },
 
-  onTrack: function () {  // 开始记录
+  onTrack: function () { // 开始记录
     this.setData({
       btnClass: 'btn btn-start',
       recordStatus: true,
@@ -298,35 +304,35 @@ Page({
                 if (j == 0) continue
                 dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
               }
-            }
-          })
-          db.collection('track').doc(_this.data.curID).update({
-            data: {
-              endTime: new Date(),
-              endSteps: stepList[30].step,
-              distance: dist
-            }
-          }).then(res => {
-            if(res.stats.updated == 1){
-              console.log('行程记录成功！', res)
-              wx.showToast({
-                title: '行程记录成功!',
-                icon: 'success',
-                duration: 2000
+              db.collection('track').doc(_this.data.curID).update({
+                data: {
+                  endTime: new Date(),
+                  endSteps: stepList[30].step,
+                  distance: dist.toFixed(2)
+                }
+              }).then(res => {
+                if (res.stats.updated == 1) {
+                  console.log('行程记录成功！', res)
+                  wx.showToast({
+                    title: '行程记录成功!',
+                    icon: 'success',
+                    duration: 2000
+                  })
+                  clearInterval(_this.data.myTimer);
+                  this.setData({
+                    startTime: 0,
+                    endTime: 0,
+                    duration: 0,
+                    index: 0,
+                    btnClass: 'btn btn-default',
+                    recordStatus: false
+                  })
+                  wx.stopLocationUpdate()
+                  wx.offLocationChange()
+                  _this.setList()
+                  _this.onLoad()
+                }
               })
-              clearInterval(_this.data.myTimer);
-              this.setData({
-                startTime: 0,
-                endTime: 0,
-                duration: 0,
-                index: 0,
-                btnClass: 'btn btn-default',
-                recordStatus: false
-              })
-              wx.stopLocationUpdate()
-              wx.offLocationChange()
-              _this.setList()
-              _this.onLoad()
             }
           })
         }).catch(err => {
@@ -358,7 +364,7 @@ Page({
   },
 
   // 删除记录
-  deleteRecord(e){
+  deleteRecord(e) {
     const db = wx.cloud.database()
     let _this = this
     let _id = e.currentTarget.dataset.id
@@ -368,23 +374,24 @@ Page({
       success(res) {
         if (res.confirm) {
           db.collection('track')
-          .doc(_id)
-          .remove()
-          .then(res=>{
-            wx.showToast({
-              title: '删除成功!',
-              icon: 'success',
-              duration: 1000
+            .doc(_id)
+            .remove()
+            .then(res => {
+              wx.showToast({
+                title: '删除成功!',
+                icon: 'success',
+                duration: 1000
+              })
+              _this.setList()
+              _this.onLoad()
             })
-            _this.setList()
-          })
-          .catch(err => {
-            wx.showToast({
-              title: '删除失败!'+ err,
-              icon: 'fail',
-              duration: 1000
+            .catch(err => {
+              wx.showToast({
+                title: '删除失败!' + err,
+                icon: 'fail',
+                duration: 1000
+              })
             })
-          })
 
         } else if (res.cancel) {
           console.log('用户点击取消')
@@ -392,5 +399,5 @@ Page({
       }
     })
   }
-  
+
 })
