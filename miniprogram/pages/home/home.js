@@ -319,7 +319,7 @@ Page({
                     duration: 2000
                   })
                   clearInterval(_this.data.myTimer);
-                  this.setData({
+                  _this.setData({
                     startTime: 0,
                     endTime: 0,
                     duration: 0,
