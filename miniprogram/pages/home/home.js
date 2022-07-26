@@ -25,8 +25,21 @@ Page({
       '步行', '自行车', '公交/地铁', '我的汽车（京A88888）'
     ],
     index: 0,
+
+    isFront: true
   },
 
+  onShow() {
+    this.setData({
+      isFront: true
+    })
+  },
+
+  onHide(){
+    this.setData({
+      isFront: false
+    })
+  },
 
   /**
    * 生命周期函数--监听页面加载
@@ -132,13 +145,20 @@ Page({
       if (cnt >= 10) {
         cnt = 0
         console.log('location change', locationFn)
-        db.collection('track').doc(_this.data.curID).update({
-          data: {
-            points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-            velos: _.push(locationFn.speed)
-          },
-          success: function (res) {
-            console.log(res)
+        wx.getNetworkType({
+          success (res) {
+            db.collection('track').doc(_this.data.curID).update({
+              data: {
+                points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                velos: _.push(locationFn.speed),
+                timestamps: _.push(new Date()),
+                networkTypes: _.push(res.networkType),
+                isFront: _.push(_this.data.isFront)
+              },
+              success: function (res) {
+                console.log(res)
+              }
+            })
           }
         })
       }
@@ -232,6 +252,9 @@ Page({
               date: new Date(),
               points: [],
               velos: [],
+              timestamps: [],
+              networkTypes: [],
+              isFront: [],
               brand: _this.data.brand,
               model: _this.data.model,
               system: _this.data.system,
@@ -262,13 +285,21 @@ Page({
             if (cnt >= 10) {
               cnt = 0
               console.log('location change', locationFn)
-              db.collection('track').doc(_this.data.curID).update({
-                data: {
-                  points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                  velos: _.push(locationFn.speed)
-                },
-                success: function (res) {
-                  console.log(res)
+              console.log('Front?', _this.data.isFront)
+              wx.getNetworkType({
+                success (res) {
+                  db.collection('track').doc(_this.data.curID).update({
+                    data: {
+                      points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                      velos: _.push(locationFn.speed),
+                      timestamps: _.push(new Date()),
+                      networkTypes: _.push(res.networkType),
+                      isFront: _.push(_this.data.isFront)
+                    },
+                    success: function (res) {
+                      console.log(res)
+                    }
+                  })
                 }
               })
             }
