@@ -37,6 +37,7 @@
     </view>
   </view>
 
+  <view class='menu-bar' bindtap='onSurvey'>调查问卷</view>
   <view class='menu-bar'>授权管理</view>
   <view class='menu-bar'>关于小程序</view>
 </view>

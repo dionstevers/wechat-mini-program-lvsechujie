@@ -3,12 +3,8 @@
     "pages/home/home",
     "pages/information/information",
     "pages/center/center",
-    "pages/index/index",
-    "pages/personal/personal",
-    "pages/test/test",
-    "pages/trace/trace",
-    "pages/track/track",
-    "pages/journal/journal"
+    "pages/journal/journal",
+    "pages/survey/survey"
   ],
   "tabBar": {
     "list": [
@@ -51,5 +47,6 @@
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
-  "requiredBackgroundModes": ["location"]
+  "requiredBackgroundModes": ["location"],
+  "embeddedAppIdList": ["wxebadf544ddae62cb"]
 }
