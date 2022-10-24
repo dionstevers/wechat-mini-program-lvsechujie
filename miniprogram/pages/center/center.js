@@ -5,6 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    userInfo: null,
     functionList:[
       {
         functionSrc:'../../asset/img/note.png',
@@ -14,13 +15,15 @@ Page({
       {
         functionSrc:'../../asset/img/history.png',
         functionTitle:'出行历史',
-        url:'../triphistory/triphistory'
+        url:'../history/history'
       },
       {
         functionSrc:'../../asset/img/exchange.png',
-        functionTitle:'兑换'
+        functionTitle:'积分中心',
+        url:'../store/store'
       }
-    ]
+    ],
+    CoinRatio: 0
   },
 
   onTapFunction(e){
@@ -32,7 +35,25 @@ Page({
     }
 
   },
-
+  // 用户授权获取信息
+  async getUserInfo(){
+    const { userInfo } = await wx.getUserProfile({
+      desc: '用于完善用户信息',
+    })
+    // 交付后端生成账号
+     
+    const { result:{ data } } = await wx.cloud.callFunction({
+       name : 'login',
+       data : {
+        nickName : userInfo.nickName,
+        avatarUrl : userInfo.avatarUrl,
+       }
+     })
+      console.log(data)
+     this.setData({
+       userInfo: data 
+     })
+  },
   onSurvey(e){
     wx.navigateTo({
       url: '/pages/survey/survey',

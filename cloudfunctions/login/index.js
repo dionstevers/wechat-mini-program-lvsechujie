@@ -15,22 +15,45 @@ cloud.init({
  * event 参数包含小程序端调用传入的 data
  * 
  */
-exports.main = async (event, context) => {
+exports.main = async (event) => {
   console.log(event)
-  console.log(context)
+   
 
   // 可执行其他自定义逻辑
   // console.log 的内容可以在云开发云函数调用日志查看
 
   // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
-  const wxContext = cloud.getWXContext()
-
-  return {
-    event,
-    openid: wxContext.OPENID,
-    appid: wxContext.APPID,
-    unionid: wxContext.UNIONID,
-    env: wxContext.ENV,
+  const { nickName, avatarUrl} = event
+  const { OPENID } = cloud.getWXContext()
+  // 如果数据库存在当前用户信息--登录
+  // 初始化集合
+  const db = cloud.database()
+  // 指定集合
+  const userInfo = db.collection('userInfo')
+  // 查询是否注册
+  const { data } = await userInfo.where({
+    _openid:OPENID
+  }).get()
+  if(data.length === 0){
+    const {_id} = await userInfo.add({
+      data : {
+         nickName: nickName,
+         avatarUrl: avatarUrl,
+         _openid : OPENID,
+         credit : 0,
+      }
+    })
+    // 接收_id快速返回该id数据
+    const user = await userInfo.doc(_id).get()
+    return {
+      data: user.data
+    }
+  } else{
+    return{
+      data:data[0]
+    }
   }
+  // 新增数据
+ 
+   
 }
-

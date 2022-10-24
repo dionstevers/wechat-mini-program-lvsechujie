@@ -1,43 +1,48 @@
 <!--pages/center/center.wxml-->
 <view class="page-background">
 
-  <view class="avatar-con">
-    <view class='avatar'>WX</view>
-    <view class='avatar-name'>微信用户</view>
-    <view class='avatar-info'>2022年07月开启低碳之旅</view>
-  </view>
+<view class="avatar-con" wx:if="{{ userInfo }}">
+  <image class="avatarImg" src="{{userInfo.avatarUrl}}"></image>
+  <view class='avatar-name' bind:tap="getUserInfo">{{userInfo.nickName}}</view>
+  <view class='avatar-info'>即刻开启你的低碳之旅</view>
+</view>
+<view class="avatar-con" wx:else>
+  <view class='avatar'>WX</view>
+  <view class='avatar-name' bind:tap="getUserInfo">登录/注册</view>
+  <view class='avatar-info'>即刻开启你的低碳之旅</view>
+</view>
 
-  <view class="function-con">
-    <template name="function-item">
-      <view class="function-item" bindtap="onTapFunction" data-url="{{url}}">
-        <image src="{{functionSrc}}" mode="aspectFit"></image>
-        <view>{{functionTitle}}</view>
-      </view>
-    </template>
-    <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
-  </view>
-
-  <view class="user-config">
-    <image src="../../asset/img/more_ico.png" mode="aspectFill" />
-  </view>
-
-  <view class='progress-con'>出行碳积分
-    <progress percent="40" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
-    <view class="progress-notice">还差 60% 即可兑换现金</view>
-  </view>
-
-
-
-  <view class="heat-title">
-    低碳热力图 30天
-  </view>
-  <view class='heat-con'>
-    <view class="image-con">
-      <image src="../../asset/img/heatmap-fake.png" mode="aspectFill" />
+<view class="function-con">
+  <template name="function-item">
+    <view class="function-item" bindtap="onTapFunction" data-url="{{url}}">
+      <image src="{{functionSrc}}" mode="aspectFit"></image>
+      <view>{{functionTitle}}</view>
     </view>
-  </view>
+  </template>
+  <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
+</view>
 
-  <view class='menu-bar' bindtap='onSurvey'>调查问卷</view>
-  <view class='menu-bar'>授权管理</view>
-  <view class='menu-bar'>关于小程序</view>
+<view class="user-config">
+  <image src="../../asset/img/more_ico.png" mode="aspectFill" />
+</view>
+
+<view class='progress-con'>出行碳积分 ： {{userInfo.credit}}
+  <progress percent="{{(userInfo.credit)/10}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+  <view class="progress-notice">还差 {{(1000-userInfo.credit)/10}}% 即可兑换低碳大奖</view>
+</view>
+
+
+
+<view class="heat-title">
+  低碳热力图 30天
+</view>
+<view class='heat-con'>
+  <view class="image-con">
+    <image src="../../asset/img/heatmap-fake.png" mode="aspectFill" />
+  </view>
+</view>
+
+<view class='menu-bar' bindtap='onSurvey'>调查问卷</view>
+<view class='menu-bar'>授权管理</view>
+<view class='menu-bar'>关于小程序</view>
 </view>
