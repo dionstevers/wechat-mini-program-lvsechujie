@@ -13,7 +13,8 @@ Page({
       },
       {
         functionSrc:'../../asset/img/history.png',
-        functionTitle:'出行历史'
+        functionTitle:'出行历史',
+        url:'../triphistory/triphistory'
       },
       {
         functionSrc:'../../asset/img/exchange.png',

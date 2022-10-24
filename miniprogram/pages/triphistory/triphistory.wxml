@@ -1,0 +1,17 @@
+<!--pages/triphistory/triphistory.wxml-->
+<wxs src="./triphistory.wxs" module="m1"></wxs>
+
+<view class="page-background">
+  <view class="list">
+    <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
+      <view class="title">
+        {{ todayRecordList.length - i }} · 时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
+        <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
+      </view>
+      <view class="content">
+        时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
+      <view class="content">步数：{{item.endSteps-item.startSteps}}</view>
+      <view class="content delete" bindtap="deleteRecord" data-id="{{item._id}}">×</view>
+    </view>
+  </view>
+</view>

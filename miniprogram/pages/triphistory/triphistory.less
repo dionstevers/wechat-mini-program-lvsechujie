@@ -1,0 +1,84 @@
+/* pages/triphistory/triphistory.wxss */
+
+.list-summary {
+  color: white;
+  text-align: center;
+  width: 600rpx;
+  height: 2vh;
+  margin: 10rpx auto 40rpx;
+  font-size: 28rpx;
+  line-height: 2vh;
+  text{
+    padding: 0 10rpx;
+    color: #00ffb9;
+    font-weight: bold;
+    font-size: 30rpx;
+  }
+}
+
+
+.notice {
+  color: #00ffb9;
+  font-size: 28rpx;
+  margin: 10rpx auto 40rpx;
+  text-align: center;
+
+  text {
+    font-size: 35rpx;
+    font-style: italic;
+  }
+}
+
+.list {
+  width: 650rpx;
+  height: 40vh;
+  overflow: auto;
+  margin: 0 auto;
+
+
+  .listItem {
+    width: 635rpx;
+    height: 160rpx;
+    margin-bottom: 10rpx;
+    border-radius: 20rpx;
+    background-color: rgba(0, 0, 0, 0.315);
+    position: relative;
+
+    .title {
+      padding-top: 18rpx;
+      text-align: center;
+      font-size: 26rpx;
+    }
+
+    .content {
+      font-size: 24rpx;
+      margin-top: 5rpx;
+      padding: 0 20rpx;
+    }
+
+    .delete{
+      color: rgba(255, 255, 255, 0.651);
+      position: absolute;
+      right: 5rpx;
+      top: 5rpx;
+      font-size: 40rpx;
+    }
+  }
+
+  .listItem:active {
+    background-color: #0000005b;
+  }
+
+  .new {
+    color: white;
+    text{
+      color: #00ffb9;
+    }
+  }
+
+  .old {
+    color: rgba(197, 197, 197, 0.842);
+  }
+}
+
+

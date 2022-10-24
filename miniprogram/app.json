@@ -4,7 +4,8 @@
     "pages/information/information",
     "pages/center/center",
     "pages/journal/journal",
-    "pages/survey/survey"
+    "pages/survey/survey",
+    "pages/triphistory/triphistory"
   ],
   "tabBar": {
     "list": [
@@ -48,5 +49,9 @@
     }
   },
   "requiredBackgroundModes": ["location"],
-  "embeddedAppIdList": ["wxebadf544ddae62cb"]
+  "embeddedAppIdList": ["wxebadf544ddae62cb"],
+  "requiredPrivateInfos": [
+    "onLocationChange",
+    "startLocationUpdateBackground"
+  ]
 }
