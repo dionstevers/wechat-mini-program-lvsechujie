@@ -15,7 +15,7 @@ Page({
       {
         functionSrc:'../../asset/img/history.png',
         functionTitle:'出行历史',
-        url:'../history/history'
+        url:'../triphistory/triphistory'
       },
       {
         functionSrc:'../../asset/img/exchange.png',
