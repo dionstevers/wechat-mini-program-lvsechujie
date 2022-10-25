@@ -4,9 +4,8 @@ Page({
     recordStatus: false,
     btnClass: 'btn btn-default',
     todayRecordList: [],
+    isRecordEmpty: true,
 
-    // 定时器：
-    myTimer: null,
     // 临时记录信息：
     startTime: 0,
     endTime: 0,
@@ -62,7 +61,7 @@ Page({
           name: 'login',
           success: res => {
             _this.setData({
-              openID: res.result.openid,
+              openID: res.result.data._openid,
             })
             console.log('openID:', _this.data.openID)
             _this.setList()
@@ -105,6 +104,8 @@ Page({
         _openid: _this.data.openID,
         date: _.gt(now)
       })
+      .orderBy('date', 'desc')
+      .limit(1)
       .get({
         success: function (res) {
           let list = res.data
@@ -121,6 +122,7 @@ Page({
           })
           _this.setData({
             todayRecordList: list.reverse(),
+            isRecordEmpty: list.length == 0
           })
         }
       })
