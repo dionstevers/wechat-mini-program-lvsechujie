@@ -40,6 +40,7 @@ Page({
     const { userInfo } = await wx.getUserProfile({
       desc: '用于完善用户信息',
     })
+    console.log(userInfo)
     // 交付后端生成账号
      
     const { result:{ data } } = await wx.cloud.callFunction({
