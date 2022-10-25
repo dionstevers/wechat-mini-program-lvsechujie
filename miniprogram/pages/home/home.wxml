@@ -17,12 +17,17 @@
     </view>
   </view>
 
-  <view class="list-summary">今日共有<text>{{ todayRecordList.length }}</text>条出行记录</view>
+  <view class="list-summary" wx:if="{{isRecordEmpty}}">
+    今日您没有出行记录
+  </view>
+  <view class="list-summary" wx:else>
+    您今日的上一条出行记录
+  </view>
 
   <view class="list">
     <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
       <view class="title">
-         {{ todayRecordList.length - i }} · 时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·  
+         时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·  
          <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
       </view>
       <view class="content">

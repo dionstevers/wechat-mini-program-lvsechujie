@@ -6,55 +6,61 @@ Page({
    */
   data: {
     userInfo: null,
-    functionList:[
-      {
-        functionSrc:'../../asset/img/note.png',
-        functionTitle:'低碳日记',
-        url:'../journal/journal'
+    functionList: [{
+        functionSrc: '../../asset/img/note.png',
+        functionTitle: '低碳日记',
+        url: '../journal/journal'
       },
       {
-        functionSrc:'../../asset/img/history.png',
-        functionTitle:'出行历史',
-        url:'../triphistory/triphistory'
+        functionSrc: '../../asset/img/history.png',
+        functionTitle: '出行历史',
+        url: '../triphistory/triphistory'
       },
       {
-        functionSrc:'../../asset/img/exchange.png',
-        functionTitle:'积分中心',
-        url:'../store/store'
+        functionSrc: '../../asset/img/exchange.png',
+        functionTitle: '积分中心',
+        url: '../store/store'
       }
     ],
     CoinRatio: 0
   },
 
-  onTapFunction(e){
-    let {url} = e.currentTarget.dataset
-    if(url){
+  onTapFunction(e) {
+    let {
+      url
+    } = e.currentTarget.dataset
+    if (url) {
       wx.navigateTo({
         url,
       })
     }
 
   },
+
   // 用户授权获取信息
-  async getUserInfo(){
-    const { userInfo } = await wx.getUserProfile({
+  async getUserInfo() {
+    const {
+      userInfo
+    } = await wx.getUserProfile({
       desc: '用于完善用户信息',
     })
-    // 交付后端生成账号
-     
-    const { result:{ data } } = await wx.cloud.callFunction({
-       name : 'login',
-       data : {
-        nickName : userInfo.nickName,
-        avatarUrl : userInfo.avatarUrl,
-       }
-     })
-      console.log(data)
-     this.setData({
-       userInfo: data 
-     })
+    console.log(userInfo)
+    var _this = this
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl,
+      },
+      success: res => {
+        _this.setData({
+          userInfo: res.result.data
+        })
+      }
+    })
   },
-  onSurvey(e){
+
+  onSurvey(e) {
     wx.navigateTo({
       url: '/pages/survey/survey',
     })
@@ -65,7 +71,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    
   },
 
   /**

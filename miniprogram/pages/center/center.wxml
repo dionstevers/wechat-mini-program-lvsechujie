@@ -3,7 +3,7 @@
 
 <view class="avatar-con" wx:if="{{ userInfo }}">
   <image class="avatarImg" src="{{userInfo.avatarUrl}}"></image>
-  <view class='avatar-name' bind:tap="getUserInfo">{{userInfo.nickName}}</view>
+  <view class='avatar-name'>{{userInfo.nickName}}</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 <view class="avatar-con" wx:else>
