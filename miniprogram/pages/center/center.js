@@ -37,8 +37,8 @@ Page({
 
   },
 
-  // 用户授权获取信息
-  async getUserInfo() {
+  // 用户注册
+  async login() {
     const {
       userInfo
     } = await wx.getUserProfile({
@@ -56,8 +56,24 @@ Page({
         _this.setData({
           userInfo: res.result.data
         })
+      
+      wx.setStorageSync('userInfo', res.result.data)
+
       }
     })
+  },
+  // 已注册用户登录
+  async getUserInfo(){
+    const data = wx.getStorageSync('userInfo')
+    if (data){
+       
+      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      this.setData({
+        userInfo: userInfo.data
+      })
+      console.log(userInfo)
+    }
+    
   },
 
   onSurvey(e) {
@@ -85,7 +101,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.getUserInfo()
   },
 
   /**

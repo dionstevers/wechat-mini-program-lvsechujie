@@ -7,8 +7,8 @@
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 <view class="avatar-con" wx:else>
-  <view class='avatar' bind:tap="getUserInfo">WX</view>
-  <view class='avatar-name' bind:tap="getUserInfo">登录/注册</view>
+  <view class='avatar' bind:tap="login">WX</view>
+  <view class='avatar-name' bind:tap="login">登录/注册</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 
@@ -22,7 +22,7 @@
   <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
 </view>
 
-<view class="user-config" bind:tap="getUserInfo">
+<view class="user-config" bind:tap="login">
   <image src="../../asset/img/more_ico.png" mode="aspectFill" />
 </view>
 
