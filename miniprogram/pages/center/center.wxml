@@ -36,10 +36,9 @@
 <view class="heat-title">
   低碳热力图 30天
 </view>
-<view class='heat-con'>
-  <view class="image-con">
-    <image src="../../asset/img/heatmap-fake.png" mode="aspectFill" />
-  </view>
+ 
+<view class="heat-con">
+  <ec-canvas class="container" id="mychart-dom-area" canvas-id="mychart-area"  ec="{{ ec }}" force-use-old-canvas="true"> </ec-canvas>
 </view>
 
 <view class='menu-bar' bindtap='onSurvey'>调查问卷</view>
