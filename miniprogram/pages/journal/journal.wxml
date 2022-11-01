@@ -1,22 +1,26 @@
 <!--pages/journal/journal.wxml-->
 <view class="page-background">
-  <view class="page-introduction" style="font-size: 42rpx; text-align: left;">
+  
+  <view class="page-introduction" style="font-size: 42rpx; text-align: left;margin-top: 10rpx;">
     亲爱的自己，昨天过得怎样？
+    <switch class="sub-title" style="margin-left:-10rpx; margin-top: 20rpx;" bindchange="">延用此前选择</switch>
   </view>
-  <form action="">
+  
+  <form bindsubmit="formSubmit">
     <view class="form-group-title">
-      LIFESTYLE
+      生活方式
     </view>
-    <view class="form-single-con">
-      <view>
-        Have any alcoholic drinks?
-      </view>
-
-      <radio-group>
-        <radio value="yes" checked="{{true}}" name="drink"></radio>
-        <radio value="yes" checked="{{false}}" name="drink"></radio>
-      </radio-group>
-    </view>
-
+    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
+        <label wx:for="{{questions}}" wx:key="id">
+          <view>
+            <checkbox value="{{item.value}}" checked="{{item.isdisabled}}">{{item.value}}</checkbox>
+          </view>
+        </label>
+    </checkbox-group>
+    
+      
+  <button form-type="submit" wx:if="{{ userInfo }} " disabled="{{checkSubmit}}">提交记录</button>
+  <button wx:else>请先登录</button>
+  <!-- <button form-type="reset">重置数据</button> -->
   </form>
 </view>
