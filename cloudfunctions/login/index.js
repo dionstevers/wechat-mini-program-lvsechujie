@@ -24,6 +24,7 @@ exports.main = async (event) => {
 
   // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
   const { nickName, avatarUrl} = event
+  
   const { OPENID } = cloud.getWXContext()
   // 如果数据库存在当前用户信息--登录
   // 初始化集合

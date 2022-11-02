@@ -141,13 +141,14 @@ Page({
     wx.cloud.callFunction({
       name: 'login',
       data: {
-        nickName: userInfo.nickName,
         avatarUrl: userInfo.avatarUrl,
+        nickName: userInfo.nickName
       },
       success: res => {
         _this.setData({
           userInfo: res.result.data
         })
+        console.log(res.result.data)
       
       wx.setStorageSync('userInfo', res.result.data)
 

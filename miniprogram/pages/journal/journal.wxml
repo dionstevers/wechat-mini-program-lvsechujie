@@ -3,23 +3,44 @@
   
   <view class="page-introduction" style="font-size: 42rpx; text-align: left;margin-top: 10rpx;">
     亲爱的自己，昨天过得怎样？
-    <switch class="sub-title" style="margin-left:-10rpx; margin-top: 20rpx;" bindchange="">延用此前选择</switch>
+    <!-- <switch class="sub-title" style="margin-left:-10rpx; margin-top: 20rpx;" bindchange="selectionHandler">延用此前选择</switch> -->
   </view>
   
-  <form bindsubmit="formSubmit">
+  <form bindsubmit="formSubmit" >
     <view class="form-group-title">
       生活方式
     </view>
     <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
-        <label wx:for="{{questions}}" wx:key="id">
+        <label wx:for="{{questions1}}" wx:key="id">
           <view>
-            <checkbox value="{{item.value}}" checked="{{item.isdisabled}}">{{item.value}}</checkbox>
+            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
           </view>
         </label>
     </checkbox-group>
+    <view class="form-group-title" id='group2'>
+      日常饮食
+    </view>
+    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
+        <label wx:for="{{questions2}}" wx:key="id">
+          <view>
+            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
+          </view>
+        </label>
+      </checkbox-group>
+    <view class="form-group-title" id='group3'>
+      一日总结
+    </view>
+    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
+        <label wx:for="{{questions3}}" wx:key="id">
+          <view>
+            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
+          </view>
+        </label>
+      </checkbox-group>
+    
     
       
-  <button form-type="submit" wx:if="{{ userInfo }} " disabled="{{checkSubmit}}">提交记录</button>
+  <button form-type="submit" wx:if="{{ userInfo }} " disabled="{{ status }}">提交记录</button>
   <button wx:else>请先登录</button>
   <!-- <button form-type="reset">重置数据</button> -->
   </form>
