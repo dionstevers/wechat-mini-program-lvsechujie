@@ -40,8 +40,12 @@
     
     
       
-  <button form-type="submit" wx:if="{{ userInfo }} " disabled="{{ status }}">提交记录</button>
+  <button form-type="submit" wx:if="{{ userInfo }}" disabled="{{status}}">提交记录</button>
   <button wx:else>请先登录</button>
-  <!-- <button form-type="reset">重置数据</button> -->
+   
+  
+   
+ 
+
   </form>
 </view>

@@ -1,38 +1,31 @@
 // pages/center/center.ts
-import * as echarts from "../../ec-canvas/echarts"
-const app = getApp();
 
+import * as echarts from "../../ec-canvas/echarts"
+
+const app = getApp();
+let chartdata = wx.getStorageSync('list'), chart= null;
+function getDate(){
+  var date = new Date();
+    var year = date.getFullYear();     
+    var month = date.getMonth() + 1;   
+    
+    var time=year + "-" + month 
+    return time
+};
 function initChart(canvas,width,height,dpr){
-  const chart = echarts.init(canvas,null,{
+    chart = echarts.init(canvas,null,{
     width:width,
     height:height,
     devicePixelRatio:dpr
   })
   canvas.setChart(chart)
-
-  
-const heat = 3;
-
-function getVirtulData(year) {
-  year = year || '2022';
-  var date = +echarts.number.parseDate(year + '-05-01');
-  var end = +echarts.number.parseDate(year + '-05-31');
-  var dayTime = 3600 * 24 * 1000;
-  var data = [];
-  for (var time = date; time <= end; time += dayTime) {
-      data.push([
-          echarts.format.formatTime('yyyy-MM-dd', time),
-          heat
-      ]);
-  }
-  return data;
-}
-
-chart.resize()
+  setChartOption(chartdata)
+  return chart;
+};
+function setChartOption(data){
+   
   const option = {
-    // tooltip: {
-    //   position: 'top'
-    // },
+
     animation: true,
     grid: {
       bottom: 10,
@@ -42,7 +35,7 @@ chart.resize()
     },
     
     calendar : {
-      range : '2022-05',
+      range : getDate(),
       top:'25',
       left:'center',
       orient:'vertical',
@@ -56,7 +49,7 @@ chart.resize()
       max: 10,
       show: false,
       calculable: true,
-      orient: 'vertical',
+      orient: 'horizontal',
       top: 'middle',
       left: 'center',
       bottom: 10,
@@ -68,7 +61,8 @@ chart.resize()
       name: 'Punch Card',
       type: 'heatmap',
       coordinateSystem: 'calendar',
-      // data: getVirtulData(2022),
+      data:data,
+      
       label: {
         normal: {
           show: false
@@ -83,10 +77,8 @@ chart.resize()
     }]
   };
 
-  chart.setOption(option);
-  return chart;
-};
-
+  chart.setOption(option,true);
+}
 
 Page({
 
@@ -94,8 +86,10 @@ Page({
    * 页面的初始数据
    */
   data: {
+    
     ec:{
       onInit: initChart
+      
     },
     userInfo: null,
     functionList: [{
@@ -116,7 +110,7 @@ Page({
     ],
     CoinRatio: 0
   },
-
+   
   onTapFunction(e) {
     let {
       url
@@ -195,6 +189,10 @@ Page({
    */
   onShow() {
     this.getUserInfo()
+    // setTimeout(() => {
+    //   chartdata = wx.getStorageSync('list')
+    //   console.log(chartdata)
+    // }, 1000);
   },
 
   /**
@@ -214,9 +212,11 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh() {
+  
 
-  },
+  // onPullDownRefresh: function () {
+      
+  // },
 
   /**
    * 页面上拉触底事件的处理函数

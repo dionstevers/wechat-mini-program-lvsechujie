@@ -1,3 +1,5 @@
+
+
 // pages/journal/journal.ts
 Page({
 
@@ -6,8 +8,8 @@ Page({
    */
   data: {
     forminfo :'',
-    userInfo: '',
-    status:'',
+    userInfo: null,
+    status:null,
     questions1:[
       {id:1,value:"未使用一次性制品"},
       {id:2,value:"乘坐公共交通或骑自行车出行"},
@@ -25,17 +27,25 @@ Page({
     questions3:[
       {id:7,value:"今日践行了低碳生活"}
     ],
-    checkSubmit:''
+    
   },
-  formSubmit: function(e: { detail: { value: any; }; }){
-     
+  formSubmit:  function(e: { detail: { value: any; }; }){
+    const list = wx.getStorageSync('list')
+    
+    var date = new Date();
+    var year = date.getFullYear();     
+    var month = date.getMonth() + 1;   
+    var dates = date.getDate();  
+    
+    var time=year + "-" + month + "-" + dates
+   
     const data = wx.getStorageSync('userInfo')
     
     // 提交低碳日记-->credit+20
     this.setData({
       forminfo:e.detail.value
     })
-    const db  = wx.cloud.database();
+    const db  =  wx.cloud.database();
     const _ = db.command;
     db.collection('userInfo').doc(data._id).update({
       data:{
@@ -46,43 +56,58 @@ Page({
     // 将form数据写入数据库
     db.collection('formdata').add({
       data:{
-        time:  Date(),
+        time: time,
         form: e.detail.value,
       }
     })
+    
     // 将目前时间写入缓存，用来比对
-    wx.setStorageSync("Time",Date()) 
-    wx.setStorageSync("formData",e.detail.value)
+    wx.setStorageSync("Time",time) 
+    
     // 提交后禁用按钮
     this.setData({
       status:'true'
     })
+    
+    if(list){
+      list.push([time,list.length/3+1])
+      wx.setStorageSync('list', list)
+    }
+    else{
+      const arr = [[time,1]]
+      wx.setStorageSync('list', arr)
+    }
   },
   checkSubmit(){
-    var cur = wx.getStorageSync('Time');
     
+    var cur =  wx.getStorageSync('Time');
+    var now = new Date();
+    var year = now.getFullYear();    
+    var month = now.getMonth() + 1;   
+    var dates = now.getDate();  
     
-    var month = cur.split(' ')[1];
-    var date = cur.split(' ')[2];
-    var year = cur.split(' ')[3];
-    var now = Date();
-    var now_month = now.split(' ')[1];
-    var now_date = now.split(' ')[2];
-    var now_year = now.split(' ')[3];
-    if(month==now_month&&date==now_date&&year==now_year){
+    var time=year + "-" + month + "-" + dates
+    if(cur==time){
       this.setData({
-        status:"false"
+        status:"true"
       })
     }else{
       this.setData({
-        status:""
+        status:null
       })
     }
   },
-  getUserInfo(){
-    this.setData({
-      userInfo: wx.getStorageSync('userInfo')
-    })
+    async getUserInfo(){
+    const data = wx.getStorageSync('userInfo')
+    if (data){
+       
+      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      this.setData({
+        userInfo: userInfo.data
+      })
+      console.log(userInfo)
+    }
+    
   },
    
    

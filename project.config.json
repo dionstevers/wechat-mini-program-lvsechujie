@@ -41,7 +41,8 @@
     "minifyWXML": true,
     "showES6CompileOption": false,
     "lazyloadPlaceholderEnable": false,
-    "useStaticServer": true
+    "useStaticServer": true,
+    "ignoreUploadUnusedFiles": false
   },
   "appid": "wx241e2c0a850c812a",
   "projectname": "CarbonFootprint",
