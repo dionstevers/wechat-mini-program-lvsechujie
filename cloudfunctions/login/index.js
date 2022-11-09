@@ -42,6 +42,7 @@ exports.main = async (event) => {
          avatarUrl: avatarUrl,
          _openid : OPENID,
          credit : 0,
+         loginlist: []
       }
     })
     // 接收_id快速返回该id数据

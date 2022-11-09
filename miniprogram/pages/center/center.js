@@ -4,7 +4,7 @@ import * as echarts from "../../ec-canvas/echarts"
 
 const app = getApp();
 let chartdata = wx.getStorageSync('list'), chart= null;
-function getDate(){
+function getDate(){ 
   var date = new Date();
     var year = date.getFullYear();     
     var month = date.getMonth() + 1;   
@@ -12,16 +12,7 @@ function getDate(){
     var time=year + "-" + month 
     return time
 };
-function initChart(canvas,width,height,dpr){
-    chart = echarts.init(canvas,null,{
-    width:width,
-    height:height,
-    devicePixelRatio:dpr
-  })
-  canvas.setChart(chart)
-  setChartOption(chartdata)
-  return chart;
-};
+
 function setChartOption(data){
    
   const option = {
@@ -79,12 +70,22 @@ function setChartOption(data){
 
   chart.setOption(option,true);
 }
-
+function initChart(canvas,width,height,dpr){
+  chart = echarts.init(canvas,null,{
+  width:width,
+  height:height,
+  devicePixelRatio:dpr
+})
+canvas.setChart(chart)
+setChartOption(chartdata)
+return chart;
+}
 Page({
 
   /**
    * 页面的初始数据
    */
+  
   data: {
     
     ec:{
