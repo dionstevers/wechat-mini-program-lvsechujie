@@ -7,7 +7,7 @@
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 <view class="avatar-con" wx:else>
-  <view class='avatar' bind:tap="login">WX</view>
+  <view class='avatar' bind:tap="onlogin">WX</view>
   <view class='avatar-name' bind:tap="login">登录/注册</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
@@ -22,9 +22,9 @@
   <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
 </view>
 
-<view class="user-config" bind:tap="login">
+<!-- <view class="user-config" bind:tap="login">
   <image src="../../asset/img/more_ico.png" mode="aspectFill" />
-</view>
+</view> -->
 
 <view class='progress-con'>出行碳积分 ： {{userInfo.credit}}
   <progress percent="{{(userInfo.credit)/10}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
@@ -37,7 +37,7 @@
   低碳热力图 30天
 </view>
  
-<view   class="heat-con">
+<view  class="heat-con">
   <ec-canvas type = "2d" class="container" id="mychart-dom-area" canvas-id="mychart-area"  ec="{{ ec }}" force-use-old-canvas="true" > </ec-canvas>
 </view>
 

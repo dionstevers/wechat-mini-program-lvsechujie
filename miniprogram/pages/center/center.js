@@ -89,8 +89,8 @@ Page({
   data: {
     
     ec:{
-      onInit: initChart
-      
+      onInit: initChart,
+       
     },
     userInfo: null,
     functionList: [{
@@ -163,7 +163,11 @@ Page({
     }
     
   },
-
+  onlogin(e){
+    wx.navigateTo({
+      url: '/pages/login/login',
+    })
+  },
   onSurvey(e) {
     wx.navigateTo({
       url: '/pages/survey/survey',

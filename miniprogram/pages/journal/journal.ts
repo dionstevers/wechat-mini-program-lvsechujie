@@ -49,7 +49,8 @@ Page({
     const _ = db.command;
     db.collection('userInfo').doc(data._id).update({
       data:{
-        credit:_.inc(20)
+        credit:_.inc(20),
+        loginlist: _.push([time,list.length/3+1])
       }
     })
     
@@ -68,7 +69,7 @@ Page({
     this.setData({
       status:'true'
     })
-    
+    // 向本地存储数据
     if(list){
       list.push([time,list.length/3+1])
       wx.setStorageSync('list', list)
@@ -79,7 +80,7 @@ Page({
     }
   },
   checkSubmit(){
-    
+    // 从本地缓存的时间查看当日提交状态
     var cur =  wx.getStorageSync('Time');
     var now = new Date();
     var year = now.getFullYear();    

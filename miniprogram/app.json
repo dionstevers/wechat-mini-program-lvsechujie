@@ -7,7 +7,9 @@
     "pages/journal/journal",
     "pages/survey/survey",
     "pages/triphistory/triphistory",
-    "pages/store/store"
+    "pages/store/store",
+    "pages/login/login"
+    
   ],
   "tabBar": {
     "list": [
