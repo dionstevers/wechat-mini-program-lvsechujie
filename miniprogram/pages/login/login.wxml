@@ -37,7 +37,7 @@
   </view>
   <view class='name'>
    <text>最高学历</text>
-   <!-- <picker mode="grad" value =" {{date}} "bindchange="bindDateChange"> 选择的时间是： {{date}} </picker> -->
+
    <picker bindchange="bindgradChange" value="{{ grad }}" range="{{gradArr}}" name="degree">
     <view wx:if="{{ grad }}">
          {{ gradArr[grad] }}
@@ -106,15 +106,6 @@
  
 <button form-type='submit'>提交</button>
 </form>
- 
-<!-- 模态框 -->
-<modal class="modal" title='要提交的信息' hidden="{{modalHidden}}" bindcancel='modalCancel' bindconfirm='modalConfirm'>
- 
-    <view>姓别:{{userSex}}</view>
-    <view>手机:{{information.phone}}</view>
-    <view>身份证号：{{information.idNumber}}</view>
-</modal>
-<!-- /模态框 -->
- 
+
 
 </view>

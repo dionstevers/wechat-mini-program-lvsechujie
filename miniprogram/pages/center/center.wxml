@@ -12,6 +12,10 @@
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 
+<view class="user-config"  >
+  <image src="../../asset/img/more_ico.png" mode="aspectFill" />
+</view>
+
 <view class="function-con">
   <template name="function-item">
     <view class="function-item" bindtap="onTapFunction" data-url="{{url}}">
@@ -22,9 +26,7 @@
   <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
 </view>
 
-<!-- <view class="user-config" bind:tap="login">
-  <image src="../../asset/img/more_ico.png" mode="aspectFill" />
-</view> -->
+
 
 <view class='progress-con'>出行碳积分 ： {{userInfo.credit}}
   <progress percent="{{(userInfo.credit)/10}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />

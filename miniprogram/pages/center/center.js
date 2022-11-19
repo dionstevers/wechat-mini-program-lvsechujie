@@ -13,7 +13,7 @@ function getDate(){
     return time
 };
 
-function setChartOption(data){
+function setChartOption(chartdata){
    
   const option = {
 
@@ -52,7 +52,7 @@ function setChartOption(data){
       name: 'Punch Card',
       type: 'heatmap',
       coordinateSystem: 'calendar',
-      data:data,
+      data:chartdata,
       
       label: {
         normal: {
@@ -124,32 +124,6 @@ Page({
 
   },
 
-  // 用户注册
-  async login() {
-    const {
-      userInfo
-    } = await wx.getUserProfile({
-      desc: '用于完善用户信息',
-    })
-    console.log(userInfo)
-    var _this = this
-    wx.cloud.callFunction({
-      name: 'login',
-      data: {
-        avatarUrl: userInfo.avatarUrl,
-        nickName: userInfo.nickName
-      },
-      success: res => {
-        _this.setData({
-          userInfo: res.result.data
-        })
-        console.log(res.result.data)
-      
-      wx.setStorageSync('userInfo', res.result.data)
-
-      }
-    })
-  },
   // 已注册用户登录
   async getUserInfo(){
     const data = wx.getStorageSync('userInfo')
@@ -194,10 +168,7 @@ Page({
    */
   onShow() {
     this.getUserInfo()
-    // setTimeout(() => {
-    //   chartdata = wx.getStorageSync('list')
-    //   console.log(chartdata)
-    // }, 1000);
+    
   },
 
   /**
