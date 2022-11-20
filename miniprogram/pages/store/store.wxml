@@ -1,6 +1,24 @@
 <view class="page-background">
+<view class='notice'>
+  <view class='notice-contain'>
+    <view class="notice-containTitle">公告栏</view>
+    
+    <swiper class="tab-right" vertical="true" autoplay="true" circular="true"  interval="2000" >
+         
+            <block wx:for='{{luckylist}}'>
+                <swiper-item>
+                    <view class='content-item'>
+                        <view class="time">{{item.time}}分钟前</view>
+                        <view class='name'>{{item.nickName}}提现了</view>
+                        <view class='wawa'>{{item.reward}}元</view>
+                    </view>
+                </swiper-item>
+            </block> 
+     
+    </swiper>
+    </view>
+    </view>
 
-<view class="intro">积分抽奖</view>
 <view class="index">
  <view class="line"></view>
  <view class="line"></view>
@@ -13,5 +31,19 @@
  <view class="detail">六等奖</view>
  <span  style="transform:rotate({{trasn}}deg);"></span>
 </view>
-<button bindtap="startspin" disabled="{{status}}">点击抽奖</button>
+
+<view class="info">
+  <view class="side" bindtap="toMyprize">
+    <view>我的奖品</view>
+    <image src="../../asset/img/more_ico.png" style="width: 30rpx; height: 30rpx; margin-top: 15rpx;" />
+  </view>
+  <button class="center" bindtap="startspin" disabled="{{status}}"> 
+  <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; " ></image> 
+  <view>{{cost}} 抽奖</view>
+  </button>
+  <view class="side"> 
+    <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx;" ></image>
+    <view>{{userInfo.credit}}</view>
+  </view>
+</view>
 </view>

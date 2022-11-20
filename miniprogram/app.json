@@ -8,7 +8,9 @@
     "pages/survey/survey",
     "pages/triphistory/triphistory",
     "pages/store/store",
-    "pages/login/login"
+    "pages/login/login",
+    "pages/myprize/myprize"
+    
     
   ],
   "tabBar": {

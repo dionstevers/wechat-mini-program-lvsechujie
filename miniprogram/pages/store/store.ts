@@ -3,7 +3,26 @@ Page({
   data: {
   random:'',
   trasn:0,
-  status: ''
+  status: '',
+  cost: 200,
+  userInfo:null,
+  luckylist:[    
+    {   
+        time:7,
+        nickName:"张三",
+        reward:"2"
+    },
+    {   
+        time:12,
+        nickName: "李四",
+        reward: "2"
+    },
+    {
+        time:14,
+        nickName: "王五",
+        reward: "2"
+    },
+],
   },
   startspin:function(e){
   let that = this
@@ -33,7 +52,7 @@ Page({
    }
    )
    }
-  },8)
+  },5)
   },
   currinl:function(e){
   let that = this
@@ -62,12 +81,38 @@ Page({
    })
    if(that.data.random <= that.data.trasn){
    wx.showToast({
-    title: name,
-    icon: 'none',
-    duration: 2000
+    title: "您获得了"+name,
+    icon: 'success',
+    duration: 2000,
+     
    })
    clearInterval(b)
    }
   },10)
   },
+  async getUserInfo(){
+    const data = wx.getStorageSync('userInfo')
+    if (data){
+       
+      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      this.setData({
+        userInfo: userInfo.data
+      })
+      console.log(userInfo)
+    }
+    
+  },
+  toMyprize(){
+    wx.navigateTo({
+      url:'../myprize/myprize'
+    })
+  },
+  onLoad(){
+    wx.setNavigationBarTitle({
+      title: '积分中心'
+    })
+  },
+  onShow(){
+    this.getUserInfo()
+  }
  })
