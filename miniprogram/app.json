@@ -58,7 +58,8 @@
   "embeddedAppIdList": ["wxebadf544ddae62cb"],
   "requiredPrivateInfos": [
     "onLocationChange",
-    "startLocationUpdateBackground"
+    "startLocationUpdateBackground",
+    "getLocation"
   ],
   "useExtendedLib": {
    

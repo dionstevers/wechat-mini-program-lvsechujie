@@ -1,49 +1,52 @@
 <!--pages/home/home.wxml-->
 <wxs src="./home.wxs" module="m1"></wxs>
-
 <view class="page-background">
-  <view class="aqi-info">
-    最近的空气质量监测站：{{name}}
-  </view>
-  <view class="aqi-info">
-    空气质量指数：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{aqi}}</text>
-  </view>
-  <view class="aqi-info">
-    空气质量等级：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{category}}</text>
-  </view>
-  <picker bindchange="bindPickerChange" value="{{index}}" range="{{transportList}}" class="picker-con">
-    <view class="picker">
-      {{transportList[index]}}
+  <view wx:if="{{ userInfo }}">
+    <view class="aqi-info">
+      最近的空气质量监测站：{{name}}
     </view>
-    <view class="triangle"></view>
-  </picker>
-
-  <view class="{{btnClass}}" bindtap="onClickEvent">
-    <view wx:if="{{!recordStatus}}">开始</view>
-    <view wx:if="{{recordStatus}}">
-      <text>{{ m1.convertStamp(duration, "duration") }}</text>
-      <text>停止记录</text>
+    <view class="aqi-info">
+      空气质量指数：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{aqi}}</text>
     </view>
-  </view>
-
-  <view class="list-summary" wx:if="{{isRecordEmpty}}">
-    今日您没有出行记录
-  </view>
-  <view class="list-summary" wx:else>
-    您今日的上一条出行记录
-  </view>
-
-  <view class="list">
-    <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
-      <view class="title">
-        时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
-        <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
+    <view class="aqi-info">
+      空气质量等级：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{category}}</text>
+    </view>
+    <picker bindchange="bindPickerChange" value="{{index}}" range="{{transportList}}" class="picker-con">
+      <view class="picker">
+        {{transportList[index]}}
       </view>
-      <view class="content">
-        时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
-      <view class="content">步数：{{item.endSteps-item.startSteps}}</view>
-      <view class="content delete" bindtap="deleteRecord" data-id="{{item._id}}">×</view>
+      <view class="triangle"></view>
+    </picker>
+
+    <view class="{{btnClass}}" bindtap="onClickEvent">
+      <view wx:if="{{!recordStatus}}">开始</view>
+      <view wx:if="{{recordStatus}}">
+        <text>{{ m1.convertStamp(duration, "duration") }}</text>
+        <text>停止记录</text>
+      </view>
+    </view>
+
+    <view class="list-summary" wx:if="{{isRecordEmpty}}">
+      今日您没有出行记录
+    </view>
+    <view class="list-summary" wx:else>
+      您今日的上一条出行记录
+    </view>
+
+    <view class="list">
+      <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
+        <view class="title">
+          时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
+          <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
+        </view>
+        <view class="content">
+          时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
+        <view class="content">步数：{{item.endSteps-item.startSteps}}</view>
+        <view class="content delete" bindtap="deleteRecord" data-id="{{item._id}}">×</view>
+      </view>
     </view>
   </view>
-  <!-- <view wx:if="{{todayRecordList.length}}" class='notice'>累计排放二氧化碳 <text>0.5kg</text></view> -->
+  <view class='list-summary' wx:else>
+    请先前往个人中心登录/注册
+  </view>
 </view>

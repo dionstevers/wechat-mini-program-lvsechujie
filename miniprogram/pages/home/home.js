@@ -1,10 +1,12 @@
 // pages/home/home.ts
+const app = getApp();
 Page({
   data: {
     recordStatus: false,
     btnClass: 'btn btn-default',
     todayRecordList: [],
     isRecordEmpty: true,
+    userInfo: null,
 
     // 临时记录信息：
     startTime: 0,
@@ -86,6 +88,9 @@ Page({
   },
 
   onLoad: async function() {
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
     const db = wx.cloud.database()
     const _ = db.command
     let _this = this
@@ -116,7 +121,7 @@ Page({
               success(loc) {
                 var latitude = loc.latitude.toFixed(2)
                 var longitude = loc.longitude.toFixed(2)
-                console.log(longitude, latitude)
+                console.log('Location: ',longitude, latitude)
                 wx.request({
                   url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
                   success: async function (res) {
@@ -126,6 +131,9 @@ Page({
                     console.log(err)
                   }
                 })
+              },
+              fail: function (err) {
+                console.log(err)
               }
             })
 
@@ -491,6 +499,12 @@ Page({
         }
       }
     })
-  }
+  },
+
+  onShow() {
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+  },
 
 })
