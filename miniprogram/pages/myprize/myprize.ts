@@ -5,12 +5,26 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    userInfo:null,
+    prizelist:null,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
+  async getUserInfo(){
+    const data = wx.getStorageSync('userInfo')
+    if (data){
+       
+      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      this.setData({
+        userInfo: userInfo.data,
+        prizelist:userInfo.data.prizelist,
+      })
+      console.log(userInfo)
+    }
+    
+  },
   onLoad() {
 
   },
@@ -26,7 +40,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.getUserInfo()
   },
 
   /**

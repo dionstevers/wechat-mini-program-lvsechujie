@@ -43,7 +43,7 @@
   <ec-canvas type = "2d" class="container" id="mychart-dom-area" canvas-id="mychart-area"  ec="{{ ec }}" force-use-old-canvas="true" > </ec-canvas>
 </view>
 
-<view class='menu-bar' bindtap='onSurvey'>调查问卷</view>
+<view class='menu-bar' bindtap='onSurvey'>关于小程序</view>
 <view class='menu-bar'>授权管理</view>
-<view class='menu-bar'>关于小程序</view>
+<view class='menu-bar'>隐私声明</view>
 </view>

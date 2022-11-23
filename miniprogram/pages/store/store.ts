@@ -84,10 +84,19 @@ Page({
     title: "您获得了"+name,
     icon: 'success',
     duration: 2000,
-     
    })
+   const data = wx.getStorageSync('userInfo')
+   const db  =  wx.cloud.database();
+    const _ = db.command;
+    db.collection('userInfo').doc(data._id).update({
+      data:{
+        credit:_.inc(-20),
+        prizelist: _.push([name])
+      }
+    })
    clearInterval(b)
    }
+   
   },10)
   },
   async getUserInfo(){

@@ -84,6 +84,7 @@ Page({
         avatarUrl: userInfo.avatarUrl,
         nickName: userInfo.nickName,
         basicInfo: info,
+        testGroup:Math.round(Math.random())
       },
       
       success: res => {

@@ -23,7 +23,7 @@ exports.main = async (event) => {
   // console.log 的内容可以在云开发云函数调用日志查看
 
   // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
-  const { nickName, avatarUrl, basicInfo} = event
+  const { nickName, avatarUrl, basicInfo,testGroup} = event
   
   const { OPENID } = cloud.getWXContext()
   // 如果数据库存在当前用户信息--登录
@@ -43,6 +43,8 @@ exports.main = async (event) => {
          _openid : OPENID,
          credit : 0,
          loginlist: [],
+         prizelist:[],
+         testGroup:testGroup,
          basicInfo:basicInfo,
       }
     })

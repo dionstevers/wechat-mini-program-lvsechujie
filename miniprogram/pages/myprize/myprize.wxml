@@ -1,14 +1,21 @@
  <view class="page-background">
-<view class="no-info" wx:if="{{!userinfo}}">
+
+ 
+ <view class="info" wx:if="{{userInfo}}">
+    <block>我的奖品</block>
+
+   <view wx:for="{{prizelist}}">
+    <label>{{item}}</label>
+   </view>
+ 
+ </view>
+ 
+ <view class="no-info" wx:else>
   <image src="../../asset/img/prizeempty.png" style="width: 500rpx ; height:500rpx;"></image>
   <view>
     还没有奖品哦，快去抽奖吧 ~
   </view>
 </view>
- 
- 
- 
- 
  
  
  
