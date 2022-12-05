@@ -78,6 +78,19 @@ Page({
       const arr = [[time,1]]
       wx.setStorageSync('list', arr)
     }
+    wx.showToast({
+      title:"提交成功",
+      icon:  "success",
+      duration:2000,
+      mask:true,
+      success: function(){
+        setTimeout(function(){
+          wx.navigateBack({
+            delta:1
+          })
+        },1500)
+      }
+    }) 
   },
   checkSubmit(){
     // 从本地缓存的时间查看当日提交状态

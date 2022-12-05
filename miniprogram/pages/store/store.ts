@@ -6,6 +6,7 @@ Page({
   status: '',
   cost: 200,
   userInfo:null,
+  credit : 0,
   luckylist:[    
     {   
         time:7,
@@ -25,9 +26,10 @@ Page({
 ],
   },
   startspin:function(e){
+  
   let that = this
   let num = 0
-  
+  that.getUserInfo()
   that.setData({
     // random-最终角度-从后端获得概率
    random:Math.floor(Math.random() * 360),
@@ -47,12 +49,10 @@ Page({
    if(num == 3){
    that.currinl()
    clearInterval(a)
-   that.setData({
-     status: ''
+  
    }
-   )
-   }
-  },5)
+  },6)
+   
   },
   currinl:function(e){
   let that = this
@@ -80,33 +80,49 @@ Page({
    trasn:that.data.trasn+2
    })
    if(that.data.random <= that.data.trasn){
-   wx.showToast({
+  const data = wx.getStorageSync('userInfo')
+  const db  =  wx.cloud.database();
+  const _ = db.command;
+     db.collection('userInfo').doc(data._id).update({
+       data:{
+         credit:_.inc(-200),
+         prizelist: _.push([name])
+       }
+     })
+    wx.showToast({
     title: "您获得了"+name,
     icon: 'success',
     duration: 2000,
    })
-   const data = wx.getStorageSync('userInfo')
-   const db  =  wx.cloud.database();
-    const _ = db.command;
-    db.collection('userInfo').doc(data._id).update({
-      data:{
-        credit:_.inc(-20),
-        prizelist: _.push([name])
-      }
-    })
+   
+   
+    that.setData({
+      status: ''
+    }
+    )
+   that.getUserInfo()
    clearInterval(b)
    }
    
-  },10)
+  },5)
+  
   },
+
+  
   async getUserInfo(){
     const data = wx.getStorageSync('userInfo')
     if (data){
        
       const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
       this.setData({
-        userInfo: userInfo.data
+        userInfo: userInfo.data,
+        credit: userInfo.data.credit
       })
+      if(userInfo.data.credit<200){
+        this.setData({
+          status:'forbid'
+        })
+      }
       console.log(userInfo)
     }
     

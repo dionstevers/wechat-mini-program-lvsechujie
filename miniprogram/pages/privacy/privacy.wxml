@@ -1,0 +1,19 @@
+<!--pages/privacy/privacy.wxml-->
+<view class="page-background">
+<view class="page-introduction">隐私声明</view>
+<view class="page-introduction">您的信息。您的权利。我们的责任。</view>
+ 
+<view class="page-introduction">
+  
+本研究小组致力于坚持履行所有法律和职业义务，以保护您记录的私密性 
+</view>
+
+<view class="page-introduction">
+  我们保证不会将您的个人信息、低碳日记内容、出行记录等任何个人数据与第三方分享
+</view>
+
+<view class="page-introduction">
+  所有研究资料均为保密资料，并将收集用于本研究计划规定的特定目的，仅供昆山杜克大学碳排放研究小组使用
+</view>
+
+</view>

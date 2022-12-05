@@ -12,7 +12,13 @@
  
   <view class='name'>
     <text>当前职业</text>
-    <input name="name" type='text' placeholder-style='font-size:28rpx;' placeholder='您当前的职业'  name="occu"></input>
+    <picker bindchange="bindOccuChange" value="{{ occu }}" range="{{occupationArr}}" name="occupation">
+    <view wx:if="{{ occu }}">
+         {{ occupationArr[occu] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
   </view>
  
   <view class='sex'>
@@ -27,7 +33,7 @@
   <view class='name'>
    <text>出生年份</text>
     
-   <picker mode="date" fields= "year"bindchange="bindyearChange" value="{{ year }}" name="birthyear" >
+   <picker mode="date" fields= "year" end = "2022" bindchange="bindyearChange" value="{{ year }}" name="birthyear" >
     <view wx:if="{{ year }}">
          {{ year }}
      </view>
@@ -46,7 +52,10 @@
     
    </picker>
   </view>
- 
+ <view class="name">
+ <text>电子邮件</text>
+  <input type="text" placeholder="用于奖品发放" name = "email"/> 
+ </view>
 <view class='baseInfo'>
   
   <text>生活习惯</text>

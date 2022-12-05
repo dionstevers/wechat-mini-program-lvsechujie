@@ -1,19 +1,12 @@
 // pages/center/center.ts
 
 import * as echarts from "../../ec-canvas/echarts"
-
 const app = getApp();
-let chartdata = wx.getStorageSync('list'), chart= null;
-function getDate(){ 
-  var date = new Date();
-    var year = date.getFullYear();     
-    var month = date.getMonth() + 1;   
-    
-    var time=year + "-" + month 
-    return time
-};
+ 
 
-function setChartOption(chartdata){
+ 
+
+function setChartOption(chart,chartdata){
    
   const option = {
 
@@ -26,13 +19,14 @@ function setChartOption(chartdata){
     },
     
     calendar : {
-      range : getDate(),
+      range : '2022-12',
       top:'25',
       left:'center',
       orient:'vertical',
       width:'230rpx',
       yearLabel: false,
-      monthLabel: false
+      monthLabel: false,
+       
       
     },
     visualMap: {
@@ -69,17 +63,10 @@ function setChartOption(chartdata){
   };
 
   chart.setOption(option,true);
+  return chart;
 }
-function initChart(canvas,width,height,dpr){
-  chart = echarts.init(canvas,null,{
-  width:width,
-  height:height,
-  devicePixelRatio:dpr
-})
-canvas.setChart(chart)
-setChartOption(chartdata)
-return chart;
-}
+
+
 Page({
 
   /**
@@ -88,9 +75,8 @@ Page({
   
   data: {
     
-    ec:{
-      onInit: initChart,
-       
+    ec:{  
+      
     },
     userInfo: null,
     functionList: [{
@@ -109,9 +95,40 @@ Page({
         url: '../store/store'
       }
     ],
-    CoinRatio: 0
+    CoinRatio: 0,
+     
   },
-   
+  initChart(){
+    let chart;
+    this.randerComponent.init((canvas,width,height,dpr)=>{
+      chart = echarts.init(canvas,null,{
+        width:width,
+        height:height,
+        devicePixelRatio: dpr,
+      });
+      setChartOption(chart,this.getdata());
+      this.chart = chart;
+      return chart
+    })
+  },
+  // 为啥get行 getdata不行
+  get(){
+    let info;
+    info = [['2022-12-22',2]]
+    return info;
+  },
+  async getdata(){
+    let data = wx.getStorageSync('userInfo')
+    let info;
+    if (data){
+       
+      let userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      info = userInfo.data.loginlist
+      
+    }
+    return info;
+    
+  },
   onTapFunction(e) {
     let {
       url
@@ -129,12 +146,12 @@ Page({
     const data = wx.getStorageSync('userInfo')
     if (data){
        
-      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      let userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
       this.setData({
-        userInfo: userInfo.data
+        userInfo: userInfo.data,
+        list:userInfo.data.loginlist
       })
       app.globalData.userInfo = userInfo;
-      console.log(userInfo)
     }
     
   },
@@ -149,7 +166,12 @@ Page({
     })
 
   },
- 
+  onPrivacy(e) {
+    wx.navigateTo({
+      url: '/pages/privacy/privacy',
+    })
+
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -167,7 +189,11 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.getUserInfo()
+    this.getUserInfo();
+
+    this.getdata();
+    this.randerComponent = this.selectComponent('#mychart-dom-area')
+    this.initChart();
   },
 
   /**

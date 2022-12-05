@@ -9,8 +9,8 @@
     "pages/triphistory/triphistory",
     "pages/store/store",
     "pages/login/login",
-    "pages/myprize/myprize"
-    
+    "pages/myprize/myprize",
+    "pages/privacy/privacy"
     
   ],
   "tabBar": {

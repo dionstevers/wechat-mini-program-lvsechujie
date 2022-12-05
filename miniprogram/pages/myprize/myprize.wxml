@@ -1,7 +1,7 @@
  <view class="page-background">
 
  
- <view class="info" wx:if="{{userInfo}}">
+ <view class="info" wx:if="{{prizelist}}">
     <block>我的奖品</block>
 
    <view wx:for="{{prizelist}}">
