@@ -98,25 +98,22 @@ Page({
     CoinRatio: 0,
      
   },
-  initChart(){
+  initChart(data){
     let chart;
+     
     this.randerComponent.init((canvas,width,height,dpr)=>{
       chart = echarts.init(canvas,null,{
         width:width,
         height:height,
         devicePixelRatio: dpr,
       });
-      setChartOption(chart,this.getdata());
+      setChartOption(chart,data);
       this.chart = chart;
       return chart
     })
   },
   // 为啥get行 getdata不行
-  get(){
-    let info;
-    info = [['2022-12-22',2]]
-    return info;
-  },
+   
   async getdata(){
     let data = wx.getStorageSync('userInfo')
     let info;
@@ -124,9 +121,9 @@ Page({
        
       let userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
       info = userInfo.data.loginlist
-      
+      this.initChart(info)
     }
-    return info;
+    
     
   },
   onTapFunction(e) {
@@ -152,6 +149,7 @@ Page({
         list:userInfo.data.loginlist
       })
       app.globalData.userInfo = userInfo;
+      console.log(userInfo)
     }
     
   },
@@ -190,10 +188,9 @@ Page({
    */
   onShow() {
     this.getUserInfo();
-
-    this.getdata();
     this.randerComponent = this.selectComponent('#mychart-dom-area')
-    this.initChart();
+    this.getdata();
+      
   },
 
   /**

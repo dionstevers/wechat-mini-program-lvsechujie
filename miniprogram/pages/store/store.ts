@@ -4,24 +4,18 @@ Page({
   random:'',
   trasn:0,
   status: '',
-  cost: 200,
+  cost: 20,
   userInfo:null,
   credit : 0,
   luckylist:[    
     {   
-        time:7,
-        nickName:"张三",
-        reward:"2"
+        time:"每次抽奖需消耗20积分",
     },
     {   
-        time:12,
-        nickName: "李四",
-        reward: "2"
+        time:"奖品将于每月月底统一发放",
     },
     {
-        time:14,
-        nickName: "王五",
-        reward: "2"
+        time:"还等什么，快来抽奖吧！",
     },
 ],
   },
@@ -85,7 +79,7 @@ Page({
   const _ = db.command;
      db.collection('userInfo').doc(data._id).update({
        data:{
-         credit:_.inc(-200),
+         credit:_.inc(-20),
          prizelist: _.push([name])
        }
      })
@@ -118,7 +112,7 @@ Page({
         userInfo: userInfo.data,
         credit: userInfo.data.credit
       })
-      if(userInfo.data.credit<200){
+      if(userInfo.data.credit<20){
         this.setData({
           status:'forbid'
         })

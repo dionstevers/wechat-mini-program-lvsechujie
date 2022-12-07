@@ -2,8 +2,8 @@
 <view class="page-background">
 
 <view class="avatar-con" wx:if="{{ userInfo }}">
-  <image class="avatarImg" src="{{userInfo.avatarUrl}}"></image>
-  <view class='avatar-name'>{{userInfo.nickName}}</view>
+  <view class='avatar'>C</view>
+  <view class='avatar-name'>轻碳</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 <view class="avatar-con" wx:else>
@@ -12,9 +12,9 @@
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 
-<view class="user-config"  >
+<!-- <view class="user-config"  >
   <image src="../../asset/img/more_ico.png" mode="aspectFill" />
-</view>
+</view> -->
 
 <view class="function-con">
   <template name="function-item">
@@ -30,7 +30,7 @@
 
 <view class='progress-con'>出行碳积分 ： {{userInfo.credit}}
   <progress percent="{{(userInfo.credit)/10}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
-  <view class="progress-notice">还差 {{(1000-userInfo.credit)/10}}% 即可兑换低碳大奖</view>
+  <!-- <view class="progress-notice">还差 {{(1000-userInfo.credit)/10}}% 即可兑换低碳大奖</view> -->
 </view>
 
 

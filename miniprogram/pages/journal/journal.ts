@@ -50,7 +50,7 @@ Page({
     db.collection('userInfo').doc(data._id).update({
       data:{
         credit:_.inc(20),
-        loginlist: _.push([time,list.length/3+1])
+        loginlist: _.push([[time,list.length/3+1]])
       }
     })
     
@@ -69,15 +69,7 @@ Page({
     this.setData({
       status:'true'
     })
-    // 向本地存储数据
-    if(list){
-      list.push([time,list.length/3+1])
-      wx.setStorageSync('list', list)
-    }
-    else{
-      const arr = [[time,1]]
-      wx.setStorageSync('list', arr)
-    }
+    
     wx.showToast({
       title:"提交成功",
       icon:  "success",

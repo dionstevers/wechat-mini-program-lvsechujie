@@ -8,9 +8,8 @@
             <block wx:for='{{luckylist}}'>
                 <swiper-item>
                     <view class='content-item'>
-                        <view class="time">{{item.time}}分钟前</view>
-                        <view class='name'>{{item.nickName}}提现了</view>
-                        <view class='wawa'>{{item.reward}}元</view>
+                        <view class="time">{{item.time}}</view>
+                         
                     </view>
                 </swiper-item>
             </block> 
