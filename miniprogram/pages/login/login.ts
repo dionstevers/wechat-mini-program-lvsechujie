@@ -72,24 +72,17 @@ Page({
   },
   //表单提交
  
-  async login(e) {
-    const {
-      userInfo
-    } = await wx.getUserProfile({
-      desc: '用于完善用户信息',
-    })
-    console.log(userInfo)
+  async login(e: { detail: { value: any; }; }) {
+    
     var _this = this
     _this.setData({
       information: e.detail.value
     })
-    const info = e.detail.value
-     
+    let info = e.detail.value
+    console.log(info)
     wx.cloud.callFunction({
       name: 'login',
       data: {
-        avatarUrl: userInfo.avatarUrl,
-        nickName: userInfo.nickName,
         basicInfo: info,
         testGroup:Math.round(Math.random())
       },
