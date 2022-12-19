@@ -78,7 +78,7 @@ Page({
     _this.setData({
       information: e.detail.value
     })
-    let info = e.detail.value
+    const info = e.detail.value
     console.log(info)
     wx.cloud.callFunction({
       name: 'login',

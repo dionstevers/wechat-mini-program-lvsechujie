@@ -42,8 +42,8 @@ exports.main = async (event) => {
          credit : 0,
          loginlist: [],
          prizelist:[],
-         testGroup:event.testGroup,
-         basicInfo:event.basicInfo,
+         testGroup:testGroup,
+         basicInfo:basicInfo,
       }
     })
     // 接收_id快速返回该id数据
