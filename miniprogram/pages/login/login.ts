@@ -5,7 +5,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-     
+    _id: null,
+    openID:null,
     userInfo:null,
     occupationArr:["学生","国家机关/社会团体","科研/综合技术服务业","卫生/医疗/保健业","教育/文化和广播电影电视业","交通运输仓储业","金融保险业","计算机IT业","房地产业","汽车业","通讯业","制造业","批发零售贸易业","商务/咨询服务业","旅游/餐饮/娱乐业","无业/自由职业"],
     gradArr: ["小学以下","小学","初中","高中","职高/中专","大专","大学","硕士","博士","博士以上"],
@@ -71,52 +72,55 @@ Page({
     })
   },
   //表单提交
- 
-  async login(e: { detail: { value: any; }; }) {
+  login(e){
+    console.log(e.detail.value)
     
+     
     var _this = this
-    _this.setData({
-      information: e.detail.value
-    })
-    const info = e.detail.value
-    console.log(info)
-    wx.cloud.callFunction({
-      name: 'login',
-      data: {
-        basicInfo: info,
-        testGroup:Math.round(Math.random())
-      },
-      
-      success: res => {
-        _this.setData({
-          userInfo: res.result.data
-        })
-        console.log(res.result.data)
-       
-        wx.setStorageSync('userInfo', res.result.data)
-
-        
-        wx.showToast({
-          title:"提交成功",
-          icon:  "success",
-          duration:2000,
-          mask:true,
-          success: function(){
-            setTimeout(function(){
-              wx.navigateBack({
-                delta:1
-              })
-            },1500)
-          }
-        }) 
-        
+    console.log(_this.data.openID)
+    const db  =  wx.cloud.database();
+    const _ = db.command;
+    db.collection('userInfo').doc(_this.data._id).update({
+      data:{
+        basicInfo:e.detail.value,
       }
-
+    }).then((res)=>{
+      console.log(res)
     })
+    db.collection('userInfo').doc(_this.data._id).get().then((res)=>{
+      console.log(res.data)
+      wx.setStorageSync('userInfo',res.data)
+    })
+    wx.showToast({
+      title:"提交成功",
+      icon:"success",
+      duration:2000,
+      mask:true,
+      success: function(){
+        setTimeout(function(){
+          wx.navigateBack({
+            delta:1
+          })
+        },1500)
+      }
+    })
+
   },
 
-  onLoad: function (options) {
-  
-  }
+  onLoad() {
+    var _this = this
+    wx.cloud.callFunction({
+      name: 'login',
+      success: res => {
+        _this.setData({
+          openID: res.result.data._openid,
+          _id:res.result.data._id,
+          
+        })
+        console.log('openID:', _this.data.openID)
+        
+      }
+    })
+  },
 })
  
