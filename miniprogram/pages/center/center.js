@@ -79,6 +79,7 @@ Page({
       
     },
     userInfo: null,
+    openID: '',
     functionList: [{
         functionSrc: '../../asset/img/note.png',
         functionTitle: '低碳日记',
@@ -113,7 +114,7 @@ Page({
     })
   },
   // 为啥get行 getdata不行
-   
+   /*
   async getdata(){
     let data = wx.getStorageSync('userInfo')
     let info;
@@ -126,6 +127,7 @@ Page({
     
     
   },
+  */
   onTapFunction(e) {
     let {
       url
@@ -139,19 +141,49 @@ Page({
   },
 
   // 已注册用户登录
-  async getUserInfo(){
-    const data = wx.getStorageSync('userInfo')
+  getUserInfo(){
+    //const data = wx.getStorageSync('userInfo');
+    const db = wx.cloud.database();
+    let _this = this;
+    wx.cloud.callFunction({
+      name: 'login',
+      success: res => {
+        _this.setData({
+          openID: res.result.data._openid,
+        })
+        console.log('openID:', _this.data.openID)
+        db.collection('userInfo').where({
+          _openid: _this.data.openID,
+        })
+        .get({
+          success: function (res) {
+            console.log(_this.data.userInfo)
+            console.log(res.data)
+            if(res.data.length == 1){
+              _this.setData({
+                userInfo: res.data[0],
+                list: res.data[0].loginlist
+              })
+              app.globalData.userInfo = _this.data.userInfo;
+              _this.initChart(_this.data.list)
+              console.log(_this.data.userInfo)
+            }
+          }
+        })
+      }
+    })
+    /*
     if (data){
        
-      let userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
+      let userInfo = await db.collection('userInfo').doc(data._id).get()
       this.setData({
         userInfo: userInfo.data,
         list:userInfo.data.loginlist
       })
       app.globalData.userInfo = userInfo;
-      console.log(userInfo)
+      console.log(this.data.userInfo)
     }
-    
+    */
   },
   onlogin(e){
     wx.navigateTo({
@@ -187,10 +219,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.getUserInfo();
-    this.randerComponent = this.selectComponent('#mychart-dom-area')
-    this.getdata();
-      
+    
+    //this.getdata();
   },
 
   /**

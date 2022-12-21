@@ -2,7 +2,7 @@
 <wxs src="./home.wxs" module="m1"></wxs>
 <view class="page-background">
   <view wx:if="{{ userInfo }}">
-    <view class="aqi-info">
+    <view class="aqi-info" wx:if="{{ name != '' }}">
       最近的空气质量监测站：{{name}}
     </view>
     <view class="aqi-info">

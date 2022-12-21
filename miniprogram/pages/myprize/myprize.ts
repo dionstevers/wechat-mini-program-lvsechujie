@@ -12,6 +12,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
+  /*
   async getUserInfo(){
     const data = wx.getStorageSync('userInfo')
     if (data){
@@ -25,6 +26,38 @@ Page({
     }
     
   },
+*/
+  getUserInfo() {
+    //const data = wx.getStorageSync('userInfo');
+    const db = wx.cloud.database();
+    const _ = db.command;
+    let _this = this;
+    wx.cloud.callFunction({
+      name: 'login',
+      success: res => {
+        _this.setData({
+          openID: res.result.data._openid,
+        })
+        console.log('openID:', _this.data.openID)
+        db.collection('userInfo').where({
+          _openid: _this.data.openID,
+        }).get({
+            success: function (res) {
+              console.log(_this.data.userInfo)
+              console.log(res.data)
+              if (res.data.length == 1) {
+                _this.setData({
+                  userInfo: res.data[0],
+                  prizelist: res.data[0].prizelist
+                })
+                console.log(_this.data.userInfo)
+              }
+            }
+          })
+      }
+    })
+  },
+
   onLoad() {
 
   },

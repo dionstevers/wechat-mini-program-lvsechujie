@@ -7,103 +7,109 @@ Page({
    * 页面的初始数据
    */
   data: {
-    forminfo :'',
+    forminfo: '',
+    openID: '',
     userInfo: null,
-    status:null,
-    questions1:[
-      {id:1,value:"未使用一次性制品"},
-      {id:2,value:"乘坐公共交通或骑自行车出行"},
-      
-      
-      {id:3,value:"主动进行垃圾分类"},
-      {id:4,value:"进行了随手环保行动"},
-      
-    
+    status: null,
+    questions1: [
+      { id: 1, value: "未使用一次性制品" },
+      { id: 2, value: "乘坐公共交通或骑自行车出行" },
+
+
+      { id: 3, value: "主动进行垃圾分类" },
+      { id: 4, value: "进行了随手环保行动" },
+
+
     ],
-    questions2:[
-      {id:5,value:"用餐时践行光盘行动"},
-      {id:6,value:"未大量摄入高碳水食物"}
+    questions2: [
+      { id: 5, value: "用餐时践行光盘行动" },
+      { id: 6, value: "未大量摄入高碳水食物" }
     ],
-    questions3:[
-      {id:7,value:"今日践行了低碳生活"}
+    questions3: [
+      { id: 7, value: "今日践行了低碳生活" }
     ],
-    
+
   },
-  formSubmit:  function(e: { detail: { value: any; }; }){
-    const list = wx.getStorageSync('list')
-    
+  formSubmit: function (e: { detail: { value: any; }; }) {
+    //const list = wx.getStorageSync('list')
+
     var date = new Date();
-    var year = date.getFullYear();     
-    var month = date.getMonth() + 1;   
-    var dates = date.getDate();  
-    
-    var time=year + "-" + month + "-" + dates
-   
-    const data = wx.getStorageSync('userInfo')
-    
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var dates = date.getDate();
+
+    var time = year + "-" + month + "-" + dates
+
+    //const data = wx.getStorageSync('userInfo')
+
     // 提交低碳日记-->credit+20
     this.setData({
-      forminfo:e.detail.value
+      forminfo: e.detail.value
     })
-    const db  =  wx.cloud.database();
+    const db = wx.cloud.database();
     const _ = db.command;
-    db.collection('userInfo').doc(data._id).update({
-      data:{
-        credit:_.inc(20),
-        loginlist: _.push([[time,list.length/3+1]])
+    var _this = this
+    db.collection('userInfo').doc(_this.data.userInfo._id).update({
+      data: {
+        credit: _.inc(20),
+        loginlist: _.push([[time,_this.data.userInfo.loginlist.length/3+1]])
       }
     })
-    
+
     // 将form数据写入数据库
     db.collection('formdata').add({
-      data:{
+      data: {
         time: time,
         form: e.detail.value,
       }
     })
-    
+
     // 将目前时间写入缓存，用来比对
-    wx.setStorageSync("Time",time) 
-    
+    //wx.setStorageSync("Time", time)
+
     // 提交后禁用按钮
     this.setData({
-      status:'true'
+      status: 'true'
     })
-    
+
     wx.showToast({
-      title:"提交成功",
-      icon:  "success",
-      duration:2000,
-      mask:true,
-      success: function(){
-        setTimeout(function(){
+      title: "提交成功",
+      icon: "success",
+      duration: 2000,
+      mask: true,
+      success: function () {
+        setTimeout(function () {
           wx.navigateBack({
-            delta:1
+            delta: 1
           })
-        },1500)
+        }, 1500)
       }
-    }) 
+    })
   },
-  checkSubmit(){
+  checkSubmit() {
     // 从本地缓存的时间查看当日提交状态
-    var cur =  wx.getStorageSync('Time');
+    /*
+    var cur = wx.getStorageSync('Time');
     var now = new Date();
-    var year = now.getFullYear();    
-    var month = now.getMonth() + 1;   
-    var dates = now.getDate();  
-    
-    var time=year + "-" + month + "-" + dates
-    if(cur==time){
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var dates = now.getDate();
+
+    var time = year + "-" + month + "-" + dates
+    if (cur == time) {
       this.setData({
-        status:"true"
+        status: "true"
       })
-    }else{
+    } else {
       this.setData({
-        status:null
+        status: null
       })
     }
+    */
+
   },
-    async getUserInfo(){
+  /*
+  async getUserInfo(){
     const data = wx.getStorageSync('userInfo')
     if (data){
        
@@ -115,8 +121,64 @@ Page({
     }
     
   },
-   
-   
+  */
+  getUserInfo() {
+    //const data = wx.getStorageSync('userInfo');
+    const db = wx.cloud.database();
+    const _ = db.command;
+    let _this = this;
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var dates = date.getDate();
+
+    var today = year + "-" + month + "-" + dates;
+    wx.cloud.callFunction({
+      name: 'login',
+      success: res => {
+        _this.setData({
+          openID: res.result.data._openid,
+        })
+        console.log('openID:', _this.data.openID)
+        db.collection('userInfo').where({
+          _openid: _this.data.openID,
+        }).get({
+            success: function (res) {
+              console.log(_this.data.userInfo)
+              console.log(res.data)
+              if (res.data.length == 1) {
+                _this.setData({
+                  userInfo: res.data[0],
+                })
+                console.log(_this.data.userInfo)
+              }
+            }
+          })
+          db.collection('formdata').where({
+            _openid: _this.data.openID,
+            time: today
+          }).get({
+              success: function (res) {
+                console.log('Length:',res.data.length)
+                if(res.data.length > 0){
+                  _this.setData({
+                    status: "true"
+                  })
+                }
+                else{
+                  _this.setData({
+                    status: null
+                  })
+                }
+              }
+            })
+      }
+    })
+  },
+
+
+
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -132,13 +194,13 @@ Page({
   onReady() {
 
   },
-   
+
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-      this.getUserInfo()
-      this.checkSubmit()
+    this.getUserInfo()
+    this.checkSubmit()
   },
 
   /**

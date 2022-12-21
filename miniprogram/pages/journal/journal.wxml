@@ -10,7 +10,7 @@
     <view class="form-group-title">
       生活方式
     </view>
-    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
+    <checkbox-group class="form-single-con" name='diet-checkbox'>
         <label wx:for="{{questions1}}" wx:key="id">
           <view>
             <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
@@ -20,7 +20,7 @@
     <view class="form-group-title" id='group2'>
       日常饮食
     </view>
-    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
+    <checkbox-group class="form-single-con" name='summary-checkbox'>
         <label wx:for="{{questions2}}" wx:key="id">
           <view>
             <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>

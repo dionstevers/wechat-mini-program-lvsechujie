@@ -68,6 +68,7 @@ Page({
     var _this = this
     var closest = -1
     var closestDist = -1
+    console.log(triplet)
     for (var i in triplet[2]) {
       var dist = await _this.calcDist(triplet, i)
       console.log(i, dist)
@@ -125,7 +126,17 @@ Page({
                 wx.request({
                   url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
                   success: async function (res) {
-                    _this.updateAQI(res, await _this.findClosest([latitude, longitude, res.data.station]))
+                    console.log(res.data)
+                    if(res.data.station){
+                      _this.updateAQI(res, await _this.findClosest([latitude, longitude, res.data.station]))
+                    }
+                    else{
+                      _this.setData({
+                        aqi: res.data.now.aqi,
+                        category: res.data.now.category
+                      })
+                    }
+                    
                   },
                   fail: function (err) {
                     console.log(err)

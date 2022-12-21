@@ -30,6 +30,7 @@ exports.main = async (event) => {
   // 初始化集合
   const db = cloud.database()
   // 指定集合
+  /*
   const userInfo = db.collection('userInfo')
   // 查询是否注册
   const { data } = await userInfo.where({
@@ -56,6 +57,11 @@ exports.main = async (event) => {
       data:data[0]
     }
   }
+  */
+  var data = {
+    _openid : OPENID
+  };
+  return {data:data}
   // 新增数据
  
    
