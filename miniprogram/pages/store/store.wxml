@@ -22,12 +22,12 @@
  <view class="line"></view>
  <view class="line"></view>
  <view class="line"></view>
- <view class="detail">一等奖</view>
- <view class="detail">二等奖</view>
- <view class="detail">三等奖</view>
- <view class="detail">四等奖</view>
- <view class="detail">五等奖</view>
- <view class="detail">六等奖</view>
+ <view class="detail"><text>微信电子书\n5元优惠卷</text></view>
+ <view class="detail"><text>￥100京东E卡</text></view>
+ <view class="detail"><text>¥20京东E卡</text></view>
+ <view class="detail" style="margin-left: -40rpx;"><text>小米空气净化器\n100元优惠卷</text></view>
+ <view class="detail"><text>燃油宝\n50元优惠卷</text></view>
+ <view class="detail"><text>低碳荞麦面\n10元优惠卷</text></view>
  <span  style="transform:rotate({{trasn}}deg);"></span>
 </view>
 

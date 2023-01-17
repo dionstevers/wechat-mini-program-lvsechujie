@@ -4,9 +4,9 @@ import * as echarts from "../../ec-canvas/echarts"
 const app = getApp();
  
 
- 
 
-function setChartOption(chart,chartdata){
+
+function setChartOption(chart,chartdata,curDate){
    
   const option = {
 
@@ -19,7 +19,7 @@ function setChartOption(chart,chartdata){
     },
     
     calendar : {
-      range : '2022-12',
+      range : curDate,
       top:'25',
       left:'center',
       orient:'vertical',
@@ -108,26 +108,20 @@ Page({
         height:height,
         devicePixelRatio: dpr,
       });
-      setChartOption(chart,data);
+      setChartOption(chart,data,this.curDate());
       this.chart = chart;
       return chart
     })
   },
-  // 为啥get行 getdata不行
-   /*
-  async getdata(){
-    let data = wx.getStorageSync('userInfo')
-    let info;
-    if (data){
-       
-      let userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
-      info = userInfo.data.loginlist
-      this.initChart(info)
-    }
+  curDate(){
+     
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    var curDate = year + "-" + month;
     
-    
+    return curDate;
   },
-  */
   onTapFunction(e) {
     let {
       url
@@ -221,6 +215,7 @@ Page({
   onShow() {
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.getUserInfo();
+    this.curDate()
     
     //this.getdata();
   },

@@ -49,13 +49,24 @@ Page({
     const db = wx.cloud.database();
     const _ = db.command;
     var _this = this
-    db.collection('userInfo').doc(_this.data.userInfo._id).update({
-      data: {
-        credit: _.inc(20),
-        loginlist: _.push([[time,_this.data.userInfo.loginlist.length/3+1]])
-      }
-    })
-
+    // 如果是当月第一天就不再push 改为更新列表
+    if(dates==1){
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+          credit: _.inc(20),
+          loginlist: _.set([[time,_this.data.userInfo.loginlist.length+1]])
+        }
+      })
+    }
+    else{
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+          credit: _.inc(20),
+          loginlist: _.push([[time,_this.data.userInfo.loginlist.length+1]])
+        }
+      })
+    }
+     
     // 将form数据写入数据库
     db.collection('formdata').add({
       data: {
@@ -86,42 +97,7 @@ Page({
       }
     })
   },
-  checkSubmit() {
-    // 从本地缓存的时间查看当日提交状态
-    /*
-    var cur = wx.getStorageSync('Time');
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth() + 1;
-    var dates = now.getDate();
 
-    var time = year + "-" + month + "-" + dates
-    if (cur == time) {
-      this.setData({
-        status: "true"
-      })
-    } else {
-      this.setData({
-        status: null
-      })
-    }
-    */
-
-  },
-  /*
-  async getUserInfo(){
-    const data = wx.getStorageSync('userInfo')
-    if (data){
-       
-      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
-      this.setData({
-        userInfo: userInfo.data
-      })
-      console.log(userInfo)
-    }
-    
-  },
-  */
   getUserInfo() {
     //const data = wx.getStorageSync('userInfo');
     const db = wx.cloud.database();
@@ -200,7 +176,7 @@ Page({
    */
   onShow() {
     this.getUserInfo()
-    this.checkSubmit()
+  
   },
 
   /**

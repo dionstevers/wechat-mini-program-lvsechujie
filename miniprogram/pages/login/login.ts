@@ -86,6 +86,7 @@ Page({
         loginlist: [],
         prizelist: [],
         testGroup: 0,
+        attempts:0,
         basicInfo: e.detail.value
       }
     })

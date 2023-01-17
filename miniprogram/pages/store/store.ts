@@ -1,6 +1,7 @@
 // pages/store/store.ts
 Page({
   data: {
+    curAttempt:0,
     random: '',
     trasn: 0,
     status: '',
@@ -12,6 +13,9 @@ Page({
         time: "每次抽奖需消耗20积分",
       },
       {
+        time:"五连抽必得20元（含以上）奖品"
+      },
+      {
         time: "奖品将于每月月底统一发放",
       },
       {
@@ -19,14 +23,77 @@ Page({
       },
     ],
   },
+
+  angleGenerator(){
+    var Max = 0;
+    var Min = 0;
+    const db = wx.cloud.database();
+    const _ = db.command;
+    var _this = this
+    var angle = 0;
+    const attempts = _this.data.curAttempt
+    const prob = Math.floor(Math.random() * 360);
+    var Rand = Math.random();
+     
+      
+       
+    //不保底最大奖 但是如果欧皇抽中 attempt变为0  5%概率抽到
+    if(prob<=5){
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+         attempts : _.set(0)
+        }
+      })
+      Max = 90;
+      Min = 30;
+      angle = Min + Math.floor(Rand * (Max-Min)); //舍去
+    }
+    // 第二有价值的奖品 5次抽奖保底20块  20%概率抽到
+    if(  ( prob>5&&prob<=25 ) ||attempts==5){
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+         attempts : _.set(0)
+        }
+      })
+      Max = 150;
+      Min = 90;
+      angle = Min + Math.floor(Rand * (Max-Min)); //舍去
+    }
+    // 其次没有价值的奖品 (共两种) 35%概率抽到
+    if(prob>25&&prob<=60){
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+         attempts : _.inc(1)
+        }
+      })
+      Max = 270;
+      Min = 150;
+      angle = Min + Math.floor(Rand * (Max-Min)); //舍去
+    }
+    //最没有价值的奖品 （共两种） 40概率抽到
+    if(prob>60&&prob<=100){
+      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+        data: {
+         attempts : _.inc(1)
+        }
+      })
+      Max = 360;
+      Min = 270;
+      angle = Min + Math.floor(Rand * (Max-Min)); //舍去
+    }
+    
+    console.log(angle);
+    return angle;
+  },
   startspin: function (e) {
 
     let that = this
     let num = 0
+    
     that.getUserInfo()
     that.setData({
       // random-最终角度-从后端获得概率
-      random: Math.floor(Math.random() * 360),
+      random: that.angleGenerator(),
       trasn: 0,
       status: 'forbid'
     })
@@ -43,12 +110,15 @@ Page({
       if (num == 3) {
         that.currinl()
         clearInterval(a)
+        
+        
 
       }
     }, 6)
 
   },
   currinl: function (e) {
+    
     let that = this
     let name = ''
     if (that.data.random == 30 || that.data.random == 90 || that.data.random == 150 || that.data.random == 210 || that.data.random == 330) {
@@ -57,27 +127,27 @@ Page({
       })
     }
     if (that.data.random < 30 || 330 < that.data.random) {
-      name = '一等奖'
+      name = '当当买书5元优惠卷'
     } else if (that.data.random > 30 && that.data.random < 90) {
-      name = '二等奖'
+      name = '￥100京东E卡'
     } else if (that.data.random > 90 && that.data.random < 150) {
-      name = '三等奖'
+      name = '¥20京东E卡'
     } else if (that.data.random > 150 && that.data.random < 210) {
-      name = '四等奖'
+      name = '小米空气净化器100元优惠卷'
     } else if (that.data.random > 210 && that.data.random < 270) {
-      name = "五等奖"
+      name = "燃油宝50元优惠卷"
     } else {
-      name = "六等奖"
+      name = "低碳荞麦面10元优惠卷"
     }
     let b = setInterval(function () {
       that.setData({
         trasn: that.data.trasn + 2
       })
+      const db = wx.cloud.database();
+      const _ = db.command;
       if (that.data.random <= that.data.trasn) {
-        //const data = wx.getStorageSync('userInfo')
-        const db = wx.cloud.database();
-        const _ = db.command;
-        db.collection('userInfo').doc(that.userInfo.data._id).update({
+         
+        db.collection('userInfo').doc(that.data.userInfo._id).update({
           data: {
             credit: _.inc(-20),
             prizelist: _.push(name)
@@ -88,7 +158,7 @@ Page({
           icon: 'success',
           duration: 2000,
         })
-
+        
 
         that.setData({
           status: ''
@@ -104,8 +174,10 @@ Page({
 
   getUserInfo() {
     //const data = wx.getStorageSync('userInfo');
+    
     const db = wx.cloud.database();
     let _this = this;
+     
     wx.cloud.callFunction({
       name: 'login',
       success: res => {
@@ -123,10 +195,14 @@ Page({
               if (res.data.length == 1) {
                 _this.setData({
                   userInfo: res.data[0],
-                  credit: res.data[0].credit
+                  credit: res.data[0].credit,
+                  curAttempt:res.data[0].attempts
                 })
-                if (_this.data.credit < 20) {
-                  this.setData({
+                console.log(_this.data.credit)
+                if (_this.data.credit < _this.data.cost) {
+                  console.log('credit',_this.data.credit)
+                  console.log('cost',_this.data.cost)
+                  _this.setData({
                     status: 'forbid'
                   })
                 }
