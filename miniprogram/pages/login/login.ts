@@ -12,11 +12,12 @@ Page({
     gradArr: ["小学以下", "小学", "初中", "高中", "职高/中专", "大专", "大学", "硕士", "博士", "博士以上"],
     foodArr: ["从不", "一周一到三次", "一周三到五次", "一周五到七次"],
     food2Arr: ["较低", "低", "中等", "较高", "高"],
-    food: 0,
-    food2: 0,
-    occu: 0,
-    grad: 0,
-    year: 0,
+    food: null,
+    food2: null,
+    occu: null,
+    grad: null,
+    year: null,
+    email:null,
     info: '',
     sex: [
       { name: '0', value: '男', checked: 'true' },
@@ -71,51 +72,96 @@ Page({
       food2: e.detail.value
     })
   },
-  //表单提交
-  login(e) {
+  bindemailchange: function(e){
     console.log(e.detail.value)
-
-
+    this.setData({
+      email:e.detail.value
+    })
+  },
+ 
+  //表单提交
+  // 检验
+  checkSubmit(){
+    var email = this.data.email;
+    var food = this.data.food;
+    var food2 = this.data.food2;
+    var year= this.data.year;
+    var occu = this.data.occu;
+    var grad = this.data.grad;
+    var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(email==null||food == null||food2 == null||year == null||occu == null||grad == null){
+      console.log('信息填写不全')
+      this.setData({
+        food: null,
+        food2:null,
+        year:null,
+        occu:null,
+        grad:null,
+        email:null
+      })
+      wx.showToast({
+        title: "信息填写不全",
+        icon: "error",
+        duration: 2000,
+        mask: true,
+      })
+      return 1;
+    }
+    console.log(reg1.test(email))
+    if(reg1.test(email)==false){
+      console.log('邮箱格式错误，请检查');
+      wx.showToast({
+        title: "邮箱格式错误",
+        icon: "error",
+        duration: 2000,
+        mask: true,
+      })
+      this.setData({
+        email:null
+      })
+      return 2;
+    }
+    if(email != null&&food != null&&food2 != null&&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
+      console.log('all good');
+      return 3;
+    }
+  },
+  login(e) {
+     
+    console.log(e.detail.value)
     var _this = this
-    console.log(_this.data.openID)
-    const db = wx.cloud.database();
-    const _ = db.command;
-    db.collection('userInfo').add({
-      data: {
-        credit: 0,
-        loginlist: [],
-        prizelist: [],
-        testGroup: 0,
-        attempts:0,
-        basicInfo: e.detail.value
-      }
-    })
-    /*
-    db.collection('userInfo').doc(_this.data._id).update({
-      data:{
-        basicInfo:e.detail.value,
-      }
-    }).then((res)=>{
-      console.log(res)
-    })
-    db.collection('userInfo').doc(_this.data._id).get().then((res)=>{
-      console.log(res.data)
-      wx.setStorageSync('userInfo',res.data)
-    })
-    */
-    wx.showToast({
-      title: "提交成功",
-      icon: "success",
-      duration: 2000,
-      mask: true,
-      success: function () {
-        setTimeout(function () {
-          wx.navigateBack({
-            delta: 1
-          })
-        }, 1500)
-      }
-    })
+    var checkResult = _this.checkSubmit();
+    
+    if(checkResult==3){
+      console.log(_this.data.openID)
+      const db = wx.cloud.database();
+      const _ = db.command;
+      db.collection('userInfo').add({
+        data: {
+          credit: 0,
+          loginlist: [],
+          prizelist: [],
+          testGroup: 0,
+          attempts:0,
+          basicInfo: e.detail.value
+        }
+      })
+    
+      wx.showToast({
+        title: "提交成功",
+        icon: "success",
+        duration: 2000,
+        mask: true,
+        success: function () {
+          setTimeout(function () {
+            wx.navigateBack({
+              delta: 1
+            })
+          }, 1500)
+        }
+      })
+    }
+    
 
   },
 

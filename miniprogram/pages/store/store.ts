@@ -32,7 +32,7 @@ Page({
     var _this = this
     var angle = 0;
     const attempts = _this.data.curAttempt
-    const prob = Math.floor(Math.random() * 360);
+    const prob = Math.floor(Math.random() * 100);
     var Rand = Math.random();
      
       
@@ -41,7 +41,7 @@ Page({
     if(prob<=5){
       db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
-         attempts : _.set(0)
+         attempts : 0
         }
       })
       Max = 90;
@@ -52,7 +52,7 @@ Page({
     if(  ( prob>5&&prob<=25 ) ||attempts==5){
       db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
-         attempts : _.set(0)
+         attempts : 0
         }
       })
       Max = 150;
@@ -205,6 +205,12 @@ Page({
                   _this.setData({
                     status: 'forbid'
                   })
+                  wx.showToast({
+                    title: "可用积分不足",
+                    icon: "error",
+                    duration: 2000,
+                    mask: true,
+                  })
                 }
                 console.log(_this.data.userInfo)
               }
@@ -214,25 +220,7 @@ Page({
     })
   },
 
-  /*
-  async getUserInfo(){
-    const data = wx.getStorageSync('userInfo')
-    if (data){
-       
-      const userInfo = await wx.cloud.database().collection('userInfo').doc(data._id).get()
-      this.setData({
-        userInfo: userInfo.data,
-        credit: userInfo.data.credit
-      })
-      if(userInfo.data.credit<20){
-        this.setData({
-          status:'forbid'
-        })
-      }
-      console.log(userInfo)
-    }
-  },
-  */
+
   toMyprize() {
     wx.navigateTo({
       url: '../myprize/myprize'

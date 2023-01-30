@@ -44,6 +44,6 @@
 </view>
 
 <view class='menu-bar' bindtap='onSurvey'>关于小程序</view>
-<view class='menu-bar'>授权管理</view>
+<!-- <view class='menu-bar'>授权管理</view> -->
 <view class='menu-bar' bindtap="onPrivacy">隐私声明</view>
 </view>
