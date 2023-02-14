@@ -59,7 +59,8 @@
   "requiredPrivateInfos": [
     "onLocationChange",
     "startLocationUpdateBackground",
-    "getLocation"
+    "getLocation",
+    "startLocationUpdate"
   ],
   "useExtendedLib": {
    
