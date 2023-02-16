@@ -1,9 +1,9 @@
 {
   "pages": [
-    
+    "pages/center/center",
     "pages/home/home",
     "pages/information/information",
-    "pages/center/center",
+    
     "pages/journal/journal",
     "pages/survey/survey",
     "pages/triphistory/triphistory",
