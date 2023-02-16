@@ -26,6 +26,10 @@
       </view>
     </view>
 
+    <view class="list-summary">
+    今日您相比于独自开车已节省约{{carbonFootprint}} g碳
+    </view>
+
     <view class="list-summary" wx:if="{{isRecordEmpty}}">
       今日您没有出行记录
     </view>

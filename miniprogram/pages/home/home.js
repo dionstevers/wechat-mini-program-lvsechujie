@@ -23,7 +23,7 @@ Page({
     transport: '步行',
 
     transportList: [
-      '步行', '自行车', '公交/地铁', '我的汽车（京A88888）'
+      '步行/自行车', '电动车', '公交/地铁', '私家车', '网约车'
     ],
     index: 0,
 
@@ -31,7 +31,9 @@ Page({
 
     aqi: '',
     name: '',
-    category: ''
+    category: '',
+
+    carbonFootprint: 0
   },
 
   onShow() {
@@ -113,6 +115,7 @@ Page({
             })
             console.log('openID:', _this.data.openID)
             _this.setList()
+            _this.calcCarbon()
             var now = new Date()
             now.setHours(0, 0, 0, 0)
             console.log(now)
@@ -202,6 +205,42 @@ Page({
           _this.setData({
             todayRecordList: list.reverse(),
             isRecordEmpty: list.length == 0
+          })
+        }
+      })
+  },
+
+  calcCarbon() { // 更新列表
+    var _this = this
+    const db = wx.cloud.database()
+    const _ = db.command
+    var now = new Date()
+    now.setHours(0, 0, 0, 0)
+    var carbon = 0
+    db.collection('track').where({
+        _openid: _this.data.openID,
+        date: _.gt(now)
+      })
+      .get({
+        success: function (res) {
+          let list = res.data
+          console.log('get list:', list);
+          list.forEach(item => {
+            var dist = 0
+            for (var j in item['points']) {
+              if (j == 0) continue
+              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
+            }
+            item['distance'] = dist.toFixed(2)
+            saving = 0
+            if(item['transport'] == '步行/自行车') saving = 192
+            else if(item['transport'] == '电动车') saving = 192 - 10
+            else if (item['transport'] == '公交/地铁') saving = 192 - 20
+            else if (item['transport'] == '网约车') saving = 192 - 53
+            carbon += dist * saving
+          })
+          _this.setData({
+            carbonFootprint: carbon
           })
         }
       })
@@ -442,6 +481,7 @@ Page({
                   wx.stopLocationUpdate()
                   wx.offLocationChange()
                   _this.setList()
+                  _this.calcCarbon()
                   _this.onLoad()
                 }
               })
@@ -495,6 +535,7 @@ Page({
                 duration: 1000
               })
               _this.setList()
+              _this.calcCarbon()
               _this.onLoad()
             })
             .catch(err => {
