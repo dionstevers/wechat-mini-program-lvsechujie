@@ -1,27 +1,30 @@
 // pages/login/login.ts
 Page({
-
+ 
   /**
    * 页面的初始数据
    */
   data: {
+    unhide:false,
+    carSelected: false,
     _id: null,
     openID: null,
     userInfo: null,
-    occupationArr: ["学生", "国家机关/社会团体", "科研/综合技术服务业", "卫生/医疗/保健业", "教育/文化和广播电影电视业", "交通运输仓储业", "金融保险业", "计算机IT业", "房地产业", "汽车业", "通讯业", "制造业", "批发零售贸易业", "商务/咨询服务业", "旅游/餐饮/娱乐业", "无业/自由职业"],
+    occupationArr: ["学生", "工人（本地城镇职工/进城务工人员）", "服务行业（服务员/司机/快递/外卖从业者等）", "航空、轨道交通和船舶等运输行业从业者", "国家机关、国有企业和事业单位工作人员", "销售", "律师", "医生", "大学教授", "个体经营者", "自由职业者", "其他"],
     gradArr: ["小学以下", "小学", "初中", "高中", "职高/中专", "大专", "大学", "硕士", "博士", "博士以上"],
-    foodArr: ["从不", "一周一到三次", "一周三到五次", "一周五到七次"],
-    food2Arr: ["较低", "低", "中等", "较高", "高"],
-    food: null,
-    food2: null,
+    transArr: ["步行", " 骑行（自行车/电单车）", "驾驶机动车（摩托车/小型汽车）", "公共交通（公交/出租车和网约车/轨道交通）"],
+    carArr:["燃油车（汽油/柴油/48V轻混）", " 油电混合动力车（蓝牌）", "增程式/插电式混合动力车", "纯电动车","天然气动力车"],
+    car:null,
     occu: null,
     grad: null,
+    trans:null,
     year: null,
     email:null,
     info: '',
     sex: [
       { name: '0', value: '男', checked: 'true' },
-      { name: '1', value: '女' }
+      { name: '1', value: '女' },
+      {name:'2', value:'保密'}
     ],
     choice: [
       { name: '0', value: '是', checked: 'true' },
@@ -48,6 +51,25 @@ Page({
       grad: e.detail.value
     })
   },
+  bindcarChange: function (e) {
+    console.log(e.detail.value)
+    this.setData({
+      car: e.detail.value
+    })
+  },
+  bindtransChange: function (e) {
+    console.log(e.detail.value)
+    this.setData({
+      trans: e.detail.value
+    })
+    if (e.detail.value==2) {
+      this.setData({
+        carSelected: true
+      })
+    }else{this.setData({
+      carSelected: false
+    })}
+  },
   bindOccuChange: function (e) {
     console.log(e.detail.value)
     this.setData({
@@ -60,18 +82,7 @@ Page({
       year: e.detail.value
     })
   },
-  bindfoodChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      food: e.detail.value
-    })
-  },
-  bindfood2Change: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      food2: e.detail.value
-    })
-  },
+
   bindemailchange: function(e){
     console.log(e.detail.value)
     this.setData({
@@ -83,17 +94,18 @@ Page({
   // 检验
   checkSubmit(){
     var email = this.data.email;
-    var food = this.data.food;
-    var food2 = this.data.food2;
+   
+    var car= this.data.car;
     var year= this.data.year;
     var occu = this.data.occu;
     var grad = this.data.grad;
+    var trans = this.data.trans;
     var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(email==null||food == null||food2 == null||year == null||occu == null||grad == null){
+    if(email==null|| trans == null||year == null||occu == null||grad == null||car == null){
       console.log('信息填写不全')
       this.setData({
-        food: null,
-        food2:null,
+        car:null,
+        trans:null,
         year:null,
         occu:null,
         grad:null,
@@ -121,7 +133,7 @@ Page({
       })
       return 2;
     }
-    if(email != null&&food != null&&food2 != null&&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
+    if(car!=null||email != null&&trans != null &&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
       console.log('all good');
       return 3;
     }
@@ -164,7 +176,26 @@ Page({
     
 
   },
-
+  onReady:function(){
+    this.popup = this.selectComponent("#popup");
+    this.popup.showPopup();
+  },
+  
+  _error(){
+    console.log("取消")
+    this.popup.hidePopup()
+    wx.navigateBack({
+      delta: 1
+    })
+  },
+  _success(){
+    console.log("确定")
+    this.popup.hidePopup()
+    this.setData({
+      unhide:true,
+    })
+  },
+  
   onLoad() {
     var _this = this
     wx.cloud.callFunction({

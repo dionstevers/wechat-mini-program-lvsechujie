@@ -17,7 +17,7 @@ function setChartOption(chart,chartdata,curDate){
       left:40,
       right:20
     },
-    
+     
     calendar : {
       range : curDate,
       top:'25',
@@ -26,22 +26,33 @@ function setChartOption(chart,chartdata,curDate){
       width:'230rpx',
       yearLabel: false,
       monthLabel: false,
-       
-      
+      itemStyle:{
+        color:'rgba(180, 180, 180, 0)',
+        borderColor:'rgba(180, 180, 180, 0.3)'
+      },
+      splitLine:{
+        lineStyle:{
+            color:'rgba(180, 180, 180, 0.3)' // This will change the border color
+        }  
+      },
     },
     visualMap: {
       min: 1,
       max: 10,
       show: false,
+      
       calculable: true,
       orient: 'horizontal',
       top: 'middle',
       left: 'center',
       bottom: 10,
+      
       inRange: {
+        
         color: ["#B7FFBF", "#95F985", "#4DED30", "#26D701", "#00C301", "#00AB08"],
       }
     },
+    
     series: [{
       name: 'Punch Card',
       type: 'heatmap',
@@ -54,10 +65,17 @@ function setChartOption(chart,chartdata,curDate){
         }
       },
       itemStyle: {
+         
         emphasis: {
           shadowBlur: 10,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+        normal: {
+          color: '',
+          opacity:1,
+          borderWidth: 3,
+          borderColor: '#ccc'
+      }
       }
     }]
   };

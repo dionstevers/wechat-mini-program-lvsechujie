@@ -86,35 +86,46 @@ Page({
     return angle;
   },
   startspin: function (e) {
-
+    
     let that = this
     let num = 0
     
     that.getUserInfo()
-    that.setData({
-      // random-最终角度-从后端获得概率
-      random: that.angleGenerator(),
-      trasn: 0,
-      status: 'forbid'
-    })
-    let a = setInterval(function () {
-      that.setData({
-        trasn: that.data.trasn + 5
+    if(that.data.credit<20){
+      wx.showToast({
+        title: "积分不足",
+        icon: 'error',
+        duration: 2000,
       })
-      //  累计转3圈
-      if (360 <= that.data.trasn) {
-        that.data.trasn = 0
-        num = num + 1
-      }
-      //  3圈得到结果、重置timer
-      if (num == 3) {
-        that.currinl()
-        clearInterval(a)
-        
-        
-
-      }
-    }, 6)
+    }
+    if(that.data.credit>=20){
+      that.setData({
+        // random-最终角度-从后端获得概率
+        random: that.angleGenerator(),
+        trasn: 0,
+        status: 'forbid'
+      })
+      let a = setInterval(function () {
+        that.setData({
+          trasn: that.data.trasn + 5,
+          status: 'forbid'
+        })
+        //  累计转3圈
+        if (360 <= that.data.trasn) {
+          that.data.trasn = 0
+          num = num + 1
+        }
+        //  3圈得到结果、重置timer
+        if (num == 3) {
+          that.currinl()
+          clearInterval(a)
+          
+          
+  
+        }
+      }, 6)
+    }
+    
 
   },
   currinl: function (e) {
@@ -141,7 +152,8 @@ Page({
     }
     let b = setInterval(function () {
       that.setData({
-        trasn: that.data.trasn + 2
+        trasn: that.data.trasn + 2,
+        status: 'forbid'
       })
       const db = wx.cloud.database();
       const _ = db.command;
@@ -161,7 +173,7 @@ Page({
         
 
         that.setData({
-          status: ''
+          status: 'forbid'
         }
         )
         that.getUserInfo()
@@ -211,7 +223,9 @@ Page({
                     duration: 2000,
                     mask: true,
                   })
-                }
+                }else{ _this.setData({
+                  status: ''
+                })}
                 console.log(_this.data.userInfo)
               }
             }
