@@ -42,7 +42,7 @@ Page({
     })
   },
 
-  onHide(){
+  onHide() {
     this.setData({
       isFront: false
     })
@@ -90,7 +90,7 @@ Page({
     })
   },
 
-  onLoad: async function() {
+  onLoad: async function () {
     this.setData({
       userInfo: app.globalData.userInfo
     })
@@ -125,21 +125,20 @@ Page({
               success(loc) {
                 var latitude = loc.latitude.toFixed(2)
                 var longitude = loc.longitude.toFixed(2)
-                console.log('Location: ',longitude, latitude)
+                console.log('Location: ', longitude, latitude)
                 wx.request({
                   url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
                   success: async function (res) {
                     console.log(res.data)
-                    if(res.data.station){
+                    if (res.data.station) {
                       _this.updateAQI(res, await _this.findClosest([latitude, longitude, res.data.station]))
-                    }
-                    else{
+                    } else {
                       _this.setData({
                         aqi: res.data.now.aqi,
                         category: res.data.now.category
                       })
                     }
-                    
+
                   },
                   fail: function (err) {
                     console.log(err)
@@ -232,15 +231,16 @@ Page({
               dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
             }
             item['distance'] = dist.toFixed(2)
-            saving = 0
-            if(item['transport'] == '步行/自行车') saving = 192
-            else if(item['transport'] == '电动车') saving = 192 - 10
-            else if (item['transport'] == '公交/地铁') saving = 192 - 20
-            else if (item['transport'] == '网约车') saving = 192 - 53
+            var saving = 0
+            if (item['transport'] == '步行/自行车') saving = 192;
+            else if (item['transport'] == '电动车') saving = 192 - 10;
+            else if (item['transport'] == '公交/地铁') saving = 192 - 20;
+            else if (item['transport'] == '网约车') saving = 192 - 53;
             carbon += dist * saving
           })
+          console.log("carbon", carbon)
           _this.setData({
-            carbonFootprint: carbon
+            carbonFootprint: carbon.toFixed(2)
           })
         }
       })
@@ -266,7 +266,7 @@ Page({
         cnt = 0
         console.log('location change', locationFn)
         wx.getNetworkType({
-          success (res) {
+          success(res) {
             db.collection('track').doc(_this.data.curID).update({
               data: {
                 points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
@@ -407,7 +407,7 @@ Page({
               console.log('location change', locationFn)
               console.log('Front?', _this.data.isFront)
               wx.getNetworkType({
-                success (res) {
+                success(res) {
                   db.collection('track').doc(_this.data.curID).update({
                     data: {
                       points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
