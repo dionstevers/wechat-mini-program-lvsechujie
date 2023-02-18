@@ -101,7 +101,8 @@ Page({
     functionList: [{
         functionSrc: '../../asset/img/note.png',
         functionTitle: '低碳日记',
-        url: '../journal/journal'
+        // url: '../journal/journal'
+        url: '../picUp/picUp'
       },
       {
         functionSrc: '../../asset/img/history.png',
@@ -272,6 +273,8 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
-    
+    return{
+      title:"快来一起低碳出街~"
+    }
   }
 })

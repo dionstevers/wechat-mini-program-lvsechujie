@@ -1,0 +1,25 @@
+<!--pages/picUp/picUp.wxml-->
+<view class="page-background">
+
+  <picker class = "selection" bindchange = "bindPickerChange" value = "{{index}}" range = "{{funclist}}">
+    <view> {{ funclist[index] }} </view>
+  </picker>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</view>

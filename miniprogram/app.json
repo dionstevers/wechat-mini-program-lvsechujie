@@ -10,7 +10,9 @@
     "pages/store/store",
     "pages/login/login",
     "pages/myprize/myprize",
-    "pages/privacy/privacy"
+    "pages/privacy/privacy",
+    "pages/picUp/picUp",
+    "pages/detail/detail"
     
   ],
   "tabBar": {
