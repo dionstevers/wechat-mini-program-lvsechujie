@@ -1,9 +1,34 @@
 <!--pages/picUp/picUp.wxml-->
 <view class="page-background">
-
+  <popup id='popup1'
+            title='上传确认'
+            content='确认上传此图片作为您的低碳随手拍？'
+            btn_no='我再想想'
+            btn_yes='确认'
+            bind:error="_error" 
+            bind:success="_success">
+  </popup>
+  
   <picker class = "selection" bindchange = "bindPickerChange" value = "{{index}}" range = "{{funclist}}">
     <view> {{ funclist[index] }} </view>
   </picker>
+  <view wx:if="{{index==0}}" class="intro">随手一拍~记录日常生活中的低碳行为（绿色餐食，垃圾分类，旧衣回收，绿色车牌...）</view>
+  <view wx:if="{{index==1}}" class="intro">这油不错~上传里程与加油小票/app截图看看你的燃油利用率如何（需要至少两次上传才可知平均油耗）</view>
+  <view class="ranPic">
+    <view class="square-container" bindtap="chooseImage">
+      <image src="{{picpath}}" class="pic" mode="aspectFill"></image>
+    </view>
+
+    <view>
+       
+
+
+        
+    <button class="submit" bindtap="uploadImage">上传</button>
+    </view>
+  </view>
+ 
+  </view>
 
 
 
@@ -19,7 +44,4 @@
 
 
 
-
-
-
-</view>
+ 

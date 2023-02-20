@@ -6,12 +6,109 @@ Page({
    */
   data: {
     index:0,
-    funclist:["随手拍","油耗电耗"]
+    funclist:["随手拍","拍油耗"],
+    picpath:'',
+
+
   },
   bindPickerChange: function (e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
     this.setData({
       index: e.detail.value,
+    })
+  },
+  chooseImage:function(e){
+    var _this = this
+    
+    wx.chooseMedia({
+      mediaType:['image'],
+      sourceType:['album','camera'],
+      camera:'back',
+      count:1,
+      success:function(res){
+        let path = res.tempFiles[0].tempFilePath
+        console.log(path)
+        _this.setData({
+          picpath:path
+        })
+
+      }
+    })
+    console.log(e)
+  },
+  uploadImage:function(e){
+    console.log(e)
+    var _this = this
+    if(_this.data.picpath==''){
+      wx.showToast({
+        title:'Oops',
+        icon:'error',
+        duration:1500,
+        mask:true
+      })
+      return;
+    }
+    _this.popup = _this.selectComponent("#popup1");
+    _this.popup.showPopup()
+  },
+  _error(){
+    console.log("取消")
+    this.popup.hidePopup()
+  
+  },
+  _success(){
+    console.log("确定")
+    
+    this.popup.hidePopup()
+    const filePath = this.data.picpath
+    let cloudPath;
+    let collectionPath;
+    if(this.data.index ==0){
+      cloudPath = 'randImage/' + new Date().getTime() + '.png'
+      collectionPath = "randImage"
+    }
+    if(this.data.index ==1){
+      cloudPath = 'carImage/' + new Date().getTime() + '.png'
+      collectionPath = "carImage"
+    }
+    console.log(filePath)
+    console.log(cloudPath)
+    wx.cloud.uploadFile({
+      cloudPath:cloudPath,
+      filePath:filePath,
+      success: res=>{
+        console.log('成功上传')
+        console.log(res.fileID)
+        let fileID = res.fileID;
+        const db  = wx.cloud.database();
+        db.collection(collectionPath).add({
+          data:{
+            Img: fileID
+          },
+          success: function(){
+            wx.showToast({
+              title:'上传成功',
+              icon:'success',
+              duration:1500,
+              mask:true
+            })
+          },
+          fail: function(){
+            wx.showToast({
+              title:'上传失败',
+              icon:'error',
+              duration:1500,
+              mask:true
+      
+            })
+          }
+        })
+
+      }
+    })
+    this.setData({
+      unhide:true,
+      picpath:''
     })
   },
   /**
@@ -25,7 +122,8 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
+    // this.popup = this.selectComponent("#popup1");
+    // this.popup.showPopup();
   },
 
   /**

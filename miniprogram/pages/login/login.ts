@@ -101,7 +101,7 @@ Page({
     var grad = this.data.grad;
     var trans = this.data.trans;
     var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(email==null|| trans == null||year == null||occu == null||grad == null||car == null){
+    if(email==null|| trans == null||year == null||occu == null||grad == null||(trans==2&&car == null)){
       console.log('信息填写不全')
       this.setData({
         car:null,
