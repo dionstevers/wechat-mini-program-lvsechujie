@@ -23,9 +23,12 @@ Page({
     transport: '步行',
 
     transportList: [
-      '步行/自行车', '电动车', '公交/地铁', '私家车', '网约车'
+      "步行/自行车", "电动自行车", "摩托车/小型汽车","公交/出租车/网约车/轨道交通"
     ],
     index: 0,
+    defaultIndex: 0,
+    capacity: 0,
+    capacityList: ["1","2","3","4","5+"],
 
     isFront: true,
 
@@ -150,6 +153,21 @@ Page({
               }
             })
 
+            db.collection('userInfo').limit(1).where({
+              _openid: _this.data.openID,
+            })
+            .get({
+              success: function (res) {
+                console.log(res.data[0].basicInfo.trans)
+                _this.setData({
+                  defaultIndex: res.data[0].basicInfo.trans,
+                  index: res.data[0].basicInfo.trans
+                })
+              },
+              fail: console.error
+            })
+
+
             // 查询上次未结束的tracking？
             db.collection('track').orderBy('date', 'desc').limit(1).where({
                 _openid: _this.data.openID,
@@ -231,11 +249,13 @@ Page({
               dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
             }
             item['distance'] = dist.toFixed(2)
+            var passenger = parseInt(item['capacity']) + 1
+            console.log("passenger", passenger)
             var saving = 0
             if (item['transport'] == '步行/自行车') saving = 192;
-            else if (item['transport'] == '电动车') saving = 192 - 10;
-            else if (item['transport'] == '公交/地铁') saving = 192 - 20;
-            else if (item['transport'] == '网约车') saving = 192 - 53;
+            else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
+            else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+            else saving = 192 - 192 / passenger;
             carbon += dist * saving
           })
           console.log("carbon", carbon)
@@ -381,6 +401,7 @@ Page({
               version: _this.data.version,
               platform: _this.data.platform,
               transport: _this.data.transportList[_this.data.index],
+              capacity: _this.data.capacity,
               startSteps: stepList[30].step
             },
             success: function (res) {
@@ -474,7 +495,8 @@ Page({
                     startTime: 0,
                     endTime: 0,
                     duration: 0,
-                    index: 0,
+                    capacity: 0,
+                    index: _this.data.defaultIndex,
                     btnClass: 'btn btn-default',
                     recordStatus: false
                   })
@@ -512,6 +534,13 @@ Page({
     this.setData({
       index: e.detail.value,
       transport: this.data.transportList[e.detail.value]
+    })
+  },
+
+  bindCapacityChange: function (e) {
+    console.log('capacity发送选择改变，携带值为', e.detail.value)
+    this.setData({
+      capacity: e.detail.value
     })
   },
 

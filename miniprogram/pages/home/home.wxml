@@ -11,12 +11,25 @@
     <view class="aqi-info">
       空气质量等级：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{category}}</text>
     </view>
+    <view class="picklist">
+    <text>出行方式</text>
     <picker bindchange="bindPickerChange" value="{{index}}" range="{{transportList}}" class="picker-con">
       <view class="picker">
         {{transportList[index]}}
       </view>
       <view class="triangle"></view>
     </picker>
+    </view>
+
+    <view class="picklist" wx:if="{{index == 2}}">
+    <text>出行人数</text>
+    <picker bindchange="bindCapacityChange" value="{{capacity}}" range="{{capacityList}}" class="picker-con">
+      <view class="picker">
+        {{capacityList[capacity]}}
+      </view>
+      <view class="triangle"></view>
+    </picker>
+  </view>
 
     <view class="{{btnClass}}" bindtap="onClickEvent">
       <view wx:if="{{!recordStatus}}">开始</view>
