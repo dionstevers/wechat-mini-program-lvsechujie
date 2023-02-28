@@ -1,7 +1,7 @@
 <!--pages/information/information.wxml-->
 <view class="page-background">
   <view class="page-introduction">
-    为您提供最新的环境资讯和身边的环境信息
+    为您提供最新的环境资讯和政策信息
   </view>
 
   <view>

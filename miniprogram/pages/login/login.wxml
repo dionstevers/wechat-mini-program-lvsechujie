@@ -48,7 +48,7 @@
   <view class='name'>
    <text>出生年份</text>
     
-   <picker mode="date" fields= "year" end = "2005" bindchange="bindyearChange" value="{{ year }}" name="birthyear" >
+   <picker mode="date" fields= "year" start = "1900" end = "2005" bindchange="bindyearChange" value="{{ year }}" name="birthyear" >
     <view wx:if="{{ year }}">
          {{ year }}
      </view>

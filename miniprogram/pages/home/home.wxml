@@ -40,7 +40,7 @@
     </view>
 
     <view class="list-summary">
-    今日您相比于独自开车已节省约{{carbonFootprint}} g碳
+    与单人驾车出行相比，今日您已省碳约{{carbonFootprint}} g
     </view>
 
     <view class="list-summary" wx:if="{{isRecordEmpty}}">
@@ -62,8 +62,34 @@
         <view class="content delete" bindtap="deleteRecord" data-id="{{item._id}}">×</view>
       </view>
     </view>
+    <view class="rank-container">
+  <view class="legend">低碳排行榜</view>
+  <block wx:for="{{users}}" wx:key="id">
+    <view class="user-item">
+      <image class="profile-image" src="{{item.profileImageUrl}}" />
+      <view class="user-info">
+        <view class="user-name">{{item.name}}</view>
+        <view class="user-stats">
+          <view class="carbon-saving">
+            <text class="stat-label">Carbon Saved:</text>
+            <text class="stat-value">{{item.carbonSaving}}g</text>
+          </view>
+          <view class="reading-minutes">
+            <text class="stat-label">Reading Minutes:</text>
+            <text class="stat-value">{{item.readingMinutes}}min</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>
   </view>
   <view class='list-summary' wx:else>
     请先前往个人中心登录/注册
   </view>
+
+  
+
+
+
 </view>

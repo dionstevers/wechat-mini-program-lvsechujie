@@ -41,7 +41,7 @@ Page({
     var _this = this
     if(_this.data.picpath==''){
       wx.showToast({
-        title:'Oops',
+        title:'未选择图片',
         icon:'error',
         duration:1500,
         mask:true
@@ -49,6 +49,7 @@ Page({
       return;
     }
     _this.popup = _this.selectComponent("#popup1");
+    _this.popup2 = _this.selectComponent("popup2")
     _this.popup.showPopup()
   },
   _error(){
@@ -60,6 +61,12 @@ Page({
     console.log("确定")
     
     this.popup.hidePopup()
+    wx.showToast({
+      title:"上传中",
+      icon:"loading",
+      duration:2000,
+      mask:true
+    })
     const filePath = this.data.picpath
     let cloudPath;
     let collectionPath;
@@ -79,31 +86,21 @@ Page({
       success: res=>{
         console.log('成功上传')
         console.log(res.fileID)
+        wx.showToast({
+          title:" 成功上传，为您点赞!",
+          icon:"none",
+          duration:2000,
+          mask:true,
+
+        })
         let fileID = res.fileID;
         const db  = wx.cloud.database();
         db.collection(collectionPath).add({
           data:{
             Img: fileID
           },
-          success: function(){
-            wx.showToast({
-              title:'上传成功',
-              icon:'success',
-              duration:1500,
-              mask:true
-            })
-          },
-          fail: function(){
-            wx.showToast({
-              title:'上传失败',
-              icon:'error',
-              duration:1500,
-              mask:true
-      
-            })
-          }
         })
-
+        this.popup2.showPopup()
       }
     })
     this.setData({

@@ -100,7 +100,7 @@ Page({
     openID: '',
     functionList: [{
         functionSrc: '../../asset/img/note.png',
-        functionTitle: '低碳快拍',
+        functionTitle: '低碳身边事',
         // url: '../journal/journal'
         url: '../picUp/picUp'
       },

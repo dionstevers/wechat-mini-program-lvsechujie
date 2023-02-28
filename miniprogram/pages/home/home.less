@@ -1,5 +1,83 @@
 /* pages/home/home.wxss */
+.legend {
+  
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px 0;
+  color:lightcyan;
+}
+.rank-container {
+  margin-top: -300rpx;
+  position: relative;
+  margin-bottom: 0rpx;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 40%;
+  width: 100%;
+  max-width: 750rpx; /* maximum screen width */
+  max-height: 600rpx; /* maximum screen height */
+}
 
+.user-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 1000rpx;
+  width: 70%;
+  max-width: 525rpx; /* 70% of maximum screen width */
+  margin-bottom: 20rpx;
+  padding: 0 20rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.profile-image {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  color: lightblue;
+}
+
+.user-stats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.carbon-saving,
+.reading-minutes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stat-value {
+  font-size: 32rpx;
+  font-weight: bold;
+}
 .aqi-info {
   color: white;
   text-align: center;

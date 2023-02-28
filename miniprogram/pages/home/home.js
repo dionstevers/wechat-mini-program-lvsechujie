@@ -2,6 +2,29 @@
 const app = getApp();
 Page({
   data: {
+    users : [
+      {
+        id: 1,
+        name: "Alice",
+        profileImageUrl: "../../asset/img/center-highlight.png",
+        carbonSaving: 235.5,
+        readingMinutes: 60
+      },
+      {
+        id: 2,
+        name: "Bob",
+        profileImageUrl: "../../asset/img/center.png",
+        carbonSaving: 124.2,
+        readingMinutes: 90
+      },
+      {
+        id: 3,
+        name: "Charlie",
+        profileImageUrl: "../../asset/img/config.png",
+        carbonSaving: 350.8,
+        readingMinutes: 120
+      }
+    ],
     recordStatus: false,
     btnClass: 'btn btn-default',
     todayRecordList: [],
