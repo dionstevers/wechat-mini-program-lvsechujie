@@ -5,17 +5,17 @@
   </view>
 
   <view>
-    <view wx:for="{{articleList}}" wx:for-index="i" wx:key="i" class="container">
-    <view bindtap="bindInfo" data-title="{{item.url}}">
+    <view wx:for="{{arlist}}" wx:for-index="i" wx:key="i" class="container">
+    <view bindtap="bindInfo" data-title="{{item.link}}">
       <view class="image-con">
         <image src="{{item.imgUrl}}" alt="des" mode="widthFix" class="img" />
       </view>
 
-      <text class="info-con">{{item.date}} | {{item.author}}</text>
+      <text class="info-con">{{item._date}} | {{item.source}}</text>
 
       <view class="preview-con">
         <view class="title">{{item.title}}</view>
-        <view class="ab">{{item.abstract}}</view>
+        <view class="ab">{{item.content}}</view>
       </view>
     </view>
     </view>
