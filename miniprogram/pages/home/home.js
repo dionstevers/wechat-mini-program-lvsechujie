@@ -2,8 +2,7 @@
 const app = getApp();
 Page({
   data: {
-    users : [
-      {
+    users: [{
         id: 1,
         name: "Alice",
         profileImageUrl: "../../asset/img/center-highlight.png",
@@ -46,12 +45,12 @@ Page({
     transport: '步行',
 
     transportList: [
-      "步行/自行车", "电动自行车", "摩托车/小型汽车","公交/出租车/网约车/轨道交通"
+      "步行/自行车", "电动自行车", "摩托车/小型汽车", "公交/出租车/网约车/轨道交通"
     ],
     index: 0,
     defaultIndex: 0,
     capacity: 0,
-    capacityList: ["1","2","3","4","5+"],
+    capacityList: ["1", "2", "3", "4", "5+"],
 
     isFront: true,
 
@@ -177,18 +176,18 @@ Page({
             })
 
             db.collection('userInfo').limit(1).where({
-              _openid: _this.data.openID,
-            })
-            .get({
-              success: function (res) {
-                console.log(res.data[0].basicInfo.trans)
-                _this.setData({
-                  defaultIndex: res.data[0].basicInfo.trans,
-                  index: res.data[0].basicInfo.trans
-                })
-              },
-              fail: console.error
-            })
+                _openid: _this.data.openID,
+              })
+              .get({
+                success: function (res) {
+                  console.log(res.data[0].basicInfo.trans)
+                  _this.setData({
+                    defaultIndex: res.data[0].basicInfo.trans,
+                    index: res.data[0].basicInfo.trans
+                  })
+                },
+                fail: console.error
+              })
 
 
             // 查询上次未结束的tracking？
@@ -214,6 +213,66 @@ Page({
         })
       }
     })
+  },
+
+  updateCarbon() { // 更新列表
+    var _this = this
+    const db = wx.cloud.database()
+    const _ = db.command
+    var now = new Date()
+    now.setHours(0, 0, 0, 0)
+    var carbon = 0
+    db.collection('track').where({
+        _openid: _this.data.openID,
+        date: _.gt(now)
+      })
+      .orderBy('date', 'desc')
+      .limit(1)
+      .get({
+        success: function (res) {
+          let list = res.data
+          console.log('get list:', list);
+          list.forEach(item => {
+            if (item['date']) item['date'] = item.date.getTime()
+            if (item['endTime']) item['endTime'] = item.endTime.getTime()
+            var dist = 0
+            for (var j in item['points']) {
+              if (j == 0) continue
+              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
+            }
+            item['distance'] = dist.toFixed(2)
+            var passenger = parseInt(item['capacity']) + 1
+            console.log("passenger", passenger)
+            var saving = 0
+            if (item['transport'] == '步行/自行车') saving = 192;
+            else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
+            else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+            else saving = 192 - 192 / passenger;
+            carbon += dist * saving
+          })
+          console.log("carbon", carbon)
+          db.collection('userInfo').where({
+              _openid: _this.data.openID,
+            })
+            .get({
+              success: function (res) {
+                var user_id = res.data[0]._id
+                db.collection('userInfo').doc(user_id).update({
+                  data: {
+                    carbSum: _.inc(carbon),
+                    carblist: _.push([
+                      [new Date(), carbon]
+                    ])
+                  },
+                  success: function (res) {
+                    console.log(res.data)
+                  }
+                })
+              },
+              fail: console.error
+            })
+        }
+      })
   },
 
   setList() { // 更新列表
@@ -527,6 +586,7 @@ Page({
                   wx.offLocationChange()
                   _this.setList()
                   _this.calcCarbon()
+                  _this.updateCarbon()
                   _this.onLoad()
                 }
               })

@@ -168,7 +168,7 @@ Page({
         data: {
           credit: 0,
           carbSum: 0,
-          carblist: [[]],
+          carblist: [],
           loginlist: [],
           prizelist: [],
           testGroup: 0,
