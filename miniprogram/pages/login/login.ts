@@ -5,7 +5,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    unhide:false,
     carSelected: false,
     _id: null,
     openID: null,
@@ -20,6 +19,7 @@ Page({
     trans:null,
     year: null,
     email:null,
+    nickname:null,
     info: '',
     sex: [
       { name: '0', value: '男', checked: 'true' },
@@ -33,8 +33,18 @@ Page({
     isSex: "0",
     information: [],
     userSex: '',
-    modalHidden: true
+    modalHidden: false
 
+  },
+  modalConfirm(e){
+    this.setData({
+      modalHidden:true
+    })
+  },
+  modalCancel(){
+    wx.navigateBack({
+      delta: 1
+    })
   },
   //单选按钮发生变化
   radioChange(e) {
@@ -89,19 +99,25 @@ Page({
       email:e.detail.value
     })
   },
+  bindnamechange: function(e){
+    console.log(e.detail.value)
+    this.setData({
+      nickname: e.detail.value
+    })
+  },
  
   //表单提交
   // 检验
   checkSubmit(){
     var email = this.data.email;
-   
+    var nickname = this.data.nickname;
     var car= this.data.car;
     var year= this.data.year;
     var occu = this.data.occu;
     var grad = this.data.grad;
     var trans = this.data.trans;
     var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(email==null|| trans == null||year == null||occu == null||grad == null||(trans==2&&car == null)){
+    if(nickname==null||email==null|| trans == null||year == null||occu == null||grad == null||(trans==2&&car == null)){
       console.log('信息填写不全')
       this.setData({
         car:null,
@@ -133,7 +149,7 @@ Page({
       })
       return 2;
     }
-    if(car!=null||email != null&&trans != null &&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
+    if(car!=null||nickname!=null&&email != null&&trans != null &&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
       console.log('all good');
       return 3;
     }
@@ -151,6 +167,8 @@ Page({
       db.collection('userInfo').add({
         data: {
           credit: 0,
+          carbSum: 0,
+          carblist: [[]],
           loginlist: [],
           prizelist: [],
           testGroup: 0,
@@ -177,24 +195,9 @@ Page({
 
   },
   onReady:function(){
-    this.popup = this.selectComponent("#popup");
-    this.popup.showPopup();
+
   },
   
-  _error(){
-    console.log("取消")
-    this.popup.hidePopup()
-    wx.navigateBack({
-      delta: 1
-    })
-  },
-  _success(){
-    console.log("确定")
-    this.popup.hidePopup()
-    this.setData({
-      unhide:true,
-    })
-  },
   
   onLoad() {
     var _this = this

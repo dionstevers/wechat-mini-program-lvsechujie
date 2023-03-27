@@ -1,13 +1,16 @@
 <!--pages/picUp/picUp.wxml-->
 <view class="page-background">
-  <popup id='popup1'
+  <modal title="上传确认" confirm-text="确认" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
+   请确认上传该图片
+  </modal>
+  <!-- <popup id='popup1'
             title='上传确认'
             content='确认上传该图片？'
             btn_no='我再想想'
             btn_yes='确认'
             bind:error="_error" 
             bind:success="_success">
-  </popup>
+  </popup> -->
 
   
   <picker class = "selection" bindchange = "bindPickerChange" value = "{{index}}" range = "{{funclist}}">

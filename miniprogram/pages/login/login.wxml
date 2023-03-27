@@ -4,27 +4,27 @@
 
 <view class="page-background">
   <view class="container" >
+  <modal title="知情同意" confirm-text="确认" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
+    您好，欢迎使用低碳出街小助手！这款研究型小程序将伴您打开低碳生活的大门。低碳之旅开始前，小助手想了解一些基本信息。它们将被严格保密，不会被提供给任何第三方。
+  </modal>
+  
 
-  <popup id='popup'
-      title='知情同意'
-      content='您好，欢迎使用低碳出街小助手！这款研究型小程序将伴您打开低碳生活的大门。低碳之旅开始前，小助手想了解一些基本信息。它们将被严格保密，不会被提供给任何第三方。'
-      btn_no='我再想想'
-      btn_yes='同意'
-      bind:error="_error" 
-      bind:success="_success">
-  </popup>
+  
 </view>
 
 <view class="page-introduction">欢迎使用低碳出街小助手！</view>
 
-  <view class='baseInfo' wx:if="{{unhide}}">
+  <view class='baseInfo' wx:if="{{modalHidden}}">
   <text>基本信息</text>
 </view>
  
-<form bindsubmit="login" wx:if="{{unhide}}">
+<form bindsubmit="login" wx:if="{{modalHidden}}">
 <view class='list'>
    
- 
+<view class="name">
+ <text>昵称</text>
+  <input type="text" placeholder="属于你喜爱的昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
+ </view>
   <view class='name'>
     <text>当前职业</text>
     <picker bindchange="bindOccuChange" value="{{ occu }}" range="{{occupationArr}}" name="occupation">

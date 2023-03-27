@@ -8,6 +8,7 @@ Page({
     index:0,
     funclist:["随手拍","拍油耗"],
     picpath:'',
+    modalHidden:true,
 
 
   },
@@ -48,23 +49,26 @@ Page({
       })
       return;
     }
-    _this.popup = _this.selectComponent("#popup1");
-    _this.popup2 = _this.selectComponent("popup2")
-    _this.popup.showPopup()
+    _this.setData({
+      modalHidden: false
+    })
+    
   },
-  _error(){
-    console.log("取消")
-    this.popup.hidePopup()
-  
+  modalCancel(e){
+    this.setData({
+      modalHidden:true
+    })
   },
-  _success(){
+  modalConfirm(e){
     console.log("确定")
     
-    this.popup.hidePopup()
+    this.setData({
+      modalHidden: true
+    })
     wx.showToast({
       title:"上传中",
       icon:"loading",
-      duration:2000,
+      duration:1500,
       mask:true
     })
     const filePath = this.data.picpath
@@ -86,12 +90,12 @@ Page({
       success: res=>{
         console.log('成功上传')
         console.log(res.fileID)
-        wx.showToast({
-          title:" 成功上传，为您点赞!",
-          icon:"none",
-          duration:2000,
-          mask:true,
-
+        wx.showModal({
+          title:'成功上传',
+          content:'感谢您的上传！低碳积分已发放到您的账号,请注意查收。',
+          showCancel:false,
+          confirmText:'确认',
+        
         })
         let fileID = res.fileID;
         const db  = wx.cloud.database();
@@ -100,7 +104,7 @@ Page({
             Img: fileID
           },
         })
-        this.popup2.showPopup()
+
       }
     })
     this.setData({
@@ -119,8 +123,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-    // this.popup = this.selectComponent("#popup1");
-    // this.popup.showPopup();
   },
 
   /**

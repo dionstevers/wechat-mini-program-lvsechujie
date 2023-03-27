@@ -1,9 +1,9 @@
 <!--pages/center/center.wxml-->
-<view class="page-background">
+<view class="page-background" catchtouchmove="true">
 
 <view class="avatar-con" wx:if="{{ userInfo }}">
   <view class='avatar'>C</view>
-  <view class='avatar-name'>{{userInfo.basicInfo.email}}</view>
+  <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>
 <view class="avatar-con" wx:else>
