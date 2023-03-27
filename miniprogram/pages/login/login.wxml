@@ -17,10 +17,13 @@
   <view class='baseInfo' wx:if="{{modalHidden}}">
   <text>基本信息</text>
 </view>
- 
+
 <form bindsubmit="login" wx:if="{{modalHidden}}">
 <view class='list'>
-   
+<view class="name">
+  <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" value = "{{ avatarUrl }}" name = "avatar">
+  <image class="avatar" src="{{avatarUrl}}"></image>
+</button> </view>
 <view class="name">
  <text>昵称</text>
   <input type="text" placeholder="属于你喜爱的昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
@@ -141,7 +144,7 @@
 
 </view>
 
-<button form-type='submit'>提交</button>
+<button form-type='submit' class="submit">提交</button>
 </form>
 
 

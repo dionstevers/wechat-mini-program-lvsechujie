@@ -49,11 +49,7 @@ Page({
     
    
     const group = ['social_based_article','policy_based_article-copy','knowledge_based_article']
-    const date = new Date()
-    const year = date.getFullYear()
-    const month = date.getMonth()+1
-    const day = date.getDate()
-    const curDate = year+'-'+month+'-'+day
+    const curDate = new Date().toISOString().slice(0,10)
     console.log(curDate)
      
     const db = wx.cloud.database()
@@ -62,10 +58,12 @@ Page({
     db.collection(group[num]).limit(3).get({
       success: function(res){
         console.log('success')
-         
+        const list = res.data;
+        _this.TimeConvert(list)
         _this.setData({
-          arlist : res.data
+          arlist : list
         })
+        _this.TimeConvert()
         console.log(_this.data.arlist)
         console.log('done')
       }
@@ -73,6 +71,22 @@ Page({
    
     
 
+  },
+  TimeConvert(list){
+    
+    for (let index = 0; index < list.length; index++) {
+      const element = list[index];
+      const timestamp = element.date;
+      const date = new Date(timestamp);
+      const dateString = date.toLocaleDateString();
+      console.log(dateString)
+      const dateParts = dateString.split('/');
+      
+      const formattedDate =  dateParts[0]+'-'+dateParts[1]+'-'+dateParts[2] // Reformat date to match "Tue Jun 14" format
+      console.log(formattedDate);
+      element.date = formattedDate
+    }
+    console.log("successfully converted")
   },
   getUserInfo() {
     
@@ -146,7 +160,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
-
+    console.log("refreshing")
   },
 
   /**

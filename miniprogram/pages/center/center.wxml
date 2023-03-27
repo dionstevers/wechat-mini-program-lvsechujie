@@ -1,8 +1,8 @@
 <!--pages/center/center.wxml-->
-<view class="page-background" catchtouchmove="true">
+<view class="page-background" catchtouchmove="dealer">
 
 <view class="avatar-con" wx:if="{{ userInfo }}">
-  <view class='avatar'>C</view>
+  <image class="avatar" src="{{userInfo.avatar}}"></image>
   <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>
 </view>

@@ -1,10 +1,12 @@
 // pages/login/login.ts
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 Page({
  
   /**
    * 页面的初始数据
    */
   data: {
+    avatarUrl: defaultAvatarUrl,
     carSelected: false,
     _id: null,
     openID: null,
@@ -35,6 +37,12 @@ Page({
     userSex: '',
     modalHidden: false
 
+  },
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail 
+    this.setData({
+      avatarUrl,
+    })
   },
   modalConfirm(e){
     this.setData({
@@ -164,6 +172,7 @@ Page({
       console.log(_this.data.openID)
       const db = wx.cloud.database();
       const _ = db.command;
+      const avatar = this.data.avatarUrl
       db.collection('userInfo').add({
         data: {
           credit: 0,
@@ -171,8 +180,9 @@ Page({
           carblist: [],
           loginlist: [],
           prizelist: [],
-          testGroup: 0,
+          testGroup: 2,
           attempts:0,
+          avatar: avatar,
           basicInfo: e.detail.value
         }
       })

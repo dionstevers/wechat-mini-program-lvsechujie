@@ -1,6 +1,7 @@
 // pages/center/center.ts
 
 import * as echarts from "../../ec-canvas/echarts"
+
 const app = getApp();
  
 
@@ -118,6 +119,7 @@ Page({
     CoinRatio: 0,
      
   },
+ 
   initChart(data){
     let chart;
      
@@ -131,6 +133,9 @@ Page({
       this.chart = chart;
       return chart
     })
+  },
+  dealer(){
+    return
   },
   curDate(){
      

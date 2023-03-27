@@ -8,10 +8,10 @@
     <view wx:for="{{arlist}}" wx:for-index="i" wx:key="i" class="container">
     <view bindtap="bindInfo" data-title="{{item.link}}">
       <view class="image-con">
-        <image src="{{item.imgUrl}}" alt="des" mode="widthFix" class="img" />
+        <image src="{{item.image}}" alt="des" mode="widthFix" class="img" />
       </view>
 
-      <text class="info-con">{{item._date}} | {{item.source}}</text>
+      <text class="info-con">{{item.date}} | {{item.source}}</text>
 
       <view class="preview-con">
         <view class="title">{{item.title}}</view>
