@@ -40,6 +40,8 @@ Page({
   },
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
+  
+    
     this.setData({
       avatarUrl,
     })
@@ -172,7 +174,18 @@ Page({
       console.log(_this.data.openID)
       const db = wx.cloud.database();
       const _ = db.command;
-      const avatar = this.data.avatarUrl
+      const avatar = _this.data.avatarUrl
+      wx.cloud.uploadFile({
+        cloudPath:'avatar/' + new Date().getTime() + '.jpeg',
+        filePath: avatar,
+        success: res =>{
+          console.log('成功上传')
+          console.log(res.fileID)
+          _this.setData({
+            avatar:res.fileID
+          })
+        }
+      })
       db.collection('userInfo').add({
         data: {
           credit: 0,

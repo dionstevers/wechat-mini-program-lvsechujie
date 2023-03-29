@@ -8,18 +8,6 @@ Page({
     userInfo:null,
     testGroup:0,
     arlist: [],
-    // articleList: [
-  
-    //   {
-    //     title: '每年杀死数十亿只鸟，玻璃窗也是个超级鸟类杀手',
-    //     abstract: '因为撞击玻璃窗而导致的鸟类死亡，已经成为仅次于家猫扑杀之外，造成鸟类死亡数量最多的人类影响。',
-    //     date: 'Apr 02 2022',
-    //     author: '新浪科技',
-    //     imgUrl:'https://n.sinaimg.cn/tech/crawl/350/w550h600/20220419/c5bc-91a1d2eb524561e2ec5ccecb28c239ad.jpg',
-    //     url:'https://view.inews.qq.com/a/20220423A03UKE00'
-    //   },
-     
-    // ]
   },
   bindInfo(e){
     console.log(e.currentTarget.dataset.title)
@@ -46,30 +34,34 @@ Page({
   },
   async getArticles(num){
     var _this = this
-    
-   
     const group = ['social_based_article','policy_based_article-copy','knowledge_based_article']
-    const curDate = new Date().toISOString().slice(0,10)
-    console.log(curDate)
+    
+    const _date = new Date()
+    _date.setHours(0,0,0,0)
+    
+    console.log(_date.valueOf())
      
     const db = wx.cloud.database()
     const _ = db.command
-    
-    db.collection(group[num]).limit(3).get({
-      success: function(res){
-        console.log('success')
-        const list = res.data;
-        _this.TimeConvert(list)
+    //test code below , delete when database is updated
+    _date.setDate(_date.getDate()+1)
+    //test code above, delete when database is updated 
+    db.collection(group[num]).limit(3).where({
+      date: _.lte(_date.valueOf())
+    }).get({
+      success:function(res){
+        console.log('yes')
+        console.log(res.data)
+        
+        _this.TimeConvert(res.data)
         _this.setData({
-          arlist : list
+          arlist:res.data.reverse()
         })
-        _this.TimeConvert()
-        console.log(_this.data.arlist)
+        
         console.log('done')
       }
     })
-   
-    
+
 
   },
   TimeConvert(list){
@@ -78,11 +70,7 @@ Page({
       const element = list[index];
       const timestamp = element.date;
       const date = new Date(timestamp);
-      const dateString = date.toLocaleDateString();
-      console.log(dateString)
-      const dateParts = dateString.split('/');
-      
-      const formattedDate =  dateParts[0]+'-'+dateParts[1]+'-'+dateParts[2] // Reformat date to match "Tue Jun 14" format
+      const formattedDate= date.toISOString().split("T")[0];
       console.log(formattedDate);
       element.date = formattedDate
     }
