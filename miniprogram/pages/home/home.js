@@ -152,18 +152,48 @@ Page({
                 var longitude = loc.longitude.toFixed(2)
                 console.log('Location: ', longitude, latitude)
                 wx.request({
-                  url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
+                  url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
                   success: async function (res) {
-                    console.log(res.data)
-                    if (res.data.station) {
-                      _this.updateAQI(res, await _this.findClosest([latitude, longitude, res.data.station]))
-                    } else {
-                      _this.setData({
-                        aqi: res.data.now.aqi,
-                        category: res.data.now.category
-                      })
-                    }
-
+                    console.log(res.data.location[0])
+                    var city_id = res.data.location[0].id
+                    var city_name = res.data.location[0].adm2 + res.data.location[0].name
+                    wx.request({
+                      url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
+                      success: async function (res) {
+                        console.log(res.data)
+                        var new_category = ""
+                        var new_aqi = 0
+                        if (res.data.now.aqi <= 12) {
+                          new_aqi = Math.round(res.data.now.aqi * 50 / 12)
+                        }
+                        else if (res.data.now.aqi <= 35.5) {
+                          new_aqi = 50 + Math.round((res.data.now.aqi - 12) * 50 / 13.5)
+                        }
+                        else if (res.data.now.aqi <= 55.5) {
+                          new_aqi = 100 + Math.round((res.data.now.aqi - 35.5) * 50 / 20)
+                        }
+                        else if (res.data.now.aqi <= 150.5) {
+                          new_aqi = 150 + Math.round((res.data.now.aqi - 55.5) * 50 / 95)
+                        }
+                        else{
+                          new_aqi = res.data.now.aqi + 50
+                        }
+                        if (new_aqi <= 50) new_category = "优"
+                        else if (new_aqi <= 100) new_category = "良"
+                        else if (new_aqi <= 150) new_category = "轻度污染"
+                        else if (new_aqi <= 200) new_category = "中度污染"
+                        else if (new_aqi <= 300) new_category = "重度污染"
+                        else new_category = "严重污染"
+                        _this.setData({
+                            aqi: new_aqi,
+                            name: city_name,
+                            category: new_category
+                          })   
+                      },
+                      fail: function (err) {
+                        console.log(err)
+                      }
+                    })                 
                   },
                   fail: function (err) {
                     console.log(err)

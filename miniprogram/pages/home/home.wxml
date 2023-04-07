@@ -3,7 +3,7 @@
 <view class="page-background">
   <view wx:if="{{ userInfo }}">
     <view class="aqi-info" wx:if="{{ name != '' }}">
-      最近的空气质量监测站：{{name}}
+      您所在的区县：{{name}}
     </view>
     <view class="aqi-info">
       空气质量指数：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{aqi}}</text>
