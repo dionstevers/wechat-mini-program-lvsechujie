@@ -28,10 +28,20 @@ Page({
       count:1,
       success:function(res){
         let path = res.tempFiles[0].tempFilePath
+        let size = res.tempFiles[0].size
         console.log(path)
-        _this.setData({
-          picpath:path
-        })
+        // 最大不超过2M
+        if(size<=2000000){
+          _this.setData({
+            picpath:path
+          })
+        }else{
+          wx.showToast({
+            title:'上传图片不能大于2M',
+            icon:'error'
+          })
+        }
+        
 
       }
     })

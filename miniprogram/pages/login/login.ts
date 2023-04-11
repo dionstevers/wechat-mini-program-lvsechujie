@@ -40,7 +40,7 @@ Page({
   },
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
-  
+    
     
     this.setData({
       avatarUrl,
@@ -181,24 +181,23 @@ Page({
         success: res =>{
           console.log('成功上传')
           console.log(res.fileID)
-          _this.setData({
-            avatar:res.fileID
+          const path = res.fileID
+          db.collection('userInfo').add({
+            data: {
+              credit: 0,
+              carbSum: 0,
+              carblist: [],
+              loginlist: [],
+              prizelist: [],
+              testGroup: 2,
+              attempts:0,
+              avatar: path,
+              basicInfo: e.detail.value
+            }
           })
         }
       })
-      db.collection('userInfo').add({
-        data: {
-          credit: 0,
-          carbSum: 0,
-          carblist: [],
-          loginlist: [],
-          prizelist: [],
-          testGroup: 2,
-          attempts:0,
-          avatar: avatar,
-          basicInfo: e.detail.value
-        }
-      })
+     
     
       wx.showToast({
         title: "提交成功",

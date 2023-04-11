@@ -2,28 +2,7 @@
 const app = getApp();
 Page({
   data: {
-    users: [{
-        id: 1,
-        name: "Alice",
-        profileImageUrl: "../../asset/img/center-highlight.png",
-        carbonSaving: 235.5,
-        readingMinutes: 60
-      },
-      {
-        id: 2,
-        name: "Bob",
-        profileImageUrl: "../../asset/img/center.png",
-        carbonSaving: 124.2,
-        readingMinutes: 90
-      },
-      {
-        id: 3,
-        name: "Charlie",
-        profileImageUrl: "../../asset/img/config.png",
-        carbonSaving: 350.8,
-        readingMinutes: 120
-      }
-    ],
+    users:[],
     recordStatus: false,
     btnClass: 'btn btn-default',
     todayRecordList: [],
@@ -60,7 +39,27 @@ Page({
 
     carbonFootprint: 0
   },
-
+  carbRanking(){
+    var _this = this
+    const db = wx.cloud.database()
+    const _ = db.command
+    db.collection('userInfo').orderBy('carbSum','desc').limit(3).get({
+      success: function(res){
+        console.log('ranking data successfully retrieved')
+        console.log(res.data)
+        const ranking  = res.data
+        for (let index = 0; index < ranking.length; index++) {
+          const element = ranking[index];
+          const carbSum = Math.round(element.carbSum/1000);
+          element.carbSum = carbSum
+          
+        }
+        _this.setData({
+          users:ranking
+        })
+      }
+    })
+  },
   onShow() {
     this.setData({
       isFront: true
@@ -122,6 +121,7 @@ Page({
     const db = wx.cloud.database()
     const _ = db.command
     let _this = this
+    this.carbRanking()
     wx.getSystemInfo({
       success(res) {
         _this.setData({
