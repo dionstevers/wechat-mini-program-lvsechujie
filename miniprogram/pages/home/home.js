@@ -176,7 +176,7 @@ Page({
                           new_aqi = 150 + Math.round((res.data.now.aqi - 55.5) * 50 / 95)
                         }
                         else{
-                          new_aqi = res.data.now.aqi + 50
+                          new_aqi = Math.min(res.data.now.aqi - 0 + 50, 500)
                         }
                         if (new_aqi <= 50) new_category = "优"
                         else if (new_aqi <= 100) new_category = "良"
