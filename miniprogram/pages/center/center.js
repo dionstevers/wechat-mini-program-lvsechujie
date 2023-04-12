@@ -18,8 +18,13 @@ function setChartOption(chart,chartdata,curDate){
       left:40,
       right:20
     },
-     
+   
     calendar : {
+      dayLabel:{
+        firstDay: 1 ,
+        color: 'white',
+        nameMap:'ZH'
+      },
       range : curDate,
       top:'25',
       left:'center',
@@ -27,13 +32,15 @@ function setChartOption(chart,chartdata,curDate){
       width:'230rpx',
       yearLabel: false,
       monthLabel: false,
+    
       itemStyle:{
+        
         color:'rgba(180, 180, 180, 0)',
-        borderColor:'rgba(180, 180, 180, 0.3)'
+        borderColor:'rgba(180, 180, 180, 0.2)'
       },
       splitLine:{
         lineStyle:{
-            color:'rgba(180, 180, 180, 0.3)' // This will change the border color
+            color:'rgba(180, 180, 180, 0.1)' // This will change the border color
         }  
       },
     },
@@ -49,7 +56,6 @@ function setChartOption(chart,chartdata,curDate){
       bottom: 10,
       
       inRange: {
-        
         color: ["#B7FFBF", "#95F985", "#4DED30", "#26D701", "#00C301", "#00AB08"],
       }
     },
@@ -69,12 +75,12 @@ function setChartOption(chart,chartdata,curDate){
          
         emphasis: {
           shadowBlur: 10,
-          shadowColor: 'rgba(0, 0, 0, 0.5)',
+          shadowColor: 'rgba(0, 0, 0, 0.1)',
         },
         normal: {
           color: '',
           opacity:1,
-          borderWidth: 3,
+          borderWidth:1,
           borderColor: '#ccc'
       }
       }
@@ -100,15 +106,14 @@ Page({
     userInfo: null,
     openID: '',
     functionList: [{
-        functionSrc: '../../asset/img/note.png',
+        functionSrc: '../../asset/img/camera.png',
         functionTitle: '低碳身边事',
-        // url: '../journal/journal'
         url: '../picUp/picUp'
       },
       {
-        functionSrc: '../../asset/img/history.png',
-        functionTitle: '出行历史',
-        url: '../triphistory/triphistory'
+        functionSrc: '../../asset/img/note.png',
+        functionTitle: '每日打卡',
+        url: '../journal/journal'
       },
       {
         functionSrc: '../../asset/img/exchange.png',
