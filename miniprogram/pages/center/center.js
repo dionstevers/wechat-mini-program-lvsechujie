@@ -10,7 +10,9 @@ const app = getApp();
 function setChartOption(chart,chartdata,curDate){
    
   const option = {
-
+      textStyle: {
+    fontFamily: ['Times New Roman', 'Times', 'serif'],
+  },
     animation: true,
     grid: {
       bottom: 10,
@@ -20,6 +22,7 @@ function setChartOption(chart,chartdata,curDate){
     },
    
     calendar : {
+     
       dayLabel:{
         firstDay: 1 ,
         color: 'white',
@@ -34,13 +37,12 @@ function setChartOption(chart,chartdata,curDate){
       monthLabel: false,
     
       itemStyle:{
-        
         color:'rgba(180, 180, 180, 0)',
-        borderColor:'rgba(180, 180, 180, 0.2)'
+        borderColor:'rgba(255, 255, 254, 0.5)'
       },
       splitLine:{
         lineStyle:{
-            color:'rgba(180, 180, 180, 0.1)' // This will change the border color
+            color:'rgba(255，255，254, 0.5)' // This will change the border color
         }  
       },
     },
@@ -99,7 +101,8 @@ Page({
    */
   
   data: {
-    
+    testGroup: 0,
+    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     ec:{  
       
     },
@@ -162,6 +165,19 @@ Page({
     }
 
   },
+  selectWithinCurMonth(items) {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1; // Month value is zero-based, so adding 1 to get the current month
+  
+    const filteredItems = items.filter(([dateString, _]) => {
+      const itemDate = new Date(dateString);
+      const itemMonth = itemDate.getMonth() + 1;
+  
+      return itemMonth === currentMonth;
+    });
+  
+    return filteredItems;
+  },
 
   // 已注册用户登录
   getUserInfo(){
@@ -185,28 +201,37 @@ Page({
             if(res.data.length == 1){
               _this.setData({
                 userInfo: res.data[0],
-                list: res.data[0].loginlist
+                list: res.data[0].loginlist,
+                testGroup : res.data[0].testGroup
               })
+              if (res.data[0].testGroup == 2) {
+                _this.setData({
+                  background : 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+                })
+                wx.setTabBarStyle({
+                  color: '#ffffff',
+                  selectedColor: '#ffffff',
+                  backgroundColor: '#D13A29',
+                  borderStyle: 'white'
+                })
+                
+                wx.setNavigationBarColor({
+              
+                  backgroundColor: "#D13A29",
+                  frontColor: '#ffffff',
+                })
+                wx.setNavigationBarTitle({
+                  title: '低碳强国',
+                })
+              }
               app.globalData.userInfo = _this.data.userInfo;
-              _this.initChart(_this.data.list)
+              _this.initChart(_this.selectWithinCurMonth(_this.data.list))
               console.log(_this.data.userInfo)
             }
           }
         })
       }
     })
-    /*
-    if (data){
-       
-      let userInfo = await db.collection('userInfo').doc(data._id).get()
-      this.setData({
-        userInfo: userInfo.data,
-        list:userInfo.data.loginlist
-      })
-      app.globalData.userInfo = userInfo;
-      console.log(this.data.userInfo)
-    }
-    */
   },
   onlogin(e){
     wx.navigateTo({

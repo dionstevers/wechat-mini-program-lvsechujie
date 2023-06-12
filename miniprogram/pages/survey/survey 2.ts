@@ -1,32 +1,18 @@
-// pages/detail/detail.ts
+// pages/survey/survey.ts
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    t:'ok'
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(option){
-    var url= '' 
-    console.log(option.query)
-    const eventChannel = this.getOpenerEventChannel()
-    eventChannel.emit('acceptDataFromOpenedPage', {data: 'test'});
-    // 监听 acceptDataFromOpenerPage 事件，获取上一页面通过 eventChannel 传送到当前页面的数据
-    eventChannel.on('acceptDataFromOpenerPage', (data)=> {
-      console.log(data.data)
-      url = data.data
-      this.setData({
-        t:url
-      })
-    })
-    this.setData({
-      t:url
-    })
+  onLoad() {
+
   },
 
   /**
@@ -47,16 +33,14 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide() {
-   
+
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    wx.navigateTo({
-      url: '/pages/journal/journal',
-    })
+
   },
 
   /**

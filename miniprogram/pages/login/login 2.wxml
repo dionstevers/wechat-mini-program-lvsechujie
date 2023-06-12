@@ -1,0 +1,151 @@
+
+
+
+
+<view class="page-background">
+  <view class="container" >
+  <modal title="知情同意" confirm-text="确认" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
+    您好，欢迎使用低碳出街小助手！这款研究型小程序将伴您打开低碳生活的大门。低碳之旅开始前，小助手想了解一些基本信息。它们将被严格保密，不会被提供给任何第三方。
+  </modal>
+  
+
+  
+</view>
+
+<view class="page-introduction">欢迎使用低碳出街小助手！</view>
+
+  <view class='baseInfo' wx:if="{{modalHidden}}">
+  <text>基本信息</text>
+</view>
+
+<form bindsubmit="login" wx:if="{{modalHidden}}">
+<view class='list'>
+<view class="name">
+  <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" value = "{{ avatarUrl }}" name = "avatar">
+  <image class="avatar" src="{{avatarUrl}}"></image>
+</button> </view>
+<view class="name">
+ <text>昵称</text>
+  <input type="text" placeholder="属于你喜爱的昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
+ </view>
+  <view class='name'>
+    <text>当前职业</text>
+    <picker bindchange="bindOccuChange" value="{{ occu }}" range="{{occupationArr}}" name="occupation">
+    <view wx:if="{{ occu }}">
+         {{ occupationArr[occu] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+ 
+  <view class='sex'>
+    <text>性别</text>
+    <radio-group class="radio-group" bindchange="radioChange" name="sex">
+      <label class="radio" wx:for="{{sex}}" wx:key="index">
+        <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+      </label>
+    </radio-group>
+  </view>
+
+  <view class='name'>
+   <text>出生年份</text>
+    
+   <picker mode="date" fields= "year" start = "1900" end = "2005" bindchange="bindyearChange" value="{{ year }}" name="birthyear" >
+    <view wx:if="{{ year }}">
+         {{ year }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+  <view class='name'>
+   <text>最高学历</text>
+
+   <picker bindchange="bindgradChange" value="{{ grad }}" range="{{gradArr}}" name="degree">
+    <view wx:if="{{ grad }}">
+         {{ gradArr[grad] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+ <view class="name">
+ <text>电子邮件</text>
+  <input type="text" placeholder="用于奖品发放" name = "email" bindinput="bindemailchange" value="{{ email }}"/> 
+ </view>
+<view class='baseInfo'>
+  
+  <text>出行方式</text>
+</view>
+<view class='sex'>
+    <text>城市通勤方式</text>
+    <picker bindchange="bindtransChange" value="{{ trans }}" range="{{transArr}}" name="trans">
+    <view wx:if="{{ trans }}">
+         {{ transArr[trans] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+  <view class='sex' wx:if="{{carSelected}}">
+    <text>最常驾驶的机动车的能源形式</text>
+    <picker bindchange="bindcarChange" value="{{ car }}" range="{{carArr}}" name="car">
+    <view wx:if="{{ car }}">
+         {{ carArr[car] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+
+  <!-- <view class='sex'>
+    <text>购买高性能电器</text>
+    <radio-group class="radio-group" bindchange="radioChange" name="household">
+      <label class="radio" wx:for="{{choice}}" wx:key="index">
+        <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+      </label>
+    </radio-group>
+  </view> -->
+  <!-- <view class='sex'>
+    <text>选择公共交通出行</text>
+    <radio-group class="radio-group" bindchange="radioChange" name = "trans">
+      <label class="radio" wx:for="{{choice}}" wx:key="index">
+        <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+      </label>
+    </radio-group>
+  </view> -->
+<!-- <view class='baseInfo'>
+  <text>饮食习惯</text>
+</view> -->
+ 
+<!-- <view class='name'>
+   <text>食用肉、蛋、奶等动物产品的频率</text>
+ 
+   <picker bindchange="bindfoodChange" value="{{ food }}" range="{{foodArr}}" name = "meatfre">
+    <view wx:if="{{ food }}">
+         {{ foodArr[food] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view>
+  <view class='name'>
+   <text>食物中半成品、加工食品占比</text>
+ 
+   <picker bindchange="bindfood2Change" value="{{ food2 }}" range="{{food2Arr}}" name = "foodratio">
+    <view wx:if="{{ food2 }}">
+         {{ food2Arr[food2] }}
+     </view>
+     <view wx:else style="color: #6f6f6f;">请选择</view>
+    
+   </picker>
+  </view> -->
+
+</view>
+
+<button form-type='submit' class="submit">提交</button>
+</form>
+
+
+</view>

@@ -1,6 +1,6 @@
 <!--pages/home/home.wxml-->
 <wxs src="./home.wxs" module="m1"></wxs>
-<view class="page-background">
+<view class="page-background" id="home" style=" font-family:‘Times New Roman’, Times, serif; background:{{background}} ;">
   <view wx:if="{{ userInfo }}">
     <view class="aqi-info" wx:if="{{ name != '' }}">
       您所在的区县：{{name}}

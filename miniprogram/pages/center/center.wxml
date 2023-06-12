@@ -1,5 +1,5 @@
 <!--pages/center/center.wxml-->
-<view class="page-background" catchtouchmove="dealer">
+<view class="page-background" id = "page" catchtouchmove="dealer" style=" font-family:‘Times New Roman’, Times, serif ;background: {{background}};">
 
 <view class="avatar-con" wx:if="{{ userInfo }}">
   <image class="avatar" src="{{userInfo.avatar}}"></image>

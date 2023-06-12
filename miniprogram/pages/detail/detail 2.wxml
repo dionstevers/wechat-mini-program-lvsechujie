@@ -1,3 +1,2 @@
 <!--pages/detail/detail.wxml-->
-
 <web-view src="{{t}}"></web-view>

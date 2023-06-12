@@ -1,4 +1,5 @@
 // pages/information/information.ts
+const app = getApp();
 Page({
 
   /**
@@ -6,13 +7,39 @@ Page({
    */
   data: {
     userInfo:null,
-    testGroup:0,
+    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     arlist: [],
+
+  }, 
+  tabchange(){
+    console.log("working" , this.data.userInfo.testGroup)
+    
+    var _this = this
+    if (_this.data.userInfo.testGroup == 2) {
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+      wx.setTabBarStyle({
+        color: '#ffffff',
+        selectedColor: '#ffffff',
+        backgroundColor: '#D13A29',
+        borderStyle: 'white'
+      })
+      
+      wx.setNavigationBarColor({
+    
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+      wx.setNavigationBarTitle({
+        title: '低碳强国',
+      })
+    }
   },
   bindInfo(e){
-    console.log(e.currentTarget.dataset.title)
-    const link = e.currentTarget.dataset.title
-    // console.log(link)
+    console.log(e.currentTarget.dataset.link)
+    const link = e.currentTarget.dataset.link
+    
     wx.navigateTo({
       url:'/pages/detail/detail',
       events: {
@@ -27,14 +54,13 @@ Page({
       }
     })
   },
- 
-  getGroup(){
-    return this.data.testGroup
 
-  },
-  async getArticles(num){
+  getArticles(){
+    if (this.data.userInfo.testGroup == 0) {
+      return;
+    }
     var _this = this
-    const group = ['social_based_article','policy_based_article-copy','knowledge_based_article']
+    const group = ['nothing','AntForest','Xiticle']
     
     const _date = new Date()
     _date.setHours(0,0,0,0)
@@ -44,14 +70,11 @@ Page({
     const db = wx.cloud.database()
     const _ = db.command
     //test code below , delete when database is updated
-    _date.setDate(_date.getDate()+1)
+    _date.setDate(_date.getDate())
     //test code above, delete when database is updated 
-    db.collection(group[num]).limit(3).where({
-      date: _.lte(_date.valueOf())
-    }).get({
+    db.collection(group[this.data.userInfo.testGroup]).limit(3).get({
       success:function(res){
-        console.log('yes')
-        console.log(res.data)
+        console.log('this is the data',res.data)
         
         _this.TimeConvert(res.data)
         _this.setData({
@@ -76,43 +99,13 @@ Page({
     }
     console.log("successfully converted")
   },
-  getUserInfo() {
-    
-    const db = wx.cloud.database();
-    const _ = db.command;
-    let _this = this;
-    wx.cloud.callFunction({
-      name: 'login',
-      success: res => {
-        _this.setData({
-          openID: res.result.data._openid,
-        })
-        console.log('openID:', _this.data.openID)
-        db.collection('userInfo').where({
-          _openid: _this.data.openID,
-        }).get({
-            success: function (res) {
-              console.log(_this.data.userInfo)
-              console.log(res.data)
-              if (res.data.length == 1) {
-                _this.setData({
-                  userInfo: res.data[0],
-                  testGroup: res.data[0].testGroup
-                })
-                _this.getArticles(res.data[0].testGroup)
-                console.log(_this.data.userInfo)
-                
-              }
-            }
-          })
-      }
-    })
-  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    this.getUserInfo()
+    // this.getUserInfo()
+    
+    
   
   },
 
@@ -127,7 +120,11 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    this.tabchange()
+    this.getArticles()
   },
 
   /**
@@ -141,7 +138,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-
+    
   },
 
   /**

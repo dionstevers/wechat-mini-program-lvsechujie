@@ -189,7 +189,7 @@ Page({
               carblist: [],
               loginlist: [],
               prizelist: [],
-              testGroup: 0,
+              testGroup: 2,
               attempts:0,
               avatar: path,
               basicInfo: e.detail.value

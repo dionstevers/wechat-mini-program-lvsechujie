@@ -42,9 +42,10 @@
     "showES6CompileOption": false,
     "lazyloadPlaceholderEnable": false,
     "useStaticServer": true,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": false,
+    "condition": false
   },
-  "appid": "wx241e2c0a850c812a",
+  "appid": "wx501c20d4e2802733",
   "projectname": "CarbonFootprint",
   "libVersion": "2.19.3",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",

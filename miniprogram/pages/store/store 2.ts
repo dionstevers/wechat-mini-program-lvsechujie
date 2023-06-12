@@ -152,7 +152,7 @@ Page({
     }
     let b = setInterval(function () {
       that.setData({
-        trasn: that.data.trasn + 5,
+        trasn: that.data.trasn + 2,
         status: 'forbid'
       })
       const db = wx.cloud.database();

@@ -47,16 +47,14 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide() {
-   
+
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    wx.navigateTo({
-      url: '/pages/journal/journal',
-    })
+
   },
 
   /**

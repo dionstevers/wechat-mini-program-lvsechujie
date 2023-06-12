@@ -1,12 +1,18 @@
 <!--pages/information/information.wxml-->
-<view class="page-background">
-  <view class="page-introduction">
+<view wx:if="{{userInfo.testGroup==0}}" class="page-background">
+<view style="font-family: 'Times New Roman', Times, serif; color: white; margin-top: 400rpx;text-align: center;">
+  页面维护中
+</view>
+</view>
+<view wx:if="{{userInfo.testGroup == 2|| userInfo.testGroup == 1}}"  class="page-background" style="background: {{background}};">
+  <view class="page-introduction" style="font-family: 'Times New Roman', Times, serif;">
+  
     为您提供最新的环境资讯和政策信息
   </view>
 
   <view>
     <view wx:for="{{arlist}}" wx:for-index="i" wx:key="i" class="container">
-    <view bindtap="bindInfo" data-title="{{item.link}}">
+    <view bindtap="bindInfo" data-link="{{item.link}}">
       <view class="image-con">
         <image src="{{item.image}}" alt="des" mode="widthFix" class="img" />
       </view>
@@ -20,4 +26,9 @@
     </view>
     </view>
   </view>
+</view>
+<view wx:else class="page-background">
+<view style="font-family: 'Times New Roman', Times, serif; color: white; margin-top: 400rpx;text-align: center;">
+  页面维护中
+</view>
 </view>
