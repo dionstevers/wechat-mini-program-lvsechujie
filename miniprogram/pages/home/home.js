@@ -448,7 +448,7 @@ Page({
         } else {
           wx.showModal({
               title: '提示',
-              content: '请开启后台定位权限'
+              content: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”'
             })
             .then(res => {
               if (res.confirm) {
