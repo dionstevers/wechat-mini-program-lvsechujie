@@ -31,9 +31,6 @@ Page({
         backgroundColor: "#D13A29",
         frontColor: '#ffffff',
       })
-      wx.setNavigationBarTitle({
-        title: '低碳强国',
-      })
     }
   },
   bindInfo(e){
@@ -120,6 +117,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    wx.setNavigationBarTitle({
+      title: '碳行家｜环境资讯'
+    })
     this.setData({
       userInfo: app.globalData.userInfo
     })

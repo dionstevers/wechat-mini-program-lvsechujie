@@ -1,11 +1,13 @@
 // pages/detail/detail.ts
+const appd = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    t:'ok'
+    t:'ok',
+    userInfo: null
   },
 
   /**
@@ -40,7 +42,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.setData({
+      userInfo: appd.globalData.userInfo
+    })
   },
 
   /**
@@ -54,9 +58,12 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    wx.navigateTo({
-      url: '/pages/journal/journal',
-    })
+    if (this.data.userInfo.testGroup == 2) {
+      wx.navigateTo({
+        url: '/pages/journal/journal',
+      })
+    }
+    
   },
 
   /**

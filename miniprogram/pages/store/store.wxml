@@ -1,4 +1,4 @@
-<view class="page-background">
+<view class="page-background" style="font-family: 'Times New Roman', Times, serif; background: {{background}};">
 <view class='notice'>
   <view class='notice-contain'>
     <view class="notice-containTitle">公告栏</view>

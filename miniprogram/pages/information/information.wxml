@@ -17,7 +17,7 @@
         <image src="{{item.image}}" alt="des" mode="widthFix" class="img" />
       </view>
 
-      <text class="info-con">{{item.date}} | {{item.source}}</text>
+      <text class="info-con">{{item.date}} | {{item.author}}</text>
 
       <view class="preview-con">
         <view class="title">{{item.title}}</view>

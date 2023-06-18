@@ -1,32 +1,33 @@
-// pages/detail/detail.ts
+// pages/survey/survey.ts
+const app = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    t:'ok'
+    userInfo: null,
+    background : 'linear-gradient(180deg, #00022a 0%,#009797 100%);'
   },
-
+  tabchange(){
+    var _this = this
+    if (_this.data.userInfo.testGroup == 2) {
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      }) 
+      wx.setNavigationBarColor({
+    
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+    }
+  },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(option){
-    var url= '' 
-    console.log(option.query)
-    const eventChannel = this.getOpenerEventChannel()
-    eventChannel.emit('acceptDataFromOpenedPage', {data: 'test'});
-    // 监听 acceptDataFromOpenerPage 事件，获取上一页面通过 eventChannel 传送到当前页面的数据
-    eventChannel.on('acceptDataFromOpenerPage', (data)=> {
-      console.log(data.data)
-      url = data.data
-      this.setData({
-        t:url
-      })
-    })
-    this.setData({
-      t:url
-    })
+
+  onLoad() {
+
   },
 
   /**
@@ -40,7 +41,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.setData({
+      userInfo : app.globalData.userInfo
+    })
+    this.tabchange()
+    wx.setNavigationBarTitle({
+      title: '碳行家｜关于我们'
+    })
   },
 
   /**

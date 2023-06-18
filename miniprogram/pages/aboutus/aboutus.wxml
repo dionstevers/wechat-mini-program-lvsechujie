@@ -1,10 +1,7 @@
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
 
 <view class="page-introduction"><text>昆山杜克大学碳排放研究小组\n\n致力碳排放知识科普与促进低碳绿色生活\n\n主导教授：Prof.Charles Chang\n\n课题组成员：林泽新，冯天澍，张元东，顾善恒，郑妮（排名不分先后）\n\n\n联系方式\n\nTel:+8611223344\n\nEmail:xxx@duke.edu</text></view>
  
-
-
-
 
 
 

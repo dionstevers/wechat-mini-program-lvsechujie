@@ -220,9 +220,7 @@ Page({
                   backgroundColor: "#D13A29",
                   frontColor: '#ffffff',
                 })
-                wx.setNavigationBarTitle({
-                  title: '低碳强国',
-                })
+                
               }
               app.globalData.userInfo = _this.data.userInfo;
               _this.initChart(_this.selectWithinCurMonth(_this.data.list))
@@ -240,7 +238,7 @@ Page({
   },
   onSurvey(e) {
     wx.navigateTo({
-      url: '/pages/survey/survey',
+      url: '/pages/aboutus/aboutus',
     })
 
   },
@@ -271,6 +269,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    wx.setNavigationBarTitle({
+      title: '碳行家｜个人中心'
+    })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.getUserInfo();
     this.curDate()

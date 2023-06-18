@@ -1,5 +1,5 @@
 <!--pages/picUp/picUp.wxml-->
-<view class="page-background">
+<view class="page-background" style="background:{{background}};">
   <modal title="上传确认" confirm-text="确认" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
    请确认上传该图片
   </modal>
@@ -13,9 +13,12 @@
   </popup> -->
 
   
-  <picker class = "selection" bindchange = "bindPickerChange" value = "{{index}}" range = "{{funclist}}">
+  <!-- <picker class = "selection" bindchange = "bindPickerChange" value = "{{index}}" range = "{{funclist}}">
     <view> {{ funclist[index] }} </view>
-  </picker>
+  </picker> -->
+  <view class="selection">
+    随手拍
+  </view>
   <view wx:if="{{index==0}}" class="intro">随时随地记录身边的低碳行为（光盘行动，绿色外卖，垃圾分类，旧衣回收等...）</view>
   <view wx:if="{{index==1}}" class="intro">这油不错~上传里程与加油小票/app截图看看你的燃油利用率如何（需要至少两次上传才可知平均油耗）</view>
   <view class="ranPic">

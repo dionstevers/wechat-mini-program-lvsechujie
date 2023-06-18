@@ -1,4 +1,5 @@
 // pages/picUp/picUp.ts
+const app = getApp()
 Page({
 
   /**
@@ -9,8 +10,32 @@ Page({
     funclist:["随手拍","拍油耗"],
     picpath:'',
     modalHidden:true,
+    userInfo: null,
+    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
 
 
+  },
+  tabchange(){
+    
+    var _this = this
+    
+    if (_this.data.userInfo.testGroup == 2) {
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+      wx.setTabBarStyle({
+        color: '#ffffff',
+        selectedColor: '#ffffff',
+        backgroundColor: '#D13A29',
+        borderStyle: 'white'
+      })
+      
+      wx.setNavigationBarColor({
+    
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+    }
   },
   bindPickerChange: function (e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
@@ -93,7 +118,7 @@ Page({
       collectionPath = "carImage"
     }
     console.log(filePath)
-    console.log(cloudPath)
+    console.log(cloudPath)    
     wx.cloud.uploadFile({
       cloudPath:cloudPath,
       filePath:filePath,
@@ -105,15 +130,21 @@ Page({
           content:'感谢您的上传！低碳积分已发放到您的账号,请注意查收。',
           showCancel:false,
           confirmText:'确认',
-        
         })
+       
         let fileID = res.fileID;
         const db  = wx.cloud.database();
+        const _ = db.command
         db.collection(collectionPath).add({
           data:{
             Img: fileID
           },
         })
+        db.collection('userInfo').doc(this.data.userInfo._id).update({
+          data:{
+            credit: _.inc(10)
+        }
+      })
 
       }
     })
@@ -139,7 +170,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    this.tabchange()
+    wx.setNavigationBarTitle({
+      title: '碳行家｜低碳身边事'
+    })
   },
 
   /**

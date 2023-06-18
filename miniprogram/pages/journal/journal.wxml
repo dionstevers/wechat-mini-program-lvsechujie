@@ -1,7 +1,7 @@
 <!--pages/journal/journal.wxml-->
-<view class="page-background">
+<view class="page-background" style="background: {{background}} ; font-family:'Times New Roman', Times, serif;" >
   
-  <view class="page-introduction"   style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;">
+  <view class="page-introduction"   style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;;">
     亲爱的自己，今天过得怎样？
     <!-- <switch class="sub-title" style="margin-left:-10rpx; margin-top: 20rpx;" bindchange="selectionHandler">延用此前选择</switch> -->
   </view>

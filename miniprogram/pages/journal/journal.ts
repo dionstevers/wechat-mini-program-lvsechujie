@@ -1,12 +1,16 @@
+import { createNativeULUMap } from "XrFrame/kanata/lib/index";
 
+const app = getApp()
 
 // pages/journal/journal.ts
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     forminfo: '',
     openID: '',
     userInfo: null,
@@ -32,6 +36,7 @@ Page({
   },
   formSubmit: function (e: { detail: { value: any; }; }) {
     //const list = wx.getStorageSync('list')
+    wx.disableAlertBeforeUnload()
 
     var date = new Date();
     var year = date.getFullYear();
@@ -39,8 +44,7 @@ Page({
     var dates = date.getDate();
 
     var time = year + "-" + month + "-" + dates
-
-    //const data = wx.getStorageSync('userInfo')
+    const data = 
 
     // 提交低碳日记-->credit+20
     this.setData({
@@ -49,24 +53,17 @@ Page({
     const db = wx.cloud.database();
     const _ = db.command;
     var _this = this
-    // 如果是当月第一天就不再push 改为更新列表
-    if(dates==1){
-      db.collection('userInfo').doc(_this.data.userInfo._id).update({
+    const testGroup = _this.data.userInfo.testGroup
+    var num = 0
+    // 空白组和蚂蚁森林组每次完成问卷不加分，xuexi组每次完成问卷加10分，一天最多可以完成三次问卷
+    if(testGroup ==0 && testGroup ==1){num = 0}
+    if(testGroup ==2){num = 10}
+    db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
-          credit: _.inc(20),
-          loginlist: _.set([[time,_this.data.userInfo.loginlist.length+1]])
-        }
-      })
-    }
-    else{
-      db.collection('userInfo').doc(_this.data.userInfo._id).update({
-        data: {
-          credit: _.inc(20),
+          credit: _.inc(num),
           loginlist: _.push([[time,_this.data.userInfo.loginlist.length+1]])
         }
       })
-    }
-     
     // 将form数据写入数据库
     db.collection('formdata').add({
       data: {
@@ -81,6 +78,7 @@ Page({
     // 提交后禁用按钮
     this.setData({
       status: 'true'
+
     })
 
     wx.showToast({
@@ -109,59 +107,73 @@ Page({
     var dates = date.getDate();
 
     var today = year + "-" + month + "-" + dates;
-    wx.cloud.callFunction({
-      name: 'login',
-      success: res => {
-        _this.setData({
-          openID: res.result.data._openid,
-        })
-        console.log('openID:', _this.data.openID)
-        db.collection('userInfo').where({
-          _openid: _this.data.openID,
-        }).get({
-            success: function (res) {
-              console.log(_this.data.userInfo)
-              console.log(res.data)
-              if (res.data.length == 1) {
-                _this.setData({
-                  userInfo: res.data[0],
-                })
-                console.log(_this.data.userInfo)
-              }
-            }
-          })
-          db.collection('formdata').where({
-            _openid: _this.data.openID,
-            time: today
-          }).get({
-              success: function (res) {
-                console.log('Length:',res.data.length)
-                if(res.data.length > 0){
-                  _this.setData({
-                    status: "true"
-                  })
-                }
-                else{
-                  _this.setData({
-                    status: null
-                  })
-                }
-              }
-            })
-      }
-    })
+
+    // wx.cloud.callFunction({
+    //   name: 'login',
+    //   success: res => {
+    //     _this.setData({
+    //       openID: res.result.data._openid,
+    //     })
+    //     console.log('openID:', _this.data.openID)
+    //     db.collection('userInfo').where({
+    //       _openid: _this.data.openID,
+    //     }).get({
+    //         success: function (res) {
+    //           console.log(_this.data.userInfo)
+    //           console.log(res.data)
+    //           if (res.data.length == 1) {
+    //             _this.setData({
+    //               userInfo: res.data[0],
+    //             })
+    //             console.log(_this.data.userInfo)
+    //           }
+    //         }
+    //       })
+    //       db.collection('formdata').where({
+    //         _openid: _this.data.openID,
+    //         time: today
+    //       }).get({
+    //           success: function (res) {
+    //             console.log('Length:',res.data.length)
+    //             if(res.data.length > 0){
+    //               _this.setData({
+    //                 status: "true"
+    //               })
+    //             }
+    //             else{
+    //               _this.setData({
+    //                 status: null
+    //               })
+    //             }
+    //           }
+    //         })
+    //   }
+    // })
   },
+  tabchange(){
+    console.log("working" , this.data.userInfo.testGroup)
+    
+    var _this = this
+    if (_this.data.userInfo.testGroup == 2) {
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+  
+      wx.setNavigationBarColor({
+    
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
 
-
+    }
+  },
 
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    wx.setNavigationBarTitle({
-      title: '低碳日记'
-    })
+    
   },
 
   /**
@@ -175,7 +187,36 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.getUserInfo()
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    this.tabchange()
+    
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    if (this.data.userInfo.testGroup == 0 || this.data.userInfo.testGroup == 1 ) {
+      wx.setNavigationBarTitle({
+        title: '碳行家｜低碳日记'
+      })
+    }
+   if(this.data.userInfo.testGroup == 2){
+    wx.setNavigationBarTitle({
+      title: '碳行家｜文章答题'
+    })
+    wx.enableAlertBeforeUnload(
+      {
+      message: '答题未完成将导致扣分，请确认是否退出',
+      success:function(res){
+        console.log('成功调用',res)
+      },
+      fail: function (err){
+        console.log('调用失败',err)
+      }
+      
+    })
+   }
+    
   
   },
 
@@ -190,6 +231,16 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
+    
+    if(this.data.status== null && this.data.userInfo.testGroup == 2){
+      const db = wx.cloud.database();
+      const _ = db.command;
+      db.collection('userInfo').doc(this.data.userInfo._id).update({
+        data:{
+          credit: _.inc(-10)
+      }
+    })
+    }
 
   },
 

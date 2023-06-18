@@ -696,37 +696,33 @@ Page({
     })
   },
   tabchange(){
-    
     var _this = this
-    
     if (_this.data.userInfo.testGroup == 2) {
       _this.setData({
         background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })
-     
-      
+      })  
       wx.setTabBarStyle({
         color: '#ffffff',
         selectedColor: '#ffffff',
         backgroundColor: '#D13A29',
         borderStyle: 'white'
       })
-      
       wx.setNavigationBarColor({
     
         backgroundColor: "#D13A29",
         frontColor: '#ffffff',
       })
-      wx.setNavigationBarTitle({
-        title: '低碳强国',
-      })
     }
   },
   onShow() {
+    wx.setNavigationBarTitle({
+      title: '碳行家｜行程记录'
+    })
     this.setData({
       userInfo: app.globalData.userInfo
     })
     this.tabchange()
+    
     
   
   },

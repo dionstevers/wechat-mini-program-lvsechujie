@@ -1,10 +1,13 @@
 // pages/store/store.ts
+const appd =getApp()
 Page({
   data: {
+    testGroup: 0,
+    background:'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     curAttempt:0,
     random: '',
     trasn: 0,
-    status: '',
+    status: false,
     cost: 20,
     userInfo: null,
     credit: 0,
@@ -23,7 +26,25 @@ Page({
       },
     ],
   },
-
+  tabchange(){     
+    var _this = this
+   
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)',
+      })
+      wx.setTabBarStyle({
+        color: '#ffffff',
+        selectedColor: '#ffffff',
+        backgroundColor: '#D13A29',
+        borderStyle: 'white'
+      })
+      
+      wx.setNavigationBarColor({
+    
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+  },
   angleGenerator(){
     var Max = 0;
     var Min = 0;
@@ -38,7 +59,7 @@ Page({
       
        
     //不保底最大奖 但是如果欧皇抽中 attempt变为0  5%概率抽到
-    if(prob<=5){
+    if(prob<=2){
       db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
          attempts : 0
@@ -49,7 +70,7 @@ Page({
       angle = Min + Math.floor(Rand * (Max-Min)); //舍去
     }
     // 第二有价值的奖品 5次抽奖保底20块  20%概率抽到
-    if(  ( prob>5&&prob<=25 ) ||attempts==5){
+    if(prob>2&&prob<=15||attempts==5){
       db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
          attempts : 0
@@ -60,7 +81,7 @@ Page({
       angle = Min + Math.floor(Rand * (Max-Min)); //舍去
     }
     // 其次没有价值的奖品 (共两种) 35%概率抽到
-    if(prob>25&&prob<=60){
+    if(prob>15&&prob<=60){
       db.collection('userInfo').doc(_this.data.userInfo._id).update({
         data: {
          attempts : _.inc(1)
@@ -88,27 +109,32 @@ Page({
   startspin: function (e) {
     
     let that = this
+    if (that.data.status == true ) {
+      return;
+    }
     let num = 0
     
     that.getUserInfo()
-    if(that.data.credit<20){
+    if(that.data.credit<that.data.cost){
       wx.showToast({
         title: "积分不足",
         icon: 'error',
         duration: 2000,
       })
+      return;
     }
-    if(that.data.credit>=20){
+
       that.setData({
         // random-最终角度-从后端获得概率
         random: that.angleGenerator(),
         trasn: 0,
-        status: 'forbid'
+        status: true,
       })
+   
       let a = setInterval(function () {
         that.setData({
           trasn: that.data.trasn + 5,
-          status: 'forbid'
+          status:true
         })
         //  累计转3圈
         if (360 <= that.data.trasn) {
@@ -119,12 +145,9 @@ Page({
         if (num == 3) {
           that.currinl()
           clearInterval(a)
-          
-          
-  
         }
       }, 6)
-    }
+    
     
 
   },
@@ -153,7 +176,7 @@ Page({
     let b = setInterval(function () {
       that.setData({
         trasn: that.data.trasn + 5,
-        status: 'forbid'
+        status: true
       })
       const db = wx.cloud.database();
       const _ = db.command;
@@ -172,10 +195,10 @@ Page({
         })
         
 
-        that.setData({
-          status: 'forbid'
-        }
-        )
+        // that.setData({
+        //   status: 'false'
+        // }
+        // )
         that.getUserInfo()
         clearInterval(b)
       }
@@ -215,7 +238,7 @@ Page({
                   console.log('credit',_this.data.credit)
                   console.log('cost',_this.data.cost)
                   _this.setData({
-                    status: 'forbid'
+                    status: true
                   })
                   wx.showToast({
                     title: "可用积分不足",
@@ -224,7 +247,7 @@ Page({
                     mask: true,
                   })
                 }else{ _this.setData({
-                  status: ''
+                  status: false
                 })}
                 console.log(_this.data.userInfo)
               }
@@ -241,11 +264,18 @@ Page({
     })
   },
   onLoad() {
-    wx.setNavigationBarTitle({
-      title: '积分中心'
-    })
+
   },
   onShow() {
+    this.setData({
+      testGroup: appd.globalData.userInfo.testGroup
+    })
+    if (this.data.testGroup ==2) {
+      this.tabchange()
+    }
     this.getUserInfo()
+    wx.setNavigationBarTitle({
+      title: '碳行家｜积分中心'
+    })
   }
 })

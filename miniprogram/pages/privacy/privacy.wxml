@@ -1,5 +1,5 @@
 <!--pages/privacy/privacy.wxml-->
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
 <view class="page-introduction">隐私声明</view>
 <view class="page-introduction">您的信息。您的权利。我们的责任。</view>
  

@@ -5,7 +5,7 @@
     "pages/information/information",
     "pages/center/center",
     "pages/journal/journal",
-    "pages/survey/survey",
+    "pages/aboutus/aboutus",
     "pages/triphistory/triphistory",
     "pages/store/store",
     "pages/login/login",
@@ -45,7 +45,7 @@
   "window": {
     "navigationBarBackgroundColor": "#000220",
     "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "低碳出街小助手",
+    "navigationBarTitleText": "碳行家",
     "backgroundColor": "#002443",
     "backgroundTextStyle": "dark"
   },
