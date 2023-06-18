@@ -2,7 +2,17 @@
 <wxs src="./home.wxs" module="m1"></wxs>
 <view class="page-background" id="home" style=" font-family:‘Times New Roman’, Times, serif; background:{{background}} ;">
   <view wx:if="{{ userInfo }}">
-    <view class="aqi-info" wx:if="{{ name != '' }}">
+    <view wx:if="{{ name != '' }}" class="aqi-region">
+      {{name}}
+    </view>
+    <view class="aqi-box" style = "background-color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">
+      <view style = "color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}; filter: grayscale(1) contrast(999) invert(1); line-height: 10vh">
+        <text style = "font-size: 30rpx; vertical-align: middle; margin-right: 15rpx">空气质量</text>
+        <text style = "font-size: 50rpx; vertical-align: middle">{{aqi}} | {{category}}</text>
+      </view>
+    </view>
+    <!--
+      <view class="aqi-info" wx:if="{{ name != '' }}">
       您所在的区县：{{name}}
     </view>
     <view class="aqi-info">
@@ -11,6 +21,7 @@
     <view class="aqi-info">
       空气质量等级：<text style="color: {{aqi<=50 ? '#00e400' : (aqi<=100 ? '#ffff00' : (aqi<=150 ? '#ff7e00' : (aqi <=200 ? '#ff0000' : (aqi<=300 ? '#8f3f97' : '#7e0023'))))}}">{{category}}</text>
     </view>
+    -->
     <view class="picklist">
     <text>出行方式</text>
     <picker bindchange="bindPickerChange" value="{{index}}" range="{{transportList}}" class="picker-con">
@@ -65,7 +76,7 @@
     <view class="rank-container">
   <view class="legend">低碳排行榜</view>
   <block wx:for="{{users}}" wx:key="id">
-  <view class="user-item">
+  <view class="user-item" style="background-color:{{userInfo.testGroup == 2 ? '#D13A29':'#00022a'}}">
     <image class="profile-image" src="{{item.avatar}}" />
     <view class="user-info">
       <view class="user-name">{{item.basicInfo.nickname}}</view>
