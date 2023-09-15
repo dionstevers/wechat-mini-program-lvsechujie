@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "privacy-popup": "../../asset/privacyPopup/privacyPopup"
+  },
   "disableScroll": true
 }

@@ -9,7 +9,6 @@ Page({
     todayRecordList: [],
     isRecordEmpty: true,
     userInfo: null,
-
     // 临时记录信息：
     startTime: 0,
     endTime: 0,
@@ -23,7 +22,6 @@ Page({
     platform: '',
     curID: '',
     transport: '步行',
-
     transportList: [
       "步行/自行车", "电动自行车", "摩托车/小型汽车", "公交/出租车/网约车/轨道交通"
     ],
@@ -31,20 +29,38 @@ Page({
     defaultIndex: 0,
     capacity: 0,
     capacityList: ["1", "2", "3", "4", "5+"],
-
     isFront: true,
-
     aqi: '',
     name: '',
     category: '',
-
     carbonFootprint: 0
   },
+  // 为不同版本切换tab栏颜色
+  tabchange(){
+    var _this = this
+    if (_this.data.userInfo.testGroup == 2) {
+      _this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })  
+      wx.setTabBarStyle({
+        color: '#ffffff',
+        selectedColor: '#ffffff',
+        backgroundColor: '#D13A29',
+        borderStyle: 'white'
+      })
+      wx.setNavigationBarColor({
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+    }
+  },
+  // 展示数据库中节省碳足迹top_n
   carbRanking(){
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
-    db.collection('userInfo').orderBy('carbSum','desc').limit(3).get({
+    const top_n = 3
+    db.collection('userInfo').orderBy('carbSum','desc').limit(top_n).get({
       success: function(res){
         console.log('ranking data successfully retrieved')
         console.log(res.data)
@@ -53,7 +69,6 @@ Page({
           const element = ranking[index];
           const carbSum = Math.round(element.carbSum/1000);
           element.carbSum = carbSum
-          
         }
         _this.setData({
           users:ranking
@@ -61,21 +76,7 @@ Page({
       }
     })
   },
-  onShow() {
-    this.setData({
-      isFront: true
-    })
-  },
-
-  onHide() {
-    this.setData({
-      isFront: false
-    })
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
+// 计算离aqi基站距离
   calcDist: async function (triplet, i) {
     var _this = this
     var dist = -1
@@ -90,7 +91,7 @@ Page({
         return _this.GetDistance(triplet[0], triplet[1], mlat, mlng)
       })
   },
-
+//  找到最近aqi基站
   async findClosest(triplet) {
     var _this = this
     var closest = -1
@@ -106,6 +107,7 @@ Page({
     }
     return closest
   },
+  // 更新aqi数据
   updateAQI: function (res, closest) {
     console.log(closest)
     this.setData({
@@ -114,139 +116,8 @@ Page({
       category: res.data.station[closest].category
     })
   },
-
-  onLoad: async function () {
-    this.setData({
-      userInfo: app.globalData.userInfo
-    })
-    const db = wx.cloud.database()
-    const _ = db.command
-    let _this = this
-    this.carbRanking()
-    wx.getSystemInfo({
-      success(res) {
-        _this.setData({
-          brand: res.brand,
-          model: res.model,
-          system: res.system,
-          version: res.version,
-          platform: res.platform
-        })
-
-        wx.cloud.callFunction({
-          name: 'login',
-          success: res => {
-            _this.setData({
-              openID: res.result.data._openid,
-            })
-            console.log('openID:', _this.data.openID)
-            _this.setList()
-            _this.calcCarbon()
-            var now = new Date()
-            now.setHours(0, 0, 0, 0)
-            console.log(now)
-
-            wx.getLocation({
-              type: 'gcj02',
-              success(loc) {
-                var latitude = loc.latitude.toFixed(2)
-                var longitude = loc.longitude.toFixed(2)
-                console.log('Location: ', longitude, latitude)
-                wx.request({
-                  url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
-                  success: async function (res) {
-                    console.log(res.data.location[0])
-                    var city_id = res.data.location[0].id
-                    var city_name = res.data.location[0].adm2 + res.data.location[0].name
-                    wx.request({
-                      url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
-                      success: async function (res) {
-                        console.log(res.data)
-                        var new_category = ""
-                        var new_aqi = 0
-                        if (res.data.now.aqi <= 12) {
-                          new_aqi = Math.round(res.data.now.aqi * 50 / 12)
-                        }
-                        else if (res.data.now.aqi <= 35.5) {
-                          new_aqi = 50 + Math.round((res.data.now.aqi - 12) * 50 / 13.5)
-                        }
-                        else if (res.data.now.aqi <= 55.5) {
-                          new_aqi = 100 + Math.round((res.data.now.aqi - 35.5) * 50 / 20)
-                        }
-                        else if (res.data.now.aqi <= 150.5) {
-                          new_aqi = 150 + Math.round((res.data.now.aqi - 55.5) * 50 / 95)
-                        }
-                        else{
-                          new_aqi = Math.min(res.data.now.aqi - 0 + 50, 500)
-                        }
-                        if (new_aqi <= 50) new_category = "优"
-                        else if (new_aqi <= 100) new_category = "良"
-                        else if (new_aqi <= 150) new_category = "轻度污染"
-                        else if (new_aqi <= 200) new_category = "中度污染"
-                        else if (new_aqi <= 300) new_category = "重度污染"
-                        else new_category = "严重污染"
-                        _this.setData({
-                            aqi: new_aqi,
-                            name: city_name,
-                            category: new_category
-                          })   
-                      },
-                      fail: function (err) {
-                        console.log(err)
-                      }
-                    })                 
-                  },
-                  fail: function (err) {
-                    console.log(err)
-                  }
-                })
-              },
-              fail: function (err) {
-                console.log(err)
-              }
-            })
-
-            db.collection('userInfo').limit(1).where({
-                _openid: _this.data.openID,
-              })
-              .get({
-                success: function (res) {
-                  console.log(res.data[0].basicInfo.trans)
-                  _this.setData({
-                    defaultIndex: res.data[0].basicInfo.trans,
-                    index: res.data[0].basicInfo.trans
-                  })
-                },
-                fail: console.error
-              })
-
-
-            // 查询上次未结束的tracking？
-            db.collection('track').orderBy('date', 'desc').limit(1).where({
-                _openid: _this.data.openID,
-              })
-              .get({
-                success: function (res) {
-                  //console.log('Last entry:')
-                  //console.log(res.data[0])
-                  var prevTracking = _this.data.recordStatus
-                  _this.setData({
-                    isTracking: !res.data[0].endTime,
-                    curID: res.data[0]._id
-                  })
-                  console.log(prevTracking)
-                  console.log(_this.data.recordStatus)
-                  if (!prevTracking && _this.data.recordStatus) _this.keepTracking()
-                }
-              })
-          },
-          fail: console.error
-        })
-      }
-    })
-  },
-
-  updateCarbon() { // 更新列表
+  // 更新碳排放列表
+  updateCarbon() { 
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -305,8 +176,8 @@ Page({
         }
       })
   },
-
-  setList() { // 更新列表
+  // 更新行程记录列表
+  setList() {
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -339,8 +210,8 @@ Page({
         }
       })
   },
-
-  calcCarbon() { // 更新列表
+// 计算当次节省碳排放 - 问题：  是否与update carbon 重复？ 
+  calcCarbon() { 
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -378,7 +249,7 @@ Page({
         }
       })
   },
-
+// 开启行程记录
   keepTracking: function () {
     var _this = this
     wx.startLocationUpdateBackground({
@@ -417,28 +288,49 @@ Page({
       }
     })
   },
-
+// 结束行程记录
   onClickEvent() {
     let _this = this
-    if (!this.data.recordStatus) {
-      this.startTrackConfirm();
-    } else {
+    if (_this.openID) {
+      if (!this.data.recordStatus) {
+        this.startTrackConfirm();
+      } else {
+        wx.showModal({
+          title: '提示',
+          content: '要结束本次行程记录吗？',
+          success(res) {
+            if (res.confirm) {
+              console.log('用户点击确定');
+              _this.endTrack();
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      }
+    }
+    else{
       wx.showModal({
-        title: '提示',
-        content: '要结束本次行程记录吗？',
-        success(res) {
+        title: '您尚未注册/登录',
+        content: '请先注册/登录并同意隐私条款',
+        success (res) {
           if (res.confirm) {
-            console.log('用户点击确定');
-            _this.endTrack();
+            wx.navigateTo({
+              url: '../login/login',
+            })
+            // wx.redirectTo({
+            //   url: 'pages/login/login',
+            // })
           } else if (res.cancel) {
             console.log('用户点击取消')
           }
         }
       })
+      
     }
   },
 
-  // 记录前准备
+  // 记录前隐私调用准备
   startTrackConfirm: function () {
     wx.getSetting()
       .then(res => {
@@ -695,26 +587,10 @@ Page({
       }
     })
   },
-  tabchange(){
-    var _this = this
-    if (_this.data.userInfo.testGroup == 2) {
-      _this.setData({
-        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })  
-      wx.setTabBarStyle({
-        color: '#ffffff',
-        selectedColor: '#ffffff',
-        backgroundColor: '#D13A29',
-        borderStyle: 'white'
-      })
-      wx.setNavigationBarColor({
-    
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
-    }
-  },
   onShow() {
+    this.setData({
+      isFront: true
+    })
     wx.setNavigationBarTitle({
       title: '碳行家｜行程记录'
     })
@@ -722,9 +598,142 @@ Page({
       userInfo: app.globalData.userInfo
     })
     this.tabchange()
-    
-    
-  
+  },
+  onHide() {
+    this.setData({
+      isFront: false
+    })
+  },
+  onLoad: async function () {
+ 
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    const db = wx.cloud.database()
+    const _ = db.command
+    let _this = this
+    this.carbRanking()
+    wx.getSystemInfo({
+      success(res) {
+        _this.setData({
+          brand: res.brand,
+          model: res.model,
+          system: res.system,
+          version: res.version,
+          platform: res.platform
+        })
+
+        wx.cloud.callFunction({
+          name: 'login',
+          success: res => {
+            _this.setData({
+              openID: res.result.data._openid,
+            })
+            console.log('openID:', _this.data.openID)
+            _this.setList()
+            _this.calcCarbon()
+            var now = new Date()
+            now.setHours(0, 0, 0, 0)
+            console.log(now)
+
+            wx.getLocation({
+              type: 'gcj02',
+              success(loc) {
+                var latitude = loc.latitude.toFixed(2)
+                var longitude = loc.longitude.toFixed(2)
+                console.log('Location: ', longitude, latitude)
+                wx.request({
+                  url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
+                  success: async function (res) {
+                    console.log(res.data.location[0])
+                    var city_id = res.data.location[0].id
+                    var city_name = res.data.location[0].adm2 + res.data.location[0].name
+                    wx.request({
+                      url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
+                      success: async function (res) {
+                        console.log(res.data)
+                        var new_category = ""
+                        var new_aqi = 0
+                        if (res.data.now.aqi <= 12) {
+                          new_aqi = Math.round(res.data.now.aqi * 50 / 12)
+                        }
+                        else if (res.data.now.aqi <= 35.5) {
+                          new_aqi = 50 + Math.round((res.data.now.aqi - 12) * 50 / 13.5)
+                        }
+                        else if (res.data.now.aqi <= 55.5) {
+                          new_aqi = 100 + Math.round((res.data.now.aqi - 35.5) * 50 / 20)
+                        }
+                        else if (res.data.now.aqi <= 150.5) {
+                          new_aqi = 150 + Math.round((res.data.now.aqi - 55.5) * 50 / 95)
+                        }
+                        else{
+                          new_aqi = Math.min(res.data.now.aqi - 0 + 50, 500)
+                        }
+                        if (new_aqi <= 50) new_category = "优"
+                        else if (new_aqi <= 100) new_category = "良"
+                        else if (new_aqi <= 150) new_category = "轻度污染"
+                        else if (new_aqi <= 200) new_category = "中度污染"
+                        else if (new_aqi <= 300) new_category = "重度污染"
+                        else new_category = "严重污染"
+                        _this.setData({
+                            aqi: new_aqi,
+                            name: city_name,
+                            category: new_category
+                          })   
+                      },
+                      fail: function (err) {
+                        console.log(err)
+                      }
+                    })                 
+                  },
+                  fail: function (err) {
+                    console.log(err)
+                  }
+                })
+              },
+              fail: function (err) {
+                console.log(err)
+              }
+            })
+
+            db.collection('userInfo').limit(1).where({
+                _openid: _this.data.openID,
+              })
+              .get({
+                success: function (res) {
+                  console.log(res.data[0].basicInfo.trans)
+                  _this.setData({
+                    defaultIndex: res.data[0].basicInfo.trans,
+                    index: res.data[0].basicInfo.trans
+                  })
+                },
+                fail: console.error
+              })
+
+
+            // 查询上次未结束的tracking？
+            db.collection('track').orderBy('date', 'desc').limit(1).where({
+                _openid: _this.data.openID,
+              })
+              .get({
+                success: function (res) {
+                  //console.log('Last entry:')
+                  //console.log(res.data[0])
+                  var prevTracking = _this.data.recordStatus
+                  _this.setData({
+                    isTracking: !res.data[0].endTime,
+                    curID: res.data[0]._id
+                  })
+                  console.log(prevTracking)
+                  console.log(_this.data.recordStatus)
+                  if (!prevTracking && _this.data.recordStatus) _this.keepTracking()
+                }
+              })
+          },
+          fail: console.error
+        })
+      }
+    })
   },
 
 })

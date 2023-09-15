@@ -32,12 +32,7 @@ Page({
       _this.setData({
         background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)',
       })
-      wx.setTabBarStyle({
-        color: '#ffffff',
-        selectedColor: '#ffffff',
-        backgroundColor: '#D13A29',
-        borderStyle: 'white'
-      })
+
       
       wx.setNavigationBarColor({
     

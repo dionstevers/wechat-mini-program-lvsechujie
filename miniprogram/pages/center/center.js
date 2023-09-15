@@ -1,6 +1,6 @@
 // pages/center/center.ts
 
-import * as echarts from "../../ec-canvas/echarts"
+import * as echarts from "../../asset/ec-canvas/echarts"
 
 const app = getApp();
  
@@ -137,6 +137,7 @@ Page({
         height:height,
         devicePixelRatio: dpr,
       });
+
       setChartOption(chart,data,this.curDate());
       this.chart = chart;
       return chart
@@ -167,18 +168,16 @@ Page({
   },
   selectWithinCurMonth(items) {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1; // Month value is zero-based, so adding 1 to get the current month
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
   
     const filteredItems = items.filter(([dateString, _]) => {
-      const itemDate = new Date(dateString);
-      const itemMonth = itemDate.getMonth() + 1;
-  
-      return itemMonth === currentMonth;
+      const [year, month] = dateString.split('-').map(Number);
+      return year === currentYear && month === currentMonth;
     });
   
     return filteredItems;
   },
-
   // 已注册用户登录
   getUserInfo(){
     //const data = wx.getStorageSync('userInfo');
@@ -223,8 +222,13 @@ Page({
                 
               }
               app.globalData.userInfo = _this.data.userInfo;
-              _this.initChart(_this.selectWithinCurMonth(_this.data.list))
+              const datat = _this.selectWithinCurMonth(_this.data.list)
+              console.log('the data is ', datat, 'the original is', _this.data.list)
+              // selectwithinmonth有问题，ios端返回的是空的列表
+              _this.initChart(datat)
+              
               console.log(_this.data.userInfo)
+              console.log("chart init success")
             }
           }
         })
@@ -273,8 +277,9 @@ Page({
       title: '碳行家｜个人中心'
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
-    this.getUserInfo();
     this.curDate()
+    this.getUserInfo();
+    
     
     //this.getdata();
   },

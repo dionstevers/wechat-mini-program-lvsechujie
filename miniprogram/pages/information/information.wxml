@@ -29,6 +29,6 @@
 </view>
 <view wx:else class="page-background">
 <view style="font-family: 'Times New Roman', Times, serif; color: white; margin-top: 400rpx;text-align: center;">
-  页面维护中
+  请先登录/注册
 </view>
 </view>

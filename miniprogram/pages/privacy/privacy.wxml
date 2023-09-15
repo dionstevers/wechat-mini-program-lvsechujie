@@ -1,19 +1,29 @@
 <!--pages/privacy/privacy.wxml-->
-<view class="page-background" style="background: {{background}};">
-<view class="page-introduction">隐私声明</view>
-<view class="page-introduction">您的信息。您的权利。我们的责任。</view>
- 
-<view class="page-introduction">
-  
-本研究小组致力于坚持履行所有法律和职业义务，以保护您记录的私密性 
-</view>
+<view class="page-background" style="background: {{background}}; text-align: center;">
+  <text style="color: white; text-align: center;">
+  隐私声明\n
 
-<view class="page-introduction">
-  我们保证不会将您的个人信息、低碳日记内容、出行记录等任何个人数据与第三方分享
-</view>
+一、前言\n
 
-<view class="page-introduction">
-  所有研究资料均为保密资料，并将收集用于本研究计划规定的特定目的，仅供昆山杜克大学碳排放研究小组使用
-</view>
+欢迎使用“碳行家”，这是一款专注于个人碳足迹可视化的小程序。作为开发者，我们深知信息安全的重要性。此声明旨在帮助您了解我们如何收集、使用、存储和保护您的个人信息。\n
 
+二、信息收集\n
+
+本小程序在运行过程中收集的位置信息数据均为匿名采集。实验结束后，我们将全部销毁。在任何情况下，我们都不会将采集到的信息提供给任何第三方。\n
+
+三、合规性\n
+
+本小程序已经昆山杜克大学研究伦理委员会审查通过，符合学术研究规范要求。\n
+
+四、遵守规定\n
+
+本小程序严格遵守微信小程序开发、运营规则，确保所有活动操作在合法、规范的范围内进行。\n
+
+五、咨询与反馈\n
+
+如您对我们的隐私声明有任何疑问或需要提供任何反馈，欢迎随时与我们联系。\n
+联系方式：charles.c.chang@dukekunshan.edu.cn \n
+
+感谢您的信任，我们会竭尽全力守护信息安全。\n\n\n\n\n\n
+</text>
 </view>
