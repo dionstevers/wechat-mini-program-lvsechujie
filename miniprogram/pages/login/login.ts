@@ -1,5 +1,7 @@
 // pages/login/login.ts
+export{}
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+const app = getApp()
 Page({
  
   /**
@@ -204,6 +206,9 @@ Page({
           console.log('成功上传')
           console.log(res.fileID)
           const path = res.fileID
+          const timestamp = new Date()
+          const userGroup = Math.floor(Math.random()*5)
+          const basicInfo  = e.detail.value
           db.collection('userInfo').add({
             data: {
               credit: 0,
@@ -211,30 +216,38 @@ Page({
               carblist: [],
               loginlist: [],
               prizelist: [],
-              testGroup: Math.floor(Math.random()*5),
+              testGroup: userGroup,
               attempts:0,
               avatar: path,
-              basicInfo: e.detail.value,
-              loginDate: new Date()
+              basicInfo: basicInfo,
+              loginDate: timestamp
             }
           })
+          
+          db.collection('userInfo').where({
+          _openid : _this.data.openID
+        }).get({
+          success: function(res) {
+            console.log('userinfo for gloabl data',res.data[0])
+            app.globalData.userInfo = res.data[0]
+            console.log('the global data', app.globalData.userInfo)
+          }
+        })
         }
       })
      
-    
       wx.showToast({
         title: "提交成功",
         icon: "success",
         duration: 2000,
         mask: true,
-        success: function () {
-          setTimeout(function () {
-            wx.navigateTo({
-              url:"/pages/center/center"
-            })
-          }, 1500)
-        }
       })
+      setTimeout(function () {
+          wx.reLaunch({
+            url:"/pages/center/center"
+          })
+        }, 2000)
+      
     }
     
 

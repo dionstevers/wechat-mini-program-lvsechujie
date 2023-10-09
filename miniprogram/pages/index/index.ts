@@ -31,7 +31,7 @@ Page({
         this.setData({
           openID:res.result.data._openid
         })
-        console.log(this.data.openID)
+        app.globalData.openID = res.result.data._openid
         db.collection('userInfo').where({
           _openid : this.data.openID
         }).get({

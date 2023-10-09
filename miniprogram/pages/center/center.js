@@ -10,7 +10,6 @@ function initChart(canvas, width, height, dpr) {
     devicePixelRatio: dpr // new
   });
   canvas.setChart(chart);
-
   var option = {
     backgroundColor: 'rgba(0, 0, 0, 0)' ,
     series: [{
@@ -195,10 +194,17 @@ Page({
   //   })
   // },
   setUserinfo(){
-    this.setData({
-      userInfo: app.globalData.userInfo
-    })
-    console.log('userinfo updated!!',this.data.userInfo)
+      this.setData({
+        openID: app.globalData.openID
+      })
+      if(app.globalData.userInfo!=null){
+        this.setData({
+          userInfo: app.globalData.userInfo
+        })
+        console.log('userinfo updated!!',this.data.userInfo)
+        return 
+      }
+      
   },
   onlogin(e){
     wx.navigateTo({
