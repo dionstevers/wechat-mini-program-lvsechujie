@@ -36,11 +36,11 @@
 
 
 <view class="heat-title">
-  低碳热力图 30天
+  出行偏好分析 ：
 </view>
  
 <view  class="heat-con">
-  <ec-canvas type = "2d" class="container" id="mychart-dom-area" canvas-id="mychart-dom-area"  ec="{{ ec }}" force-use-old-canvas="true" > </ec-canvas>
+  <ec-canvas type = "2d" class="container" id="mychart-dom-area" canvas-id="mychart-dom-area"  ec="{{ ec }}"> </ec-canvas>
 </view>
 
 <view class='menu-bar' bindtap='onSurvey'>关于我们</view>

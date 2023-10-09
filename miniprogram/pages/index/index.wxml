@@ -1,0 +1,13 @@
+
+
+  <view class="page-background">
+  <view class="center-box">
+    <view class="welcome-text">
+      <text>欢迎来到碳行家</text>
+      <text>Welcome to Carbon Master</text>
+    </view>
+   
+    <button bind:tap="HandleSignIn" class="login-button">登录</button>
+    <button bind:tap="HandleSignUp" class="register-button">注册</button>
+  </view>
+</view>

@@ -1,0 +1,69 @@
+/* pages/quiz/quiz.wxss */
+/* 设置整体页面的样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: 'Times New Roman', serif;
+  color: white;
+  padding: 20px;
+}
+
+/* 标题样式 */
+.title {
+  font-size: 24px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* 题目样式 */
+.question {
+  font-size: 20px;
+  margin-top: 10px;
+  margin-bottom: 40px; 
+}
+
+
+
+/* 单选选项横着排列，每行显示三个选项 */
+.radio-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* 单选选项样式 */
+.radio {
+  flex-basis: calc(33.33% - 10px); /* 让每个选项占据一行的1/3宽度，之间留有间隔 */
+  margin-bottom: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 垂直居中对齐按钮 */
+  margin: 20px 20px; /* 上下各添加10px的间距，左右为0 */
+}
+.spacer {
+  flex-basis: 10px; /* 间距宽度，根据需要调整 */
+}
+
+/* 提示按钮样式 */
+#hint-button {
+  margin-top: 10px;
+}
+
+/* 提交按钮样式 */
+#submit-button {
+  margin-top: 10px;
+}
+
+/* 提示内容样式 */
+.prompt {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+

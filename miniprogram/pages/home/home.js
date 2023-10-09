@@ -291,7 +291,7 @@ Page({
 // 结束行程记录
   onClickEvent() {
     let _this = this
-    if (_this.openID) {
+    if (_this.data.userInfo!=null) {
       if (!this.data.recordStatus) {
         this.startTrackConfirm();
       } else {
@@ -309,7 +309,7 @@ Page({
         })
       }
     }
-    else{
+    if(_this.data.userInfo==null){
       wx.showModal({
         title: '您尚未注册/登录',
         content: '请先注册/登录并同意隐私条款',

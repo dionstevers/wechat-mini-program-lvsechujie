@@ -11,16 +11,17 @@ Page({
     _id: null,
     openID: null,
     userInfo: null,
-    occupationArr: ["国家机关、党群组织、企业、事业单位负责人、工作人员", "专业技术人员（包括：科学研究人员；工程/农业/飞机和船舶/卫生/经济与金融专业技术人员；法律、社会和宗教/文学、艺术、体育/新闻出版、文化专业人员；教学人员）", "办事人员和有关人员（包括：行政业务办理人员；行政事务处理人员； 行政执法和仲裁人员；人民警察；消防和应急救援人员；保卫人员）", "社会生产服务和生活服务人员", "农、林、牧、渔业生产及辅助人员", "军人", "自由职业者", "个体经营户"],
+    dobarr: ["18-23岁","24-29岁","30-39岁","40-49岁","50-59","60岁及以上"],
+    occupationArr: ["学生","事业单位工作人员","党政机关工作人员", "国有企业员工", "外资企业雇员", "民营企业雇员", "私企或个体经营户", "体力工人", "自由职业者", "商业，服务从业者","退休"],
     gradArr: ["小学以下", "小学", "初中", "高中", "职高/中专", "大专", "大学", "硕士", "博士"],
-    transArr: ["步行/自行车", "电动自行车", "驾驶机动车（摩托车/小型汽车）", "公共交通（公交/出租车/网约车/轨道交通）"],
+    transArr: ["步行或骑行","公共交通","驾驶机动车"],
     carArr:["纯燃油车", "混合动力汽车", "插电式混合动力车", "增程式电动汽车","纯电动汽车"],
     car:null,
     occu: null,
     grad: null,
     trans:null,
-    year: null,
-    email:null,
+    dob: null,
+    email:'',
     nickname:null,
     info: '',
     sex: [
@@ -40,8 +41,6 @@ Page({
   },
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
-    
-    
     this.setData({
       avatarUrl,
     })
@@ -96,10 +95,10 @@ Page({
       occu: e.detail.value
     })
   },
-  bindyearChange: function (e) {
+  bindDobChange: function (e) {
     console.log(e.detail.value)
     this.setData({
-      year: e.detail.value
+      dob: e.detail.value
     })
   },
 
@@ -122,47 +121,70 @@ Page({
     var email = this.data.email;
     var nickname = this.data.nickname;
     var car= this.data.car;
-    var year= this.data.year;
+    var dob= this.data.dob;
     var occu = this.data.occu;
     var grad = this.data.grad;
     var trans = this.data.trans;
     var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(nickname==null||email==null|| trans == null||year == null||occu == null||grad == null||(trans==2&&car == null)){
-      console.log('信息填写不全')
-      this.setData({
-        car:null,
-        trans:null,
-        year:null,
-        occu:null,
-        grad:null,
-        email:null
-      })
+    console.log(nickname)
+    if(nickname == null){
       wx.showToast({
-        title: "信息填写不全",
-        icon: "error",
-        duration: 2000,
-        mask: true,
+        title:"昵称未填写",
+        icon:"error"
       })
-      return 1;
+      return 1 
     }
-    console.log(reg1.test(email))
-    if(reg1.test(email)==false){
-      console.log('邮箱格式错误，请检查');
+    if(dob == null){
       wx.showToast({
-        title: "邮箱格式错误",
-        icon: "error",
-        duration: 2000,
-        mask: true,
+        title: '年龄未填写',
+        icon:"error"
       })
-      this.setData({
-        email:null
+      return 1
+    }
+    if(occu == null){
+      wx.showToast({
+        title: '职业未填写',
+        icon:"error"
       })
-      return 2;
+      return 1
     }
-    if(car!=null||nickname!=null&&email != null&&trans != null &&year != null&&occu != null&&grad != null&&reg1.test(email)==true){
-      console.log('all good');
-      return 3;
+    if(grad == null){
+      wx.showToast({
+        title: '学历未填写',
+        icon:"error"
+      })
+      return 1
     }
+    if(trans==null){
+      wx.showToast({
+        title: '出行方式未填写',
+        icon:"error"
+      })
+      return 1
+    }
+    if(trans!=0&&car==null){
+      wx.showToast({
+        title: '能源形式未填写',
+        icon:"error"
+      })
+      return 1 
+    }
+    if (email!='') {
+      if(reg1.test(email)==false){
+        console.log('邮箱格式错误，请检查');
+        wx.showToast({
+          title: "邮箱格式错误",
+          icon: "error",
+          duration: 2000,
+          mask: true,
+        })
+        this.setData({
+          email:''
+        })
+        return 1;
+      }
+    }
+    return 2 
   },
   login(e) {
      
@@ -170,7 +192,7 @@ Page({
     var _this = this
     var checkResult = _this.checkSubmit();
     
-    if(checkResult==3){
+    if(checkResult==2){
       console.log(_this.data.openID)
       const db = wx.cloud.database();
       const _ = db.command;
@@ -189,10 +211,11 @@ Page({
               carblist: [],
               loginlist: [],
               prizelist: [],
-              testGroup: Math.floor(Math.random()*3),
+              testGroup: Math.floor(Math.random()*5),
               attempts:0,
               avatar: path,
-              basicInfo: e.detail.value
+              basicInfo: e.detail.value,
+              loginDate: new Date()
             }
           })
         }
@@ -206,8 +229,8 @@ Page({
         mask: true,
         success: function () {
           setTimeout(function () {
-            wx.navigateBack({
-              delta: 1
+            wx.navigateTo({
+              url:"/pages/center/center"
             })
           }, 1500)
         }
@@ -222,18 +245,5 @@ Page({
   
   
   onLoad() {
-    var _this = this
-    wx.cloud.callFunction({
-      name: 'login',
-      success: res => {
-        _this.setData({
-          openID: res.result.data._openid,
-          //_id:res.result.data._id,
-
-        })
-        console.log('openID:', _this.data.openID)
-
-      }
-    })
   },
 })

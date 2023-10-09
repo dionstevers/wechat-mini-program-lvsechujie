@@ -1,0 +1,46 @@
+<!--pages/quiz/quiz.wxml-->
+<view class="page-background">
+
+  <view class="container">
+  <view class="title">
+    <!-- 标题 - 每日一题 -->
+    <text>每日一题</text>
+  </view>
+  
+  <view class="question">
+    <!-- 从数据库中获取题目内容 -->
+    <text>{{question}}</text>
+  </view>
+  
+<!-- 正确的radio-group结构 -->
+<radio-group bindchange="selectChoice">
+  <block wx:for="{{ choices }}">
+    <label class="radio">
+      <radio name="radioGroup" value="{{ item }}"></radio>
+      {{ item }}
+    </label>
+  </block>
+</radio-group>
+
+
+<view class="button-container">
+    <!-- 提示按钮 -->
+    <button id="hint-button" bindtap="showPrompt">显示提示</button>
+    <view class="spacer"></view>
+    <!-- 提交按钮 -->
+    <button id="submit-button" bindtap="submit">提交</button>
+  </view>
+
+    <!-- 提示内容 -->
+    <view wx:if="{{showingPrompt}}" class="prompt">
+    <!-- 从数据库中获取提示内容 -->
+    <text>{{prompt}}</text>
+  </view>
+
+
+</view>
+
+
+
+
+</view>
