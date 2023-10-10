@@ -33,10 +33,30 @@ function initChart(canvas, width, height, dpr) {
         console.log(driving)
         var option = {
           backgroundColor: 'rgba(0, 0, 0, 0)',
+          legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: ['骑行','公交','开车'],
+            textStyle: {
+              color: '#ffffff'
+            }
+
+          },
           series: [{
-            label: {
-              normal: {
-                fontSize: 14
+            
+          label: {
+              show: false,
+              position: 'center'
+            },
+          labelLine: {
+              show: false
+            },
+          avoidLabelOverlap: false,
+          emphasis: {
+              label: {
+                show: true,
+                fontSize: '20',
+                fontWeight: 'bold'
               }
             },
             type: 'pie',
@@ -51,7 +71,7 @@ function initChart(canvas, width, height, dpr) {
               name: '公交'
             }, {
               value: driving,
-              name: '机动车'
+              name: '开车'
             }]
           }]
         };
