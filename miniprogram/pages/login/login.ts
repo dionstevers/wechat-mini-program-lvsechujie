@@ -1,7 +1,6 @@
 // pages/login/login.ts
-export{}
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 const app = getApp()
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 Page({
  
   /**
@@ -194,61 +193,110 @@ Page({
     var _this = this
     var checkResult = _this.checkSubmit();
     
-    if(checkResult==2){
-      console.log(_this.data.openID)
+    if (checkResult == 2) {
+      console.log(_this.data.openID);
       const db = wx.cloud.database();
       const _ = db.command;
-      const avatar = _this.data.avatarUrl
+      const avatar = _this.data.avatarUrl;
+    
+      // 显示数据更新中的提示
+      wx.showToast({
+        title: '数据更新中',
+        icon: 'loading',
+        duration: 10000, // 设置持续显示时间，单位毫秒，可根据实际上传时间调整
+        mask: true,
+      });
+    
       wx.cloud.uploadFile({
-        cloudPath:'avatar/' + new Date().getTime() + '.jpeg',
+        cloudPath: 'avatar/' + new Date().getTime() + '.jpeg',
         filePath: avatar,
-        success: res =>{
-          console.log('成功上传')
-          console.log(res.fileID)
-          const path = res.fileID
-          const timestamp = new Date()
-          const userGroup = Math.floor(Math.random()*5)
-          const basicInfo  = e.detail.value
+        success: async (res) => {
+          console.log('成功上传');
+          console.log(res.fileID);
+          const path = res.fileID;
+          const timestamp = new Date();
+          const userGroup = Math.floor(Math.random() * 5) + 1;
+          const basicInfo = e.detail.value;
           db.collection('userInfo').add({
-            data: {
-              credit: 0,
-              carbSum: 0,
-              carblist: [],
-              loginlist: [],
-              prizelist: [],
+            data:{
               testGroup: userGroup,
-              attempts:0,
               avatar: path,
               basicInfo: basicInfo,
-              loginDate: timestamp
+              loginDate: timestamp,
+              carbSum: 0,
+              // todo: minimize the schema of this collection
+  
             }
           })
-          
-          db.collection('userInfo').where({
-          _openid : _this.data.openID
-        }).get({
-          success: function(res) {
-            console.log('userinfo for gloabl data',res.data[0])
-            app.globalData.userInfo = res.data[0]
-            console.log('the global data', app.globalData.userInfo)
+          try {
+            // 上传完成后，从userInfo中获取用户信息
+            const userInfoData = {
+              testGroup: userGroup,
+              avatar: path,
+              basicInfo: basicInfo,
+              loginDate: timestamp,
+              carbSum: 0,
+              // todo: minimize the schema of this collection
+            };
+    
+    
+            if (userInfoData) {
+              // 更新 app.globalData.userInfo
+              app.globalData.userInfo = userInfoData;
+    
+              // 隐藏数据更新中的提示
+              wx.hideToast();
+    
+              // 显示提交成功的提示
+              wx.showToast({
+                title: '提交成功',
+                icon: 'success',
+                duration: 2000,
+                mask: true,
+              });
+    
+              // 延时跳转到指定页面
+              setTimeout(function () {
+                wx.navigateTo({
+                  url: "/pages/journal/journal"
+                });
+              }, 2000);
+            } else {
+              // 如果找不到用户信息，显示错误提示
+              wx.hideToast();
+              wx.showToast({
+                title: '未找到用户信息',
+                icon: 'none',
+                duration: 2000,
+                mask: true,
+              });
+            }
+          } catch (error) {
+            // 处理获取用户信息失败的情况
+            wx.hideToast();
+            wx.showToast({
+              title: '获取用户信息失败',
+              icon: 'none',
+              duration: 2000,
+              mask: true,
+            });
+            console.error('获取用户信息失败', error);
           }
-        })
+        },
+        fail: (error) => {
+          // 处理上传失败的情况
+          wx.hideToast(); // 隐藏数据更新中的提示
+          wx.showToast({
+            title: '上传失败',
+            icon: 'none',
+            duration: 2000,
+            mask: true,
+          });
+          console.error('上传失败', error);
         }
-      })
-     
-      wx.showToast({
-        title: "提交成功",
-        icon: "success",
-        duration: 2000,
-        mask: true,
-      })
-      setTimeout(function () {
-          wx.reLaunch({
-            url:"/pages/center/center"
-          })
-        }, 2000)
-      
+      });
     }
+    
     
 
   },

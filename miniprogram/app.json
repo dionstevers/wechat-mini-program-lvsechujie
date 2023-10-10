@@ -1,5 +1,6 @@
 {
   "pages": [
+    
     "pages/index/index",
     "pages/home/home",
     "pages/information/information",
@@ -14,8 +15,6 @@
     "pages/picUp/picUp",
     "pages/detail/detail", 
     "pages/quiz/quiz"
-    
-    
   ],
   "tabBar": {
     "list": [

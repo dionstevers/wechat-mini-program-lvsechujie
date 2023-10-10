@@ -159,62 +159,6 @@ Page({
 
     return filteredItems;
   },
-  // 已注册用户登录
-  // getUserInfo(){
-  //   const db = wx.cloud.database();
-  //   let _this = this;
-  //   wx.cloud.callFunction({
-  //     name: 'login',
-  //     success: res => {
-  //       _this.setData({
-  //         openID: res.result.data._openid,
-  //       })
-  //       console.log('openID:', _this.data.openID)
-  //       db.collection('userInfo').where({
-  //         _openid: _this.data.openID,
-  //       })
-  //       .get({
-  //         success: function (res) {
-  //           console.log(_this.data.userInfo)
-  //           console.log(res.data)
-  //           if(res.data.length == 1){
-  //             _this.setData({
-  //               userInfo: res.data[0],
-  //               list: res.data[0].loginlist,
-  //               testGroup : res.data[0].testGroup
-  //             })
-  //             if (res.data[0].testGroup == 2) {
-  //               _this.setData({
-  //                 background : 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-  //               })
-  //               wx.setTabBarStyle({
-  //                 color: '#ffffff',
-  //                 selectedColor: '#ffffff',
-  //                 backgroundColor: '#D13A29',
-  //                 borderStyle: 'white'
-  //               })
-
-  //               wx.setNavigationBarColor({
-
-  //                 backgroundColor: "#D13A29",
-  //                 frontColor: '#ffffff',
-  //               })
-
-  //             }
-  //             app.globalData.userInfo = _this.data.userInfo;
-  //             const datat = _this.selectWithinCurMonth(_this.data.list)
-  //             console.log('the data is ', datat, 'the original is', _this.data.list)
-  //             // selectwithinmonth有问题，ios端返回的是空的列表
-  //             _this.initChart(datat)
-
-  //             console.log(_this.data.userInfo)
-  //             console.log("chart init success")
-  //           }
-  //         }
-  //       })
-  //     }
-  //   })
-  // },
   setUserinfo() {
     this.setData({
       openID: app.globalData.openID

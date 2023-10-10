@@ -1,52 +1,26 @@
 <!--pages/journal/journal.wxml-->
 <view class="page-background" style="background: {{background}} ; font-family:'Times New Roman', Times, serif;" >
   
-  <view class="page-introduction"   style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;;">
-    亲爱的自己，今天过得怎样？
-    <!-- <switch class="sub-title" style="margin-left:-10rpx; margin-top: 20rpx;" bindchange="selectionHandler">延用此前选择</switch> -->
+  <view class="page-introduction"  style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;;">
   </view>
   
-  <form bindsubmit="formSubmit" >
-    <view class="form-group-title">
-      生活方式
+  <view class = 'container'>
+    <!-- 单选题 -->
+    <view wx:for="{{single}}">
+    <view class="question">
+      <text>{{item.question}}</text>
     </view>
-    <checkbox-group class="form-single-con" name='diet-checkbox'>
-        <label wx:for="{{questions1}}" wx:key="id">
-          <view>
-            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
-          </view>
-        </label>
-    </checkbox-group>
-    <view class="form-group-title" id='group2'>
-      日常饮食
-    </view>
-    <checkbox-group class="form-single-con" name='summary-checkbox'>
-        <label wx:for="{{questions2}}" wx:key="id">
-          <view>
-            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
-          </view>
-        </label>
-      </checkbox-group>
-    <view class="form-group-title" id='group3'>
-      一日总结
-    </view>
-    <checkbox-group class="form-single-con" name='lifestyle-checkbox'>
-        <label wx:for="{{questions3}}" wx:key="id">
-          <view>
-            <checkbox value="{{item.value}}" checked="{{item.ischecked}}">{{item.value}}</checkbox>
-          </view>
-        </label>
-      </checkbox-group>
-    
-    
-   
-  <button form-type="submit" wx:if="{{ userInfo }}" disabled="{{status}}"  >提交记录</button>
- 
-  <button wx:else>请先登录</button>
-   
-  
-   
- 
+    <picker mode="selector" range="{{item.options}}" bindchange="handleSingleSelect" data-index="{{index}}">
+      <view class="picker">
+       <text>{{singleSelected[index] ? item.options[singleSelected[index]] : '请选择'}}</text>
+      </view>
+    </picker>
+  </view>
+  <!-- todo: sort  -->
 
-  </form>
+
+  <button bind:tap="formSubmit" wx:if="{{!isLoading}}">提交问卷</button>
+
+
+  </view>
 </view>

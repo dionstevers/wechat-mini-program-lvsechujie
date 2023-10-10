@@ -23,94 +23,59 @@ Page({
   onReady(){
 
   },
-  HandleSignUp() {
+  async HandleSignUp() {
     const db = wx.cloud.database()
-    wx.cloud.callFunction({
-      name: 'login',
-      success: res => {
-        this.setData({
-          openID:res.result.data._openid
+    try{
+      const res = await wx.cloud.callFunction({ name: 'login' });
+      this.setData({ openID: res.result.data._openid });
+      app.globalData.openID = res.result.data._openid;
+
+      const userInfoQuery = await db.collection('userInfo')
+      .where({ _openid: this.data.openID })
+      .get();
+      if (userInfoQuery.data.length === 1) {
+        app.globalData.userInfo = userInfoQuery.data[0];
+        wx.showModal({ title: '您已有账号',content:'请直接点击登录按钮登录' , showCancel:false});
+      }else{
+        wx.navigateTo({
+          url:'/pages/login/login'
         })
-        app.globalData.openID = res.result.data._openid
-        db.collection('userInfo').where({
-          _openid : this.data.openID
-        }).get({
-          success: function(res) {
-            console.log('userinfo for gloabl data',res.data[0])
-            if(res.data.length==1){
-              app.globalData.userInfo = res.data[0]
-              wx.showModal({
-                title:'您已有账号',
-                content:'请直接点击登录按钮登录'
-              })
-            }else{
-              wx.navigateTo({
-                url:'/pages/login/login'
-              })
-            }
-          },
-          fail: err => {
-            console.error( 'login function call failed:', err);
-            // Handle the error here.
-          }   
-        })
-      },
-      fail: err => {
-        console.error( 'login function call failed:', err);
-        // Handle the error here.
       }
-    })
+
+    }catch(err){
+      console.log(err)
+    }
   },
-  HandleSignIn() {
+ async HandleSignIn() {
     const db = wx.cloud.database()
-    wx.cloud.callFunction({
-      name: 'login',
-      success: res => {
-        this.setData({
-          openID:res.result.data._openid
+    try{
+      const res = await wx.cloud.callFunction({ name: 'login' });
+      this.setData({ openID: res.result.data._openid });
+      app.globalData.openID = res.result.data._openid;
+      const userInfoQuery = await db.collection('userInfo')
+        .where({ _openid: this.data.openID })
+        .get();
+      if (userInfoQuery.data.length === 1) {
+        app.globalData.userInfo = userInfoQuery.data[0];
+        wx.showToast({ 
+        title:'正在登录中',
+        icon:'loading',
+        duration:1500 });
+        setTimeout(() => {
+          wx.switchTab({
+            url : '/pages/center/center'
+          })
+      }, 1500);
+      }else{
+        wx.showModal({
+          title: '您尚未注册',
+          content: '请点击下方注册按钮注册',
+          showCancel: false
         })
-        console.log(this.data.openID)
-        db.collection('userInfo').where({
-          _openid : this.data.openID
-        }).get({
-          success: function(res) {
-            console.log('userinfo for gloabl data',res.data[0])
-            if(res.data.length==1){
-              app.globalData.userInfo = res.data[0]
-              wx.showToast({
-                title:'正在登录中',
-                icon:'loading',
-                duration:1500
-              })
-              setTimeout(() => {
-                  wx.reLaunch({
-                    url : '/pages/center/center'
-                  })
-              }, 1500);
-              
-            }else{
-              wx.showModal({
-                title: '您尚未注册',
-                content: '请点击下方注册按钮注册',
-                success(res){
-                  if(res.confirm){
-                    console.log('confirm')
-                  }
-                }
-              })
-            }
-          },
-          fail: err => {
-            console.error( 'login function call failed:', err);
-            // Handle the error here.
-          }   
-        })
-      },
-      fail: err => {
-        console.error( 'login function call failed:', err);
-        // Handle the error here.
       }
-    })
+    }catch(err){
+      console.log(err)
+    }
   },
 
   /**

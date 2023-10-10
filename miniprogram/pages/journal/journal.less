@@ -1,53 +1,73 @@
 /* pages/journal/journal.wxss */
+/* pages/journal/journal.wxss */
+.page-background{
+  font-family: 'Times New Roman', Times, serif;
+  color: #fff; /* 设置文字颜色为白色 */
+}
+.page-introduction {
+  font-size: 50rpx;
+  text-align: left;
+  margin-top: 30rpx;
+  margin-left: 40rpx;
+}
+.container{
+  margin-left: 5%;
+  margin-right:5%;
+}
+
+.question {
+  margin-top: 20rpx; /* 添加题目之间的上边距 */
+  border-bottom: 1px solid #fff; /* 添加分割线 */
+  padding-bottom: 20rpx; /* 设置题目下方边距 */
+}
+
+/* 单选题选项样式 */
+.picker {
+  border: 1px solid #fff; /* 添加单选题选项的边框 */
+  border-radius: 5px; /* 圆角边框 */
+  padding: 10px;
+  margin-top: 10rpx;
+}
+
+/* 排序题样式 */
+.sort-question {
+  margin-top: 20rpx; /* 添加题目之间的上边距 */
+  border-bottom: 1px solid #fff; /* 添加分割线 */
+  padding-bottom: 20rpx; /* 设置题目下方边距 */
+}
+
+.sort-options {
+  display: flex;
+  align-items: center;
+}
+
+.sort-button {
+  margin-right: 10rpx;
+  cursor: pointer;
+  color: #007AFF; /* 链接颜色，根据需要自定义 */
+  font-size: 20px;
+}
+
+.sort-button .icon {
+  width: 20px; /* 图标宽度，根据需要自定义 */
+  height: 20px; /* 图标高度，根据需要自定义 */
+}
+
+.sort-option {
+  background-color: #007AFF;
+  color: #fff;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10rpx; /* 添加选项之间的上边距 */
+}
+
+.sort-option.selected {
+  background-color: #D13A29;
+}
 button{
-  position: relative;
-  text-align: center;
-  margin-top: 70rpx;
-  margin-bottom: 20rpx;
-}
- 
-checkbox{
-  margin-left: 5rpx;
-  margin-top: 18rpx;
-  font-size: 35rpx;
-  font-weight: 450;
-}
-.form-group-title{
-  height: 50rpx;
-  margin: 80rpx 40rpx 0 ;
-  color: rgb(145, 145, 145);
-  font-size: 35rpx;
-  padding: 15rpx;
-  border-bottom: 1rpx solid #a5a4a4;
-}
-#group2{
-  margin-top: 340rpx;
-   
-}
-#group3{
-  margin-top: 153rpx;
-   
-}
-.sub-title{
-  margin: 10rpx 10rpx 0;
-  font-size:28rpx ;
-}
-.form-single-con{
-  height: 70rpx;
-  line-height: 70rpx;
-  // background-color: red;
-  margin: 10rpx 40rpx 0 ;
-  color: white;
-  position: relative;
-  font-size: 28rpx;
-  
-   
-  radio-group{
-    position: absolute;
-    right: 0rpx;
-    top: -8rpx;
-     
-  }
-  
- 
+
+  margin-top: 10%;
+  margin-bottom: 20%;
 }

@@ -17,6 +17,29 @@ Page({
     this.getDataFromDatabase();
     
   },
+  onUnload(){
+    wx.enableAlertBeforeUnload(
+      {
+      message: '答题未完成将导致扣分，请确认是否退出',
+      success:function(res){
+        console.log('成功调用',res)
+      },
+      fail: function (err){
+        console.log('调用失败',err)
+      }
+      
+    })
+// 减分机制
+    // if(this.data.status== null && this.data.userInfo.testGroup == 2){
+    //   const db = wx.cloud.database();
+    //   const _ = db.command;
+    //   db.collection('userInfo').doc(this.data.userInfo._id).update({
+    //     data:{
+    //       credit: _.inc(-10)
+    //   }
+    // })
+    // }
+  },
   // 选择选项触发的事件处理函数
   selectChoice(event) {
     const selectedChoiceIndex = event.detail.value;
