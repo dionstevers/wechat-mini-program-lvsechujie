@@ -10,32 +10,54 @@ function initChart(canvas, width, height, dpr) {
     devicePixelRatio: dpr // new
   });
   canvas.setChart(chart);
-  var option = {
-    backgroundColor: 'rgba(0, 0, 0, 0)' ,
-    series: [{
-      label: {
-        normal: {
-          fontSize: 14
-        }
-      },
-      type: 'pie',
-      center: ['50%', '50%'],
-      radius: ['60%', '90%'],
+  const db = wx.cloud.database()
+  const _ = db.command
+  var cycling = 0
+  var pub_transit = 0
+  var driving = 0
+  db.collection('track').where({
+      _openid: app.globalData.userInfo._openid,
+    })
+    .orderBy('date', 'desc')
+    .get({
+      success: function (res) {
+        let list = res.data
+        console.log('get list:', list);
+        list.forEach(item => {
+          if (item['transport'] == "步行/自行车" || item['transport'] == "电动自行车") cycling += 1
+          else if (item['transport'] == "公交/出租车/网约车/轨道交通") pub_transit += 1
+          else driving += 1
+        })
+        console.log(cycling)
+        console.log(pub_transit)
+        console.log(driving)
+        var option = {
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          series: [{
+            label: {
+              normal: {
+                fontSize: 14
+              }
+            },
+            type: 'pie',
+            center: ['50%', '50%'],
+            radius: ['60%', '90%'],
       
-      data: [{
-        value: 55,
-        name: '骑行'
-      },{
-        value: 10,
-        name: '公交'
-      }, {
-        value: 20,
-        name: '机动车'
-      }]
-    }]
-  };
-
-  chart.setOption(option);
+            data: [{
+              value: cycling,
+              name: '骑行'
+            }, {
+              value: pub_transit,
+              name: '公交'
+            }, {
+              value: driving,
+              name: '机动车'
+            }]
+          }]
+        };
+        chart.setOption(option);
+      }
+    })
   return chart;
 }
 Page({
@@ -43,11 +65,11 @@ Page({
   /**
    * 页面的初始数据
    */
-  
+
   data: {
     testGroup: 0,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
-    ec:{  
+    ec: {
       onInit: initChart
     },
     userInfo: null,
@@ -69,31 +91,31 @@ Page({
       }
     ],
     CoinRatio: 0,
-     
+
   },
- 
-  initChart(){
+
+  initChart() {
     let chart;
     if (this.randerComponent) {
-      
-      this.randerComponent.init((canvas,width,height,dpr)=>{
+
+      this.randerComponent.init((canvas, width, height, dpr) => {
         const getPixelRatio = () => {
-        let dpr = 0;
+          let dpr = 0;
           wx.getSystemInfo({
-            success: function (res){
-              dpr  = res.pixelRatio
+            success: function (res) {
+              dpr = res.pixelRatio
               console.log('dpr =  ', dpr)
             },
-            fail: function(){
+            fail: function () {
               dpr = 2
             }
           })
-          return dpr 
+          return dpr
         }
-        
-        chart = echarts.init(canvas,null,{
-          width:width,
-          height:height,
+
+        chart = echarts.init(canvas, null, {
+          width: width,
+          height: height,
           devicePixelRatio: getPixelRatio(),
         });
         setChartOption(chart);
@@ -102,16 +124,16 @@ Page({
       })
     }
   },
-  dealer(){
+  dealer() {
     return
   },
-  curDate(){
-     
+  curDate() {
+
     var date = new Date();
     var year = date.getFullYear();
-    var month = date.getMonth()+1;
+    var month = date.getMonth() + 1;
     var curDate = year + "-" + month;
-    
+
     return curDate;
   },
   onTapFunction(e) {
@@ -129,12 +151,12 @@ Page({
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
-  
+
     const filteredItems = items.filter(([dateString, _]) => {
       const [year, month] = dateString.split('-').map(Number);
       return year === currentYear && month === currentMonth;
     });
-  
+
     return filteredItems;
   },
   // 已注册用户登录
@@ -171,20 +193,20 @@ Page({
   //                 backgroundColor: '#D13A29',
   //                 borderStyle: 'white'
   //               })
-                
+
   //               wx.setNavigationBarColor({
-              
+
   //                 backgroundColor: "#D13A29",
   //                 frontColor: '#ffffff',
   //               })
-                
+
   //             }
   //             app.globalData.userInfo = _this.data.userInfo;
   //             const datat = _this.selectWithinCurMonth(_this.data.list)
   //             console.log('the data is ', datat, 'the original is', _this.data.list)
   //             // selectwithinmonth有问题，ios端返回的是空的列表
   //             _this.initChart(datat)
-              
+
   //             console.log(_this.data.userInfo)
   //             console.log("chart init success")
   //           }
@@ -193,20 +215,20 @@ Page({
   //     }
   //   })
   // },
-  setUserinfo(){
+  setUserinfo() {
+    this.setData({
+      openID: app.globalData.openID
+    })
+    if (app.globalData.userInfo != null) {
       this.setData({
-        openID: app.globalData.openID
+        userInfo: app.globalData.userInfo
       })
-      if(app.globalData.userInfo!=null){
-        this.setData({
-          userInfo: app.globalData.userInfo
-        })
-        console.log('userinfo updated!!',this.data.userInfo)
-        return 
-      }
-      
+      console.log('userinfo updated!!', this.data.userInfo)
+      return
+    }
+
   },
-  onlogin(e){
+  onlogin(e) {
     wx.navigateTo({
       url: '/pages/login/login',
     })
@@ -228,7 +250,7 @@ Page({
    */
   onLoad() {
     wx.pageScrollTo({
-      scrollTop:0,
+      scrollTop: 0,
       duration: 0,
     })
     this.setUserinfo()
@@ -252,8 +274,8 @@ Page({
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.curDate()
 
-    
-    
+
+
     //this.getdata();
   },
 
@@ -274,10 +296,10 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  
+
 
   // onPullDownRefresh: function () {
-      
+
   // },
 
   /**
@@ -294,9 +316,9 @@ Page({
     wx.showShareMenu({
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']
-    }) 
-    return{
-      title:"快来一起低碳出街~",
+    })
+    return {
+      title: "快来一起低碳出街~",
     }
   }
 
