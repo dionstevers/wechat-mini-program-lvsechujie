@@ -1,4 +1,5 @@
 // pages/index/index.ts
+export{}
 const app = getApp()
 Page({
 
@@ -27,9 +28,8 @@ Page({
     const db = wx.cloud.database()
     try{
       const res = await wx.cloud.callFunction({ name: 'login' });
-      this.setData({ openID: res.result.data._openid });
-      app.globalData.openID = res.result.data._openid;
-
+      this.setData({ openID: (res.result as {data?:any}).data._openid });
+      app.globalData.openID = (res.result as {data?:any}).data._openid;
       const userInfoQuery = await db.collection('userInfo')
       .where({ _openid: this.data.openID })
       .get();
@@ -50,8 +50,8 @@ Page({
     const db = wx.cloud.database()
     try{
       const res = await wx.cloud.callFunction({ name: 'login' });
-      this.setData({ openID: res.result.data._openid });
-      app.globalData.openID = res.result.data._openid;
+      this.setData({ openID: (res.result as {data?:any}).data._openid });
+      app.globalData.openID = (res.result as {data?:any}).data._openid;
       const userInfoQuery = await db.collection('userInfo')
         .where({ _openid: this.data.openID })
         .get();

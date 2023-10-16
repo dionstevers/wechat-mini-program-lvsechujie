@@ -26,20 +26,6 @@ Page({
       },
     ],
   },
-  tabchange(){     
-    var _this = this
-   
-      _this.setData({
-        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)',
-      })
-
-      
-      wx.setNavigationBarColor({
-    
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
-  },
   angleGenerator(){
     var Max = 0;
     var Min = 0;
@@ -259,15 +245,11 @@ Page({
     })
   },
   onLoad() {
-
-  },
-  onShow() {
     this.setData({
       testGroup: appd.globalData.userInfo.testGroup
     })
-    if (this.data.testGroup ==2) {
-      this.tabchange()
-    }
+  },
+  onShow() {
     this.getUserInfo()
     wx.setNavigationBarTitle({
       title: '碳行家｜积分中心'

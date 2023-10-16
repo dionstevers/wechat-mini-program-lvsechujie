@@ -78,7 +78,7 @@
     <view class="rank-container">
   <view class="legend">低碳排行榜</view>
   <block wx:for="{{users}}" wx:key="id">
-  <view class="user-item" style="background-color:{{userInfo.testGroup == 2 ? '#D13A29':'#23cfc9'}}">
+  <view class="user-item" style="background-color:{{userInfo.testGroup == 1 ? '#D13A29':'#23cfc9'}}">
     <image class="profile-image" src="{{item.avatar}}" />
     <view class="user-info">
       <view class="user-name">{{item.basicInfo.nickname}}</view>

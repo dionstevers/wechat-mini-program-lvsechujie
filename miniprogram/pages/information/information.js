@@ -1,36 +1,62 @@
-// pages/information/information.ts
-const app = getApp();
+const app = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    userInfo:null,
+    userInfo:app.globalData.userInfo,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     arlist: [],
-
+    imgSrc:''
   }, 
-  tabchange(){
-    console.log("working" , this.data.userInfo.testGroup)
-    
-    var _this = this
-    if (_this.data.userInfo.testGroup == 2) {
-      _this.setData({
-        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })
-      wx.setTabBarStyle({
-        color: '#ffffff',
-        selectedColor: '#ffffff',
-        backgroundColor: '#D13A29',
-        borderStyle: 'white'
-      })
-      
-      wx.setNavigationBarColor({
-    
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
+
+  async getArticles(){
+    // this should be un-commented once we begin experiment
+    // const currentTime = new Date()
+    // static time for now 
+    const currentTime = new Date("Tue Oct 12 2023 10:00:00 GMT-0400")
+    currentTime.setHours(0,0,0,0)
+    console.log(
+      'current time: ', currentTime
+    )
+    const db = wx.cloud.database()
+    const _ = db.command
+    const userInfo = this.data.userInfo
+    const testGroup = userInfo.testGroup
+    try{
+      if(testGroup == 1){
+        console.log('blank control')
+        return
+      }
+      //  antForest
+      if(testGroup == 2 || testGroup ==3 || testGroup == 4){
+        const res = await db.collection('articles').where({
+          uploadTime: _.lt(currentTime),
+          author: '低碳我知道'
+        }).limit(3).orderBy('uploadTime', 'desc').get()
+        var list = res.data
+        const arlist = this.TimeConvert(list)
+        this.setData({
+          arlist: arlist,
+          imgSrc:'https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29391697426089_.pic.jpg?sign=8bf9e57267ca14df4fb5365586876cbc&t=1697468352'
+        })
+      }
+      // xuexi
+      if(testGroup == 5){
+        const res  = await db.collection('articles').where({
+          uploadTime: _.lt(currentTime),
+          author:'低碳强国'
+        }).orderBy('uploadTime', 'desc').limit(3).get()
+        var list = res.data
+        const arlist = this.TimeConvert(list)
+        this.setData({
+          arlist: arlist,
+          imgSrc:'https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29341697425796_.pic.jpg?sign=e7ff04ac24e44232e2fc33522d3727af&t=1697435214'
+        })
+      }
+    }catch(err){
+     console.log("error msg: ", err)
     }
   },
   bindInfo(e){
@@ -38,72 +64,27 @@ Page({
     const link = e.currentTarget.dataset.link
     
     wx.navigateTo({
-      url:'/pages/detail/detail',
-      events: {
-        // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
-        acceptDataFromOpenedPage: function(data) {
-          console.log(data)
-        },
-      },
-      success: function(res) {
-        // 通过 eventChannel 向被打开页面传送数据
-        res.eventChannel.emit('acceptDataFromOpenerPage', { data: link })
-      }
+      url:'/pages/detail/detail?link=' + link
     })
-  },
-
-  getArticles(){
-    if (this.data.userInfo.testGroup == 0) {
-      return;
-    }
-    var _this = this
-    const group = ['nothing','AntForest','Xiticle']
-    
-    const _date = new Date()
-    _date.setHours(0,0,0,0)
-    
-    console.log(_date.valueOf())
-     
-    const db = wx.cloud.database()
-    const _ = db.command
-    //test code below , delete when database is updated
-    _date.setDate(_date.getDate())
-    //test code above, delete when database is updated 
-    db.collection(group[this.data.userInfo.testGroup]).limit(3).get({
-      success:function(res){
-        console.log('this is the data',res.data)
-        
-        _this.TimeConvert(res.data)
-        _this.setData({
-          arlist:res.data.reverse()
-        })
-        
-        console.log('done')
-      }
-    })
-
-
   },
   TimeConvert(list){
     
     for (let index = 0; index < list.length; index++) {
       const element = list[index];
-      const timestamp = element.date;
-      const date = new Date(timestamp);
+      const date = new Date(element.uploadTime);
       const formattedDate= date.toISOString().split("T")[0];
-      console.log(formattedDate);
       element.date = formattedDate
     }
-    console.log("successfully converted")
+    return list
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    // this.getUserInfo()
-    
-    
-  
+    this.setData({
+      userInfo: app.globalData.userInfo
+    })
+    this.getArticles()
   },
 
   /**
@@ -120,11 +101,6 @@ Page({
     wx.setNavigationBarTitle({
       title: '碳行家｜环境资讯'
     })
-    this.setData({
-      userInfo: app.globalData.userInfo
-    })
-    this.tabchange()
-    this.getArticles()
   },
 
   /**

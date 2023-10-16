@@ -56,7 +56,9 @@ function initChart(canvas, width, height, dpr) {
               label: {
                 show: true,
                 fontSize: '20',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                fontColor: '#ffffff'
+                
               }
             },
             type: 'pie',
