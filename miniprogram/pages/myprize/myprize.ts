@@ -1,16 +1,35 @@
 // pages/myprize/myprize.ts
+const app = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    userInfo:null,
     prizelist:null,
   },
-
-  onLoad() {
-
+  getPrize(){
+    const db = wx.cloud.database()
+    const _ = db.command
+    db.collection('lottery').where({
+      _openid: app.globalData.openID
+    }).watch({
+      onChange: (snapshot) =>{
+        this.setData({
+          prizelist : snapshot.docs[0].prizes
+        })
+      },
+      onError: (err) =>{
+        console.log(err)
+      }
+    })
+  },
+ 
+  onLoad(options) {
+    var prizelist = JSON.parse(options.prizelist!)
+    this.setData({
+      prizelist: prizelist
+    })
   },
 
   /**
@@ -24,7 +43,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-  
+    
   },
 
   /**

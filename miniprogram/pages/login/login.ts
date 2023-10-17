@@ -248,10 +248,8 @@ Page({
             if (userInfoData) {
               // 更新 app.globalData.userInfo
               app.globalData.userInfo = userInfoData;
-    
               // 隐藏数据更新中的提示
               wx.hideToast();
-    
               // 显示提交成功的提示
               wx.showToast({
                 title: '提交成功',

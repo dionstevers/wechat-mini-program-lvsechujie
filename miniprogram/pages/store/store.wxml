@@ -28,7 +28,7 @@
  <view class="detail" style="margin-left: -40rpx;"><text>小米空气净化器\n100元优惠卷</text></view>
  <view class="detail"><text>燃油宝\n50元优惠卷</text></view>
  <view class="detail"><text>低碳荞麦面\n10元优惠卷</text></view>
- <span  style="transform:rotate({{deg}}deg);"></span>
+ <span  style="transform:rotate({{trasn}}deg);"></span>
 </view>
 
 <view class="info">
@@ -36,9 +36,13 @@
     <view>我的奖品</view>
     <image src="../../asset/img/more_ico.png" style="width: 30rpx; height: 30rpx; margin-top: 15rpx;" />
   </view>
-  <button class="center" bindtap="startSpin" disabled="{{spinning}}"> 
+  <button wx:if="{{!spinning}}" class="center" bindtap="startSpin"> 
   <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; " ></image> 
   <view>{{cost}} 抽奖</view>
+  </button>
+  <button wx:if = "{{spinning}}" class="center"> 
+  <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; " ></image> 
+  <view>抽奖中</view>
   </button>
   <view class="side"> 
     <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx;" ></image>

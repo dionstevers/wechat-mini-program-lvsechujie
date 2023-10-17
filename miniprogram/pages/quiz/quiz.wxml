@@ -4,7 +4,7 @@
   <view class="container">
   <view class="title">
     <!-- 标题 - 每日一题 -->
-    <text>每日一题</text>
+    <text>问卷中心</text>
   </view>
   
   <view class="question">

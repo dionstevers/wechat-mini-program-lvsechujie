@@ -89,6 +89,7 @@ Page({
    */
 
   data: {
+    credit: 0,
     testGroup: 0,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     ec: {
@@ -103,7 +104,7 @@ Page({
       },
       {
         functionSrc: '../../asset/img/note.png',
-        functionTitle: '每日一题',
+        functionTitle: '问卷中心',
         url: '../journal/journal'
       },
       {
@@ -115,7 +116,22 @@ Page({
     CoinRatio: 0,
 
   },
-
+  updateCredit(){
+    const db = wx.cloud.database()
+    db.collection('lottery').where({
+      _openid : this.data.openID
+    }).watch({
+      onChange:(snapshot) =>{
+        console.log('query result snapshot after the event', snapshot.docs[0])
+          this.setData({
+            credit : snapshot.docs[0].credit
+          })
+      },
+      onError:(err)=>{
+        console.log(err)
+      }
+    })
+  },
   initChart() {
     let chart;
     if (this.randerComponent) {
@@ -227,7 +243,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
+    this.updateCredit()
   },
 
   /**
@@ -239,6 +255,7 @@ Page({
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.curDate()
+    
 
 
 
