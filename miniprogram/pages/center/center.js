@@ -199,11 +199,15 @@ Page({
   },
   setUserinfo() {
     this.setData({
-      openID: app.globalData.openID
+      openID: app.globalData.openID,
     })
     if (app.globalData.userInfo != null) {
+      const userInfo = app.globalData.userInfo
+      
+      console.log('userinfo', userInfo)
       this.setData({
-        userInfo: app.globalData.userInfo
+        userInfo: userInfo,
+        testGroup: userInfo.testGroup
       })
       console.log('userinfo updated!!', this.data.userInfo)
       return
@@ -237,6 +241,22 @@ Page({
     })
     this.setUserinfo()
     this.initChart()
+    if(this.data.testGroup ==5 ) {
+      this.setData({
+        background : 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+      
+      wx.setTabBarStyle({
+        color: '#ffffff',
+        selectedColor: '#ffffff',
+        backgroundColor: '#D13A29',
+        borderStyle: 'white'
+        })
+      wx.setNavigationBarColor({
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+    }
   },
 
   /**

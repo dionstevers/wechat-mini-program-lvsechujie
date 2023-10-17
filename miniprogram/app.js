@@ -17,5 +17,6 @@ App({
     userInfo: null,
     openID: null,
     testGroup : 0,
+    background: null,
   }
 })

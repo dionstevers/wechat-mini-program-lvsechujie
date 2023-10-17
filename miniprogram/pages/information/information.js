@@ -5,6 +5,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    
+    testGroup: null,
     userInfo:app.globalData.userInfo,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     arlist: [],
@@ -82,8 +84,18 @@ Page({
    */
   onLoad() {
     this.setData({
-      userInfo: app.globalData.userInfo
+      userInfo: app.globalData.userInfo,
+      testGroup :app.globalData.userInfo.testGroup
     })
+    if(this.data.testGroup == 5 ){
+      wx.setNavigationBarColor({
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+      this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+    }
     this.getArticles()
   },
 

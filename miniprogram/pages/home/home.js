@@ -2,6 +2,7 @@
 const app = getApp();
 Page({
   data: {
+    testGroup:null,
    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     users:[],
     recordStatus: false,
@@ -588,8 +589,18 @@ Page({
   onLoad: async function () {
  
     this.setData({
-      userInfo: app.globalData.userInfo
+      userInfo: app.globalData.userInfo,
+      testGroup: app.globalData.userInfo.testGroup
     })
+    if(this.data.testGroup == 5 ){
+      wx.setNavigationBarColor({
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
+      this.setData({
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
+      })
+    }
     const db = wx.cloud.database()
     const _ = db.command
     let _this = this
