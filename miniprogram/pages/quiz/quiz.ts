@@ -1,44 +1,53 @@
 
 // Page初始化函数
+const app = getApp()
 Page({
   // 数据初始化
   data: {
+    answered: false,
+    link:null,
+    _id: null,
     question: '',  // 从数据库获取的题目
     choices: '',   // 从数据库获取的选项
     prompt: '',    // 从数据库获取的提示内容
     ans: '',
-    selectedChoiceIndex: -1,  // 用户选择的选项索引 
+    selectedChoiceIndex: null,  // 用户选择的选项索引 
     showingPrompt: false,     // 是否显示提示内容
+    openID: null
   },
 
   // 页面加载时触发
-  onLoad() {
+  onLoad(option) {
     // 从数据库中获取题目、选项和提示内容，然后更新data中的相应字段
+    
     this.getDataFromDatabase();
+    this.setData({
+      openID : app.globalData.openID,
+      link: option.link
+    })
+    if(!this.data.answered){
+      wx.enableAlertBeforeUnload({
+        message:'未完成答题将导致扣分，您确定要现在退出答题吗？'
+      })
+    }
+    
     
   },
-  onUnload(){
-    wx.enableAlertBeforeUnload(
-      {
-      message: '答题未完成将导致扣分，请确认是否退出',
-      success:function(res){
-        console.log('成功调用',res)
-      },
-      fail: function (err){
-        console.log('调用失败',err)
-      }
-      
-    })
-// 减分机制
-    // if(this.data.status== null && this.data.userInfo.testGroup == 2){
-    //   const db = wx.cloud.database();
-    //   const _ = db.command;
-    //   db.collection('userInfo').doc(this.data.userInfo._id).update({
-    //     data:{
-    //       credit: _.inc(-10)
-    //   }
-    // })
-    // }
+  async onUnload(){
+    const db = wx.cloud.database()
+    const _ = db.command
+    if(!this.data.selectedChoiceIndex){
+      const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
+        this.setData({
+          _id: res.data[0]._id
+        })
+        await db.collection('lottery').doc(this.data._id).update({
+          data:{
+            credit : _.inc(-10)
+          }
+        })
+    }
+
   },
   // 选择选项触发的事件处理函数
   selectChoice(event) {
@@ -49,9 +58,49 @@ Page({
   },
 
   // 提交按钮触发的事件处理函数
-  submit() {
+  async submit() {
+    const db = wx.cloud.database()
+    const _  = db.command
     if (this.data.selectedChoiceIndex) {
+      this.setData({
+        answered: true
+      })
+      wx.showToast({
+        title:'上传中',
+        icon: 'loading',
+        mask: true,
+        duration: 20000
+      })
+      try{
+        await db.collection('quizAns').add({
+          data:{
+            Qid: this.data._id,
+            Aid: this.data.link,
+            userAns: this.data.selectedChoiceIndex
+          }
+        })
+        const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
+        this.setData({
+          _id: res.data[0]._id
+        })
+        await db.collection('lottery').doc(this.data._id).update({
+          data:{
+            credit : _.inc(10)
+          }
+        })
+        wx.hideToast()
+        
+        wx.switchTab({
+          url: '/pages/information/information'
+        })
+      }catch(err){console.log(err)}
       
+    }else{
+      wx.showToast({
+        title:'请选择至少一项',
+        icon: 'error',
+        duration: 1000
+      })
     }
   },
 
@@ -77,12 +126,11 @@ Page({
       const randomQuiz = quizData[randomIndex];
       // 更新页面的quizData字段，用于展示数据
       this.setData({
-        'question': randomQuiz.question,
-        'choices': randomQuiz.selection,
-        'prompt': randomQuiz.hint,
-        'ans':randomQuiz.answer
-
-
+        question : randomQuiz.question,
+        choices : randomQuiz.selection,
+        prompt : randomQuiz.hint,
+        ans :randomQuiz.answer,
+        _id: randomQuiz._id
       });
     }).catch((error) => {
       // 处理获取数据失败的情况

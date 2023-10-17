@@ -47,9 +47,9 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    if (this.data.userInfo.testGroup == 2) {
+    if (this.data.userInfo.testGroup == 4 ||this.data.userInfo.testGroup == 5) {
       wx.navigateTo({
-        url: '/pages/quiz/quiz',
+        url: '/pages/quiz/quiz?link=' + this.data.link,
       })
     }
     

@@ -4,7 +4,7 @@
   <view class="container">
   <view class="title">
     <!-- 标题 - 每日一题 -->
-    <text>问卷中心</text>
+    <text>每日一题</text>
   </view>
   
   <view class="question">
@@ -23,7 +23,7 @@
 </radio-group>
 
 
-<view class="button-container">
+<view wx:if="{{question}}" class="button-container">
     <!-- 提示按钮 -->
     <button id="hint-button" bindtap="showPrompt">显示提示</button>
     <view class="spacer"></view>

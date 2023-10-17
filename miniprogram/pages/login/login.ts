@@ -220,7 +220,7 @@ Page({
           const basicInfo = e.detail.value;
           await db.collection('lottery').add({
             data:{
-              credit:0,
+              credit:30,
               prizes:[],
               attempts:0
             }
