@@ -218,7 +218,14 @@ Page({
           const timestamp = new Date();
           const userGroup = Math.floor(Math.random() * 5) + 1;
           const basicInfo = e.detail.value;
-          db.collection('userInfo').add({
+          await db.collection('lottery').add({
+            data:{
+              credit:0,
+              prizes:[],
+              attempts:0
+            }
+          })
+          await db.collection('userInfo').add({
             data:{
               testGroup: userGroup,
               avatar: path,
@@ -226,7 +233,6 @@ Page({
               loginDate: timestamp,
               carbSum: 0,
               // todo: minimize the schema of this collection
-  
             }
           })
           try {
@@ -239,8 +245,6 @@ Page({
               carbSum: 0,
               // todo: minimize the schema of this collection
             };
-    
-    
             if (userInfoData) {
               // 更新 app.globalData.userInfo
               app.globalData.userInfo = userInfoData;

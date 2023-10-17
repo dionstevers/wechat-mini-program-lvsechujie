@@ -1,4 +1,5 @@
 // pages/picUp/picUp.ts
+export{}
 const app = getApp()
 Page({
 

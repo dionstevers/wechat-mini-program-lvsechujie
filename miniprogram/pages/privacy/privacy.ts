@@ -1,4 +1,5 @@
 // pages/privacy/privacy.ts
+export{}
 const app =getApp()
 Page({
 

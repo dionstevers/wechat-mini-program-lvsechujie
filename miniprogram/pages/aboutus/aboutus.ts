@@ -1,7 +1,7 @@
 // pages/survey/survey.ts
+export{}
 const app = getApp()
 Page({
-
   /**
    * 页面的初始数据
    */
