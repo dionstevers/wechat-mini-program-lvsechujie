@@ -164,7 +164,7 @@ Page({
       })
       return 1
     }
-    if(trans!=0&&car==null){
+    if(trans==2&&car==null){
       wx.showToast({
         title: '能源形式未填写',
         icon:"error"
