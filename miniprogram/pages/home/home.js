@@ -135,6 +135,7 @@ Page({
             else saving = 192 - 192 / passenger;
             carbon += dist * saving
           })
+          // TODO: put the carbsum and carblist into a seperate collection 
           console.log("carbon", carbon)
           db.collection('userInfo').where({
               _openid: _this.data.openID,
