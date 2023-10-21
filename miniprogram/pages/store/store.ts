@@ -17,32 +17,32 @@ Page({
     userInfo: null,
     credit: 0,
     luckylist: [
-      {time: "每次抽奖需消耗20积分"},
-      {time:"五连抽必得20元（含以上）奖品"},
-      {time: "奖品将于每月月底统一发放",},
+     
+      {time:"超过50%概率获得10元以上奖励！"},
+      {time: "奖品将于每月月底统一发放！",},
       {time: "还等什么，快来抽奖吧！",}],
   },
   async angleGenerator(){
     var angle = 0;
     var prize = 0;
-    const prob = Math.floor(Math.random() * 100);
+    const prob = Math.floor(Math.random() * 1000);
     const random = Math.random()
-    //一等奖 2%概率抽到
-    if(prob<=2){
+    //一等奖 0.5%概率抽到
+    if(prob<=5){
       angle = Math.floor(40 + random*(40))
       prize = 1
     }
-    // 第二有价值的奖品 10%概率抽到
-    if(prob>2&&prob<=12){
+    // 第二有价值的奖品 1.5%概率抽到
+    if(prob>5&&prob<=20){
       angle = Math.floor(100 + random*(40));
       prize = 2
     }
-    // 20% 概率
-    if(prob>12&&prob<=32){angle =Math.floor(160 + random*(40)); prize = 3}
-    // 20% 概率
-    if(prob>32&&prob<=52){angle = Math.floor(220+ random*(40)); prize = 4}
-    // 24
-    if(prob>52&&prob<=76){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
+    // 5% 概率
+    if(prob>20&&prob<=70){angle =Math.floor(160 + random*(40)); prize = 3}
+    // 35% 概率
+    if(prob>70&&prob<=420){angle = Math.floor(220+ random*(40)); prize = 4}
+    // 38% 概率
+    if(prob>420&&prob<=800){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
     else{
       angle = Math.floor(340 + Math.random()*(20));
       prize = 6
@@ -93,15 +93,10 @@ Page({
         })
         if(that.data.angle <= that.data.trasn){
         try{
-          wx.showToast({
-            title: '恭喜中奖!',
-            icon: 'none',
-            duration: 2000
-           })
           clearInterval(b)
           const db = wx.cloud.database()
           const _ = db.command
-          const prizeList = ['placeholder','一等奖','二等奖','三等奖','四等奖','五等奖','六等奖']
+          const prizeList = ['placeholder','京东E卡200元','京东E卡100元','京东E卡50元','京东图书品类卡30元','京东E卡20元','京东图书品类卡10元']
           await db.collection('lottery').doc(that.data._id).update({
             data:{
               credit: _.inc(-that.data.cost),
@@ -113,6 +108,11 @@ Page({
             trasn: 0,
             spinning: false
           })
+          wx.showModal({
+            title: '恭喜中奖',
+            content: '您获得：' + [prizeList[that.data.prize]],
+            showCancel: false,
+           })
         }catch(err){
           console.log(err)
         }}
@@ -160,10 +160,16 @@ Page({
     })
   },
   onLoad() {
+    if(app.globalData.userInfo.testGroup==5){
+      var cost = 300
+    }else{
+      cost = 150
+    }
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup,
-      openID:app.globalData.openID
+      openID:app.globalData.openID,
+      cost : cost
     })
     this.getLotteryInfo()
   },

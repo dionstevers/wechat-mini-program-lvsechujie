@@ -143,12 +143,12 @@ Page({
             .get({
               success: function (res) {
                 var user_id = res.data[0]._id
-                db.collection('userInfo').doc(user_id).update({
+                db.collection('').doc(user_id).update({
                   data: {
                     carbSum: _.inc(carbon),
-                    carblist: _.push([
-                      [new Date(), carbon]
-                    ])
+                    // carblist: _.push([
+                    //   [new Date(), carbon]
+                    // ])
                   },
                   success: function (res) {
                     console.log(res.data)

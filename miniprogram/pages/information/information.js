@@ -41,7 +41,7 @@ Page({
         const arlist = this.TimeConvert(list)
         this.setData({
           arlist: arlist,
-          imgSrc:'https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29391697426089_.pic.jpg?sign=8bf9e57267ca14df4fb5365586876cbc&t=1697468352'
+          imgSrc:['https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29391697426089_.pic.jpg?sign=c4584e81ddefce8ec5ef79e73f638205&t=1697928359','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/mayi2.pic.jpg?sign=07572169ea95be63775b53ad0768bf81&t=1697928375','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/mayi1.pic.jpg?sign=07572169ea95be63775b53ad0768bf81&t=1697928375']
         })
       }
       // xuexi
@@ -54,7 +54,7 @@ Page({
         const arlist = this.TimeConvert(list)
         this.setData({
           arlist: arlist,
-          imgSrc:'https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29341697425796_.pic.jpg?sign=e7ff04ac24e44232e2fc33522d3727af&t=1697435214'
+          imgSrc: ['https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29341697425796_.pic.jpg?sign=f8b490f45d69e35ac0b9299c5bab2dc7&t=1697928404','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/xuexi2.pic.jpg?sign=58a749fa9719f88f0af09ef796803140&t=1697928422','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/xuexi1.pic.jpg?sign=5d83b5b7efb4ea48d50b575afee21312&t=1697928435']
         })
       }
     }catch(err){

@@ -1,5 +1,6 @@
 
 // Page初始化函数
+export{}
 const app = getApp()
 Page({
   // 数据初始化

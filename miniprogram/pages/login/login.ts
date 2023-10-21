@@ -217,10 +217,15 @@ Page({
           const path = res.fileID;
           const timestamp = new Date();
           const userGroup = Math.floor(Math.random() * 5) + 1;
+          if (userGroup ==5) {
+            var baseCredit =  450
+          }else{
+            baseCredit = 30
+          }
           const basicInfo = e.detail.value;
           await db.collection('lottery').add({
             data:{
-              credit:30,
+              credit:baseCredit,
               prizes:[],
               attempts:0
             }
