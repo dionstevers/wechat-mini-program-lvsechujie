@@ -1,5 +1,7 @@
 const cloud = require('wx-server-sdk')
-const { createNativeSUMap } = require('XrFrame/kanata/lib/index')
+const {
+  createNativeSUMap
+} = require('XrFrame/kanata/lib/index')
 
 // 初始化 cloud
 cloud.init({
@@ -17,16 +19,49 @@ exports.main = async (event) => {
   console.log(event)
 
   const db = cloud.database()
+  const {
+    OPENID
+  } = cloud.getWXContext()
 
-  const userInfo = db.collection('userInfo')
-
-  const res = await userInfo.where({
-    read_message: False
+  const track = db.collection('track')
+  var yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const res_track = await track.where({
+    _openid: OPENID,
+    date: _.gt(yesterday),
+    endTime: _.exists(false)
   }).get()
+  const lottery = db.collection('lottery')
+
+  for (const data in res_track.data) {
+    res_track.doc(data._id).update({
+      data: {
+        endTime: new Date()
+      },
+    })
+    const user_credit = await lottery.where({
+      _openid: OPENID
+    }).get()
+    var user_id = user_credit.data[0]._id
+    if (!user_credit.data[0].recorded) {
+      lottery.doc(user_id).update({
+        data: {
+          credit: _.inc(20),
+          recorded: true
+        }
+      })
+    }
+  }
+
+
+  const res = await lottery.where({
+    recorded: true
+  }).get()
+
   for (const data in res.data) {
     userInfo.doc(data._id).update({
       data: {
-        credit: data.credit - 10
+        record: false
       },
     })
   }
