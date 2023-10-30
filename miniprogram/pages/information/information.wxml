@@ -4,7 +4,7 @@
   页面维护中
 </view>
 </view>
-<view wx:if="{{userInfo.testGroup == 2|| userInfo.testGroup == 3 || userInfo.testGroup == 4 || userInfo.testGroup == 5}}"  class="page-background" style="background: {{background}};">
+<view wx:if="{{userInfo.testGroup == 2|| userInfo.testGroup == 3}}"  class="page-background" style="background: {{background}};">
   <view class="page-introduction" style="font-family: 'Times New Roman', Times, serif;">
     为您提供最新的环境资讯和政策信息
   </view>

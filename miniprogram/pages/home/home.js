@@ -2,9 +2,9 @@
 const app = getApp();
 Page({
   data: {
-    testGroup: null,
-    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
-    users: [],
+    testGroup:null,
+   background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
+    users:[],
     recordStatus: false,
     btnClass: 'btn btn-default',
     todayRecordList: [],
@@ -38,28 +38,28 @@ Page({
   },
 
   // 展示数据库中节省碳足迹top_n
-  carbRanking() {
+  carbRanking(){
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
     const top_n = 3
-    db.collection('userInfo').orderBy('carbSum', 'desc').limit(top_n).get({
-      success: function (res) {
+    db.collection('userInfo').orderBy('carbSum','desc').limit(top_n).get({
+      success: function(res){
         console.log('ranking data successfully retrieved')
         console.log(res.data)
-        const ranking = res.data
+        const ranking  = res.data
         for (let index = 0; index < ranking.length; index++) {
           const element = ranking[index];
-          const carbSum = Math.round(element.carbSum / 1000);
+          const carbSum = Math.round(element.carbSum/1000);
           element.carbSum = carbSum
         }
         _this.setData({
-          users: ranking
+          users:ranking
         })
       }
     })
   },
-  // 计算离aqi基站距离
+// 计算离aqi基站距离
   calcDist: async function (triplet, i) {
     var _this = this
     var dist = -1
@@ -74,7 +74,7 @@ Page({
         return _this.GetDistance(triplet[0], triplet[1], mlat, mlng)
       })
   },
-  //  找到最近aqi基站
+//  找到最近aqi基站
   async findClosest(triplet) {
     var _this = this
     var closest = -1
@@ -100,7 +100,7 @@ Page({
     })
   },
   // 更新碳排放列表
-  updateCarbon() {
+  updateCarbon() { 
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -137,72 +137,27 @@ Page({
           })
           // TODO: put the carbsum and carblist into a seperate collection 
           console.log("carbon", carbon)
-          db.collection('lottery').where({
-            _openid: _this.data.openID
-          }).get({
-            success: function (res) {
-              var user_id = res.data[0]._id
-              if (!res.data[0].recorded) {
-                db.collection('lottery').doc(user_id).update({
+          db.collection('userInfo').where({
+              _openid: _this.data.openID,
+            })
+            .get({
+              success: function (res) {
+                var user_id = res.data[0]._id
+                db.collection('').doc(user_id).update({
                   data: {
-                    credit: _.inc(20),
-                    recorded: true
+                    carbSum: _.inc(carbon),
+                    // carblist: _.push([
+                    //   [new Date(), carbon]
+                    // ])
                   },
                   success: function (res) {
                     console.log(res.data)
                   }
                 })
-              }
-            }
-          })
-          db.collection('carbInfo').where({
-              _openid: _this.data.openID
-            })
-            .get({
-              success: function (res) {
-                if (res.data.length == 0) {
-                  db.collection('carbInfo').add({
-                    data: {
-                      carbSum: 0,
-                      carblist: []
-                    },
-                    success: function (res) {
-                      _this.setCarbonInfo(carbon);
-                    }
-                  })
-                }
-                else {
-                  _this.setCarbonInfo(carbon);
-                }
-              }
+              },
+              fail: console.error
             })
         }
-      })
-  },
-  setCarbonInfo(carbon) {
-    const db = wx.cloud.database()
-    const _ = db.command
-    var _this = this
-    db.collection('carbInfo').where({
-        _openid: _this.data.openID
-      })
-      .get({
-        success: function (res) {
-          var user_id = res.data[0]._id
-          console.log(res.data)
-          db.collection('carbInfo').doc(user_id).update({
-            data: {
-              carbSum: _.inc(carbon),
-              carblist: _.push([
-                [new Date(), carbon]
-              ])
-            },
-            success: function (res) {
-              console.log(res.data)
-            }
-          })
-        },
-        fail: console.error
       })
   },
   // 更新行程记录列表
@@ -239,8 +194,8 @@ Page({
         }
       })
   },
-  // 计算当次节省碳排放 - 问题：  是否与update carbon 重复？ 
-  calcCarbon() {
+// 计算当次节省碳排放 - 问题：  是否与update carbon 重复？ 
+  calcCarbon() { 
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -278,7 +233,7 @@ Page({
         }
       })
   },
-  // 开启行程记录
+// 开启行程记录
   keepTracking: function () {
     var _this = this
     wx.startLocationUpdateBackground({
@@ -317,10 +272,10 @@ Page({
       }
     })
   },
-  // 结束行程记录
+// 结束行程记录
   onClickEvent() {
     let _this = this
-    if (_this.data.userInfo != null) {
+    if (_this.data.userInfo!=null) {
       if (!this.data.recordStatus) {
         this.startTrackConfirm();
       } else {
@@ -338,11 +293,11 @@ Page({
         })
       }
     }
-    if (_this.data.userInfo == null) {
+    if(_this.data.userInfo==null){
       wx.showModal({
         title: '您尚未注册/登录',
         content: '请先注册/登录并同意隐私条款',
-        success(res) {
+        success (res) {
           if (res.confirm) {
             wx.navigateTo({
               url: '../login/login',
@@ -355,7 +310,7 @@ Page({
           }
         }
       })
-
+      
     }
   },
 
@@ -633,12 +588,12 @@ Page({
     })
   },
   onLoad: async function () {
-
+ 
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
     })
-    if (this.data.testGroup == 5) {
+    if(this.data.testGroup == 3 ){
       wx.setNavigationBarColor({
         backgroundColor: "#D13A29",
         frontColor: '#ffffff',
@@ -694,13 +649,17 @@ Page({
                         var new_aqi = 0
                         if (res.data.now.aqi <= 12) {
                           new_aqi = Math.round(res.data.now.aqi * 50 / 12)
-                        } else if (res.data.now.aqi <= 35.5) {
+                        }
+                        else if (res.data.now.aqi <= 35.5) {
                           new_aqi = 50 + Math.round((res.data.now.aqi - 12) * 50 / 13.5)
-                        } else if (res.data.now.aqi <= 55.5) {
+                        }
+                        else if (res.data.now.aqi <= 55.5) {
                           new_aqi = 100 + Math.round((res.data.now.aqi - 35.5) * 50 / 20)
-                        } else if (res.data.now.aqi <= 150.5) {
+                        }
+                        else if (res.data.now.aqi <= 150.5) {
                           new_aqi = 150 + Math.round((res.data.now.aqi - 55.5) * 50 / 95)
-                        } else {
+                        }
+                        else{
                           new_aqi = Math.min(res.data.now.aqi - 0 + 50, 500)
                         }
                         if (new_aqi <= 50) new_category = "优"
@@ -710,15 +669,15 @@ Page({
                         else if (new_aqi <= 300) new_category = "重度污染"
                         else new_category = "严重污染"
                         _this.setData({
-                          aqi: new_aqi,
-                          name: city_name,
-                          category: new_category
-                        })
+                            aqi: new_aqi,
+                            name: city_name,
+                            category: new_category
+                          })   
                       },
                       fail: function (err) {
                         console.log(err)
                       }
-                    })
+                    })                 
                   },
                   fail: function (err) {
                     console.log(err)

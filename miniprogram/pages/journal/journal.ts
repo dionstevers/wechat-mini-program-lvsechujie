@@ -13,14 +13,23 @@ Page({
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     forminfo: '',
     openID: '',
-    userInfo: app.globalData.userInfo,
-    type :1 , // todo  : static now, will add a function to tell time 
+    userInfo: null,
+    typeq :1 , // todo  : static now, will add a function to tell time 
     status: null,
     single:[],
     sort:[],
     singleSelected: [], // 单选题选项的选择结果
     sortSelected:[],
-    isLoading: true
+    isLoading: true,
+    info: null,
+    prizelist: null,
+    _id : null,
+
+  },
+  bindinfo(e:any){
+    this.setData({
+      info: e.detail.value
+    })
   },
   handleSingleSelect: function (e) {
 
@@ -31,7 +40,7 @@ Page({
     this.setData({ singleSelected });
   },
 
-  async fetchData() {
+  async fetchData(type: any) {
     this.setData({
       isLoading: true // 开始加载数据，按钮将被隐藏
     });
@@ -44,8 +53,8 @@ Page({
     const db = wx.cloud.database();
   
     try {
-      const type = this.data.type
-      const res = await db.collection('qsThree').where({_id: 1}).get();
+
+      const res = await db.collection('qsThree').where({_id:type}).get();
       console.log(res.data[0]);
       
       // 隐藏加载中提示
@@ -71,7 +80,12 @@ Page({
     }
   },
 
- 
+  infoCheck(){
+    if (this.data.info) {
+      return true
+    }
+    return false
+  },
   formCheck(){
     var ans = this.data.singleSelected.length
     const total = this.data.single.length
@@ -86,6 +100,73 @@ Page({
     }
     return true
   },
+  async claimPrize(){
+    if (this.formCheck()&&this.infoCheck()) {
+      // 显示上传中的提示
+      wx.showToast({
+        title: '上传中',
+        icon: 'loading',
+        duration: 10000 // 设置持续显示时间，单位毫秒，可根据实际上传时间调整
+      });
+    
+      const db = wx.cloud.database();
+      const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
+      this.setData({
+        _id: res.data[0]._id
+      })
+      await db.collection('lottery').doc(this.data._id).update({
+        data:{
+          prizes: []
+        }
+      })
+      await db.collection('claimedprize').add({
+        data:{
+          prizelist: this.data.prizelist,
+          info : this.data.info,
+        }
+      })
+      await db.collection('qsAns').add({
+        data: {
+          ans: this.data.singleSelected,
+          type: this.data.typeq
+        }
+      
+      ////
+      }).then(() => {
+        // 隐藏上传中提示
+        wx.hideToast();
+        wx.showModal({
+            title : '成功上传',
+            content : '感谢您的参与! 奖品兑换码将在24小时内以短信/邮件方式发送到您指定的联系方式。',
+            showCancel: false,
+            success(res){
+              if(res.confirm){
+                wx.switchTab({
+                  url: '/pages/center/center'
+                });
+              }
+            }
+          })  
+      }).catch((error) => {
+        // 处理上传失败的情况
+        wx.hideToast(); // 隐藏上传中提示
+        wx.showToast({
+          title: '上传失败',
+          icon: 'none',
+          duration: 2000
+        });
+        console.error('上传失败', error);
+      });
+    }else{
+      wx.showToast({
+        title:'信息填写不全',
+        icon: 'error',
+        mask: true,
+        duration : 2000
+
+      })
+    }
+  },
   async formSubmit() {
     if (this.formCheck()) {
       // 显示上传中的提示
@@ -99,23 +180,23 @@ Page({
       db.collection('qsAns').add({
         data: {
           ans: this.data.singleSelected,
-          type: this.data.type
+          type: this.data.typeq
         }
       }).then(() => {
         // 隐藏上传中提示
         wx.hideToast();
-    
-        // 显示上传完成的提示
-        wx.showToast({
-          title: '上传完成',
-          icon: 'success',
-          duration: 2000 // 设置上传完成提示的显示时间，单位毫秒
-        });
-    
-        // 在上传完成后切换到 'pages/center/center' 页面
-        wx.switchTab({
-          url: '/pages/center/center'
-        });
+        wx.showModal({
+            title : '成功上传',
+            content : '感谢您的填写!',
+            showCancel: false,
+            success(res){
+              if(res.confirm){
+                wx.switchTab({
+                  url: '/pages/center/center'
+                });
+              }
+            }
+          })  
       }).catch((error) => {
         // 处理上传失败的情况
         wx.hideToast(); // 隐藏上传中提示
@@ -133,8 +214,21 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-    this.fetchData()
+  onLoad(options) {
+    console.log(options.typeq)
+    var typeq = parseInt(options.typeq!)
+    this.fetchData(typeq)
+    this.setData({
+      typeq : typeq,
+      openID: app.globalData.openID
+    })
+    if(options.prizelist){
+      var prizelist = JSON.parse(options.prizelist)
+      this.setData({
+        prizelist: prizelist
+      })
+    }
+    
   },
 
   /**

@@ -216,16 +216,11 @@ Page({
           console.log(res.fileID);
           const path = res.fileID;
           const timestamp = new Date();
-          const userGroup = Math.floor(Math.random() * 5) + 1;
-          if (userGroup ==5) {
-            var baseCredit =  450
-          }else{
-            baseCredit = 30
-          }
+          const userGroup = Math.floor(Math.random() * 3) + 1;
           const basicInfo = e.detail.value;
           await db.collection('lottery').add({
             data:{
-              credit:baseCredit,
+              credit:10,
               prizes:[],
               attempts:0
             }
@@ -266,7 +261,7 @@ Page({
               // 延时跳转到指定页面
               setTimeout(function () {
                 wx.navigateTo({
-                  url: "/pages/journal/journal"
+                  url: "/pages/journal/journal?typeq=1"
                 });
               }, 2000);
             } else {

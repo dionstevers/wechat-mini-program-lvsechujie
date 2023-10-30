@@ -47,12 +47,18 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    if (this.data.userInfo.testGroup == 5) {
+    if (this.data.userInfo.testGroup == 3) {
       wx.navigateTo({
         url: '/pages/quiz/quiz?link=' + this.data.link,
       })
     }
-    
+    else{
+      wx.showModal({
+        title: '阅读成功',
+        content:'低碳生活，携手同行！',
+        showCancel: false
+      })
+    }
   },
 
   /**

@@ -32,7 +32,7 @@ Page({
         return
       }
       //  antForest
-      if(testGroup == 2 || testGroup ==3 || testGroup == 4){
+      if(testGroup == 2){
         const res = await db.collection('articles').where({
           uploadTime: _.lt(currentTime),
           author: '低碳我知道'
@@ -45,7 +45,7 @@ Page({
         })
       }
       // xuexi
-      if(testGroup == 5){
+      if(testGroup == 3){
         const res  = await db.collection('articles').where({
           uploadTime: _.lt(currentTime),
           author:'低碳强国'
@@ -87,7 +87,7 @@ Page({
       userInfo: app.globalData.userInfo,
       testGroup :app.globalData.userInfo.testGroup
     })
-    if(this.data.testGroup == 5 ){
+    if(this.data.testGroup == 3 ){
       wx.setNavigationBarColor({
         backgroundColor: "#D13A29",
         frontColor: '#ffffff',

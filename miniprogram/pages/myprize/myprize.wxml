@@ -7,6 +7,8 @@
    <view wx:for="{{prizelist}}">
     <label>{{item}}</label>
    </view>
+
+   <button bind:tap="claimPrize">兑奖</button>
  
  </view>
  

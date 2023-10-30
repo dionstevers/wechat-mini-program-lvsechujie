@@ -1,5 +1,6 @@
 // pages/myprize/myprize.ts
 const app = getApp()
+export{}
 Page({
 
   /**
@@ -24,7 +25,13 @@ Page({
       }
     })
   },
- 
+  claimPrize(){
+    var prizelist = JSON.stringify(this.data.prizelist)
+
+    wx.navigateTo({
+      url: '/pages/journal/journal?typeq=3&prizelist=' + prizelist
+    })
+  },
   onLoad(options) {
     var prizelist = JSON.parse(options.prizelist!)
     this.setData({

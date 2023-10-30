@@ -95,6 +95,7 @@ Page({
 
   data: {
     credit: 0,
+    percent : 0,
     testGroup: 0,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     ec: {
@@ -110,7 +111,7 @@ Page({
       {
         functionSrc: '../../asset/img/note.png',
         functionTitle: '问卷中心',
-        url: '../journal/journal'
+        url: '../journal/journal?typeq=2'
       },
       {
         functionSrc: '../../asset/img/exchange.png',
@@ -129,7 +130,8 @@ Page({
       onChange:(snapshot) =>{
         console.log('query result snapshot after the event', snapshot.docs[0])
           this.setData({
-            credit : snapshot.docs[0].credit
+            credit : snapshot.docs[0].credit,
+            percent: Math.floor(snapshot.docs[0].credit/1.5)
           })
       },
       onError:(err)=>{
@@ -246,7 +248,7 @@ Page({
     })
     this.setUserinfo()
     this.initChart()
-    if(this.data.testGroup ==5 ) {
+    if(this.data.testGroup ==3 ) {
       this.setData({
         background : 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
       })

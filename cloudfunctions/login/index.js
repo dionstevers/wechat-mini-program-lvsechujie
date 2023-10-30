@@ -29,35 +29,6 @@ exports.main = async (event) => {
   // 如果数据库存在当前用户信息--登录
   // 初始化集合
   const db = cloud.database()
-  // 指定集合
-  /*
-  const userInfo = db.collection('userInfo')
-  // 查询是否注册
-  const { data } = await userInfo.where({
-    _openid:OPENID
-  }).get()
-  if(data.length === 0){
-    const {_id} = await userInfo.add({
-      data : {
-         _openid : OPENID,
-         credit : 0,
-         loginlist: [],
-         prizelist:[],
-         testGroup:0,
-         basicInfo:{},
-      }
-    })
-    // 接收_id快速返回该id数据
-    const user = await userInfo.doc(_id).get()
-    return {
-      data: user.data
-    }
-  } else{
-    return{
-      data:data[0]
-    }
-  }
-  */
   var data = {
     _openid : OPENID
   };

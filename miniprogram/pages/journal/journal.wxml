@@ -1,9 +1,16 @@
 <!--pages/journal/journal.wxml-->
 <view class="page-background" style="background: {{background}} ; font-family:'Times New Roman', Times, serif;" >
   
-  <view class="page-introduction"  style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;;">
+  <view wx:if="{{typeq==3}}"   class="page-introduction"  style="font-size: 50rpx; text-align: left;margin-top: 30rpx;margin-left: 40rpx;margin-bottom: 40rpx;">
+  <view>恭喜中奖！请完成此问卷兑奖</view>
   </view>
-  
+
+  <view wx:if="{{typeq==3}}">
+  <view class="container">
+  <view class="question"><text>请输入您的兑奖邮箱或手机号码</text></view>
+  <view class="picker"><input type="text" placeholder="您的联系方式" bindinput="bindinfo"/> </view>
+  </view>
+  </view>
   <view class = 'container'>
     <!-- 单选题 -->
     <view wx:for="{{single}}">
@@ -16,10 +23,10 @@
       </view>
     </picker>
   </view>
-  <!-- todo: sort  -->
 
+  <button bind:tap="formSubmit" wx:if="{{!isLoading&&typeq!=3}}">提交问卷</button>
+  <button bind:tap="claimPrize" wx:if="{{!isLoading&&typeq==3}}">提交并兑奖</button>
 
-  <button bind:tap="formSubmit" wx:if="{{!isLoading}}">提交问卷</button>
 
 
   </view>

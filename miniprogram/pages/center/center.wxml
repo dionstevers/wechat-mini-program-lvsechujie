@@ -29,7 +29,7 @@
 
 
 <view class='progress-con'>低碳能量值 ： {{credit}}
-  <progress percent="{{(credit)/10}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+  <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
   <!-- <view class="progress-notice">还差 {{(1000-userInfo.credit)/10}}% 即可兑换低碳大奖</view> -->
 </view>
 

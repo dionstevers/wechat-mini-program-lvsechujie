@@ -41,7 +41,7 @@
 
 
 
-  <view class="page-introduction">欢迎使用低碳出街小助手！</view>
+  <view style="font-size:50rpx; padding: 20rpx; color: white;text-align: center; border-bottom: 5rpx solid #a5a4a4;">欢迎您使用低碳出街小助手！请完成注册开始您的低碳之旅</view>
 
   <view class='baseInfo' wx:if="{{modalHidden}}">
     <!-- <text>基本信息</text> -->
@@ -50,6 +50,7 @@
 <form bindsubmit="login" wx:if="{{modalHidden}}">
 <view class='list'>
 <view class="name">
+  <text>头像</text>
   <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" value = "{{ avatarUrl }}" name = "avatar">
   <image class="avatar" src="{{avatarUrl}}"></image>
 </button> </view>
@@ -174,7 +175,7 @@
 
 </view>
 
-<button form-type='submit' class="submit">提交</button>
+<button form-type='submit' class="submit" style="margin-bottom: 100rpx; margin-top: 50rpx;">提交</button>
 </form>
 
 

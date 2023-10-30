@@ -28,27 +28,32 @@ Page({
     })
     if(!this.data.answered){
       wx.enableAlertBeforeUnload({
-        message:'未完成答题将导致扣分，您确定要现在退出答题吗？'
+        message:'答题未完成将导致中奖概率大幅降低，您确定要这么做吗'
       })
     }
     
     
   },
   async onUnload(){
-    const db = wx.cloud.database()
-    const _ = db.command
-    if(!this.data.selectedChoiceIndex){
-      const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
-        this.setData({
-          _id: res.data[0]._id
-        })
-        await db.collection('lottery').doc(this.data._id).update({
-          data:{
-            credit : _.inc(-10)
-          }
-        })
-    }
-
+    // const db = wx.cloud.database()
+    // const _ = db.command
+    // if(!this.data.selectedChoiceIndex){
+    //   const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
+    //     this.setData({
+    //       _id: res.data[0]._id
+    //     })
+    //     await db.collection('lottery').doc(this.data._id).update({
+    //       data:{
+    //         credit : _.inc(-10)
+    //       }
+    //     })
+    // }
+    // if(!this.data.selectedChoiceIndex){
+    //   wx.showModal({
+    //     title: '未完成答题',
+    //     content: '答题未完成将导致中奖概率大幅降低，您确定要这么做吗'
+    //   })
+    // }
   },
   // 选择选项触发的事件处理函数
   selectChoice(event) {
@@ -77,7 +82,8 @@ Page({
           data:{
             Qid: this.data._id,
             Aid: this.data.link,
-            userAns: this.data.selectedChoiceIndex
+            userAns: this.data.selectedChoiceIndex,
+            Date: new Date()
           }
         })
         const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
@@ -90,17 +96,27 @@ Page({
           }
         })
         wx.hideToast()
-        
-        wx.switchTab({
-          url: '/pages/information/information'
+        wx.showModal({
+          title: '成功上传',
+          content:'感谢您的参与',
+          showCancel: false,
+          success(res){
+            if (res.confirm) {
+              wx.switchTab({
+                url: '/pages/information/information'
+              })
+            }
+          }
         })
+        
       }catch(err){console.log(err)}
       
     }else{
       wx.showToast({
         title:'请选择至少一项',
         icon: 'error',
-        duration: 1000
+        duration: 1000,
+        mask: true
       })
     }
   },
