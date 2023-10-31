@@ -23,9 +23,7 @@ Page({
     platform: '',
     curID: '',
     transport: '步行',
-    transportList: [
-      "步行/自行车", "电动自行车", "摩托车/小型汽车", "公交/出租车/网约车/轨道交通"
-    ],
+    transportList: ["步行或骑行","公共交通","驾驶机动车"],
     index: 0,
     defaultIndex: 0,
     capacity: 0,
@@ -129,9 +127,8 @@ Page({
             var passenger = parseInt(item['capacity']) + 1
             console.log("passenger", passenger)
             var saving = 0
-            if (item['transport'] == '步行/自行车') saving = 192;
-            else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
-            else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+            if (item['transport'] == '步行或骑行') saving = 192;
+            else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
             else saving = 192 - 192 / passenger;
             carbon += dist * saving
           })

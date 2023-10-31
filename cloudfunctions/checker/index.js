@@ -1,7 +1,4 @@
 const cloud = require('wx-server-sdk')
-const {
-  createNativeSUMap
-} = require('XrFrame/kanata/lib/index')
 
 // 初始化 cloud
 cloud.init({
@@ -26,6 +23,7 @@ exports.main = async (event) => {
   const track = db.collection('track')
   var yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
+  const _ = db.command
   const res_track = await track.where({
     _openid: OPENID,
     date: _.gt(yesterday),
@@ -34,7 +32,7 @@ exports.main = async (event) => {
   const lottery = db.collection('lottery')
 
   for (const data in res_track.data) {
-    res_track.doc(data._id).update({
+    track.doc(data._id).update({
       data: {
         endTime: new Date()
       },

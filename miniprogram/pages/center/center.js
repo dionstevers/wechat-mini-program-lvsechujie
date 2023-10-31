@@ -28,8 +28,8 @@ function initChart(canvas, width, height, dpr) {
           console.log(id_res.result.data._openid)
           console.log('get list:', list);
           list.forEach(item => {
-            if (item['transport'] == "步行/自行车" || item['transport'] == "电动自行车") cycling += 1
-            else if (item['transport'] == "公交/出租车/网约车/轨道交通") pub_transit += 1
+            if (item['transport'] == "步行/自行车" || item['transport'] == "电动自行车" || item['transport'] == "步行或骑行") cycling += 1
+            else if (item['transport'] == "公交/出租车/网约车/轨道交通" || item['transport'] == "公共交通") pub_transit += 1
             else driving += 1
           })
           console.log(cycling)
