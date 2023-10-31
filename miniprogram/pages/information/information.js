@@ -13,15 +13,13 @@ Page({
     imgSrc:''
   }, 
 
-  async getArticles(){
-    // this should be un-commented once we begin experiment
-    // const currentTime = new Date()
-    // static time for now 
-    const currentTime = new Date("Tue Oct 12 2023 10:00:00 GMT-0400")
-    currentTime.setHours(0,0,0,0)
-    console.log(
-      'current time: ', currentTime
-    )
+  async getArticles(daydiff){
+    var showid = 0
+    if(daydiff<7){
+      showid = 1
+    }else{
+      showid = 2
+    }
     const db = wx.cloud.database()
     const _ = db.command
     const userInfo = this.data.userInfo
@@ -34,27 +32,25 @@ Page({
       //  antForest
       if(testGroup == 2){
         const res = await db.collection('articles').where({
-          uploadTime: _.lt(currentTime),
+          showid: showid,
           author: '低碳我知道'
-        }).limit(3).orderBy('uploadTime', 'desc').get()
+        }).orderBy('uploadTime', 'desc').get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({
-          arlist: arlist,
-          imgSrc:['https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29391697426089_.pic.jpg?sign=c4584e81ddefce8ec5ef79e73f638205&t=1697928359','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/mayi2.pic.jpg?sign=07572169ea95be63775b53ad0768bf81&t=1697928375','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/mayi1.pic.jpg?sign=07572169ea95be63775b53ad0768bf81&t=1697928375']
+          arlist: arlist
         })
       }
       // xuexi
       if(testGroup == 3){
         const res  = await db.collection('articles').where({
-          uploadTime: _.lt(currentTime),
+          showid: showid,
           author:'低碳强国'
-        }).orderBy('uploadTime', 'desc').limit(3).get()
+        }).orderBy('uploadTime', 'desc').get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({
-          arlist: arlist,
-          imgSrc: ['https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/29341697425796_.pic.jpg?sign=f8b490f45d69e35ac0b9299c5bab2dc7&t=1697928404','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/xuexi2.pic.jpg?sign=58a749fa9719f88f0af09ef796803140&t=1697928422','https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/xuexi1.pic.jpg?sign=5d83b5b7efb4ea48d50b575afee21312&t=1697928435']
+          arlist: arlist
         })
       }
     }catch(err){
@@ -96,7 +92,14 @@ Page({
         background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
       })
     }
-    this.getArticles()
+    
+    const currentDate = new Date()
+      // 计算日期差异的毫秒数
+    var timeDiff = Math.abs(currentDate.getTime()-this.data.userInfo.loginDate);
+    // 将毫秒数转换为天数
+    var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    this.getArticles(dayDiff)
+   
   },
 
   /**
@@ -113,6 +116,7 @@ Page({
     wx.setNavigationBarTitle({
       title: '碳行家｜环境资讯'
     })
+
   },
 
   /**
