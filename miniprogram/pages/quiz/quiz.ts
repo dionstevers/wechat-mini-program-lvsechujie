@@ -90,11 +90,11 @@ Page({
         this.setData({
           _id: res.data[0]._id
         })
-        await db.collection('lottery').doc(this.data._id).update({
-          data:{
-            credit : _.inc(10)
-          }
-        })
+        // await db.collection('lottery').doc(this.data._id).update({
+        //   data:{
+        //     credit : _.inc(10)
+        //   }
+        // })
         wx.hideToast()
         wx.showModal({
           title: '成功上传',

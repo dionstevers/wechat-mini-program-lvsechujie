@@ -148,7 +148,7 @@ Page({
                 .get({
                   success: function (res) {
                     let list = res.data
-                    console.log('get daily list:', list.length);
+                    console.log('get daily list:', list);
                     if (list.length == 1) {                     
                       db.collection('lottery').doc(user_id).update({
                         data: {
@@ -170,7 +170,7 @@ Page({
             .get({
               success: function (res) {
                 var user_id = res.data[0]._id
-                db.collection('').doc(user_id).update({
+                db.collection('userInfo').doc(user_id).update({
                   data: {
                     carbSum: _.inc(carbon),
                     // carblist: _.push([
