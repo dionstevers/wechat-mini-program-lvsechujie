@@ -98,7 +98,7 @@ Page({
     })
   },
   // 更新碳排放列表
-  updateCarbon() {
+ updateCarbon() {
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -148,13 +148,14 @@ Page({
                 .get({
                   success: function (res) {
                     let list = res.data
-                    console.log('get list:', list);
+                    console.log('get daily list:', list.length);
                     if (list.length == 1) {                     
                       db.collection('lottery').doc(user_id).update({
                         data: {
                           credit: _.inc(20)
                         },
                         success: function (res) {
+                          console.log('credit updated')
                           console.log(res.data)
                         }
                       })
@@ -163,7 +164,7 @@ Page({
                 })
             }
           })
-          db.collection('userInfo').where({
+         db.collection('userInfo').where({
               _openid: _this.data.openID,
             })
             .get({
@@ -339,7 +340,6 @@ Page({
 
     }
   },
-
   // 记录前隐私调用准备
   startTrackConfirm: function () {
     wx.getSetting()

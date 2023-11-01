@@ -57,7 +57,7 @@
 
  <view class="name">
  <text>昵称</text>
-  <input type="text" placeholder="输入您喜爱的昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
+  <input type="text" placeholder-style="color:white" placeholder="输入您喜爱的昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
  </view>
  <view class='sex'>
     <text>性别</text>
@@ -73,7 +73,7 @@
    <view wx:if = "{{ dob }}">
     {{dobarr[dob]}}
    </view>
-   <view wx:else="" style="color: #6f6f6f;">
+   <view wx:else="" style="color:white">
    请选择
    </view>
    </picker>
@@ -84,7 +84,7 @@
     <view wx:if="{{ occu }}">
          {{ occupationArr[occu] }}
      </view>
-     <view wx:else style="color: #6f6f6f;">请选择</view>
+     <view wx:else style="color:white;">请选择</view>
     
    </picker>
   </view>
@@ -96,13 +96,13 @@
     <view wx:if="{{ grad }}">
          {{ gradArr[grad] }}
      </view>
-     <view wx:else style="color: #6f6f6f;">请选择</view>
+     <view wx:else style="color:white;">请选择</view>
     
    </picker>
   </view>
  <view class="name">
  <text>电子邮件（选填）</text>
-  <input type="text" placeholder="用于奖品发放" name = "email" bindinput="bindemailchange" value="{{ email }}"/> 
+  <input type="text" placeholder-style="color:white" placeholder="用于奖品发放" name = "email" bindinput="bindemailchange" value="{{ email }}"/> 
  </view>
 <view class='baseInfo'>
   
@@ -114,7 +114,7 @@
     <view wx:if="{{ trans }}">
          {{ transArr[trans] }}
      </view>
-     <view wx:else style="color: #6f6f6f;">请选择</view>
+     <view wx:else style="color: white;">请选择</view>
     
    </picker>
   </view>
@@ -124,7 +124,7 @@
     <view wx:if="{{ car }}">
          {{ carArr[car] }}
      </view>
-     <view wx:else style="color: #6f6f6f;">请选择</view>
+     <view wx:else style="color:white">请选择</view>
     
    </picker>
   </view>
