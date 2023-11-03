@@ -162,11 +162,9 @@ Page({
     })
   },
   onLoad() {
-    if(app.globalData.userInfo.testGroup==5){
-      var cost = 300
-    }else{
-      cost = 150
-    }
+    
+    const cost = 150
+    
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup,

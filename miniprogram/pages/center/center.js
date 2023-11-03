@@ -110,7 +110,7 @@ Page({
       },
       {
         functionSrc: '../../asset/img/note.png',
-        functionTitle: '问卷中心',
+        functionTitle: '低碳问答',
         url: '../journal/journal?typeq=2'
       },
       {
