@@ -1,23 +1,34 @@
 // pages/detail/detail.ts
-const appd = getApp()
+const app = getApp()
+export{}
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    link: ''
+    link: '',
+    openid: '',
+    openTime:'',
+    userInfo:''
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(option){
-    const link  = option.link
-    console.log(link)
+    const db  = wx.cloud.database()
+    const link = option.link
+    console.log('the link is ', link)
+    const openTime  = new Date()
     this.setData({
-      link: link
+      link: link,
+      openid: app.globalData.openID,
+      openTime: openTime
     })
+    
+
+
   },
 
   /**
@@ -32,7 +43,7 @@ Page({
    */
   onShow() {
     this.setData({
-      userInfo: appd.globalData.userInfo
+      userInfo: app.globalData.userInfo
     })
   },
 
@@ -47,12 +58,32 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
+    const db = wx.cloud.database()
+    const endTime = new Date()
+    const startTime = new Date(this.data.openTime)
     if (this.data.userInfo.testGroup == 3) {
+      db.collection('readHistory').add({
+        data:{
+          openid: this.data.openID,
+          startTime: startTime,
+          endTime: endTime,
+          link: this.data.link
+        }
+      })
       wx.navigateTo({
         url: '/pages/quiz/quiz?link=' + this.data.link,
       })
     }
     else{
+      db.collection('readHistory').add({
+        data:{
+          openid: this.data.openID,
+          startTime: startTime,
+          endTime: endTime,
+          link: this.data.link
+        }
+      })
+      
       wx.showModal({
         title: '阅读成功',
         content:'低碳生活，携手同行！',
