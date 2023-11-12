@@ -15,11 +15,6 @@ Page({
 
   async getArticles(daydiff){
     var showid = 0
-    if(daydiff<7){
-      showid = 1
-    }else{
-      showid = 2
-    }
     const db = wx.cloud.database()
     const _ = db.command
     const userInfo = this.data.userInfo
@@ -32,9 +27,8 @@ Page({
       //  antForest
       if(testGroup == 2){
         const res = await db.collection('articles').where({
-          showid: showid,
           author: '低碳我知道'
-        }).orderBy('uploadTime', 'desc').get()
+        }).orderBy('uploadTime', 'desc').limit(daydiff).get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({
@@ -44,9 +38,8 @@ Page({
       // xuexi
       if(testGroup == 3){
         const res  = await db.collection('articles').where({
-          showid: showid,
           author:'低碳强国'
-        }).orderBy('uploadTime', 'desc').get()
+        }).orderBy('uploadTime', 'desc').limit(daydiff).get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({

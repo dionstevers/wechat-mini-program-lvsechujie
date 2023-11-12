@@ -127,8 +127,15 @@ Page({
     var occu = this.data.occu;
     var grad = this.data.grad;
     var trans = this.data.trans;
+    var avatar = this.data.avatarUrl
     var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     console.log(nickname)
+    if(avatar == defaultAvatarUrl){
+      wx.showToast({
+        title: '头像未选择',
+        icon: 'error'
+      })
+    }
     if(nickname == null){
       wx.showToast({
         title:"昵称未填写",
@@ -188,7 +195,7 @@ Page({
     }
     return 2 
   },
-  login(e) {
+  login(e:any) {
      
     console.log(e.detail.value)
     var _this = this

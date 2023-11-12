@@ -247,6 +247,7 @@ Page({
       duration: 0,
     })
     this.setUserinfo()
+    this.updateCredit()
     this.initChart()
     if(this.data.testGroup ==3 ) {
       this.setData({
@@ -270,7 +271,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-    this.updateCredit()
+
   },
 
   /**
