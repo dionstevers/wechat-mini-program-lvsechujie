@@ -98,7 +98,7 @@ Page({
     })
   },
   // 更新碳排放列表
- updateCarbon() {
+  updateCarbon() {
     var _this = this
     const db = wx.cloud.database()
     const _ = db.command
@@ -149,7 +149,7 @@ Page({
                   success: function (res) {
                     let list = res.data
                     console.log('get daily list:', list);
-                    if (list.length == 1) {                     
+                    if (list.length == 1) {
                       db.collection('lottery').doc(user_id).update({
                         data: {
                           credit: _.inc(20)
@@ -164,7 +164,7 @@ Page({
                 })
             }
           })
-         db.collection('userInfo').where({
+          db.collection('userInfo').where({
               _openid: _this.data.openID,
             })
             .get({
@@ -491,11 +491,20 @@ Page({
                 if (j == 0) continue
                 dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
               }
+              var passenger = parseInt(item['capacity']) + 1
+              console.log("passenger", passenger)
+              var saving = 0
+              if (item['transport'] == '步行/自行车') saving = 192;
+              else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
+              else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+              else saving = 192 - 192 / passenger;
+              saving *= dist;
               db.collection('track').doc(_this.data.curID).update({
                 data: {
                   endTime: new Date(),
                   endSteps: stepList[30].step,
-                  distance: dist.toFixed(2)
+                  distance: dist.toFixed(2),
+                  carbSum: saving
                 }
               }).then(res => {
                 if (res.stats.updated == 1) {
@@ -691,9 +700,11 @@ Page({
                         else if (new_aqi <= 300) new_category = "重度污染"
                         else new_category = "严重污染"
                         _this.setData({
-                          aqi: new_aqi,
                           name: city_name,
-                          category: new_category
+                          //aqi: new_aqi,                         
+                          //category: new_category
+                          aqi: res.data.now.aqi,
+                          category: res.data.now.category
                         })
                       },
                       fail: function (err) {

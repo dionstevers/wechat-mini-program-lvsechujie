@@ -1,7 +1,7 @@
 
 var convertStamp = function(stamp,type){
   if(stamp !== 0 && !stamp){
-    return '（记录异常）'
+    return '（记录提前终止）'
   }
   if(type == 'duration'){
     stamp = stamp - 28800000
