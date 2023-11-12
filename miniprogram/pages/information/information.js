@@ -14,7 +14,6 @@ Page({
   }, 
 
   async getArticles(daydiff){
-    var showid = 0
     const db = wx.cloud.database()
     const _ = db.command
     const userInfo = this.data.userInfo
@@ -28,7 +27,7 @@ Page({
       if(testGroup == 2){
         const res = await db.collection('articles').where({
           author: '低碳我知道'
-        }).orderBy('uploadTime', 'desc').limit(daydiff).get()
+        }).orderBy('uploadTime', 'asc').limit(daydiff).get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({
@@ -39,7 +38,7 @@ Page({
       if(testGroup == 3){
         const res  = await db.collection('articles').where({
           author:'低碳强国'
-        }).orderBy('uploadTime', 'desc').limit(daydiff).get()
+        }).orderBy('uploadTime', 'asc').limit(daydiff).get()
         var list = res.data
         const arlist = this.TimeConvert(list)
         this.setData({
@@ -93,7 +92,7 @@ Page({
     var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     this.getArticles(dayDiff)
    
-  },
+  }, 
 
   /**
    * 生命周期函数--监听页面初次渲染完成
