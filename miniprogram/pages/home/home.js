@@ -487,10 +487,12 @@ Page({
           let dist = 0
           db.collection('track').doc(_this.data.curID).get({
             success: function (res) {
+              console.log(res.data)
               for (var j in res.data.points) {
                 if (j == 0) continue
                 dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
               }
+              var item = res.data;
               var passenger = parseInt(item['capacity']) + 1
               console.log("passenger", passenger)
               var saving = 0
