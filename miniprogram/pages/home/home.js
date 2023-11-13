@@ -247,9 +247,9 @@ Page({
             var passenger = parseInt(item['capacity']) + 1
             console.log("passenger", passenger)
             var saving = 0
-            if (item['transport'] == '步行/自行车') saving = 192;
-            else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
-            else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+            if (item['transport'] == '步行或骑行') saving = 192;
+            //else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
+            else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
             else saving = 192 - 192 / passenger;
             carbon += dist * saving
           })
@@ -484,10 +484,10 @@ Page({
           console.log('[onGetWeRunData] 收到 echo 回包：', res)
           let stepList = res.result.info.data.stepInfoList
           console.log(stepList[30].step)
-          let dist = 0
           db.collection('track').doc(_this.data.curID).get({
             success: function (res) {
               console.log(res.data)
+              var dist = 0
               for (var j in res.data.points) {
                 if (j == 0) continue
                 dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
@@ -496,9 +496,9 @@ Page({
               var passenger = parseInt(item['capacity']) + 1
               console.log("passenger", passenger)
               var saving = 0
-              if (item['transport'] == '步行/自行车') saving = 192;
-              else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
-              else if (item['transport'] == '公交/出租车/网约车/轨道交通') saving = 192 - 20 / passenger;
+              if (item['transport'] == '步行或骑行') saving = 192;
+              //else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
+              else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
               else saving = 192 - 192 / passenger;
               saving *= dist;
               db.collection('track').doc(_this.data.curID).update({
