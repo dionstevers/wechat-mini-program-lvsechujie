@@ -213,6 +213,7 @@ Page({
               dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
             }
             item['distance'] = dist.toFixed(2)
+            item['carbSum'] = item.carbSum.toFixed(2)
           })
           _this.setData({
             todayRecordList: list.reverse(),
