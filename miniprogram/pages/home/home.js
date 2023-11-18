@@ -23,7 +23,7 @@ Page({
     platform: '',
     curID: '',
     transport: '步行',
-    transportList: ["步行或骑行", "公共交通", "驾驶机动车"],
+    transportList: ["步行或骑行", "公共交通", "驾驶电动汽车", "驾驶燃油汽车"],
     index: 0,
     defaultIndex: 0,
     capacity: 0,
@@ -31,8 +31,8 @@ Page({
     isFront: true,
     aqi: '',
     name: '',
-    category: '',
-    carbonFootprint: 0
+    category: ''
+    //carbonFootprint: 0
   },
 
   // 展示数据库中节省碳足迹top_n
@@ -127,9 +127,10 @@ Page({
             var passenger = parseInt(item['capacity']) + 1
             console.log("passenger", passenger)
             var saving = 0
-            if (item['transport'] == '步行或骑行') saving = 192;
-            else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
-            else saving = 192 - 192 / passenger;
+            if (item['transport'] == '步行或骑行') saving = 292.4;
+            else if (item['transport'] == '驾驶电动汽车') saving = 292.4 - 181.5 / passenger;
+            else if (item['transport'] == '公共交通') saving = 292.4 - 20 / passenger;
+            else saving = 292.4 - 292.4 / passenger;
             carbon += dist * saving
           })
           // TODO: put the carbsum and carblist into a seperate collection 
@@ -223,6 +224,7 @@ Page({
       })
   },
   // 计算当次节省碳排放 - 问题：  是否与update carbon 重复？ 
+  /*
   calcCarbon() {
     var _this = this
     const db = wx.cloud.database()
@@ -261,6 +263,7 @@ Page({
         }
       })
   },
+  */
   // 开启行程记录
   keepTracking: function () {
     var _this = this
@@ -497,10 +500,10 @@ Page({
               var passenger = parseInt(item['capacity']) + 1
               console.log("passenger", passenger)
               var saving = 0
-              if (item['transport'] == '步行或骑行') saving = 192;
-              //else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
-              else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
-              else saving = 192 - 192 / passenger;
+              if (item['transport'] == '步行或骑行') saving = 292.4;
+              else if (item['transport'] == '驾驶电动汽车') saving = 292.4 - 181.5 / passenger;
+              else if (item['transport'] == '公共交通') saving = 292.4 - 20 / passenger;
+              else saving = 292.4 - 292.4 / passenger;
               saving *= dist;
               db.collection('track').doc(_this.data.curID).update({
                 data: {
@@ -530,7 +533,7 @@ Page({
                   wx.stopLocationUpdate()
                   wx.offLocationChange()
                   _this.setList()
-                  _this.calcCarbon()
+                  //_this.calcCarbon()
                   _this.updateCarbon()
                   _this.onLoad()
                 }
@@ -592,7 +595,7 @@ Page({
                 duration: 1000
               })
               _this.setList()
-              _this.calcCarbon()
+              //_this.calcCarbon()
               _this.onLoad()
             })
             .catch(err => {
@@ -662,7 +665,7 @@ Page({
             })
             console.log('openID:', _this.data.openID)
             _this.setList()
-            _this.calcCarbon()
+            //_this.calcCarbon()
             var now = new Date()
             now.setHours(0, 0, 0, 0)
             console.log(now)

@@ -34,7 +34,7 @@
     </picker>
     </view>
 
-    <view class="picklist" wx:if="{{index == 2}}">
+    <view class="picklist" wx:if="{{index == 2 || index == 3}}">
     <text>出行人数</text>
     <picker bindchange="bindCapacityChange" value="{{capacity}}" range="{{capacityList}}" class="picker-con">
       <view class="picker">
