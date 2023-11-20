@@ -1,7 +1,7 @@
-import { createNativeULUMap } from "XrFrame/kanata/lib/index";
+
 
 const app = getApp()
-
+export{}
 // pages/journal/journal.ts
 
 Page({
@@ -108,21 +108,24 @@ Page({
         icon: 'loading',
         duration: 10000 // 设置持续显示时间，单位毫秒，可根据实际上传时间调整
       });
-    
+      
       const db = wx.cloud.database();
+      const _ = db.command
       const res = await db.collection('lottery').where({_openid:this.data.openID}).get()
       this.setData({
         _id: res.data[0]._id
       })
       await db.collection('lottery').doc(this.data._id).update({
         data:{
-          prizes: []
+          prizes: [],
+          claimedprizes: _.push(this.data.prizelist)
         }
       })
       await db.collection('claimedprize').add({
         data:{
           prizelist: this.data.prizelist,
           info : this.data.info,
+          date: new Date()
         }
       })
       await db.collection('qsAns').add({
@@ -137,7 +140,7 @@ Page({
         wx.hideToast();
         wx.showModal({
             title : '成功上传',
-            content : '感谢您的参与! 奖品兑换码将在24小时内以短信/邮件方式发送到您指定的联系方式。',
+            content : '感谢您的参与! 奖品兑换码将在实验结束一周内在积分中心-我的奖品-兑奖记录更新',
             showCancel: false,
             success(res){
               if(res.confirm){

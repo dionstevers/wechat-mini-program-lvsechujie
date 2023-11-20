@@ -8,34 +8,20 @@ Page({
    */
   data: {
     prizelist:null,
-  },
-  getPrize(){
-    const db = wx.cloud.database()
-    const _ = db.command
-    db.collection('lottery').where({
-      _openid: app.globalData.openID
-    }).watch({
-      onChange: (snapshot) =>{
-        this.setData({
-          prizelist : snapshot.docs[0].prizes
-        })
-      },
-      onError: (err) =>{
-        console.log(err)
-      }
-    })
+    claimedprizes:null,
   },
   claimPrize(){
     var prizelist = JSON.stringify(this.data.prizelist)
-
     wx.navigateTo({
       url: '/pages/journal/journal?typeq=3&prizelist=' + prizelist
     })
   },
   onLoad(options) {
     var prizelist = JSON.parse(options.prizelist!)
+    var claimedprizes = JSON.parse(options.claimedprizes!)
     this.setData({
-      prizelist: prizelist
+      prizelist: prizelist,
+      claimedprizes: claimedprizes
     })
   },
 
@@ -43,7 +29,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
+   
   },
 
   /**

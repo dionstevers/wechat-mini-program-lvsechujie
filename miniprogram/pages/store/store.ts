@@ -5,6 +5,7 @@ Page({
   data: {
     prize: 0,
     prizes: [],
+    claimedprizes: [],
     angle:0,
     attempts:0,
     _id: 0,
@@ -37,14 +38,14 @@ Page({
       angle = Math.floor(100 + random*(40));
       prize = 2
     }
-    // 3% 概率
-    if(prob>20&&prob<=50){angle =Math.floor(160 + random*(40)); prize = 3}
+    // 2% 概率
+    if(prob>20&&prob<=40){angle =Math.floor(160 + random*(40)); prize = 3}
 
-    // 20% 概率
-    if(prob>50&&prob<=250){angle = Math.floor(220+ random*(40)); prize = 4}
-    // 35% 概率
-    if(prob>250&&prob<=600){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
-    // 40% 概率
+    // 23% 概率
+    if(prob>40&&prob<=270){angle = Math.floor(220+ random*(40)); prize = 4}
+    // 36% 概率
+    if(prob>270&&prob<=630){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
+    // 37% 概率
     else{
       angle = Math.floor(340 + Math.random()*(20));
       prize = 6
@@ -98,7 +99,7 @@ Page({
           clearInterval(b)
           const db = wx.cloud.database()
           const _ = db.command
-          const prizeList = ['placeholder','京东E卡1000元','京东E卡200元','京东E卡100元','京东E卡50元','京东E卡30元','京东E卡20元']
+          const prizeList = ['placeholder','京东E卡1000元','京东E卡200元','京东E卡100元','京东E卡50元','京东图书品类卡30元','京东E卡20元']
           await db.collection('lottery').doc(that.data._id).update({
             data:{
               credit: _.inc(-that.data.cost),
@@ -142,7 +143,9 @@ Page({
             credit : snapshot.docs[0].credit,
             _id: snapshot.docs[0]._id,
             attempts: snapshot.docs[0].attempts,
-            prizes:snapshot.docs[0].prizes
+            prizes:snapshot.docs[0].prizes,
+            claimedprizes: snapshot.docs[0].claimedprizes
+
           })
           wx.hideToast()
         },
@@ -157,8 +160,10 @@ Page({
   },
   toMyprize(){
     var prizelist = JSON.stringify(this.data.prizes)
+    var claimedprizes = JSON.stringify(this.data.claimedprizes)
+
     wx.navigateTo({
-      url: '/pages/myprize/myprize?prizelist=' + prizelist
+      url: '/pages/myprize/myprize?prizelist=' + prizelist +'&claimedprizes=' + claimedprizes
     })
   },
   onLoad() {

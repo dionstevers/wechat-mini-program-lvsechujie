@@ -1,16 +1,28 @@
  <view class="page-background">
 
- 
- <view class="info" wx:if="{{prizelist.length>0}}">
-    <block>我的奖品</block>
 
-   <view wx:for="{{prizelist}}">
+ <view class="info" wx:if="{{prizelist.length>0||claimedprizes.length>0}}">
+  <view style="font-size:60rpx;">我的奖品</view>
+  <block wx:if="{{prizelist.length>0}}">
+    <view wx:for="{{prizelist}}">
     <label>{{item}}</label>
    </view>
+   <button bind:tap="claimPrize">兑奖</button>  
+  </block>
+  <block wx:if="{{prizelist.length==0}}">
+    <view>暂无未兑换奖品</view>
+  </block>
+  <view style="font-size:60rpx; margin-top: 30rpx;">兑奖记录</view>
+  <block wx:if="{{claimedprizes}}">
+    <view wx:for="{{claimedprizes}}">
+    <label>{{item}}</label>
+   </view>  
+  </block>
 
-   <button bind:tap="claimPrize">兑奖</button>
- 
+   
+   
  </view>
+
  
  <view class="no-info" wx:else>
   <image src="../../asset/img/prizeempty.png" style="width: 500rpx ; height:500rpx;"></image>
