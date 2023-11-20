@@ -108,7 +108,7 @@ Page({
         console.log(res.fileID)
         wx.showModal({
           title:'成功上传',
-          content:'感谢您的上传！低碳积分已发放到您的账号,请注意查收。',
+          content:'感谢您的上传！',
           showCancel:false,
           confirmText:'确认',
         })
@@ -121,12 +121,6 @@ Page({
             Img: fileID
           },
         })
-        db.collection('userInfo').doc(this.data.userInfo._id).update({
-          data:{
-            credit: _.inc(10)
-        }
-      })
-
       }
     })
     this.setData({

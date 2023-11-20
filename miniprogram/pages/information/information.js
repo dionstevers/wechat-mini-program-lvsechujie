@@ -90,6 +90,7 @@ Page({
     var timeDiff = Math.abs(currentDate.getTime()-this.data.userInfo.loginDate);
     // 将毫秒数转换为天数
     var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    console.log(dayDiff)
     this.getArticles(dayDiff)
    
   }, 
