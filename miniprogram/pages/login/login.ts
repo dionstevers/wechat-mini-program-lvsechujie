@@ -229,6 +229,7 @@ Page({
             data:{
               credit:10,
               prizes:[],
+              claimedprizes: [],
               attempts:0
             }
           })
