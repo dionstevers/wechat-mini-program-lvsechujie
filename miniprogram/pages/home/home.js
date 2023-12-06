@@ -301,15 +301,20 @@ Page({
               },
               success: function (result) {
                 console.log(result)
-                db.collection('track').doc(_this.data.curID).update({
+                db.collection('track').doc(_this.data.curID).get({
                   success: function (res) {
                     console.log(res.data.points)
-                    if (cnt >= 180) {
-                      d30 = _this.GetDistance(res.data.points[j - 180].latitude, res.data.points[j - 180].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      d20 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      d10 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      console.log(d10, d20, d30);
-                      if (d30 < 1e-9 && d20 < 1e-9 && d10 < 1e-9) {
+                    var gap = 60;
+                    var j = Math.floor(cnt / 10);
+                    console.log(j)
+                    if (j >= gap * 3) {
+                      var d30 = _this.GetDistance(res.data.points[j - gap * 3].latitude, res.data.points[j - gap * 3].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                      var d20 = _this.GetDistance(res.data.points[j - gap * 2].latitude, res.data.points[j - gap * 2].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                      var d10 = _this.GetDistance(res.data.points[j - gap].latitude, res.data.points[j - gap].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                      console.log(d10);
+                      console.log(d20);
+                      console.log(d30);
+                      if (d30 < 1e-6 && d20 < 1e-6 && d10 < 1e-6) {
                         _this.endTrack(false);
                       }
                     }
@@ -482,15 +487,20 @@ Page({
                     },
                     success: function (result) {
                       console.log(result)
-                      db.collection('track').doc(_this.data.curID).update({
+                      db.collection('track').doc(_this.data.curID).get({
                         success: function (res) {
                           console.log(res.data.points)
-                          if (cnt >= 180) {
-                            d30 = _this.GetDistance(res.data.points[j - 180].latitude, res.data.points[j - 180].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            d20 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            d10 = _this.GetDistance(res.data.points[j - 60].latitude, res.data.points[j - 60].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            console.log(d10, d20, d30);
-                            if (d30 < 1e-9 && d20 < 1e-9 && d10 < 1e-9) {
+                          var gap = 60;
+                          var j = Math.floor(cnt / 10);
+                          console.log(j)
+                          if (j >= gap * 3) {
+                            var d30 = _this.GetDistance(res.data.points[j - gap * 3].latitude, res.data.points[j - gap * 3].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                            var d20 = _this.GetDistance(res.data.points[j - gap * 2].latitude, res.data.points[j - gap * 2].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                            var d10 = _this.GetDistance(res.data.points[j - gap].latitude, res.data.points[j - gap].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+                            console.log(d10);
+                            console.log(d20);
+                            console.log(d30);
+                            if (d30 < 1e-6 && d20 < 1e-6 && d10 < 1e-6) {
                               _this.endTrack(false);
                             }
                           }
