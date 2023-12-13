@@ -277,18 +277,13 @@ Page({
     })
     const db = wx.cloud.database()
     const _ = db.command
-    var cnt = 0
+    var cnt = 10
     console.log(_this.data.curID)
     wx.onLocationChange(function (locationFn) {
       cnt++
-      if (cnt % 10 == 1) {
+      if (cnt >= 10) {
+        cnt = 0
         console.log('location change', locationFn)
-        var now = new Date()
-        var hour = now.getHours();
-        console.log('Hour:', hour);
-        if (hour == 4) {
-          _this.endTrack(false);
-        }
         wx.getNetworkType({
           success(res) {
             db.collection('track').doc(_this.data.curID).update({
@@ -299,22 +294,8 @@ Page({
                 networkTypes: _.push(res.networkType),
                 isFront: _.push(_this.data.isFront)
               },
-              success: function (result) {
-                console.log(result)
-                db.collection('track').doc(_this.data.curID).update({
-                  success: function (res) {
-                    console.log(res.data.points)
-                    if (cnt >= 180) {
-                      d30 = _this.GetDistance(res.data.points[j - 180].latitude, res.data.points[j - 180].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      d20 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      d10 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                      console.log(d10, d20, d30);
-                      if (d30 < 1e-9 && d20 < 1e-9 && d10 < 1e-9) {
-                        _this.endTrack(false);
-                      }
-                    }
-                  }
-                })
+              success: function (res) {
+                console.log(res)
               }
             })
           }
@@ -335,7 +316,7 @@ Page({
           success(res) {
             if (res.confirm) {
               console.log('用户点击确定');
-              _this.endTrack(true);
+              _this.endTrack();
             } else if (res.cancel) {
               console.log('用户点击取消')
             }
@@ -458,18 +439,13 @@ Page({
               console.log('开启后台定位失败', err)
             },
           })
-          var cnt = 0
-          console.log(_this.data.curID)
+          var cnt = 10
           wx.onLocationChange(function (locationFn) {
             cnt++
-            if (cnt % 10 == 1) {
+            if (cnt >= 10) {
+              cnt = 0
               console.log('location change', locationFn)
-              var now = new Date()
-              var hour = now.getHours();
-              console.log('Hour:', hour);
-              if (hour == 4) {
-                _this.endTrack(false);
-              }
+              console.log('Front?', _this.data.isFront)
               wx.getNetworkType({
                 success(res) {
                   db.collection('track').doc(_this.data.curID).update({
@@ -480,22 +456,8 @@ Page({
                       networkTypes: _.push(res.networkType),
                       isFront: _.push(_this.data.isFront)
                     },
-                    success: function (result) {
-                      console.log(result)
-                      db.collection('track').doc(_this.data.curID).update({
-                        success: function (res) {
-                          console.log(res.data.points)
-                          if (cnt >= 180) {
-                            d30 = _this.GetDistance(res.data.points[j - 180].latitude, res.data.points[j - 180].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            d20 = _this.GetDistance(res.data.points[j - 120].latitude, res.data.points[j - 120].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            d10 = _this.GetDistance(res.data.points[j - 60].latitude, res.data.points[j - 60].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
-                            console.log(d10, d20, d30);
-                            if (d30 < 1e-9 && d20 < 1e-9 && d10 < 1e-9) {
-                              _this.endTrack(false);
-                            }
-                          }
-                        }
-                      })
+                    success: function (res) {
+                      console.log(res)
                     }
                   })
                 }
@@ -510,7 +472,7 @@ Page({
   },
 
   // 结束记录
-  endTrack: function (isToast) {
+  endTrack: function () {
     let _this = this
     const db = wx.cloud.database()
     console.log(this.data.curID)
@@ -553,13 +515,11 @@ Page({
               }).then(res => {
                 if (res.stats.updated == 1) {
                   console.log('行程记录成功！', res)
-                  if (isToast) {
-                    wx.showToast({
-                      title: '行程记录成功!',
-                      icon: 'success',
-                      duration: 2000
-                    })
-                  }
+                  wx.showToast({
+                    title: '行程记录成功!',
+                    icon: 'success',
+                    duration: 2000
+                  })
                   clearInterval(_this.data.myTimer);
                   _this.setData({
                     startTime: 0,
