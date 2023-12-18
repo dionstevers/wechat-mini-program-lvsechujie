@@ -44,7 +44,7 @@ exports.main = async (event) => {
     if (!user_credit.data[0].recorded) {
       lottery.doc(user_id).update({
         data: {
-          credit: _.inc(20),
+          credit: _.inc(25),
           recorded: true
         }
       })

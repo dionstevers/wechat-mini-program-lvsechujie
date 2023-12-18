@@ -153,7 +153,7 @@ Page({
                     if (list.length == 1) {
                       db.collection('lottery').doc(user_id).update({
                         data: {
-                          credit: _.inc(20)
+                          credit: _.inc(25)
                         },
                         success: function (res) {
                           console.log('credit updated')

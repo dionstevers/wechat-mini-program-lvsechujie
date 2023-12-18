@@ -12,6 +12,7 @@ Page({
   data: {
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     forminfo: '',
+    num: 10,
     openID: '',
     userInfo: null,
     typeq :1 , // todo  : static now, will add a function to tell time 
@@ -55,7 +56,14 @@ Page({
     try {
 
       const res = await db.collection('qsThree').where({_id:type}).get();
-      console.log(res.data[0]);
+      console.log('questionaire data',res.data[0]);
+      var num = Math.ceil(Math.random()*4)
+      if (type ==3) {
+        console.log('first single',res.data[0].single[0].question)
+        const question = res.data[0].single[0].question[num]
+        res.data[0].single[0].question = question
+        console.log('changed',res.data[0].single[0].question) 
+      }
       
       // 隐藏加载中提示
       wx.hideToast();
@@ -66,7 +74,7 @@ Page({
       this.setData({
         single: res.data[0].single,
         sort: res.data[0].sort,
-        
+        num: num
       });
     } catch (error) {
       // 处理加载数据失败的情况
@@ -128,10 +136,12 @@ Page({
           date: new Date()
         }
       })
+      
       await db.collection('qsAns').add({
         data: {
           ans: this.data.singleSelected,
-          type: this.data.typeq
+          type: this.data.typeq,
+          num: this.data.num
         }
       
       ////
