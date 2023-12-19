@@ -26,26 +26,26 @@ Page({
   async angleGenerator(){
     var angle = 0;
     var prize = 0;
-    const prob = Math.floor(Math.random() * 1000);
+    const prob = Math.floor(Math.random() * 100);
     const random = Math.random()
-    //一等奖 0.1%概率抽到
-    if(prob<=1){
+    //一等奖 3%概率抽到
+    if(prob<=3){
       angle = Math.floor(40 + random*(40))
       prize = 1
     }
-    // 第二有价值的奖品 1.9%概率抽到
-    if(prob>1&&prob<=20){
+    // 第二有价值的奖品 7%概率抽到
+    if(prob>3&&prob<=10){
       angle = Math.floor(100 + random*(40));
       prize = 2
     }
-    // 2% 概率
-    if(prob>20&&prob<=40){angle =Math.floor(160 + random*(40)); prize = 3}
+    // 10% 概率
+    if(prob>10&&prob<=20){angle =Math.floor(160 + random*(40)); prize = 3}
 
-    // 23% 概率
-    if(prob>40&&prob<=270){angle = Math.floor(220+ random*(40)); prize = 4}
-    // 36% 概率
-    if(prob>270&&prob<=630){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
-    // 37% 概率
+    // 15% 概率
+    if(prob>20&&prob<=35){angle = Math.floor(220+ random*(40)); prize = 4}
+    // 30% 概率
+    if(prob>35&&prob<=65){  angle = Math.floor(280 + Math.random()*(40)); prize = 5}
+    // 35% 概率
     else{
       angle = Math.floor(340 + Math.random()*(20));
       prize = 6
@@ -99,7 +99,7 @@ Page({
           clearInterval(b)
           const db = wx.cloud.database()
           const _ = db.command
-          const prizeList = ['placeholder','京东E卡1000元','京东E卡200元','京东E卡100元','京东E卡50元','京东图书品类卡30元','京东E卡20元']
+          const prizeList = ['placeholder','京东E卡100元','京东E卡50元','京东E卡40元','京东图书品类卡30元','京东E卡20元','京东E卡10元']
           await db.collection('lottery').doc(that.data._id).update({
             data:{
               credit: _.inc(-that.data.cost),

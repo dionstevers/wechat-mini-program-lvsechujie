@@ -22,12 +22,12 @@
  <view class="line"></view>
  <view class="line"></view>
  <view class="line"></view>
- <view class="detail"><text>京东E卡\n20元</text></view>
- <view class="detail"><text>京东E卡\n1000元</text></view>
- <view class="detail"><text>京东E卡\n200元</text></view>
- <view class="detail" style="margin-left: -40rpx;"><text>京东E卡100元</text></view>
+ <view class="detail"><text>京东E卡\n10元</text></view>
+ <view class="detail"><text>京东E卡\n100元</text></view>
  <view class="detail"><text>京东E卡\n50元</text></view>
- <view class="detail"><text>京东图书E卡\n30元</text></view>
+ <view class="detail" style="margin-left: -40rpx;"><text>京东E卡40元</text></view>
+ <view class="detail"><text>京东图书品类卡\n30元</text></view>
+ <view class="detail"><text>京东E卡\n20元</text></view>
  <span  style="transform:rotate({{trasn}}deg);"></span>
 </view>
 
