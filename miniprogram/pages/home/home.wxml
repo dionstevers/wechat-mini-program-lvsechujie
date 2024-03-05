@@ -73,7 +73,6 @@
         <view class="content">
           时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
         <view class="content">省碳量：{{item.carbSum}} g</view>
-        <view class="content delete" bindtap="deleteRecord" data-id="{{item._id}}">×</view>
       </view>
     </view>
     <view class="rank-container">

@@ -576,6 +576,7 @@ Page({
   },
 
   // 删除记录
+  /*
   deleteRecord(e) {
     const db = wx.cloud.database()
     let _this = this
@@ -612,6 +613,7 @@ Page({
       }
     })
   },
+  */
   onShow() {
     this.setData({
       isFront: true
