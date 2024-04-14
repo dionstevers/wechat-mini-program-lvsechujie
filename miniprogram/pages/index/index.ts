@@ -16,8 +16,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   
-  async onLoad() {
-
+  async onLoad(options) {
+      console.log('the openid of the one who shared is ', options.id)
       const db = wx.cloud.database()
       try{
         const res = await wx.cloud.callFunction({ name: 'login' });
@@ -49,6 +49,7 @@ Page({
   onReady(){
 
   },
+
   async HandleSignUp() {
     const db = wx.cloud.database()
     try{
@@ -107,7 +108,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    
   },
 
   /**
@@ -116,6 +117,15 @@ Page({
   onHide() {
 
   },
+  
+  onShareTimeline(){
+    return {
+      title:"快来一起低碳出街",
+      query:this.data.openID,
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
+    }
+  },
+
 
   /**
    * 生命周期函数--监听页面卸载

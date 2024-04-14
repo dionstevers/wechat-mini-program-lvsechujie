@@ -13,10 +13,16 @@ App({
     this.globalData = {}
     
   },
+  onShow:function(e){
+    console.log('event',e)
+    this.globalData.shareTicket = e.shareTicket
+    console.log('the share ticket is ', e.shareTicket)
+  },
   globalData: {
     userInfo: null,
     openID: null,
     testGroup : 0,
     background: null,
+    shareTicket:null
   }
 })
