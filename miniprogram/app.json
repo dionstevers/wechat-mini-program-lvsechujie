@@ -14,7 +14,7 @@
     "pages/privacy/privacy",
     "pages/picUp/picUp",
     "pages/detail/detail", 
-    "pages/quiz/quiz"
+    "pages/quiz/quiz" 
   ],
   "tabBar": {
     "list": [
@@ -26,13 +26,13 @@
       },
       {
         "pagePath": "pages/information/information",
-        "text": "环境资讯",
+        "text": "信息中心",
         "iconPath": "./asset/img/info.png",
         "selectedIconPath": "./asset/img/info-highlight.png"
       },
       {
         "pagePath": "pages/center/center",
-        "text": "个人中心",
+        "text": "个人主页",
         "iconPath": "./asset/img/center.png",
         "selectedIconPath": "./asset/img/center-highlight.png"
       }
