@@ -239,7 +239,7 @@ Page({
    */
   onShow() {
     wx.setNavigationBarTitle({
-      title: '碳行家｜环境资讯'
+      title: '碳行家｜信息中心'
     })
 
   },

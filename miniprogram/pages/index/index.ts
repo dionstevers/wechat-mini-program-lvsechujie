@@ -25,7 +25,7 @@ Page({
       console.log('the openid of the one who shared is ', options.id)
       const sharedFromid = options.id
       const db = wx.cloud.database()
-      
+
       try{
         const res = await wx.cloud.callFunction({ name: 'login' });
         this.setData({ openID: (res.result as {data?:any}).data._openid });

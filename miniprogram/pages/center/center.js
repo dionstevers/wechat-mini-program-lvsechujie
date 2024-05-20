@@ -284,7 +284,7 @@ Page({
    */
   onShow() {
     wx.setNavigationBarTitle({
-      title: '碳行家｜个人中心'
+      title: '碳行家｜个人主页'
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.curDate()
