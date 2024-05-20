@@ -6,101 +6,160 @@ Page({
   /**
    * 页面的初始数据
    */
-
   data: {
     userInfo: [],
-    openID: ''
+    openID: '',
   },
+
+  /**
+   * 页面实例数据
+   */
+  isFetchingUserInfo: false,
+  isNavigating: false,
 
   /**
    * 生命周期函数--监听页面加载
    */
-  
   async onLoad(options) {
+    // share app message
       console.log('the openid of the one who shared is ', options.id)
+      const sharedFromid = options.id
       const db = wx.cloud.database()
+      
       try{
         const res = await wx.cloud.callFunction({ name: 'login' });
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
-        const userInfoQuery = await db.collection('userInfo')
-          .where({ _openid: this.data.openID })
-          .get();
-        if (userInfoQuery.data.length === 1) {
-          app.globalData.userInfo = userInfoQuery.data[0];
-          wx.showToast({ 
-          title:'正在登录中',
-          icon:'loading',
-          duration:1500 });
-          setTimeout(() => {
-            wx.switchTab({
-              url : '/pages/center/center'
-            })
-        }, 1500);
-        }}catch(err){
+        const openid = (res.result as {data?:any}).data._openid;
+
+        // now include sharedFromid upload
+        if(sharedFromid==null){
+          console.log('no share user')
+          return;
+        }
+        // check if the sharedFromid is null
+        if(sharedFromid!=null){
+          // get the entry
+          const userDoc = await db.collection('shareNet').where({
+            _id: openid
+          }).get();
+
+          // check if the entry exists
+          if(userDoc.data.length>0){
+            await db.collection('shareNet').doc(openid).update({
+              data: {
+                sharedFromid: db.command.addToSet(sharedFromid) // Add to the array if not already present
+              }
+            });
+          }else{//if the entry does not exist, then create it
+            await db.collection('shareNet').add({
+              data: {
+                _id: openid, // Use openid as the document id
+                sharedFromid: [sharedFromid],
+              }
+            });
+          }
+        }
+      }catch(err){
         console.log(err)
-      }
-    
+      } 
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady(){
-
+    this.isFetchingUserInfo = true;
+    this.onHandleSignIn(true);
   },
 
-  async HandleSignUp() {
-    const db = wx.cloud.database()
-    try{
-      const res = await wx.cloud.callFunction({ name: 'login' });
-      this.setData({ openID: (res.result as {data?:any}).data._openid });
-      app.globalData.openID = (res.result as {data?:any}).data._openid;
-      const userInfoQuery = await db.collection('userInfo')
-      .where({ _openid: this.data.openID })
-      .get();
-      if (userInfoQuery.data.length === 1) {
-        app.globalData.userInfo = userInfoQuery.data[0];
-        wx.showModal({ title: '您已有账号',content:'请直接点击登录按钮登录' , showCancel:false});
-      }else{
-        wx.navigateTo({
-          url:'/pages/login/login'
-        })
-      }
-
-    }catch(err){
-      console.log(err)
+  // 注册
+  HandleSignUp(){
+    if (!this.isFetchingUserInfo && !this.isNavigating) {
+      this.isFetchingUserInfo = true;
+      this.onHandleSignUp();
     }
   },
- async HandleSignIn() {
-    const db = wx.cloud.database()
-    try{
+  
+  // 注册-抓取
+  async onHandleSignUp() {
+    const db = wx.cloud.database();
+    try {
       const res = await wx.cloud.callFunction({ name: 'login' });
-      this.setData({ openID: (res.result as {data?:any}).data._openid });
-      app.globalData.openID = (res.result as {data?:any}).data._openid;
+      const openID = (res.result as { data?: any }).data._openid;
+      this.setData({ openID });
+      getApp().globalData.openID = openID;
+
       const userInfoQuery = await db.collection('userInfo')
-        .where({ _openid: this.data.openID })
+        .where({ _openid: openID })
         .get();
+
+      if (userInfoQuery.data.length === 1) {
+        getApp().globalData.userInfo = userInfoQuery.data[0];
+        wx.showModal({
+          title: '您已有账号',
+          content: '请直接点击登录按钮登录',
+          showCancel: false,
+        });
+      } else {
+        this.isNavigating = true;
+        wx.navigateTo({
+          url: '/pages/login/login',
+          complete: () => this.isNavigating = false
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      this.isFetchingUserInfo = false;
+    }
+  },
+
+  // 登录
+  HandleSignIn(){
+    if (!this.isFetchingUserInfo && !this.isNavigating) {
+      this.isFetchingUserInfo = true;
+      this.onHandleSignIn(false);
+    }
+  },
+
+  // 登录-抓取
+  async onHandleSignIn(autoLogin: boolean) {
+    const db = wx.cloud.database();
+    try {
+      const res = await wx.cloud.callFunction({ name: 'login' });
+      const openID = (res.result as { data?: any }).data._openid;
+      this.setData({ openID });
+      getApp().globalData.openID = openID;
+
+      const userInfoQuery = await db.collection('userInfo')
+        .where({ _openid: openID })
+        .get();
+        
       if (userInfoQuery.data.length === 1) {
         app.globalData.userInfo = userInfoQuery.data[0];
+        this.isNavigating = true;
         wx.showToast({ 
         title:'正在登录中',
         icon:'loading',
         duration:1500 });
         setTimeout(() => {
           wx.switchTab({
-            url : '/pages/center/center'
+            url : '/pages/center/center',
+            complete: () => this.isNavigating = false
           })
-      }, 1500);
-      }else{
+        }, 1500);
+      } else if (!autoLogin) {
         wx.showModal({
           title: '您尚未注册',
           content: '请点击下方注册按钮注册',
           showCancel: false
         })
       }
-    }catch(err){
+    } catch(err) {
       console.log(err)
+    } finally {
+      this.isFetchingUserInfo = false;
     }
   },
 
@@ -108,7 +167,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    
+
   },
 
   /**
@@ -117,15 +176,6 @@ Page({
   onHide() {
 
   },
-  
-  onShareTimeline(){
-    return {
-      title:"快来一起低碳出街",
-      query:this.data.openID,
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
-    }
-  },
-
 
   /**
    * 生命周期函数--监听页面卸载
@@ -152,6 +202,16 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
-
+    return {
+      title: "快来一起低碳出街~",
+      path:"/pages/index/index?id=" + this.data.openID,
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function(res){
+        console.log(res.shareTickets[0])
+      },
+      fail:function(res){
+        console.log('share failed')
+      }
+    }
   }
 })
