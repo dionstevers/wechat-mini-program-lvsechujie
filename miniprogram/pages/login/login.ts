@@ -223,16 +223,14 @@ Page({
           console.log(res.fileID);
           const path = res.fileID;
           const timestamp = new Date();
-          const userGroup = Math.floor(Math.random() * 3) + 1;
+          const userGroup = Math.floor(Math.random() * app.constData.totalTestGroupNumber) + 1;
+          const recommendationIndicator = [
+            Array.from({ length: app.constData.totalArticleTypeNumber }, (_, i) => i === userGroup ? 1 : 0.05), // 概率数组
+            Array.from({ length: app.constData.totalArticleTypeNumber }, () => 0) // 文章存储数组
+          ];
           const basicInfo = e.detail.value;
-          await db.collection('lottery').add({
-            data:{
-              credit:20,
-              prizes:[],
-              claimedprizes: [],
-              attempts:0
-            }
-          })
+
+          // 用户信息初始化
           await db.collection('userInfo').add({
             data:{
               testGroup: userGroup,
@@ -243,6 +241,25 @@ Page({
               // todo: minimize the schema of this collection
             }
           })
+
+          // 抽奖初始化
+          await db.collection('lottery').add({
+            data:{
+              credit:20,
+              prizes:[],
+              claimedprizes: [],
+              attempts:0
+            }
+          });
+
+          // 推送设置初始化
+          await db.collection('articleRecommend').add({
+            data:{
+              recommendProbabilities: recommendationIndicator[0],
+              articleCount: recommendationIndicator[1]
+            }
+          });
+
           try {
             // 上传完成后，从userInfo中获取用户信息
             const userInfoData = {

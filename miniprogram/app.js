@@ -18,6 +18,14 @@ App({
     this.globalData.shareTicket = e.shareTicket
     console.log('the share ticket is ', e.shareTicket)
   },
+
+  // 全局常量
+  constData: {
+    totalTestGroupNumber: 3,
+    totalArticleTypeNumber: 2
+  },
+
+  // 全局用户数据
   globalData: {
     userInfo: null,
     openID: null,
