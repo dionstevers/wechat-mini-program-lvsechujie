@@ -21,8 +21,7 @@ App({
 
   // 全局常量
   constData: {
-    totalTestGroupNumber: 3,
-    totalArticleTypeNumber: 2
+    totalTestGroupNumber: 3
   },
 
   // 全局用户数据
