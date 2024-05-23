@@ -55,7 +55,10 @@ Page({
               articleCount: articleRecommend[1]
             }
           });
-          wx.setStorageSync("articleRecommend", articleRecommend)
+          wx.setStorageSync("articleRecommend", [
+            articleRecommend.recommendProbabilities,
+            articleRecommend.articleCount
+          ])
 
         // 仅本地数据丢失情况
         } else {
@@ -63,7 +66,10 @@ Page({
             recommendProbabilities: articleRecommendData[0].recommendProbabilities,
             articleCount: articleRecommendData[0].articleCount
           }
-          wx.setStorageSync("articleRecommend", articleRecommend)
+          wx.setStorageSync("articleRecommend", [
+            articleRecommend.recommendProbabilities,
+            articleRecommend.articleCount
+          ])
         }
 
       } catch (error) {
@@ -122,7 +128,10 @@ Page({
       }
     });
 
-    wx.setStorageSync("articleRecommend", this.data.articleRecommend)
+    wx.setStorageSync("articleRecommend", [
+      this.data.articleRecommend.recommendProbabilities,
+      this.data.articleRecommend.articleCount
+    ])
   },
 
   // 动态进行article分配
@@ -154,6 +163,8 @@ Page({
   getArticles(articleNumber){
     try{
       // 更新本地articleCount
+      console.log(this.data.articleRecommend)
+
       const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
       const iterations = articleNumber + Object.keys(this.data.articleTypes).length - articleCountSum;
 
@@ -172,7 +183,10 @@ Page({
         }
       }
 
-      wx.setStorageSync("articleRecommend", this.data.articleRecommend)
+      wx.setStorageSync("articleRecommend", [
+        this.data.articleRecommend.recommendProbabilities,
+        this.data.articleRecommend.articleCount
+      ])
     
       // 生成对应的文章给用户
       const articleList = this.data.articles.filter(article => article.author === "碳行家");
@@ -234,12 +248,16 @@ Page({
   async onLoad() {
     // 初始化页面数据
     await this.fetchCloudData()
+    const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup :app.globalData.userInfo.testGroup,
       articles: wx.getStorageSync('articles'),
-      articleRecommend: wx.getStorageSync('articleRecommend')
+      articleRecommend: {
+        recommendProbabilities: localArticleRecommend[0],
+        articleCount: localArticleRecommend[1]
+      }
     })
 
     // 根据测试组不同，背景颜色不同
