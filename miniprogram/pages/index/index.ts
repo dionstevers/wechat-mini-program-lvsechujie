@@ -72,6 +72,7 @@ Page({
     this.isFetchingUserInfo = true;
     this.onHandleSignIn(true);
   },
+  
 
   // 注册
   HandleSignUp(){
@@ -167,7 +168,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    console.log('index page showing up')
   },
 
   /**

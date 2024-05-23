@@ -18,7 +18,7 @@
 
 <view class="function-con">
   <template name="function-item">
-    <view class="function-item" bindtap="onTapFunction" data-url="{{url}}">
+    <view class="function-item" bindtap="onTapFunction" data-url="{{url}}" data-title = "{{functionTitle}}">
       <image src="{{functionSrc}}" mode="aspectFit"></image>
       <view>{{functionTitle}}</view>
     </view>

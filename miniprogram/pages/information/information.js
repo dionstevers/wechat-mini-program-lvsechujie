@@ -1,4 +1,5 @@
 const app = getApp()
+const { logEvent } = require("../../utils/log");
 Page({
 
   /**
@@ -28,6 +29,7 @@ Page({
     try {
       let articles = (await db.collection('articles').orderBy('uploadTime', 'asc').get()).data;
       wx.setStorageSync("articles", articles)
+      console.log('storage data set')
     } catch (error) {
       console.error("获取文章时出错：", error);
     }
@@ -260,7 +262,7 @@ Page({
     var timeDiff = Math.abs(currentDate.getTime()-this.data.userInfo.loginDate); // 计算日期差异的毫秒数
     var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // 将毫秒数转换为天数
 
-    console.log(`距离登陆日已过了 ${dayDiff} 天`)
+    console.log(`${dayDiff} days since first login`)
     this.getArticles(dayDiff)
   }, 
 
@@ -275,9 +277,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    logEvent('Information Center')
     wx.setNavigationBarTitle({
       title: '碳行家｜信息中心'
     })
+
+    console.log('info page showing up')
 
   },
 

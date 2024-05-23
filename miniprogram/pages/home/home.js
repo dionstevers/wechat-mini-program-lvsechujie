@@ -1,3 +1,5 @@
+const { logEvent } = require("../../utils/log");
+
 // pages/home/home.ts
 const app = getApp();
 Page({
@@ -374,6 +376,7 @@ Page({
   },
 
   onTrack: function () { // 开始记录
+    logEvent('Start Tracking')
     this.setData({
       btnClass: 'btn btn-start',
       recordStatus: true,
@@ -473,6 +476,7 @@ Page({
 
   // 结束记录
   endTrack: function () {
+    logEvent('End Tracking')
     let _this = this
     const db = wx.cloud.database()
     console.log(this.data.curID)
@@ -615,6 +619,7 @@ Page({
   },
   */
   onShow() {
+    logEvent('Home Page')
     this.setData({
       isFront: true
     })
@@ -624,6 +629,8 @@ Page({
     this.setData({
       userInfo: app.globalData.userInfo
     })
+
+    console.log('home page showing up')
   },
   onHide() {
     this.setData({

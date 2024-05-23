@@ -1,5 +1,5 @@
 // pages/center/center.ts
-
+import { logEvent } from '../../utils/log';
 import * as echarts from "../../asset/ec-canvas/echarts"
 const app = getApp();
 
@@ -170,7 +170,7 @@ Page({
     }
   },
   dealer() {
-    return
+    return;
   },
   curDate() {
 
@@ -181,15 +181,24 @@ Page({
 
     return curDate;
   },
+
   onTapFunction(e) {
-    let {
-      url
-    } = e.currentTarget.dataset
-    if (url) {
+    console.log(e)
+    console.log(e.currentTarget.dataset)
+    let url = e.currentTarget.dataset.url
+    let title = e.currentTarget.dataset.title
+    if(url!=null & title !=null){
+      logEvent(title)
       wx.navigateTo({
-        url,
+        url: url,
       })
     }
+    // if (url && title ) {
+    //   logEvent(title)
+    //   wx.navigateTo({
+    //     url,
+    //   })
+    // }
 
   },
   selectWithinCurMonth(items) {
@@ -221,18 +230,21 @@ Page({
     }
 
   },
+  // this function is no longer in use
   onlogin(e) {
     wx.navigateTo({
       url: '/pages/login/login',
     })
   },
   onSurvey(e) {
+    logEvent('About Us')
     wx.navigateTo({
       url: '/pages/aboutus/aboutus',
     })
 
   },
   onPrivacy(e) {
+    logEvent('Privacy Statement')
     wx.navigateTo({
       url: '/pages/privacy/privacy',
     })
@@ -283,13 +295,15 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    logEvent('Center Page')
     wx.setNavigationBarTitle({
       title: '碳行家｜个人主页'
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.curDate()
-    
 
+    
+    
 
 
     //this.getdata();
@@ -329,7 +343,7 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
-
+    logEvent('Share App')
     return {
       title: "快来一起低碳出街~",
       path:"/pages/index/index?id=" + this.data.openID,
