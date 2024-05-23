@@ -52,7 +52,8 @@ async function checkAndUploadLogs() {
     const logs = wx.getStorageSync('logs') || [];
     const logsSize = JSON.stringify(logs).length;
     console.log(logsSize)
-    // Check if storage size exceeds 1MB ( now testing, set to 10kb)
+    // Check if storage size exceeds 1MB ( now testing, set to 10kb )
+    // TODO: Change storage size limit upon experiment 
     if (logsSize > 1 * 1024 * 10.24) {
       const app = getApp();
       const openid = app.globalData.openID;

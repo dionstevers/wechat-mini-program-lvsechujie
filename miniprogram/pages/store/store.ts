@@ -1,5 +1,6 @@
 // pages/store/store.ts
 const app = getApp()
+import { logEvent } from '../../utils/log';
 export{}
 Page({
   data: {
@@ -56,6 +57,7 @@ Page({
     });
   },
   async startSpin(){
+    logEvent('Lottery Spin')
     let that = this
     if(that.data.credit<that.data.cost){
       wx.showToast({

@@ -31,7 +31,7 @@ Page({
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
         const openid = (res.result as {data?:any}).data._openid;
-
+        
         // now include sharedFromid upload
         if(sharedFromid==null){
           console.log('no share user')
@@ -39,27 +39,12 @@ Page({
         }
         // check if the sharedFromid is null
         if(sharedFromid!=null){
-          // get the entry
-          const userDoc = await db.collection('shareNet').where({
-            _id: openid
-          }).get();
-
-          // check if the entry exists
-          if(userDoc.data.length>0){
-            await db.collection('shareNet').doc(openid).update({
-              data: {
-                sharedFromid: db.command.addToSet(sharedFromid) // Add to the array if not already present
-              }
-            });
-          }else{//if the entry does not exist, then create it
-            await db.collection('shareNet').add({
-              data: {
-                _id: openid, // Use openid as the document id
-                sharedFromid: [sharedFromid],
-              }
-            });
-          }
+          await this.recordShare(openid, sharedFromid);
         }
+          // If the sender document does not exist, create it
+
+
+        
       }catch(err){
         console.log(err)
       } 
@@ -72,8 +57,54 @@ Page({
     this.isFetchingUserInfo = true;
     this.onHandleSignIn(true);
   },
+  // record share relations
+  async recordShare(openid, sharedFromid) {
+    const db = wx.cloud.database();
   
-
+    try {
+      const receiverDoc = await db.collection('shareNet').doc(openid).get();
+      const senderDoc = await db.collection('shareNet').doc(sharedFromid).get();
+  
+      // If the receiver document does not exist, create it
+      if (receiverDoc.data.length === 0) {
+        await db.collection('shareNet').add({
+          data: {
+            _id: openid,
+            sharedFromid: [sharedFromid],
+            shareToid: []
+          }
+        });
+      } else {
+        // If the receiver document exists, update it
+        await db.collection('shareNet').doc(openid).update({
+          data: {
+            sharedFromid: db.command.addToSet(sharedFromid)
+          }
+        });
+      }
+  
+      // If the sender document does not exist, create it
+      if (senderDoc.data.length === 0) {
+        await db.collection('shareNet').add({
+          data: {
+            _id: sharedFromid,
+            sharedFromid: [],
+            shareToid: [openid]
+          }
+        });
+      } else {
+        // If the sender document exists, update it
+        await db.collection('shareNet').doc(sharedFromid).update({
+          data: {
+            shareToid: db.command.addToSet(openid)
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  
   // 注册
   HandleSignUp(){
     if (!this.isFetchingUserInfo && !this.isNavigating) {
