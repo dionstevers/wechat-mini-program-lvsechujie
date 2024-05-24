@@ -21,21 +21,33 @@ Page({
     arlist: [],
   }, 
 
-  // 获取云端数据
-  async fetchCloudData(){
+  /**
+   * 页面实例数据
+   */
+  updateCounter: 0,
+  isLoaded: false,
+  shouldUpdateCloud: false,
+
+  /**
+   * 获取云端数据
+   * @param {boolean} isForced 是否强行更新本地数据
+   */
+  async fetchCloudData(isForced){
     const db = wx.cloud.database();
 
     // 获取文章数据
-    try {
-      let articles = (await db.collection('articles').orderBy('uploadTime', 'asc').get()).data;
-      wx.setStorageSync("articles", articles)
-      console.log('storage data set')
-    } catch (error) {
-      console.error("获取文章时出错：", error);
+    if (wx.getStorageSync("articles") === "" || isForced) {
+      try {
+        let articles = (await db.collection('articles').orderBy('uploadTime', 'asc').get()).data;
+        wx.setStorageSync("articles", articles)
+        console.log('storage data set')
+      } catch (error) {
+        console.error("获取文章时出错：", error);
+      }
     }
     
     // 处理articleRecommend数据丢失情况 
-    if (wx.getStorageSync("articleRecommend") === ""){
+    if (wx.getStorageSync("articleRecommend") === "" || isForced){
       try {
         let articleRecommendData = (await db.collection('articleRecommend')
         .where({ _openid: getApp().globalData.openID })
@@ -78,7 +90,9 @@ Page({
     }
   },
 
-  // 更新云端articleRecommend
+  /**
+   * 更新云端articleRecommend
+   */
   async updateCloudStorage(){
     const localArticleRecommend = wx.getStorageSync("articleRecommend");
 
@@ -98,15 +112,15 @@ Page({
       if (articleRecommendData.length === 0) {
         await db.collection('articleRecommend').add({
           data:{
-            recommendProbabilities: localArticleRecommend["recommendProbabilities"],
-            articleCount: localArticleRecommend["articleCount"]
+            recommendProbabilities: localArticleRecommend[0],
+            articleCount: localArticleRecommend[1]
           }
         });
       } else {
         await db.collection('articleRecommend').doc(articleRecommendData._id).update({
           data: {
-            recommendProbabilities: localArticleRecommend["recommendProbabilities"],
-            articleCount: localArticleRecommend["articleCount"]
+            recommendProbabilities: localArticleRecommend[0],
+            articleCount: localArticleRecommend[1]
           }
         });
       }
@@ -116,7 +130,10 @@ Page({
     }
   },
 
-  // 更新本地recommendProbabilities
+  /**
+   * 更新本地recommendProbabilities
+   * @param {number} pickedType 用户选择的articleType
+   */
   updateLocalRecommend(pickedType) {
     // 更新概率
     const updateFactor = 0.2 / Object.keys(this.data.articleTypes).length;
@@ -134,7 +151,10 @@ Page({
     ])
   },
 
-  // 动态进行article分配
+  /**
+   * 动态进行article分配
+   * @param {never[]} recommendationProbabilities 用户的推荐概率值
+   */ 
   getArticleType(recommendationProbabilities) {
     // 计算各种文章类型的概率
     const sumProbabilities = 
@@ -159,16 +179,20 @@ Page({
     return pickedType;
   },
 
-  // 给用户分配文章
+  /**
+   * 给用户分配文章 （每种类型总会至少生成一个）
+   * @param {number} articleNumber 总共生成的额外的文章数
+   */
   getArticles(articleNumber){
     try{
-      // 更新本地articleCount
-      console.log(this.data.articleRecommend)
-
+      // 获取新文章
       const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
       const iterations = articleNumber + Object.keys(this.data.articleTypes).length - articleCountSum;
 
-      // 获取新文章
+      if (iterations > 0) {
+        this.shouldUpdateCloud = true;
+      }
+
       for (let i = 0; i < iterations; i++) {
         let articleType = this.getArticleType(this.data.articleRecommend.recommendProbabilities);
         if (articleType != -1 && articleType < Object.keys(this.data.articleTypes).length) {
@@ -177,12 +201,15 @@ Page({
               this.data.articles.filter(article => this.data.articleTypes[article.author] === articleType).length) {
                 this.data.articleRecommend.articleCount[articleType] ++;
                 console.log(`生成${articleType}文章`);
-              }
+          } else {
+            console.log("已达文章上限");
+          }
         } else {
           console.log("生成文章错误");
         }
       }
 
+      // 更新本地articleCount
       wx.setStorageSync("articleRecommend", [
         this.data.articleRecommend.recommendProbabilities,
         this.data.articleRecommend.articleCount
@@ -209,14 +236,43 @@ Page({
     }
   },
 
-  // 按钮文章事件
+  /**
+   * 根据天数获取文章
+   */
+  getArticlesByLoginDays() {
+    if(this.data.testGroup == 1){ // 空白对照组, 无文章
+      console.log('blank control')
+      return
+    }
+
+    const currentDate = new Date()
+    var timeDiff = Math.abs(currentDate.getTime()-this.data.userInfo.loginDate); // 计算日期差异的毫秒数
+    var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // 将毫秒数转换为天数
+
+    console.log(`${dayDiff} days since first login`)
+    this.getArticles(dayDiff)
+  },
+
+  /**
+   * 文章按钮事件
+   */
   bindInfo(e){
     logEvent('Read Article')
     const author = e.currentTarget.dataset.author
     const link = e.currentTarget.dataset.link
 
-    // 更新推荐概率值
+    // 更新本地推荐概率值
     this.updateLocalRecommend(this.data.articleTypes[author])
+    this.updateCounter++;
+
+    // 检查和存储counter并更新数据库
+    wx.setStorageSync('articleClickCounter', this.updateCounter)
+    if (this.updateCounter >= 10) {
+      this.updateCounter = 0;
+      this.shouldUpdateCloud = true;
+    }
+
+    console.log(this.updateCounter)
     
     // 导航到对应链接
     wx.navigateTo({
@@ -224,7 +280,10 @@ Page({
     })
   },
 
-  // 把文章日期格式化并排序
+  /**
+   * 把文章日期格式化并排序
+   * @param {Array} list 文章list
+   */
   TimeConvert(list){
     // 格式化时间
     for (let index = 0; index < list.length; index++) {
@@ -243,22 +302,40 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面加载
+   * 异步处理数据录入
    */
-  async onLoad() {
+  async loadData(){
     // 初始化页面数据
-    await this.fetchCloudData()
+    await this.fetchCloudData(false)
     const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     this.setData({
-      userInfo: app.globalData.userInfo,
-      testGroup :app.globalData.userInfo.testGroup,
       articles: wx.getStorageSync('articles'),
       articleRecommend: {
         recommendProbabilities: localArticleRecommend[0],
         articleCount: localArticleRecommend[1]
       }
     })
+
+    this.isLoaded = true;
+    this.getArticlesByLoginDays();
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad() {
+    this.setData({
+      userInfo: app.globalData.userInfo,
+      testGroup :app.globalData.userInfo.testGroup
+    });
+    this.loadData();
+
+    // 获取文章点击计数器
+    const counterStored = wx.getStorageSync('articleClickCounter')
+    if (counterStored !== "") {
+      this.updateCounter = counterStored
+    }
 
     // 根据测试组不同，背景颜色不同
     if(this.data.testGroup == 3){
@@ -270,19 +347,6 @@ Page({
         background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
       })
     }
-    
-    // 根据天数获取文章
-    if(this.data.testGroup == 1){ // 空白对照组, 无文章
-      console.log('blank control')
-      return
-    }
-
-    const currentDate = new Date()
-    var timeDiff = Math.abs(currentDate.getTime()-this.data.userInfo.loginDate); // 计算日期差异的毫秒数
-    var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // 将毫秒数转换为天数
-
-    console.log(`${dayDiff} days since first login`)
-    this.getArticles(dayDiff)
   }, 
 
   /**
@@ -296,27 +360,36 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    // 提交用户log
     logEvent('Information Center')
+    console.log('info page showing up')
+
+    // 设置标题栏
     wx.setNavigationBarTitle({
       title: '碳行家｜信息中心'
     })
 
-    console.log('info page showing up')
-
+    // 更新文章显示
+    if (this.isLoaded) {
+      this.getArticlesByLoginDays();
+    }
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide() {
-
+    // 检查是否需要更新
+    if (this.shouldUpdateCloud) {
+      this.updateCloudStorage();
+    }
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    
+
   },
 
   /**
@@ -336,7 +409,6 @@ Page({
   /**
    * 用户点击右上角分享
    */
-
   onShareAppMessage() {
     logEvent('Share App')
     const app = getApp()
@@ -354,8 +426,10 @@ Page({
     }
   },
 
-  // 测试用生成文章
+  /**
+   * 测试用生成文章
+   */
   debugGenerateArticle() {
-    this.getArticles(this.data.arlist.length - 2);
+    this.getArticles(this.data.arlist.length - Object.keys(this.data.articleTypes).length);
   },
 })
