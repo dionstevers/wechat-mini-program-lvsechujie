@@ -26,15 +26,73 @@ Page({
     curID: '',
     transport: '步行',
     transportList: ["步行或骑行", "公共交通", "驾驶电动汽车", "驾驶燃油汽车"],
+    endTransportList: ["未驾驶汽车", "驾驶电动汽车", "驾驶燃油汽车"],
     index: 0,
     defaultIndex: 0,
     capacity: 0,
     capacityList: ["1", "2", "3", "4", "5+"],
     isFront: true,
-    aqi: '',
-    name: '',
-    category: ''
+    aqi: "",
+    name: "",
+    category: "",
+    transporModalHidden: true,
+    capacityModalHidden: true,
     //carbonFootprint: 0
+    speedBtwwon: [
+      {
+        label: "步行/跑步",
+        min: 0,
+        max: 2.78
+      },
+       {
+        label: "骑行",
+        min: 2.78,
+        max: 5.56
+      },
+      {
+        label: "汽车(市区)",
+        min: 5.56,
+        max: 13.89
+      },
+      {
+        label: "汽车(高速公路)",
+        min: 22.22,
+        max: 33.33
+      },
+       {
+        label: "公交车（市区）",
+        min: 4.17,
+        max: 8.33
+      },
+       {
+        label: "公交车（长途）",
+        min: 16.67,
+        max: 25
+      },
+    ]
+  },
+
+  capacityModalConfirm(e) {
+    this.setData({
+      capacityModalHidden: true
+    })
+    this.onTrack();
+  },
+  capacityModalCancel() {
+    this.setData({
+      capacityModalHidden: true
+    })
+  },
+  transporModalConfirm(e) {
+    this.setData({
+      transporModalHidden: true
+    })
+    this.endTrack();
+  },
+  transporModalCancel() {
+    this.setData({
+      transporModalHidden: true
+    })
   },
 
   // 展示数据库中节省碳足迹top_n
@@ -43,120 +101,136 @@ Page({
     const db = wx.cloud.database()
     const _ = db.command
     const top_n = 3
-    db.collection('userInfo').orderBy('carbSum', 'desc').limit(top_n).get({
-      success: function (res) {
-        console.log('ranking data successfully retrieved')
-        console.log(res.data)
-        const ranking = res.data
-        for (let index = 0; index < ranking.length; index++) {
-          const element = ranking[index];
-          const carbSum = Math.round(element.carbSum / 1000);
-          element.carbSum = carbSum
+    db.collection('userInfo')
+      .orderBy('carbSum', 'desc')
+      .limit(top_n)
+      .get({
+        success: function (res) {
+          console.log('ranking data successfully retrieved')
+          console.log(res.data)
+          const ranking = res.data
+          for (let index = 0; index < ranking.length; index++) {
+            const element = ranking[index];
+            const carbSum = Math.round(element.carbSum / 1000);
+            element.carbSum = carbSum
+          }
+          _this.setData({
+            users: ranking
+          })
         }
-        _this.setData({
-          users: ranking
-        })
-      }
-    })
+      });
   },
   // 计算离aqi基站距离
   calcDist: async function (triplet, i) {
     var _this = this
     var dist = -1
-    const db = wx.cloud.database()
-    return db.collection('monitor').where({
+    const db = wx.cloud.database();
+    return db
+      .collection('monitor')
+      .where({
         POI_ID: triplet[2][i].id,
       })
-      .get().then(res => {
+      .get()
+      .then(res => {
         //console.log(res.data)
         var mlat = res.data[0].POI_Latitude
         var mlng = res.data[0].POI_Longitude
         return _this.GetDistance(triplet[0], triplet[1], mlat, mlng)
-      })
+      });
   },
   //  找到最近aqi基站
   async findClosest(triplet) {
-    var _this = this
-    var closest = -1
-    var closestDist = -1
-    console.log(triplet)
+    var _this = this;
+    var closest = -1;
+    var closestDist = -1;
+    console.log(triplet);
     for (var i in triplet[2]) {
-      var dist = await _this.calcDist(triplet, i)
-      console.log(i, dist)
+      var dist = await _this.calcDist(triplet, i);
+      console.log(i, dist);
       if (closest == -1 || dist < closestDist) {
-        closest = i
-        closestDist = dist
+        closest = i;
+        closestDist = dist;
       }
     }
-    return closest
+    return closest;
   },
   // 更新aqi数据
   updateAQI: function (res, closest) {
-    console.log(closest)
+    console.log(closest);
     this.setData({
       aqi: res.data.station[closest].aqi,
       name: res.data.station[closest].name,
       category: res.data.station[closest].category
-    })
+    });
   },
   // 更新碳排放列表
   updateCarbon() {
     var _this = this
-    const db = wx.cloud.database()
-    const _ = db.command
-    var now = new Date()
+    const db = wx.cloud.database();
+    const _ = db.command;
+    var now = new Date();
     now.setHours(0, 0, 0, 0)
-    var carbon = 0
-    db.collection('track').where({
-        _openid: _this.data.openID,
-        date: _.gt(now)
+    var carbon = 0;
+    db.collection('track')
+      .where({
+          _openid: _this.data.openID,
+          date: _.gt(now)
       })
       .orderBy('date', 'desc')
       .limit(1)
       .get({
         success: function (res) {
-          let list = res.data
+          let list = res.data; 
           console.log('get list:', list);
           list.forEach(item => {
-            if (item['date']) item['date'] = item.date.getTime()
-            if (item['endTime']) item['endTime'] = item.endTime.getTime()
-            var dist = 0
+            if (item['date']) item['date'] = item.date.getTime();
+            if (item['endTime']) item['endTime'] = item.endTime.getTime();
+            var dist = 0;
             for (var j in item['points']) {
-              if (j == 0) continue
-              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
+              if (j == 0) continue;
+              dist += _this.GetDistance(
+                item['points'][j - 1].latitude, 
+                item['points'][j - 1].longitude, 
+                item['points'][j].latitude, 
+                item['points'][j].longitude
+              );
             }
-            item['distance'] = dist.toFixed(2)
-            var passenger = parseInt(item['capacity']) + 1
-            console.log("passenger", passenger)
-            var saving = 0
+            item['distance'] = dist.toFixed(2);
+            var passenger = parseInt(item['capacity']) + 1;
+            console.log("passenger", passenger);
+            var saving = 0;
             if (item['transport'] == '步行或骑行') saving = 292.4;
             else if (item['transport'] == '驾驶电动汽车') saving = 292.4 - 181.5 / passenger;
             else if (item['transport'] == '公共交通') saving = 292.4 - 20 / passenger;
             else saving = 292.4 - 292.4 / passenger;
-            carbon += dist * saving
+            carbon += dist * saving;
           })
           // TODO: put the carbsum and carblist into a seperate collection 
-          console.log("carbon", carbon)
-          db.collection('lottery').where({
+          console.log("carbon", carbon);
+          db.collection('lottery')
+          .where({
             _openid: _this.data.openID
-          }).get({
+          })
+          .get({
             success: function (res) {
-              var user_id = res.data[0]._id
-              var four = new Date()
-              four.setHours(4, 0, 0, 0)
-              db.collection('track').where({
-                  _openid: _this.data.openID,
-                  date: _.gt(four)
+              var user_id = res.data[0]._id;
+              var four = new Date();
+              four.setHours(4, 0, 0, 0);
+              db.collection('track')
+                .where({
+                    _openid: _this.data.openID,
+                    date: _.gt(four)
                 })
                 .get({
                   success: function (res) {
                     let list = res.data
                     console.log('get daily list:', list);
                     if (list.length == 1) {
-                      db.collection('lottery').doc(user_id).update({
-                        data: {
-                          credit: _.inc(25)
-                        },
+                      db.collection('lottery')
+                        .doc(user_id).update({
+                          data: {
+                            credit: _.inc(25)
+                          },
                         success: function (res) {
                           console.log('credit updated')
                           console.log(res.data)
@@ -167,37 +241,41 @@ Page({
                 })
             }
           })
-          db.collection('userInfo').where({
+          db.collection('userInfo')
+            .where({
               _openid: _this.data.openID,
             })
             .get({
               success: function (res) {
-                var user_id = res.data[0]._id
-                db.collection('userInfo').doc(user_id).update({
-                  data: {
-                    carbSum: _.inc(carbon),
-                    // carblist: _.push([
-                    //   [new Date(), carbon]
-                    // ])
+                var user_id = res.data[0]._id;
+                db.collection('userInfo')
+                  .doc(user_id)
+                  .update({
+                    data: {
+                      carbSum: _.inc(carbon),
+                      // carblist: _.push([
+                      //   [new Date(), carbon]
+                      // ])
                   },
                   success: function (res) {
-                    console.log(res.data)
+                    console.log(res.data);
                   }
                 })
               },
               fail: console.error
-            })
+            });
         }
-      })
+      });
   },
   // 更新行程记录列表
   setList() {
-    var _this = this
-    const db = wx.cloud.database()
-    const _ = db.command
-    var now = new Date()
-    now.setHours(0, 0, 0, 0)
-    db.collection('track').where({
+    var _this = this;
+    const db = wx.cloud.database();
+    const _ = db.command;
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    db.collection('track')
+      .where({
         _openid: _this.data.openID,
         date: _.gt(now)
       })
@@ -205,15 +283,20 @@ Page({
       .limit(1)
       .get({
         success: function (res) {
-          let list = res.data
+          let list = res.data;
           console.log('get list:', list);
           list.forEach(item => {
-            if (item['date']) item['date'] = item.date.getTime()
-            if (item['endTime']) item['endTime'] = item.endTime.getTime()
-            var dist = 0
+            if (item['date']) item['date'] = item.date.getTime();
+            if (item['endTime']) item['endTime'] = item.endTime.getTime();
+            var dist = 0;
             for (var j in item['points']) {
-              if (j == 0) continue
-              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
+              if (j == 0) continue;
+              dist += _this.GetDistance(
+                item['points'][j - 1].latitude, 
+                item['points'][j - 1].longitude, 
+                item['points'][j].latitude, 
+                item['points'][j].longitude
+              );
             }
             item['distance'] = dist.toFixed(2)
             item['carbSum'] = item.carbSum.toFixed(2)
@@ -268,36 +351,41 @@ Page({
   */
   // 开启行程记录
   keepTracking: function () {
-    var _this = this
+    var _this = this;
     wx.startLocationUpdateBackground({
       success(res) {
-        console.log('开启后台定位', res)
+        console.log('开启后台定位', res);
       },
       fail(err) {
         console.log('开启后台定位失败', err)
       },
-    })
-    const db = wx.cloud.database()
-    const _ = db.command
-    var cnt = 10
-    console.log(_this.data.curID)
+    });
+    const db = wx.cloud.database();
+    const _ = db.command;
+    var cnt = 10;
+    console.log(_this.data.curID);
     wx.onLocationChange(function (locationFn) {
-      cnt++
+      cnt++;
       if (cnt >= 10) {
-        cnt = 0
-        console.log('location change', locationFn)
+        cnt = 0;
+        console.log('location change', locationFn);
+        const {
+          speed
+        } = locationFn || {}
         wx.getNetworkType({
           success(res) {
-            db.collection('track').doc(_this.data.curID).update({
+            db.collection('track')
+              .doc(_this.data.curID)
+              .update({
               data: {
                 points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
                 velos: _.push(locationFn.speed),
                 timestamps: _.push(new Date()),
                 networkTypes: _.push(res.networkType),
-                isFront: _.push(_this.data.isFront)
+                isFront: _.push(_this.data.isFront),
               },
               success: function (res) {
-                console.log(res)
+                console.log(res);
               }
             })
           }
@@ -318,9 +406,12 @@ Page({
           success(res) {
             if (res.confirm) {
               console.log('用户点击确定');
-              _this.endTrack();
+              //_this.endTrack();
+              _this.setData({
+                transporModalHidden: false
+              })
             } else if (res.cancel) {
-              console.log('用户点击取消')
+              console.log('用户点击取消');
             }
           }
         })
@@ -352,7 +443,10 @@ Page({
       .then(res => {
         // console.log('getSetting', res);
         if (res.authSetting['scope.userLocationBackground']) {
-          this.onTrack()
+          this.setData({
+            capacityModalHidden: false
+          })
+          this.onTrack();
         } else {
           wx.showModal({
               title: '提示',
@@ -362,9 +456,12 @@ Page({
               if (res.confirm) {
                 wx.openSetting({
                   success(res) {
-                    console.log(res.authSetting)
+                    console.log(res.authSetting);
                     if (res.authSetting['scope.userLocationBackground']) {
-                      this.onTrack()
+                      this.setData({
+                        capacityModalHidden: false
+                      })
+                      //this.onTrack();
                     }
                   }
                 })
@@ -375,23 +472,23 @@ Page({
 
   },
 
-  onTrack: function () { // 开始记录
-    logEvent('Start Tracking')
+  onTrack: function () { 
+    // 开始记录
     this.setData({
       btnClass: 'btn btn-start',
       recordStatus: true,
       startTime: +new Date(),
       myTimer: setInterval(() => {
         let newTime = +new Date();
-        let duration = newTime - this.data.startTime
+        let duration = newTime - this.data.startTime;
         this.setData({
           duration
         })
       }, 1000)
     })
-    let _this = this
-    const db = wx.cloud.database()
-    const _ = db.command
+    let _this = this;
+    const db = wx.cloud.database();
+    const _ = db.command;
     // console.log(_this.data.brand)
     // console.log(_this.data.model)
     // console.log(_this.data.system)
@@ -399,33 +496,34 @@ Page({
     // console.log(_this.data.platform)
     wx.getWeRunData({
       success: res => {
-        wx.cloud.callFunction({
-          name: 'echo',
-          data: {
-            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-            info: wx.cloud.CloudID(res.cloudID),
-          },
-        }).then(res => {
-          console.log('[onGetWeRunData] 收到 echo 回包：', res)
-          var stepList = res.result.info.data.stepInfoList
-          console.log(stepList[30].step)
-          db.collection('track').add({
+        wx.cloud
+          .callFunction({
+            name: 'echo',
             data: {
-              date: new Date(),
-              points: [],
-              velos: [],
-              timestamps: [],
-              networkTypes: [],
-              isFront: [],
-              brand: _this.data.brand,
-              model: _this.data.model,
-              system: _this.data.system,
-              version: _this.data.version,
-              platform: _this.data.platform,
-              transport: _this.data.transportList[_this.data.index],
-              capacity: _this.data.capacity,
-              startSteps: stepList[30].step
+              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+              info: wx.cloud.CloudID(res.cloudID),
             },
+          })
+          .then(res => {
+            console.log('[onGetWeRunData] 收到 echo 回包：', res)
+            var stepList = res.result.info.data.stepInfoList;
+            db.collection('track').add({
+              data: {
+                date: new Date(),
+                points: [],
+                velos: [],
+                timestamps: [],
+                networkTypes: [],
+                isFront: [],
+                brand: _this.data.brand,
+                model: _this.data.model,
+                system: _this.data.system,
+                version: _this.data.version,
+                platform: _this.data.platform,
+                transport: _this.data.transportList[_this.data.index],
+                capacity: _this.data.capacity,
+                startSteps: stepList[30].step
+              },
             success: function (res) {
               console.log(res)
               _this.setData({
@@ -442,22 +540,24 @@ Page({
               console.log('开启后台定位失败', err)
             },
           })
-          var cnt = 10
+          var cnt = 10;
           wx.onLocationChange(function (locationFn) {
-            cnt++
+            cnt++;
             if (cnt >= 10) {
-              cnt = 0
-              console.log('location change', locationFn)
-              console.log('Front?', _this.data.isFront)
+              cnt = 0;
+              console.log('location change', locationFn);
+              console.log('Front?', _this.data.isFront);
               wx.getNetworkType({
                 success(res) {
-                  db.collection('track').doc(_this.data.curID).update({
-                    data: {
-                      points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                      velos: _.push(locationFn.speed),
-                      timestamps: _.push(new Date()),
-                      networkTypes: _.push(res.networkType),
-                      isFront: _.push(_this.data.isFront)
+                  db.collection('track')
+                    .doc(_this.data.curID)
+                    .update({
+                      data: {
+                        points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                        velos: _.push(locationFn.speed),
+                        timestamps: _.push(new Date()),
+                        networkTypes: _.push(res.networkType),
+                        isFront: _.push(_this.data.isFront)
                     },
                     success: function (res) {
                       console.log(res)
@@ -476,46 +576,157 @@ Page({
 
   // 结束记录
   endTrack: function () {
-    logEvent('End Tracking')
-    let _this = this
-    const db = wx.cloud.database()
-    console.log(this.data.curID)
+    let _this = this;
+    const db = wx.cloud.database();
     wx.getWeRunData({
       success: res => {
-        wx.cloud.callFunction({
-          name: 'echo',
-          data: {
-            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-            info: wx.cloud.CloudID(res.cloudID),
-          },
-        }).then(res => {
+        wx.cloud
+          .callFunction({
+            name: "echo",
+            data: {
+              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+              info: wx.cloud.CloudID(res.cloudID)
+      }
+    })
+    .then(res => {
           console.log('[onGetWeRunData] 收到 echo 回包：', res)
           let stepList = res.result.info.data.stepInfoList
           console.log(stepList[30].step)
-          db.collection('track').doc(_this.data.curID).get({
-            success: function (res) {
-              console.log(res.data)
-              var dist = 0
-              for (var j in res.data.points) {
-                if (j == 0) continue
-                dist += _this.GetDistance(res.data.points[j - 1].latitude, res.data.points[j - 1].longitude, res.data.points[j].latitude, res.data.points[j].longitude)
+          db.collection('track')
+            .doc(_this.data.curID)
+            .get({
+              success: function (res) {
+                console.log(res.data)
+                var dist = 0
+                for (var j in res.data.points) {
+                  if (j == 0) continue
+                  dist += _this.GetDistance(
+                    res.data.points[j - 1].latitude, 
+                    res.data.points[j - 1].longitude, 
+                    res.data.points[j].latitude, 
+                    res.data.points[j].longitude)
               }
               var item = res.data;
+              //人数
               var passenger = parseInt(item['capacity']) + 1
               console.log("passenger", passenger)
               var saving = 0
-              if (item['transport'] == '步行或骑行') saving = 292.4;
-              else if (item['transport'] == '驾驶电动汽车') saving = 292.4 - 181.5 / passenger;
-              else if (item['transport'] == '公共交通') saving = 292.4 - 20 / passenger;
-              else saving = 292.4 - 292.4 / passenger;
-              saving *= dist;
-              db.collection('track').doc(_this.data.curID).update({
-                data: {
-                  endTime: new Date(),
-                  endSteps: stepList[30].step,
-                  distance: dist.toFixed(2),
-                  carbSum: saving
+              //初始化统计结果
+              const result = new Map();
+                  for (let [key, value] of _this.data.speedBtwwon.entries()) {
+                    result.set(key, {
+                      label: value.label,
+                      count: 0,
+                      totalTime: 0,
+                      totalMeters: 0
+                    });
+                  }
+              // 计算每个速度对应的区间并统计数量和时间
+              item.velos.forEach(speed => {
+                _this.data.speedBtwwon.forEach((item,key) => {
+                  const {min, max} = item || {}
+                  if (speed >= min && speed <= max) {
+                    const currentEntry = result.get(key);
+                    currentEntry.count += 1;
+                    currentEntry.totalTime += 1; 
+                    currentEntry.totalMeters += speed;
+                    result.set(key, currentEntry);
+                  }
+                })
+            })
+            // 四舍五入并转公里
+            function roundToTwoKM(num) {
+              if (num <= 0) return 0
+              return Math.round((num / 1000) * 100) / 100;
+            }
+              //旧版
+              //if (item['transport'] == '步行或骑行') saving = 292.4;
+              //else if (item['transport'] == '驾驶电动汽车') saving = 292.4 - 181.5 / passenger;
+              //else if (item['transport'] == '公共交通') saving = 292.4 - 20 / passenger;
+              //else saving = 292.4 - 292.4 / passenger;
+              //saving *= dist;
+              
+              //新版
+              // 步行或骑行
+              const {
+                totalMeters: totalMetersWalk = 0
+              } = result.get(0) || {}
+              const {
+                totalMeters: totalMetersCycling = 0
+              } = result.get(1) || {}
+              const total = roundToTwoKM(totalMetersWalk + totalMetersCycling)
+
+              const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09]
+              saving += total * savingRate[passenger - 1]
+         
+              // 公共交通
+              const {
+                totalMeters: totalMetersCity = 0
+              } = result.get(4) || {}
+              const {
+                totalMeters: totalMetersHighSpeed = 0
+              } = result.get(5) || {}
+
+
+              const cityRate = 337.05
+              const highSpeedRate = 200.51
+              
+              const cityTotal = roundToTwoKM(totalMetersCity)
+              const highSpeedTotal = roundToTwoKM(totalMetersHighSpeed)
+              
+              saving += cityTotal * cityRate
+              saving += highSpeedTotal * highSpeedRate
+              const arr = ["步行或骑行", "步行或骑行",  "驾驶燃油汽车", "驾驶燃油汽车","公共交通","公共交通"]
+              
+  
+
+              let maxEntry = null;
+              let maxMeters = -Infinity;
+
+              for (const [key, value] of result.entries()) {
+                if (value.totalMeters > maxMeters) {
+                  maxMeters = value.totalMeters;
+                  maxEntry = {
+                    key,
+                    value
+                  };
                 }
+              }
+              let transport = arr[maxEntry.key]
+
+              if (_this.data.transport === "驾驶电动汽车") {
+                transport = '驾驶电动汽车'
+                // 市区
+                const {
+                  totalMeters: totalMetersCity = 0
+                } = result.get(2) || {}
+                // 高速
+                const {
+                  totalMeters: totalMetersHighSpeed = 0
+                } = result.get(3) || {}
+
+                const cityTotal = roundToTwoKM(totalMetersCity)
+                const highSpeedTotal = roundToTwoKM(totalMetersHighSpeed)
+
+                // 电车市区节省碳
+                const savingCityRate = [308.68, 154.34, 102.89, 77.17, 61.74, 56.12]
+                // 电车高速节省碳
+                const savingHighSpeedRate = [170.87, 85.44, 56.95, 42.72, 34.17, 31.07]
+
+                saving += cityTotal * savingCityRate[passenger - 1]
+                saving += highSpeedTotal * savingHighSpeedRate[passenger - 1]
+              }
+
+              db.collection('track')
+                .doc(_this.data.curID)
+                .update({
+                  data: {
+                    endTime: new Date(),
+                    endSteps: stepList[30].step,
+                    distance: dist.toFixed(2),
+                    carbSum: saving,
+                    transport
+                  }
               }).then(res => {
                 if (res.stats.updated == 1) {
                   console.log('行程记录成功！', res)
@@ -552,8 +763,8 @@ Page({
   },
 
   GetDistance: function (lat1, lng1, lat2, lng2) {
-    var radLat1 = lat1 * Math.PI / 180.0;
-    var radLat2 = lat2 * Math.PI / 180.0;
+    var radLat1 = (lat1 * Math.PI) / 180.0;
+    var radLat2 = (lat2 * Math.PI) / 180.0;
     var a = radLat1 - radLat2;
     var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
     var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) +
@@ -566,10 +777,14 @@ Page({
   // 出行方式选择
   bindPickerChange: function (e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
+    //this.setData({
+      //index: e.detail.value,
+      //transport: this.data.transportList[e.detail.value]
+    //})
     this.setData({
-      index: e.detail.value,
-      transport: this.data.transportList[e.detail.value]
-    })
+      endIndex: e.detail.value,
+      transport: this.data.endTransportList[e.detail.value]
+    });
   },
 
   bindCapacityChange: function (e) {
@@ -619,18 +834,15 @@ Page({
   },
   */
   onShow() {
-    logEvent('Home Page')
     this.setData({
       isFront: true
-    })
+    });
     wx.setNavigationBarTitle({
       title: '碳行家｜行程记录'
-    })
+    });
     this.setData({
       userInfo: app.globalData.userInfo
-    })
-
-    console.log('home page showing up')
+    });
   },
   onHide() {
     this.setData({
@@ -638,7 +850,6 @@ Page({
     })
   },
   onLoad: async function () {
-
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
@@ -685,6 +896,7 @@ Page({
                 var latitude = loc.latitude.toFixed(2)
                 var longitude = loc.longitude.toFixed(2)
                 console.log('Location: ', longitude, latitude)
+                console.log(loc.speed, 'speed')
                 wx.request({
                   url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + ',' + latitude,
                   success: async function (res) {
@@ -737,12 +949,13 @@ Page({
               }
             })
 
-            db.collection('userInfo').limit(1).where({
+            db.collection('userInfo')
+              .limit(1)
+              .where({
                 _openid: _this.data.openID,
               })
               .get({
                 success: function (res) {
-                  console.log(res.data[0].basicInfo.trans)
                   _this.setData({
                     defaultIndex: res.data[0].basicInfo.trans,
                     index: res.data[0].basicInfo.trans
@@ -751,9 +964,11 @@ Page({
                 fail: console.error
               })
 
-
             // 查询上次未结束的tracking？
-            db.collection('track').orderBy('date', 'desc').limit(1).where({
+            db.collection('track')
+              .orderBy('date', 'desc')
+              .limit(1)
+              .where({
                 _openid: _this.data.openID,
               })
               .get({
