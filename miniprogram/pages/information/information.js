@@ -68,8 +68,8 @@ Page({
             }
           });
           wx.setStorageSync("articleRecommend", [
-            articleRecommend.recommendProbabilities,
-            articleRecommend.articleCount
+            articleRecommend[0],
+            articleRecommend[1]
           ])
 
         // 仅本地数据丢失情况
@@ -308,7 +308,7 @@ Page({
     // 初始化页面数据
     await this.fetchCloudData(false)
     const localArticleRecommend = wx.getStorageSync('articleRecommend');
-
+    
     this.setData({
       articles: wx.getStorageSync('articles'),
       articleRecommend: {
