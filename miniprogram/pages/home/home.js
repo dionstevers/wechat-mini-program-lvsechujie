@@ -10,11 +10,11 @@ Page({
     todayRecordList: [],
     isRecordEmpty: true,
     userInfo: null,
-    // 临时记录信息：
+    // Temporary record information
     startTime: 0,
     endTime: 0,
     duration: 0,
-    // 用户数据
+    // User data
     openID: "",
     brand: "",
     model: "",
@@ -35,7 +35,7 @@ Page({
     name: "",
     category: "",
     transporModalHidden: true,
-    capacityModalHidden: true,
+    // capacityModalHidden: true,
     speedBtwwon: [
       {
         label: "步行/跑步",
@@ -70,13 +70,6 @@ Page({
     ]
   },
 
-  capacityModalConfirm(e) {
-    this.setData({ capacityModalHidden: true });
-    this.onTrack();
-  },
-  capacityModalCancel() {
-    this.setData({ capacityModalHidden: true });
-  },
   transporModalConfirm(e) {
     this.setData({
       transporModalHidden: true
@@ -88,7 +81,7 @@ Page({
       transporModalHidden: true
     });
   },
-  // 展示数据库中节省碳足迹top_n
+  // Show carbon footprint savings in database top_n
   carbRanking() {
     const db = wx.cloud.database();
     db.collection("userInfo")
@@ -104,7 +97,7 @@ Page({
         }
       });
   },
-  // 计算离aqi基站距离
+  // Calculate the distance from aqi base station
   calcDist: async function (triplet, i) {
     const db = wx.cloud.database();
     const { data } = await db
@@ -116,7 +109,7 @@ Page({
     const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
     return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
-  //  找到最近aqi基站
+  // Find the closest aqi base station
   async findClosest(triplet) {
     let closest = -1;
     let closestDist = -1;
@@ -130,7 +123,7 @@ Page({
     }
     return closest;
   },
-  // 更新aqi数据
+  // Update aqi data
   updateAQI: function (res, closest) {
     this.setData({
       aqi: res.data.station[closest].aqi,
@@ -138,7 +131,7 @@ Page({
       category: res.data.station[closest].category
     });
   },
-  // 更新碳排放列表
+  // Update the carbon saving list
   updateCarbon() {
     const _this = this;
     const db = wx.cloud.database();
@@ -170,7 +163,7 @@ Page({
               );
             }
             item["distance"] = dist.toFixed(2);
-            let passenger = parseInt(item["capacity"]) + 1;
+            let passenger = 1; //parseInt(item["capacity"]) + 1;
 
             let saving = 0;
             if (item["transport"] == "步行或骑行") saving = 292.4;
@@ -232,7 +225,7 @@ Page({
         }
       });
   },
-  // 更新行程记录列表
+  // Update recording list
   setList() {
     const _this = this;
     const db = wx.cloud.database();
@@ -273,48 +266,8 @@ Page({
         }
       });
   },
-  // 计算当次节省碳排放 - 问题：  是否与update carbon 重复？
-  /*
-  calcCarbon() {
-    const _this = this
-    const db = wx.cloud.database()
-    const _ = db.command
-    let now = new Date()
-    now.setHours(0, 0, 0, 0)
-    let carbon = 0
-    db.collection('track').where({
-        _openid: _this.data.openID,
-        date: _.gt(now)
-      })
-      .get({
-        success: function (res) {
-          let list = res.data
-          console.log('get list:', list);
-          list.forEach(item => {
-            let dist = 0
-            for (let j in item['points']) {
-              if (j == 0) continue
-              dist += _this.GetDistance(item['points'][j - 1].latitude, item['points'][j - 1].longitude, item['points'][j].latitude, item['points'][j].longitude)
-            }
-            item['distance'] = dist.toFixed(2)
-            let passenger = parseInt(item['capacity']) + 1
-            console.log("passenger", passenger)
-            let saving = 0
-            if (item['transport'] == '步行或骑行') saving = 192;
-            //else if (item['transport'] == '电动自行车') saving = 192 - 10 / passenger;
-            else if (item['transport'] == '公共交通') saving = 192 - 20 / passenger;
-            else saving = 192 - 192 / passenger;
-            carbon += dist * saving
-          })
-          console.log("carbon", carbon)
-          _this.setData({
-            carbonFootprint: carbon.toFixed(2)
-          })
-        }
-      })
-  },
-  */
-  // 开启行程记录
+  
+  // Start recording
   keepTracking: function () {
     const db = wx.cloud.database();
     const _ = db.command;
@@ -354,7 +307,7 @@ Page({
       }
     });
   },
-  // 结束行程记录
+  // End recording
   onClickEvent() {
     const _this = this;
     if (_this.data.userInfo != null) {
@@ -392,9 +345,10 @@ Page({
   startTrackConfirm: function () {
     wx.getSetting().then(res => {
       if (res.authSetting["scope.userLocationBackground"]) {
-        this.setData({
-          capacityModalHidden: false
-        });
+        this.onTrack();
+        // this.setData({
+        //   capacityModalHidden: false
+        // });
       } else {
         wx.showModal({
           title: "提示",
@@ -403,9 +357,10 @@ Page({
           if (modalRes.confirm) {
             wx.openSetting().then(settingRes => {
               if (settingRes.authSetting["scope.userLocationBackground"]) {
-                this.setData({
-                  capacityModalHidden: false
-                });
+                this.onTrack();
+                // this.setData({
+                //   capacityModalHidden: false
+                // });
               }
             });
           }
@@ -507,7 +462,7 @@ Page({
     });
   },
 
-  // 结束记录
+  // End recording
   endTrack: function () {
     const _this = this;
     const db = wx.cloud.database();
@@ -541,12 +496,12 @@ Page({
                   }
                   let item = res.data;
 
-                  // 人数
-                  let passenger = parseInt(item["capacity"]) + 1;
+                  // Passenger number
+                  let passenger = 1; //parseInt(item["capacity"]) + 1;
                   let saving = 0;
 
                   // new logic
-                  // 初始化统计结果
+                  // Initialization
                   const result = new Map();
                   for (let [key, value] of _this.data.speedBtwwon.entries()) {
                     result.set(key, {
@@ -557,7 +512,7 @@ Page({
                     });
                   }
 
-                  // 计算每个速度对应的区间并统计数量和时间
+                  // Calculate the interval corresponding to each speed and count the quantity and time
                   item.velos.forEach(speed => {
                     _this.data.speedBtwwon.forEach((item, key) => {
                       const { min, max } = item || {};
@@ -571,15 +526,8 @@ Page({
                     });
                   });
 
-                  // 计算省碳排放 旧版
-                  // if (item["transport"] == "步行或骑行") saving = 292.4;
-                  // else if (item["transport"] == "驾驶电动汽车") saving = 292.4 - 181.5 / passenger;
-                  // else if (item["transport"] == "公共交通") saving = 292.4 - 20 / passenger;
-                  // else aving = 292.4 - 292.4 / passenger;
-                  // saving *= dist;
-
-                  // 新逻辑
-                  // 步行或骑行
+                  // New logic
+                  // 步行或骑行 Walk or cycle
                   const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
                   const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
                   const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
@@ -587,7 +535,7 @@ Page({
                   const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
                   saving += total * savingRate[passenger - 1];
 
-                  // 公共交通
+                  // 公共交通 Public transportation
                   const { totalMeters: totalMetersCity = 0 } = result.get(4) || {};
                   const { totalMeters: totalMetersHighSpeed = 0 } = result.get(5) || {};
 
@@ -615,20 +563,19 @@ Page({
                   }
                   let transport = arr[maxEntry.key];
 
-                  // 驾驶电动汽车
+                  // 驾驶电动汽车 Electric vehicle
                   if (_this.data.transport === "驾驶电动汽车") {
                     transport = "驾驶电动汽车";
-                    // 市区
+                    // 市区 City
                     const { totalMeters: totalMetersCity = 0 } = result.get(2) || {};
-                    // 高速
+                    // 高速 Highway
                     const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
 
                     const cityTotal = _this.roundToTwoKM(totalMetersCity);
                     const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
 
-                    // 电车市区节省碳比例
                     const savingCityRate = [308.68, 154.34, 102.89, 77.17, 61.74, 56.12];
-                    // 电车高速节省碳比例
+
                     const savingHighSpeedRate = [170.87, 85.44, 56.95, 42.72, 34.17, 31.07];
 
                     saving += cityTotal * savingCityRate[passenger - 1];
@@ -681,7 +628,7 @@ Page({
       }
     });
   },
-  // 四舍五入并转公里
+  // Round to kilometers
   roundToTwoKM(num) {
     if (num <= 0) return 0;
     return Math.round((num / 1000) * 100) / 100;
@@ -697,7 +644,7 @@ Page({
     return s;
   },
 
-  // 出行方式选择
+  // Travel mode selection
   bindPickerChange: function (e) {
     this.setData({
       endIndex: e.detail.value,
@@ -711,47 +658,7 @@ Page({
     });
   },
 
-  // 删除记录
-  /*
-  deleteRecord(e) {
-    const db = wx.cloud.database()
-    const _this = this
-    let _id = e.currentTarget.dataset.id
-    wx.showModal({
-      title: '提示',
-      content: '删除本条记录？',
-      success(res) {
-        if (res.confirm) {
-          db.collection('track')
-            .doc(_id)
-            .remove()
-            .then(res => {
-              wx.showToast({
-                title: '删除成功!',
-                icon: 'success',
-                duration: 1000
-              })
-              _this.setList()
-              //_this.calcCarbon()
-              _this.onLoad()
-            })
-            .catch(err => {
-              wx.showToast({
-                title: '删除失败!' + err,
-                icon: 'fail',
-                duration: 1000
-              })
-            })
-
-        } else if (res.cancel) {
-          console.log('用户点击取消')
-        }
-      }
-    })
-  },
-  */
   onShow() {
-    logEvent('Home Page')
     this.setData({
       isFront: true
     });
@@ -768,7 +675,6 @@ Page({
     });
   },
   onLoad: async function () {
-    console.log(app)
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
@@ -889,7 +795,7 @@ Page({
                 fail: console.error
               });
 
-            // 查询上次未结束的tracking？
+            // Query the last unfinished tracking？
             db.collection("track")
               .orderBy("date", "desc")
               .limit(1)
