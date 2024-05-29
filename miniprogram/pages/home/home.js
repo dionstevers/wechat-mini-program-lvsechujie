@@ -751,6 +751,7 @@ Page({
   },
   */
   onShow() {
+    logEvent('Home Page')
     this.setData({
       isFront: true
     });

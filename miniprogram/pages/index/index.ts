@@ -42,9 +42,7 @@ Page({
           await this.recordShare(openid, sharedFromid);
         }
           // If the sender document does not exist, create it
-
-
-        
+      
       }catch(err){
         console.log(err)
       } 

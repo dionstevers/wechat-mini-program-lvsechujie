@@ -14,7 +14,8 @@
     "pages/privacy/privacy",
     "pages/picUp/picUp",
     "pages/detail/detail", 
-    "pages/quiz/quiz" 
+    "pages/quiz/quiz",
+    "pages/notification/notification"
   ],
   "tabBar": {
     "list": [

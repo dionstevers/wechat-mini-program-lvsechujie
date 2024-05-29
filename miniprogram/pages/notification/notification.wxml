@@ -1,0 +1,29 @@
+<!-- pages/notification-center/notification-center.wxml -->
+<view class="container">
+  <view class="tabbar">
+    <block wx:for="{{tabs}}" wx:key="index">
+      <button bindtap="switchTab" data-index="{{index}}" class="tab {{currentTab === index ? 'tab-selected' : ''}}">
+        {{item}}
+      </button>
+    </block>
+  </view>
+  <view wx:if="{{currentTab == 0}}" class="inbox-container">
+    <block wx:for="{{messages}}" wx:key="id">
+      <view class="message-item" data-index="{{index}}" bindtap="toggleMessage">
+        <text class="sender">{{item.sender}}</text>
+        <text class="time">{{item.time}}</text>
+        <text class="type">{{item.type}}</text>
+        <view class="message-content">
+          <text class="{{expandedMessageIndex === index ? 'message-full' : 'message-preview'}}">{{item.message}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+  <view wx:if="{{currentTab == 1}}" class="send-message-container">
+    <picker mode="selector" range="{{types}}" bindchange="bindPickerChange">
+      <view class="picker">{{type || "Select type"}}</view>
+    </picker>
+    <textarea bindinput="bindMessageInput" placeholder="Enter your message" value="{{message}}"></textarea>
+    <button bindtap="submitMessage">Send</button>
+  </view>
+</view>
