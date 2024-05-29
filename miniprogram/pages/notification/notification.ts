@@ -7,7 +7,7 @@ Page({
     messages: [],
     type: "",
     message: "",
-    types: ["Type1", "Type2", "Type3"],
+    types: ["奖品兑换", "功能建议", "问题修复"],
     expandedMessageIndex: -1
   },
 
@@ -26,13 +26,46 @@ Page({
 
   loadMessages() {
     const db = wx.cloud.database();
-    db.collection('messages').get().then(res => {
-      this.setData({
-        messages: res.data
+    const openid = this.data.openID;
+    db.collection('messages')
+      .where({
+        _openid: openid
+      })
+      .orderBy('stage', 'asc')
+      .orderBy('time', 'asc')
+      .get()
+      .then(res => {
+        const messages = res.data.map((message: any) => {
+          return {
+            ...message,
+            formattedTime: this.formatTime(message.time) // Format time for each message
+          };
+        });
+  
+        this.setData({
+          inboxMessages: messages
+        });
+      })
+      .catch(err => {
+        console.error('Error loading messages:', err);
       });
-    });
   },
-
+  
+  formatTime(time: number) {
+    const date = new Date(time);
+    const year = date.getFullYear();
+    const month = this.padZero(date.getMonth() + 1);
+    const day = this.padZero(date.getDate());
+    const hour = this.padZero(date.getHours());
+    const minute = this.padZero(date.getMinutes());
+    const formattedTime = `${year}-${month}-${day} ${hour}:${minute}`;
+    return formattedTime;
+  },
+  
+  padZero(num: number) {
+    return num < 10 ? '0' + num : num;
+  },
+  
   toggleMessage(event: any) {
     const index = event.currentTarget.dataset.index;
     this.setData({
@@ -57,7 +90,7 @@ Page({
     const { type, message, openID } = this.data;
   
     wx.requestSubscribeMessage({
-      tmplIds: ['5wXvMNdaUfyr5TP_XsMxUeI4waBCtaPo_MRaJK6PkbQ', '0E8lHFKjSYWUJMA9NB7iKEFnTWwg3ivKOS8XTXrOKRU'],
+      tmplIds: ['0E8lHFKjSYWUJMA9NB7iKEFnTWwg3ivKOS8XTXrOKRU','5wXvMNdaUfyr5TP_XsMxUeI4waBCtaPo_MRaJK6PkbQ'],
       success: (res) => {
         const db = wx.cloud.database();
         db.collection('messages').add({
@@ -66,7 +99,8 @@ Page({
             message,
             sender: openID,
             time: new Date(),
-            stage: 0 // 0 stands for processing state, and 1 stands for processed stage
+            stage: 0 ,// 0 stands for processing state, and 1 stands for processed stage
+            response: "" // Set response to empty string for newly submitted messages
           }
         }).then(dbRes => {
           wx.showToast({
