@@ -1,11 +1,8 @@
 <view style="background: {{ background }}; display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center;">
 
 <text style=" text-align: center; font-size: 16px; color: white;">
-  昆山杜克大学\n\n个人碳足迹研究小组\n\n致力碳排放知识科普与促进低碳绿色生活\n\n主导教授：常超一 \n\n 联系我们： \n\n Email: charles.c.chang@dukekunshan.edu.cn \n\n 微信技术指导：郑同学
+  昆山杜克大学\n\n个人碳足迹研究小组\n\n致力碳排放知识科普与促进低碳绿色生活\n\n主导教授：常超一 \n\n 联系我们： \n\n Email: charles.c.chang@dukekunshan.edu.cn \n
 </text>
 
-<view style="margin-top: 20px; text-align: center;">
-  <image src="https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/groups/image-removebg-preview%20(2).png?sign=e1073b70ce3aabc32c5204b2afd3c302&t=1700455403" mode="" style="max-width: 90%; max-height: 100%;" />
-</view>
 
 </view>

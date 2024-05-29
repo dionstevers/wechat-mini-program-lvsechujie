@@ -3,7 +3,7 @@ Page({
   data: {
     openID:'',
     currentTab: 0,
-    tabs: ["Inbox", "Send Message"],
+    tabs: ["收件箱", "发件箱"],
     messages: [],
     type: "",
     message: "",
