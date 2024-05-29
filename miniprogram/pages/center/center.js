@@ -104,18 +104,18 @@ Page({
     userInfo: null,
     openID: '',
     functionList: [{
-        functionSrc: '../../asset/img/camera.png',
-        functionTitle: '低碳身边事',
-        url: '../picUp/picUp'
-      },
-      {
-        functionSrc: '../../asset/img/note.png',
+        functionSrc: '../../asset/img/order_unread.png',
         functionTitle: '低碳问答',
         url: '../journal/journal?typeq=2'
       },
       {
-        functionSrc: '../../asset/img/exchange.png',
-        functionTitle: '积分中心',
+        functionSrc: '../../asset/img/message_unread.png',
+        functionTitle: '消息中心',
+        url: '../notification/notification'
+      },
+      {
+        functionSrc: '../../asset/img/credits.png',
+        functionTitle: '积分抽奖',
         url: '../store/store'
       }
     ],
@@ -239,7 +239,7 @@ Page({
   onSurvey(e) {
     logEvent('About Us')
     wx.navigateTo({
-      url: '/pages/notification/notification',
+      url: '/pages/aboutus/aboutus',
     })
 
   },
