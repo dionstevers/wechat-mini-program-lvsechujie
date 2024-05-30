@@ -36,8 +36,7 @@ Page({
     category: "",
     transporModalHidden: true,
     // capacityModalHidden: true,
-    speedBtwwon: [
-      {
+    speedBtwwon: [{
         label: "步行/跑步",
         min: 0,
         max: 2.78
@@ -93,20 +92,27 @@ Page({
             ...item,
             carbSum: Math.round(item.carbSum / 1000)
           }));
-          this.setData({ users: ranking });
+          this.setData({
+            users: ranking
+          });
         }
       });
   },
   // Calculate the distance from aqi base station
   calcDist: async function (triplet, i) {
     const db = wx.cloud.database();
-    const { data } = await db
+    const {
+      data
+    } = await db
       .collection("monitor")
       .where({
         POI_ID: triplet[2][i].id
       })
       .get();
-    const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
+    const {
+      POI_Latitude: mlat,
+      POI_Longitude: mlng
+    } = data[0];
     return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
   // Find the closest aqi base station
@@ -259,6 +265,11 @@ Page({
             item["distance"] = dist.toFixed(2);
             item["carbSum"] = item.carbSum.toFixed(2);
           });
+
+
+          console.log(list, 'listlistlistlistlist')
+
+
           _this.setData({
             todayRecordList: list.reverse(),
             isRecordEmpty: list.length == 0
@@ -266,7 +277,7 @@ Page({
         }
       });
   },
-  
+
   // Start recording
   keepTracking: function () {
     const db = wx.cloud.database();
@@ -385,7 +396,7 @@ Page({
     const _ = db.command;
 
     wx.getWeRunData({
-      success: res => {
+      complete: async res => {
         wx.cloud
           .callFunction({
             name: "echo",
@@ -393,71 +404,77 @@ Page({
               info: wx.cloud.CloudID(res.cloudID)
             }
           })
-          .then(async res => {
-            console.log("[onGetWeRunData] 收到 echo 回包：", res);
-            let stepList = res.result.info.data.stepInfoList;
 
-            const trackRes = await db.collection("track").add({
-              data: {
-                date: new Date(),
-                points: [],
-                velos: [],
-                timestamps: [],
-                networkTypes: [],
-                isFront: [],
-                brand: this.data.brand,
-                model: this.data.model,
-                system: this.data.system,
-                version: this.data.version,
-                platform: this.data.platform,
-                transport: this.data.transportList[this.data.index],
-                capacity: this.data.capacity,
-                startSteps: stepList[30].step
-              }
-            });
+        const {
+          result = null
+        } = await wx.cloud.callFunction({
+          name: "echo",
+          data: {
+            info: wx.cloud.CloudID(res.cloudID)
+          }
+        }) || {}
 
-            this.setData({
-              curID: trackRes._id,
-              isTracking: true
-            });
+        const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
-            wx.startLocationUpdateBackground({
-              success(res) {
-                console.log("开启后台定位", res);
-              },
-              fail(err) {
-                console.log("开启后台定位失败", err);
-              }
-            });
 
-            let cnt = 10;
-            wx.onLocationChange(async locationFn => {
-              cnt++;
-              if (cnt >= 10) {
-                cnt = 0;
-                try {
-                  const networkRes = await wx.getNetworkType();
-                  await db
-                    .collection("track")
-                    .doc(this.data.curID)
-                    .update({
-                      data: {
-                        points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                        velos: _.push(locationFn.speed),
-                        timestamps: _.push(new Date()),
-                        networkTypes: _.push(networkRes.networkType),
-                        isFront: _.push(this.data.isFront)
-                      }
-                    });
-                } catch (err) {
-                  console.error("网络类型获取或数据更新失败", err);
-                }
-              }
-            });
-          })
-          .catch(err => {
-            console.log("[onGetWeRunData] 失败：", err);
-          });
+        const trackRes = await db.collection("track").add({
+          data: {
+            date: new Date(),
+            points: [],
+            velos: [],
+            timestamps: [],
+            networkTypes: [],
+            isFront: [],
+            brand: this.data.brand,
+            model: this.data.model,
+            system: this.data.system,
+            version: this.data.version,
+            platform: this.data.platform,
+            transport: this.data.transportList[this.data.index],
+            capacity: this.data.capacity,
+            startSteps: stepList ? stepList[30].step : null
+          }
+        });
+
+        this.setData({
+          curID: trackRes._id,
+          isTracking: true
+        });
+
+        wx.startLocationUpdateBackground({
+          success(res) {
+            console.log("开启后台定位", res);
+          },
+          fail(err) {
+            console.log("开启后台定位失败", err);
+          }
+        });
+
+        let cnt = 10;
+        wx.onLocationChange(async locationFn => {
+          cnt++;
+          if (cnt >= 10) {
+            cnt = 0;
+            try {
+              const networkRes = await wx.getNetworkType();
+              await db
+                .collection("track")
+                .doc(this.data.curID)
+                .update({
+                  data: {
+                    points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                    velos: _.push(locationFn.speed),
+                    timestamps: _.push(new Date()),
+                    networkTypes: _.push(networkRes.networkType),
+                    isFront: _.push(this.data.isFront)
+                  }
+                });
+            } catch (err) {
+              console.error("网络类型获取或数据更新失败", err);
+            }
+          }
+        });
+
       }
     });
   },
@@ -467,163 +484,174 @@ Page({
     const _this = this;
     const db = wx.cloud.database();
     wx.getWeRunData({
-      success: res => {
-        wx.cloud
-          .callFunction({
-            name: "echo",
-            data: {
-              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-              info: wx.cloud.CloudID(res.cloudID)
-            }
-          })
-          .then(res => {
-            console.log("[onGetWeRunData] 收到 echo 回包：", res);
-            let stepList = res.result.info.data.stepInfoList;
+      complete: async res => {
+        const {
+          result = null
+        } = await wx.cloud.callFunction({
+          name: "echo",
+          data: {
+            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+            info: wx.cloud.CloudID(res.cloudID)
+          }
+        }) || {}
 
-            db.collection("track")
-              .doc(_this.data.curID)
-              .get({
-                success: function (res) {
-                  let dist = 0;
-                  for (let j in res.data.points) {
-                    if (j == 0) continue;
-                    dist += _this.GetDistance(
-                      res.data.points[j - 1].latitude,
-                      res.data.points[j - 1].longitude,
-                      res.data.points[j].latitude,
-                      res.data.points[j].longitude
-                    );
+        const stepList = result.info.data ? result.info.data.stepInfoList : null;
+
+        db.collection("track")
+          .doc(_this.data.curID)
+          .get({
+            success: function (res) {
+              let dist = 0;
+              for (let j in res.data.points) {
+                if (j == 0) continue;
+                dist += _this.GetDistance(
+                  res.data.points[j - 1].latitude,
+                  res.data.points[j - 1].longitude,
+                  res.data.points[j].latitude,
+                  res.data.points[j].longitude
+                );
+              }
+              let item = res.data;
+
+              // Passenger number
+              let passenger = 1; //parseInt(item["capacity"]) + 1;
+              let saving = 0;
+
+              // new logic
+              // Initialization
+              const result = new Map();
+              for (let [key, value] of _this.data.speedBtwwon.entries()) {
+                result.set(key, {
+                  label: value.label,
+                  count: 0,
+                  totalTime: 0,
+                  totalMeters: 0
+                });
+              }
+
+              // Calculate the interval corresponding to each speed and count the quantity and time
+              item.velos.forEach(speed => {
+                _this.data.speedBtwwon.forEach((item, key) => {
+                  const {
+                    min,
+                    max
+                  } = item || {};
+                  if (speed >= min && speed <= max) {
+                    const currentEntry = result.get(key);
+                    currentEntry.count += 1;
+                    currentEntry.totalTime += 1;
+                    currentEntry.totalMeters += speed;
+                    result.set(key, currentEntry);
                   }
-                  let item = res.data;
-
-                  // Passenger number
-                  let passenger = 1; //parseInt(item["capacity"]) + 1;
-                  let saving = 0;
-
-                  // new logic
-                  // Initialization
-                  const result = new Map();
-                  for (let [key, value] of _this.data.speedBtwwon.entries()) {
-                    result.set(key, {
-                      label: value.label,
-                      count: 0,
-                      totalTime: 0,
-                      totalMeters: 0
-                    });
-                  }
-
-                  // Calculate the interval corresponding to each speed and count the quantity and time
-                  item.velos.forEach(speed => {
-                    _this.data.speedBtwwon.forEach((item, key) => {
-                      const { min, max } = item || {};
-                      if (speed >= min && speed <= max) {
-                        const currentEntry = result.get(key);
-                        currentEntry.count += 1;
-                        currentEntry.totalTime += 1;
-                        currentEntry.totalMeters += speed;
-                        result.set(key, currentEntry);
-                      }
-                    });
-                  });
-
-                  // New logic
-                  // 步行或骑行 Walk or cycle
-                  const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
-                  const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
-                  const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
-
-                  const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
-                  saving += total * savingRate[passenger - 1];
-
-                  // 公共交通 Public transportation
-                  const { totalMeters: totalMetersCity = 0 } = result.get(4) || {};
-                  const { totalMeters: totalMetersHighSpeed = 0 } = result.get(5) || {};
-
-                  const cityRate = 337.05;
-                  const highSpeedRate = 200.51;
-
-                  const cityTotal = _this.roundToTwoKM(totalMetersCity);
-                  const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
-
-                  saving += cityTotal * cityRate;
-                  saving += highSpeedTotal * highSpeedRate;
-                  const arr = ["步行或骑行", "步行或骑行", "驾驶燃油汽车", "驾驶燃油汽车", "公共交通", "公共交通"];
-
-                  let maxEntry = null;
-                  let maxMeters = -Infinity;
-
-                  for (const [key, value] of result.entries()) {
-                    if (value.totalMeters > maxMeters) {
-                      maxMeters = value.totalMeters;
-                      maxEntry = {
-                        key,
-                        value
-                      };
-                    }
-                  }
-                  let transport = arr[maxEntry.key];
-
-                  // 驾驶电动汽车 Electric vehicle
-                  if (_this.data.transport === "驾驶电动汽车") {
-                    transport = "驾驶电动汽车";
-                    // 市区 City
-                    const { totalMeters: totalMetersCity = 0 } = result.get(2) || {};
-                    // 高速 Highway
-                    const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
-
-                    const cityTotal = _this.roundToTwoKM(totalMetersCity);
-                    const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
-
-                    const savingCityRate = [308.68, 154.34, 102.89, 77.17, 61.74, 56.12];
-
-                    const savingHighSpeedRate = [170.87, 85.44, 56.95, 42.72, 34.17, 31.07];
-
-                    saving += cityTotal * savingCityRate[passenger - 1];
-                    saving += highSpeedTotal * savingHighSpeedRate[passenger - 1];
-                  }
-
-                  db.collection("track")
-                    .doc(_this.data.curID)
-                    .update({
-                      data: {
-                        endTime: new Date(),
-                        endSteps: stepList[30].step,
-                        distance: dist.toFixed(2),
-                        carbSum: saving,
-                        transport
-                      }
-                    })
-                    .then(res => {
-                      if (res.stats.updated == 1) {
-                        console.log("行程记录成功！", res);
-                        wx.showToast({
-                          title: "行程记录成功!",
-                          icon: "success",
-                          duration: 2000
-                        });
-                        clearInterval(_this.data.myTimer);
-                        _this.setData({
-                          startTime: 0,
-                          endTime: 0,
-                          duration: 0,
-                          capacity: 0,
-                          index: _this.data.defaultIndex,
-                          btnClass: "btn btn-default",
-                          recordStatus: false
-                        });
-                        wx.stopLocationUpdate();
-                        wx.offLocationChange();
-                        _this.setList();
-                        //_this.calcCarbon()
-                        _this.updateCarbon();
-                        _this.onLoad();
-                      }
-                    });
-                }
+                });
               });
-          })
-          .catch(err => {
-            console.log("[onGetWeRunData] 失败：", err);
+
+              // New logic
+              // 步行或骑行 Walk or cycle
+              const {
+                totalMeters: totalMetersWalk = 0
+              } = result.get(0) || {};
+              const {
+                totalMeters: totalMetersCycling = 0
+              } = result.get(1) || {};
+              const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
+
+              const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
+              saving += total * savingRate[passenger - 1];
+
+              // 公共交通 Public transportation
+              const {
+                totalMeters: totalMetersCity = 0
+              } = result.get(4) || {};
+              const {
+                totalMeters: totalMetersHighSpeed = 0
+              } = result.get(5) || {};
+
+              const cityRate = 337.05;
+              const highSpeedRate = 200.51;
+
+              const cityTotal = _this.roundToTwoKM(totalMetersCity);
+              const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
+
+              saving += cityTotal * cityRate;
+              saving += highSpeedTotal * highSpeedRate;
+              const arr = ["步行或骑行", "步行或骑行", "驾驶燃油汽车", "驾驶燃油汽车", "公共交通", "公共交通"];
+
+              let maxEntry = null;
+              let maxMeters = -Infinity;
+
+              for (const [key, value] of result.entries()) {
+                if (value.totalMeters > maxMeters) {
+                  maxMeters = value.totalMeters;
+                  maxEntry = {
+                    key,
+                    value
+                  };
+                }
+              }
+              let transport = arr[maxEntry.key];
+
+              // 驾驶电动汽车 Electric vehicle
+              if (_this.data.transport === "驾驶电动汽车") {
+                transport = "驾驶电动汽车";
+                // 市区 City
+                const {
+                  totalMeters: totalMetersCity = 0
+                } = result.get(2) || {};
+                // 高速 Highway
+                const {
+                  totalMeters: totalMetersHighSpeed = 0
+                } = result.get(3) || {};
+
+                const cityTotal = _this.roundToTwoKM(totalMetersCity);
+                const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
+
+                const savingCityRate = [308.68, 154.34, 102.89, 77.17, 61.74, 56.12];
+
+                const savingHighSpeedRate = [170.87, 85.44, 56.95, 42.72, 34.17, 31.07];
+
+                saving += cityTotal * savingCityRate[passenger - 1];
+                saving += highSpeedTotal * savingHighSpeedRate[passenger - 1];
+              }
+
+              db.collection("track")
+                .doc(_this.data.curID)
+                .update({
+                  data: {
+                    endTime: new Date(),
+                    endSteps: stepList ? stepList[30].step : null,
+                    distance: dist.toFixed(2),
+                    carbSum: saving,
+                    transport
+                  }
+                })
+                .then(res => {
+                  if (res.stats.updated == 1) {
+                    console.log("行程记录成功！", res);
+                    wx.showToast({
+                      title: "行程记录成功!",
+                      icon: "success",
+                      duration: 2000
+                    });
+                    clearInterval(_this.data.myTimer);
+                    _this.setData({
+                      startTime: 0,
+                      endTime: 0,
+                      duration: 0,
+                      capacity: 0,
+                      index: _this.data.defaultIndex,
+                      btnClass: "btn btn-default",
+                      recordStatus: false
+                    });
+                    wx.stopLocationUpdate();
+                    wx.offLocationChange();
+                    _this.setList();
+                    //_this.calcCarbon()
+                    _this.updateCarbon();
+                    _this.onLoad();
+                  }
+                });
+            }
           });
       }
     });
@@ -747,17 +775,17 @@ Page({
                           )
                         );
                         new_category =
-                          new_aqi <= 50
-                            ? "优"
-                            : new_aqi <= 100
-                            ? "良"
-                            : new_aqi <= 150
-                            ? "轻度污染"
-                            : new_aqi <= 200
-                            ? "中度污染"
-                            : new_aqi <= 300
-                            ? "重度污染"
-                            : "严重污染";
+                          new_aqi <= 50 ?
+                          "优" :
+                          new_aqi <= 100 ?
+                          "良" :
+                          new_aqi <= 150 ?
+                          "轻度污染" :
+                          new_aqi <= 200 ?
+                          "中度污染" :
+                          new_aqi <= 300 ?
+                          "重度污染" :
+                          "严重污染";
 
                         _this.setData({
                           name: city_name,

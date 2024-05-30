@@ -1,52 +1,67 @@
-<view class="page-background" style="font-family: 'Times New Roman', Times, serif; background: {{background}};">
-<view class='notice'>
-  <view class='notice-contain'>
-    <view class="notice-containTitle">公告栏</view>
-    
-    <swiper class="tab-right" vertical="true" autoplay="true" circular="true"  interval="2000" >
-         
-            <block wx:for='{{luckylist}}'>
-                <swiper-item>
-                    <view class='content-item'>
-                        <view class="time">{{item.time}}</view>
-                         
-                    </view>
-                </swiper-item>
-            </block> 
-     
-    </swiper>
-    </view>
-    </view>
+<wxs module="fn">
+  module.exports = {
+    formatText: function (str) {
+      return str.replace("-", "\n");
+    }
+  }
+</wxs>
 
-<view class="index">
- <view class="line"></view>
- <view class="line"></view>
- <view class="line"></view>
- <view class="detail"><text>京东E卡\n10元</text></view>
+<view class="page-background" style="font-family: 'Times New Roman', Times, serif; background: {{background}};">
+  <view class='notice'>
+    <view class='notice-contain'>
+      <view class="notice-containTitle">公告栏</view>
+
+      <swiper class="tab-right" vertical="true" autoplay="true" circular="true" interval="2000">
+
+        <block wx:for='{{luckylist}}'>
+          <swiper-item>
+            <view class='content-item'>
+              <view class="time">{{item.time}}</view>
+
+            </view>
+          </swiper-item>
+        </block>
+
+      </swiper>
+    </view>
+  </view>
+
+  <view class="index">
+    <view class="line"></view>
+    <view class="line"></view>
+    <view class="line"></view>
+
+    <!-- <view class="detail"><text>京东E卡\n10元</text></view>
  <view class="detail"><text>京东E卡\n100元</text></view>
  <view class="detail"><text>京东E卡\n50元</text></view>
  <view class="detail" style="margin-left: -40rpx;"><text>京东E卡40元</text></view>
  <view class="detail"><text>京东图书品类卡\n30元</text></view>
- <view class="detail"><text>京东E卡\n20元</text></view>
- <span  style="transform:rotate({{trasn}}deg);"></span>
-</view>
+ <view class="detail"><text>京东E卡\n20元</text></view> -->
 
-<view class="info">
-  <view class="side" bindtap="toMyprize">
-    <view>我的奖品</view>
-    <image src="../../asset/img/more_ico.png" style="width: 30rpx; height: 30rpx; margin-top: 15rpx;" />
+
+    <view class="detail" wx:for="{{xml}}" style="{{item.style}}">
+      <text>{{fn.formatText(item.text)}}</text>
+    </view>
+
+    <span style="transform:rotate({{trasn}}deg);"></span>
   </view>
-  <button wx:if="{{!spinning}}" class="center" bindtap="startSpin"> 
-  <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; " ></image> 
-  <view>{{cost}} 抽奖</view>
-  </button>
-  <button wx:if = "{{spinning}}" class="center"> 
-  <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; " ></image> 
-  <view>抽奖中</view>
-  </button>
-  <view class="side"> 
-    <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx;" ></image>
-    <view>{{credit}}</view>
+
+  <view class="info">
+    <view class="side" bindtap="toMyprize">
+      <view>我的奖品</view>
+      <image src="../../asset/img/more_ico.png" style="width: 30rpx; height: 30rpx; margin-top: 15rpx;" />
+    </view>
+    <button wx:if="{{!spinning}}" class="center" bindtap="startSpin">
+      <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; "></image>
+      <view>{{cost}} 抽奖</view>
+    </button>
+    <button wx:if="{{spinning}}" class="center">
+      <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx; "></image>
+      <view>抽奖中</view>
+    </button>
+    <view class="side">
+      <image src="../../asset/img/exchange.png" class="img-con" style="width: 50rpx; height: 50rpx;"></image>
+      <view>{{credit}}</view>
+    </view>
   </view>
-</view>
 </view>
