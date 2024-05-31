@@ -115,7 +115,7 @@ Page({
       },
       {
         functionSrc: '../../asset/img/credits.png',
-        functionTitle: '积分抽奖',
+        functionTitle: '积分好礼',
         url: '../store/store'
       }
     ],
