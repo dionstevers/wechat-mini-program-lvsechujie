@@ -1,5 +1,6 @@
 // pages/home/home.ts
 const app = getApp();
+const { logEvent } = require("../../utils/log");
 Page({
   data: {
     testGroup: null,
@@ -280,6 +281,7 @@ Page({
 
   // Start recording
   keepTracking: function () {
+    logEvent("Tracking Start")
     const db = wx.cloud.database();
     const _ = db.command;
     let cnt = 10;
@@ -320,6 +322,7 @@ Page({
   },
   // End recording
   onClickEvent() {
+    logEvent("Tracking End")
     const _this = this;
     if (_this.data.userInfo != null) {
       if (!this.data.recordStatus) {
@@ -687,6 +690,7 @@ Page({
   },
 
   onShow() {
+    logEvent("Home Page")
     this.setData({
       isFront: true
     });

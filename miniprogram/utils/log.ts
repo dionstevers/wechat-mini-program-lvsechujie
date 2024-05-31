@@ -53,8 +53,9 @@ async function checkAndUploadLogs() {
     const logsSize = JSON.stringify(logs).length;
     console.log(logsSize)
     // Check if storage size exceeds 1MB ( now testing, set to 10kb )
-    // TODO: Change storage size limit upon experiment 
-    if (logsSize > 1 * 1024 * 10.24) {
+    // TODO: Change storage size limit upon experiment
+    // NOTE: the current size is about 100 logs 
+    if (logsSize > 0.5 * 1024 * 10.24) {
       const app = getApp();
       const openid = app.globalData.openID;
 
