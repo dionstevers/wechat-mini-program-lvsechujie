@@ -1,6 +1,5 @@
 // pages/home/home.ts
 const app = getApp();
-const { logEvent } = require("../../utils/log");
 Page({
   data: {
     testGroup: null,
@@ -37,7 +36,8 @@ Page({
     category: "",
     transporModalHidden: true,
     // capacityModalHidden: true,
-    speedBtwwon: [{
+    speedBtwwon: [
+      {
         label: "步行/跑步",
         min: 0,
         max: 2.78
@@ -102,18 +102,13 @@ Page({
   // Calculate the distance from aqi base station
   calcDist: async function (triplet, i) {
     const db = wx.cloud.database();
-    const {
-      data
-    } = await db
+    const { data } = await db
       .collection("monitor")
       .where({
         POI_ID: triplet[2][i].id
       })
       .get();
-    const {
-      POI_Latitude: mlat,
-      POI_Longitude: mlng
-    } = data[0];
+    const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
     return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
   // Find the closest aqi base station
@@ -267,9 +262,7 @@ Page({
             item["carbSum"] = item.carbSum.toFixed(2);
           });
 
-
-          console.log(list, 'listlistlistlistlist')
-
+          console.log(list, "listlistlistlistlist");
 
           _this.setData({
             todayRecordList: list.reverse(),
@@ -281,7 +274,6 @@ Page({
 
   // Start recording
   keepTracking: function () {
-    logEvent("Tracking Start")
     const db = wx.cloud.database();
     const _ = db.command;
     let cnt = 10;
@@ -322,7 +314,6 @@ Page({
   },
   // End recording
   onClickEvent() {
-    logEvent("Tracking End")
     const _this = this;
     if (_this.data.userInfo != null) {
       if (!this.data.recordStatus) {
@@ -400,25 +391,22 @@ Page({
 
     wx.getWeRunData({
       complete: async res => {
-        wx.cloud
-          .callFunction({
-            name: "echo",
-            data: {
-              info: wx.cloud.CloudID(res.cloudID)
-            }
-          })
-
-        const {
-          result = null
-        } = await wx.cloud.callFunction({
+        wx.cloud.callFunction({
           name: "echo",
           data: {
             info: wx.cloud.CloudID(res.cloudID)
           }
-        }) || {}
+        });
+
+        const { result = null } =
+          (await wx.cloud.callFunction({
+            name: "echo",
+            data: {
+              info: wx.cloud.CloudID(res.cloudID)
+            }
+          })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
-
 
         const trackRes = await db.collection("track").add({
           data: {
@@ -477,7 +465,6 @@ Page({
             }
           }
         });
-
       }
     });
   },
@@ -488,15 +475,14 @@ Page({
     const db = wx.cloud.database();
     wx.getWeRunData({
       complete: async res => {
-        const {
-          result = null
-        } = await wx.cloud.callFunction({
-          name: "echo",
-          data: {
-            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-            info: wx.cloud.CloudID(res.cloudID)
-          }
-        }) || {}
+        const { result = null } =
+          (await wx.cloud.callFunction({
+            name: "echo",
+            data: {
+              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+              info: wx.cloud.CloudID(res.cloudID)
+            }
+          })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
@@ -535,10 +521,7 @@ Page({
               // Calculate the interval corresponding to each speed and count the quantity and time
               item.velos.forEach(speed => {
                 _this.data.speedBtwwon.forEach((item, key) => {
-                  const {
-                    min,
-                    max
-                  } = item || {};
+                  const { min, max } = item || {};
                   if (speed >= min && speed <= max) {
                     const currentEntry = result.get(key);
                     currentEntry.count += 1;
@@ -550,25 +533,17 @@ Page({
               });
 
               // New logic
-              // 步行或骑行 Walk or cycle
-              const {
-                totalMeters: totalMetersWalk = 0
-              } = result.get(0) || {};
-              const {
-                totalMeters: totalMetersCycling = 0
-              } = result.get(1) || {};
+              // 步行或骑行 Walk or cycle//
+              const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
+              const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
               const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
 
               const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
               saving += total * savingRate[passenger - 1];
 
               // 公共交通 Public transportation
-              const {
-                totalMeters: totalMetersCity = 0
-              } = result.get(4) || {};
-              const {
-                totalMeters: totalMetersHighSpeed = 0
-              } = result.get(5) || {};
+              const { totalMeters: totalMetersCity = 0 } = result.get(4) || {};
+              const { totalMeters: totalMetersHighSpeed = 0 } = result.get(5) || {};
 
               const cityRate = 337.05;
               const highSpeedRate = 200.51;
@@ -597,14 +572,10 @@ Page({
               // 驾驶电动汽车 Electric vehicle
               if (_this.data.transport === "驾驶电动汽车") {
                 transport = "驾驶电动汽车";
-                // 市区 City
-                const {
-                  totalMeters: totalMetersCity = 0
-                } = result.get(2) || {};
-                // 高速 Highway
-                const {
-                  totalMeters: totalMetersHighSpeed = 0
-                } = result.get(3) || {};
+                // 市区 City//
+                const { totalMeters: totalMetersCity = 0 } = result.get(2) || {};
+                // 高速 Highway//
+                const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
 
                 const cityTotal = _this.roundToTwoKM(totalMetersCity);
                 const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
@@ -688,9 +659,8 @@ Page({
       capacity: e.detail.value
     });
   },
-
+//
   onShow() {
-    logEvent("Home Page")
     this.setData({
       isFront: true
     });
@@ -779,17 +749,17 @@ Page({
                           )
                         );
                         new_category =
-                          new_aqi <= 50 ?
-                          "优" :
-                          new_aqi <= 100 ?
-                          "良" :
-                          new_aqi <= 150 ?
-                          "轻度污染" :
-                          new_aqi <= 200 ?
-                          "中度污染" :
-                          new_aqi <= 300 ?
-                          "重度污染" :
-                          "严重污染";
+                          new_aqi <= 50
+                            ? "优"//
+                            : new_aqi <= 100
+                            ? "良"
+                            : new_aqi <= 150
+                            ? "轻度污染"
+                            : new_aqi <= 200
+                            ? "中度污染"
+                            : new_aqi <= 300
+                            ? "重度污染"
+                            : "严重污染";
 
                         _this.setData({
                           name: city_name,
@@ -849,5 +819,10 @@ Page({
         });
       }
     });
+  },
+
+  onhide() {
+    if (!this.data.recordStatus) return;
+    this.endTrack();
   }
 });
