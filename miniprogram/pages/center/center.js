@@ -116,7 +116,7 @@ Page({
       {
         functionSrc: '../../asset/img/credits.png',
         functionTitle: '积分好礼',
-        url: '../store/store'
+        url: '../prizeCenter/prizeCenter'
       }
     ],
     CoinRatio: 0,
