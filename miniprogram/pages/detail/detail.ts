@@ -8,6 +8,7 @@ Page({
    */
   data: {
     link: '',
+    articleType: null,
     openid: '',
     openTime:'',
     userInfo:''
@@ -18,14 +19,17 @@ Page({
    */
   onLoad: function(option){
     const link = option.link
-    console.log('the link is ', link)
+    const articleType = option.articleType
     const openTime  = new Date()
     this.setData({
       link: link,
+      articleType: articleType,
       openid: app.globalData.openID,
       openTime: openTime,
       userInfo: app.globalData.userInfo
     })
+
+    console.log('the link is ', link, '\nthe article type is ', articleType)
   },
 
   /**
@@ -56,7 +60,18 @@ Page({
     const db = wx.cloud.database()
     const endTime = new Date()
     const startTime = new Date(this.data.openTime)
+    const timeDifference = endTime.valueOf() - startTime.valueOf();
 
+    // 更新本地readAmount
+    if (this.data.articleType !== -1){
+      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+      if (localArticleRecommend !== "") {
+        localArticleRecommend.readAmount[this.data.articleType] += Math.floor(timeDifference / 1000); // 阅读时间单位为：秒
+        wx.setStorageSync('articleRecommend', localArticleRecommend)
+      }
+    }
+
+    // 更新云端阅读记录
     try {
       db.collection('readHistory').add({
         data:{
@@ -66,6 +81,7 @@ Page({
         }
       })
   
+      // 强国版用户增加测试题
       if (this.data.userInfo.testGroup == 3) {
         wx.navigateTo({
           url: '/pages/quiz/quiz?link=' + this.data.link,

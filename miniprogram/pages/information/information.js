@@ -11,13 +11,15 @@ Page({
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
     updateCloudThreshold: 10,
     articleTypes: {
+      "碳行家": -1,
       "低碳我知道": 0,
       "低碳强国": 1
     },
     articles: [],
     articleRecommend: {
-      frequencyScores: [],
-      articleCount: []
+      frequencyScore: [],
+      articleCount: [],
+      readAmount: []
     },
     arlist: [],
   }, 
@@ -59,32 +61,38 @@ Page({
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
           const articleRecommend = [
-            Array.from({ length: Object.keys(this.data.articleTypes).length }, // 概率数组
-              () => 0.2 / Object.keys(this.data.articleTypes).length), 
-            Array.from({ length: Object.keys(this.data.articleTypes).length }, // 文章存储数组
-              () => 1) 
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 概率数组
+              () => (100 / 4) / (Object.keys(this.data.articleTypes).length - 1)), 
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章存储数组
+              () => 1),
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章阅读量数组
+              () => 0)
           ];
           await db.collection('articleRecommend').add({
             data:{
-              frequencyScores: articleRecommend[0],
-              articleCount: articleRecommend[1]
+              frequencyScore: articleRecommend[0],
+              articleCount: articleRecommend[1],
+              readAmount: articleRecommend[2]
             }
           });
-          wx.setStorageSync("articleRecommend", [ // TODO: 用{}来存储并添加readTime
-            articleRecommend[0],
-            articleRecommend[1]
-          ])
+          wx.setStorageSync("articleRecommend", {
+            frequencyScore: articleRecommend[0],
+            articleCount: articleRecommend[1],
+            readAmount: articleRecommend[2]
+          })
 
         // 仅本地数据丢失情况
         } else {
           const articleRecommend = {
-            frequencyScores: articleRecommendData[0].frequencyScores,
-            articleCount: articleRecommendData[0].articleCount
+            frequencyScore: articleRecommendData[0].frequencyScore,
+            articleCount: articleRecommendData[0].articleCount,
+            readAmount: articleRecommendData[0].readAmount
           }
-          wx.setStorageSync("articleRecommend", [ // TODO: 用{}来存储并添加readTime
-            articleRecommend.frequencyScores,
-            articleRecommend.articleCount
-          ])
+          wx.setStorageSync("articleRecommend", {
+            frequencyScore: articleRecommend.frequencyScore,
+            articleCount: articleRecommend.articleCount,
+            readAmount: articleRecommend.readAmount
+          })
         }
 
       } catch (error) {
@@ -115,15 +123,17 @@ Page({
       if (articleRecommendData.length === 0) {
         await db.collection('articleRecommend').add({
           data:{
-            frequencyScores: localArticleRecommend[0],
-            articleCount: localArticleRecommend[1]
+            frequencyScore: localArticleRecommend.frequencyScore,
+            articleCount: localArticleRecommend.articleCount,
+            readAmount: localArticleRecommend.readAmount
           }
         });
       } else {
         await db.collection('articleRecommend').doc(articleRecommendData._id).update({
           data: {
-            frequencyScores: localArticleRecommend[0],
-            articleCount: localArticleRecommend[1]
+            frequencyScore: localArticleRecommend.frequencyScore,
+            articleCount: localArticleRecommend.articleCount,
+            readAmount: localArticleRecommend.readAmount
           }
         });
       }
@@ -134,36 +144,54 @@ Page({
   },
 
   /**
-   * 更新本地frequencyScores
+   * 更新本地frequencyScore
    * @param {number} pickedType 用户选择的articleType
    */
-  updateLocalRecommend(pickedType) {
-    // 更新概率
-    const updateFactor = 0.2 / Object.keys(this.data.articleTypes).length;
-    this.data.articleRecommend.frequencyScores = this.data.articleRecommend.frequencyScores.map((value, index) => {
+  updateLocalFrequencyScore(pickedType) {
+    if (pickedType === -1) {
+      return;
+    }
+
+    // 更新本地frequencyScore
+    const updateFactor = (100 / 4) / (Object.keys(this.data.articleTypes).length - 1);
+    this.data.articleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore.map((value, index) => {
       if (index == pickedType) {
-        return Math.min(value + updateFactor, 1); // 选中类型的概率值增加updateFactor
+        return Math.min(value + updateFactor, 100); // 选中类型的概率值增加updateFactor
       } else {
         return Math.max(value - updateFactor, updateFactor); // 未选中类型的概率值减少updateFactor
       }
     });
 
-    wx.setStorageSync("articleRecommend", [
-      this.data.articleRecommend.frequencyScores,
-      this.data.articleRecommend.articleCount
-    ])
+    const localArticleRecommend = wx.getStorageSync('articleRecommend');
+    if (localArticleRecommend !== ""){
+      localArticleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore;
+      wx.setStorageSync('articleRecommend', localArticleRecommend)
+    }
   },
 
   /**
    * 动态进行article分配
-   * @param {never[]} frequencyScores 用户的推荐概率值
    */ 
-  getArticleType(frequencyScores) {
-    // 计算各种文章类型的概率
-    const sumProbabilities = 
-      frequencyScores.reduce((a, b) => a + b, 0);
-    const probabilities = 
-      frequencyScores.map(probability => probability / sumProbabilities);
+  getArticleType() {
+    // 计算各种文章概率分布
+    const frequencyScore = this.data.articleRecommend.frequencyScore
+    const readAmount = this.data.articleRecommend.readAmount
+    const weightFS = 0.6
+
+    const totalFrequencyScore = frequencyScore.reduce((sum, value) => sum + value, 0); // 归一化frequencyScore和readAmount
+    const totalReadAmount = readAmount.reduce((sum, value) => sum + value, 0);
+    const normalizedFrequencyScore = totalFrequencyScore !== 0 ? 
+      frequencyScore.map(value => value / totalFrequencyScore) : frequencyScore;
+    const normalizedReadAmount = totalReadAmount !== 0 ? 
+      readAmount.map(value => value / totalReadAmount) : readAmount;
+
+    const weightedAverage = normalizedFrequencyScore.map((fs, index) => { // 按照权重分配占比
+      const normalizedRa = normalizedReadAmount[index];
+      return weightFS * fs + (1 - weightFS) * normalizedRa;
+    });
+
+    const totalWeightedSum = weightedAverage.reduce((sum, value) => sum + value, 0); // 获取概率分布
+    const probabilities = weightedAverage.map(value => value / totalWeightedSum);
 
     // 返回文章类型，0是type1; 1是type2; 2是type3; ...
     const randomValue = Math.random();
@@ -188,15 +216,15 @@ Page({
     try{
       // 获取新文章
       const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
-      const iterations = articleNumber + Object.keys(this.data.articleTypes).length - articleCountSum;
+      const iterations = articleNumber + (Object.keys(this.data.articleTypes).length - 1) - articleCountSum;
 
       if (iterations > 0) {
         this.shouldUpdateCloud = true;
       }
 
       for (let i = 0; i < iterations; i++) {
-        let articleType = this.getArticleType(this.data.articleRecommend.frequencyScores);
-        if (articleType != -1 && articleType < Object.keys(this.data.articleTypes).length) {
+        let articleType = this.getArticleType();
+        if (articleType != -1 && articleType < (Object.keys(this.data.articleTypes).length - 1)) {
           // 检查文章是否已经达到上限
           if (this.data.articleRecommend.articleCount[articleType] < 
               this.data.articles.filter(article => this.data.articleTypes[article.author] === articleType).length) {
@@ -211,15 +239,16 @@ Page({
       }
 
       // 更新本地articleCount
-      wx.setStorageSync("articleRecommend", [
-        this.data.articleRecommend.frequencyScores,
-        this.data.articleRecommend.articleCount
-      ])
+      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+      if (localArticleRecommend !== ""){
+        localArticleRecommend.articleCount = this.data.articleRecommend.articleCount;
+        wx.setStorageSync('articleRecommend', localArticleRecommend)
+      }
     
       // 生成对应的文章给用户
       const articleList = this.data.articles.filter(article => article.author === "碳行家");
 
-      for (let articleType = 0; articleType < Object.keys(this.data.articleTypes).length; articleType++) {
+      for (let articleType = 0; articleType < (Object.keys(this.data.articleTypes).length - 1); articleType++) {
         if (this.data.articleRecommend.articleCount[articleType] === 0) continue;
         let articleRes = this.data.articles
           .filter(article => this.data.articleTypes[article.author] === articleType)
@@ -263,7 +292,7 @@ Page({
     const link = e.currentTarget.dataset.link
 
     // 更新本地推荐概率值
-    this.updateLocalRecommend(this.data.articleTypes[author])
+    this.updateLocalFrequencyScore(this.data.articleTypes[author])
     this.updateCounter++;
 
     // 检查和存储counter并更新数据库
@@ -307,16 +336,19 @@ Page({
     // 初始化页面数据
     await this.fetchCloudData(false)
     const localArticleRecommend = wx.getStorageSync('articleRecommend');
-    
-    this.setData({
-      articleRecommend: {
-        frequencyScores: localArticleRecommend[0],
-        articleCount: localArticleRecommend[1]
-      }
-    })
+    if (localArticleRecommend !== "") {
+      this.setData({
+        articleRecommend: {
+          frequencyScore: localArticleRecommend.frequencyScore,
+          articleCount: localArticleRecommend.articleCount,
+          readAmount: localArticleRecommend.readAmount
+        }
+      })
+    }
 
     this.isLoaded = true;
     this.getArticlesByLoginDays();
+    await this.updateCloudStorage();
   },
 
   /**
@@ -367,9 +399,20 @@ Page({
       title: '碳行家｜信息中心'
     })
 
-    // 更新文章显示
+    // 更新文章显示和本地内容
     if (this.isLoaded) {
       this.getArticlesByLoginDays();
+
+      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+      if (localArticleRecommend !== "") {
+        this.setData({
+          articleRecommend: {
+            frequencyScore: localArticleRecommend.frequencyScore,
+            articleCount: localArticleRecommend.articleCount,
+            readAmount: localArticleRecommend.readAmount
+          }
+        })
+      }
     }
   },
 
@@ -431,6 +474,6 @@ Page({
    * 测试用生成文章
    */
   debugGenerateArticle() {
-    this.getArticles(this.data.arlist.length - Object.keys(this.data.articleTypes).length);
+    this.getArticles(this.data.arlist.length - (Object.keys(this.data.articleTypes).length - 1));
   },
 })
