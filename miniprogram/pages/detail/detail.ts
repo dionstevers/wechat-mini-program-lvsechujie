@@ -17,18 +17,15 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(option){
-    const db  = wx.cloud.database()
     const link = option.link
     console.log('the link is ', link)
     const openTime  = new Date()
     this.setData({
       link: link,
       openid: app.globalData.openID,
-      openTime: openTime
+      openTime: openTime,
+      userInfo: app.globalData.userInfo
     })
-    
-
-
   },
 
   /**
@@ -42,9 +39,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.setData({
-      userInfo: app.globalData.userInfo
-    })
+
   },
 
   /**
@@ -61,35 +56,32 @@ Page({
     const db = wx.cloud.database()
     const endTime = new Date()
     const startTime = new Date(this.data.openTime)
-    if (this.data.userInfo.testGroup == 3) {
+
+    try {
       db.collection('readHistory').add({
         data:{
-          openid: this.data.openID,
           startTime: startTime,
           endTime: endTime,
           link: this.data.link
         }
       })
-      wx.navigateTo({
-        url: '/pages/quiz/quiz?link=' + this.data.link,
-      })
+  
+      if (this.data.userInfo.testGroup == 3) {
+        wx.navigateTo({
+          url: '/pages/quiz/quiz?link=' + this.data.link,
+        })
+      }
+      else{  
+        wx.showModal({
+          title: '阅读成功',
+          content:'低碳生活，携手同行！',
+          showCancel: false
+        })
+      }
+    } catch(err) {
+      console.log("文章阅读记录失败：" + err)
     }
-    else{
-      db.collection('readHistory').add({
-        data:{
-          openid: this.data.openID,
-          startTime: startTime,
-          endTime: endTime,
-          link: this.data.link
-        }
-      })
-      
-      wx.showModal({
-        title: '阅读成功',
-        content:'低碳生活，携手同行！',
-        showCancel: false
-      })
-    }
+    
   },
 
   /**
