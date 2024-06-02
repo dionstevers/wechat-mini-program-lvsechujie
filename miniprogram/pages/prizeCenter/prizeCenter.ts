@@ -2,10 +2,10 @@ Page({
   data: {
     credits: 0,
     prizes: [
-      { image: '../../asset/img/prizeempty.png', price: 100 },
-      { image: '../../asset/img/prizeempty.png', price: 200 },
-      { image: '../../asset/img/prizeempty.png', price: 300 },
-      { image: '../../asset/img/prizeempty.png', price: 400 }
+      { image: '../../asset/img/prizeempty.png', title: '吨吨鹅针织袋', description: '碳行家限量针织带', price: 100 },
+      { image: '../../asset/img/prizeempty.png', title: '顿顿鸡笔记本', description: '碳行家限量笔记本', price: 200 },
+      { image: '../../asset/img/prizeempty.png', title: 'Prize 3', description: 'n3', price: 300 },
+      { image: '../../asset/img/prizeempty.png', title: 'Prize 4', description: ' 4', price: 400 }
       // Add more prize objects as needed
     ],
     prizeList:[],
@@ -24,7 +24,15 @@ Page({
       url: '/pages/store/store'
     });
   },
-  
+  async getMerchData(){
+    try{
+      const db = wx.cloud.database();
+      const res = await db.collection('merch').get()
+      
+    }catch(err){
+      console.log(err)
+    }
+  },
   navigateToPrizes: function() {
     var prizelist = JSON.stringify(this.data.prizeList);
     var claimedprizes = JSON.stringify(this.data.claimedprizes);

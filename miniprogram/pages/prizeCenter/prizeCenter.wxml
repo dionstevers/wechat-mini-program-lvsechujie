@@ -1,24 +1,25 @@
 <view class="page-background">
   <view class="top-section">
-    <view class="user-credits" style="width: 302rpx; height: 212rpx; display: flex; box-sizing: border-box">
+    <view class="user-credits" style="width: 300rpx; height: 178rpx; display: flex; box-sizing: border-box">
       <image src="../../asset/img/exchange.png" class="token-icon"></image>
       <text class="credits-text">Credits: {{credits}}</text>
     </view>
     <view class="navigation-buttons">
-      <button class="lottery-button" bindtap="navigateToLottery" style="position: relative; left: 0rpx; top: 0rpx; width: 368rpx; height: 106rpx; display: block; box-sizing: border-box">Lottery Spin</button>
-      <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 10rpx; width: 368rpx; height: 82rpx; display: block; box-sizing: border-box">My Prizes</button>
+      <button class="lottery-button" bindtap="navigateToLottery">Lottery Spin</button>
+      <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 9rpx">My Prizes</button>
     </view>
   </view>
 
-  <!-- Updated divider with white text -->
   <view class="divider">
     <text class="divider-text">为您精选</text>
   </view>
 
   <view class="prizes-section">
     <block wx:for="{{prizes}}" wx:key="index">
-      <view class="prize-box">
-        <image src="{{item.image}}" class="prize-image" style="width: 258rpx; height: 258rpx; display: inline-block; box-sizing: border-box"></image>
+      <view class="prize-box" style="width: 306rpx; height: 384rpx; display: flex; box-sizing: border-box">
+        <image src="{{item.image}}" class="prize-image"></image>
+        <view class="prize-title">{{item.title}}</view>
+        <view class="prize-description">{{item.description}}</view>
         <view class="prize-price">
           <image src="../../asset/img/exchange.png" class="price-icon"></image>
           <text class="price-text">{{item.price}}</text>

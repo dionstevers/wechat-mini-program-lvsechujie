@@ -62,18 +62,42 @@
 }
 
 .prize-box {
-  width: 45%;
+  width: 40%; /* Adjust width as needed */
+  height: 480rpx; /* Fixed height */
+  background-color: white;
+  border-radius: 20rpx;
   margin-bottom: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 15rpx;
   text-align: center;
+  padding: 20rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .prize-image {
-  width: 100%;
+  width: 90%;
   border-radius: 10rpx;
+  margin: 0 auto; /* Center the image horizontally */
+}
+
+.prize-title {
+  font-weight: bold;
+  font-size: 32rpx;
+  color: black;
+  margin-top: 10rpx;
+}
+
+.prize-description {
+  font-size: 28rpx;
+  color: black;
+  margin-top: 5rpx;
 }
 
 .prize-price {
-  color: white;
+  color: #009797;
   font-size: 32rpx;
   margin-top: 10rpx;
   display: flex;
@@ -85,10 +109,11 @@
   width: 30rpx;
   height: 30rpx;
   margin-right: 5rpx;
+  color: #009797;
 }
 
 .price-text {
-  color: white;
+  color: #009797;
   font-size: 32rpx;
 }
 
@@ -105,4 +130,3 @@
   font-size: 16px;
   margin-bottom: 10rpx;
 }
-
