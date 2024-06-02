@@ -1,6 +1,6 @@
 {
   "pages": [
-    "pages/prizeCenter/prizeCenter",
+
     "pages/index/index",
     "pages/home/home",
     "pages/information/information",
@@ -15,7 +15,8 @@
     "pages/picUp/picUp",
     "pages/detail/detail", 
     "pages/quiz/quiz",
-    "pages/notification/notification"
+    "pages/notification/notification",
+    "pages/prizeCenter/prizeCenter"
 
 
 
