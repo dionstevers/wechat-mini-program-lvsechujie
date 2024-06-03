@@ -16,12 +16,12 @@
 
   <view class="prizes-section">
     <block wx:for="{{prizes}}" wx:key="index">
-      <view class="prize-box" style="width: 306rpx; height: 384rpx; display: flex; box-sizing: border-box">
+      <view class="prize-box" style="width: 306rpx; height: 384rpx; display: flex; box-sizing: border-box" bind:tap="navigateToMerchs" data-id = "{{item.merch_id}}">
         <image src="{{item.image}}" class="prize-image"></image>
         <view class="prize-title">{{item.title}}</view>
         <view class="prize-description">{{item.description}}</view>
         <view class="prize-price">
-          <image src="../../asset/img/exchange.png" class="price-icon"></image>
+          <image src="../../asset/img/exchange_light.png" class="price-icon"></image>
           <text class="price-text">{{item.price}}</text>
         </view>
       </view>

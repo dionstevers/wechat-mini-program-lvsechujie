@@ -1,0 +1,19 @@
+<view class="page-background">
+  <view class="top-image-section">
+    <image class="merch-image" src="{{merch.image}}"></image>
+  </view>
+  <view class="merch-info">
+    <view class="merch-title">{{merch.title}}</view>
+    <view class="merch-price">
+      <image class="price-icon" src="../../asset/img/exchange_light.png"></image>
+      <text class="price-text">{{merch.price}}</text>
+    </view>
+    <view class="merch-description">{{merch.description}}</view>
+    <view class="merch-long-description">{{merch.longDescription}}</view>
+    <view class="claim-button" bindtap="claimMerch">
+      <image class="exchange-icon" src="../../asset/img/exchange.png" style="position: relative; left: -38rpx; top: 5rpx"></image>
+      {{merch.price}} 兑换
+    </view>
+
+  </view>
+</view>

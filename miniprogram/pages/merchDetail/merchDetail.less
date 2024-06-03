@@ -1,0 +1,91 @@
+.page-background {
+  font-family: 'Times New Roman', Times, serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: scroll;
+  background: linear-gradient(180deg, #00022a 0%, #009797 100%);
+  position: relative;
+}
+
+.top-image-section {
+  width: 100%;
+  height: 40vh; /* 40% of the viewport height */
+  overflow: hidden;
+}
+
+.merch-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the container */
+}
+
+.merch-info {
+  position: relative;
+  top: -10vh; /* Move up by 10% of viewport height to overlay */
+  width: 95%; /* 80% width to have 10% margin on both sides */
+  margin: 0 auto; /* Center horizontally */
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better overlay effect */
+}
+.exchange-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx; /* Adjust as needed */
+  align-self: center; /* Vertically center the icon */
+}
+
+.merch-title {
+  font-weight: bold;
+  font-size: 36rpx;
+  color: black;
+  margin-bottom: 10rpx;
+}
+
+.merch-price {
+  display: flex;
+  align-items: center;
+  color: #009797;
+  font-size: 32rpx;
+  margin-bottom: 10rpx;
+}
+
+.price-icon {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 5rpx;
+}
+
+.price-text {
+  color: #009797;
+  font-size: 32rpx;
+}
+
+.merch-description {
+  font-size: 28rpx;
+  color: black;
+  margin-bottom: 10rpx;
+}
+
+.merch-long-description {
+  font-size: 28rpx;
+  color: black;
+  margin-bottom: 20rpx;
+}
+
+.claim-button {
+  background-color: #009797;
+  color: white;
+  font-size: 32rpx;
+  padding: 20rpx;
+  border-radius: 20rpx; /* Same as the description */
+  width: 100%; /* Same width as the description */
+  text-align: center;
+  margin-top: 20rpx;
+  box-sizing: border-box;
+}

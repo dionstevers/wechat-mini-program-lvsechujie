@@ -1,19 +1,14 @@
 Page({
   data: {
     credits: 0,
-    prizes: [
-      { image: '../../asset/img/prizeempty.png', title: '吨吨鹅针织袋', description: '碳行家限量针织带', price: 100 },
-      { image: '../../asset/img/prizeempty.png', title: '顿顿鸡笔记本', description: '碳行家限量笔记本', price: 200 },
-      { image: '../../asset/img/prizeempty.png', title: 'Prize 3', description: 'n3', price: 300 },
-      { image: '../../asset/img/prizeempty.png', title: 'Prize 4', description: ' 4', price: 400 }
-      // Add more prize objects as needed
-    ],
+    prizes:[],
     prizeList:[],
     claimedprizes:[]
 
   },
   onLoad(){
     this.getLotteryInfo()
+    this.getMerchData()
   },
   onShow(){
     this.getLotteryInfo()
@@ -24,14 +19,34 @@ Page({
       url: '/pages/store/store'
     });
   },
-  async getMerchData(){
-    try{
+  async getMerchData() {
+    try {
       const db = wx.cloud.database();
-      const res = await db.collection('merch').get()
-      
-    }catch(err){
-      console.log(err)
+      let res = (await db.collection('merch').get());
+      console.log(res)
+      // Map data excluding quantity
+      const prizes = res.data.map(item => ({
+        merch_id: item.merch_id,
+        image: item.image_url,
+        title: item.title,
+        description: item.descp_short,
+        longDescription: item.descp_full,
+        price: item.price
+      }));
+      // set local storage
+      wx.setStorageSync('prizes', prizes);
+      // Update local state
+      this.setData({ prizes });
+    } catch (err) {
+      console.log(err);
     }
+  },
+  navigateToMerchs: function(e){ 
+    const merchId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/merchDetail/merchDetail?merch_id=${merchId}`
+    });
+    console.log(merchId);
   },
   navigateToPrizes: function() {
     var prizelist = JSON.stringify(this.data.prizeList);
