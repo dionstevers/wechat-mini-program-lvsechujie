@@ -17,6 +17,9 @@ Page({
   isFetchingUserInfo: false,
   isNavigating: false,
 
+  
+  // Define the recordShare function
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -39,7 +42,7 @@ Page({
         }
         // check if the sharedFromid is null
         if(sharedFromid!=null){
-          await this.recordShare(openid, sharedFromid);
+          await this.recordShare(sharedFromid);
         }
           // If the sender document does not exist, create it
       
@@ -56,54 +59,39 @@ Page({
     this.onHandleSignIn(true);
   },
   // record share relations
-  async recordShare(openid, sharedFromid) {
+  async recordShare(sharedFromid: string) {
     const db = wx.cloud.database();
-    const _ = db.command;
-  
     try {
-      // Check if sender document exists
-      const senderDoc = await db.collection('shareNet').doc(sharedFromid).get().catch(err => null);
-      if (!senderDoc || !senderDoc.data) {
-        // If sender document does not exist, create it
-        await db.collection('shareNet').add({
-          data: {
-            _id: sharedFromid,
-            sharedFromid: [],
-            shareToid: [openid]
-          }
-        });
-      } else {
-        // If sender document exists, update it
-        await db.collection('shareNet').doc(sharedFromid).update({
-          data: {
-            shareToid: _.addToSet(openid)
-          }
-        });
-      }
+      // Get the user's openid
+      const res = await wx.cloud.callFunction({ name: 'login' });
+      const openid = (res.result as { data?: any }).data._openid;
+      const createdAt = new Date();
   
-      // Check if receiver document exists
-      const receiverDoc = await db.collection('shareNet').doc(openid).get().catch(err => null);
-      if (!receiverDoc || !receiverDoc.data) {
-        // If receiver document does not exist, create it
-        await db.collection('shareNet').add({
-          data: {
-            _id: openid,
-            sharedFromid: [sharedFromid],
-            shareToid: []
-          }
-        });
-      } else {
-        // If receiver document exists, update it
-        await db.collection('shareNet').doc(openid).update({
-          data: {
-            sharedFromid: _.addToSet(sharedFromid)
-          }
-        });
-      }
+      // Add the connection
+      await db.collection('connections').add({
+        data: {
+          userA: sharedFromid,
+          userB: openid,
+          createdAt: createdAt,
+        },
+      });
+  
+      return {
+        success: true,
+        message: 'Share recorded successfully',
+      };
+  
     } catch (err) {
-      console.error("Error recording share:", err);
+      console.error('Error recording share:', err);
+      return {
+        success: false,
+        message: 'Error recording share',
+      };
     }
   },
+  
+
+  
   
   
   

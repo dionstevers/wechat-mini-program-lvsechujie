@@ -241,13 +241,13 @@ Page({
           // 抽奖初始化
           await db.collection('lottery').add({
             data:{
+              //TODO: subject to change: initial credit is set to 20
               credit:20,
               prizes:[],
               claimedprizes: [],
               attempts:0
             }
-          });
-          
+          });      
           try {
             // 上传完成后，从userInfo中获取用户信息
             const userInfoData = {
