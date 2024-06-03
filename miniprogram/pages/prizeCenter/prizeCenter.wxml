@@ -2,11 +2,11 @@
   <view class="top-section">
     <view class="user-credits" style="width: 300rpx; height: 178rpx; display: flex; box-sizing: border-box">
       <image src="../../asset/img/exchange.png" class="token-icon"></image>
-      <text class="credits-text">Credits: {{credits}}</text>
+      <text class="credits-text">{{credits}}</text>
     </view>
     <view class="navigation-buttons">
-      <button class="lottery-button" bindtap="navigateToLottery">Lottery Spin</button>
-      <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 9rpx">My Prizes</button>
+      <button class="lottery-button" bindtap="navigateToLottery">抽奖转盘</button>
+      <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 9rpx">我的兑换</button>
     </view>
   </view>
 

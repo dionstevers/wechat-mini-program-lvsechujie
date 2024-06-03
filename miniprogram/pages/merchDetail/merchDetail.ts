@@ -54,7 +54,7 @@ Page({
                 })
               } else {
                 wx.showToast({
-                  title:'Merch claim fail',
+                  title:'请稍后再试',
                   icon: 'error',
                   duration:2000
                 })
@@ -63,7 +63,7 @@ Page({
             fail: err => {
               console.error('Error calling cloud function:', err);
               wx.showToast({
-                title: 'Claim failed',
+                title: '请稍后再试',
                 icon: 'error',
                 duration: 2000,
               });
