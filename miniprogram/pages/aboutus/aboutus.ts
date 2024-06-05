@@ -26,9 +26,9 @@ Page({
 
   },
   dailyOrderid(){
-    const date = new Date();
-    const orderid = date.getDate()+'-'+date.getDay()+'-'+date.getFullYear()+'-'+getApp().globalData.openID;
-    return orderid;
+    let reqtick = Date.parse(new Date().toString());
+    let openid = getApp().globalData.openID
+    return reqtick+openid;
   },
 
   HandleSendCash(){
