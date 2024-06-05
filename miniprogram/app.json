@@ -5,7 +5,6 @@
     "pages/information/information",
     "pages/center/center",
     "pages/journal/journal",
-    "pages/aboutus/aboutus",
     "pages/triphistory/triphistory",
     "pages/store/store",
     "pages/login/login",
@@ -16,7 +15,9 @@
     "pages/quiz/quiz",
     "pages/notification/notification",
     "pages/prizeCenter/prizeCenter",
-    "pages/merchDetail/merchDetail"
+    "pages/merchDetail/merchDetail",
+    "pages/test/test",    
+    "pages/aboutus/aboutus"
 
 
 
