@@ -91,11 +91,6 @@ Page({
   },
   
 
-  
-  
-  
-  
-  
   // 注册
   HandleSignUp(){
     if (!this.isFetchingUserInfo && !this.isNavigating) {
