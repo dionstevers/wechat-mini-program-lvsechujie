@@ -10,7 +10,7 @@
     </view>
     <view wx:if="{{currentTab == 0}}" class="inbox-container">
       <block wx:for="{{inboxMessages}}" wx:key="id">
-        <view class="message-item" data-index="{{index}}" bindtap="toggleMessage">
+        <view class="message-item {{selectedMessageIndex === index ? 'message-item-selected' : ''}}" data-index="{{index}}" bindtap="toggleMessage">
           <text class="type">{{item.type}}</text>
           <text class="time">{{item.formattedTime}}</text>
           <text class="stage">{{item.stage === 0 ? '处理中' : '已处理'}}</text>

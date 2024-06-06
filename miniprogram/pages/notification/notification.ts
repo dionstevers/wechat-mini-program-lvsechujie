@@ -1,14 +1,14 @@
-// pages/notification-center/notification-center.ts
 Page({
   data: {
-    openID:'',
+    openID: '',
     currentTab: 0,
     tabs: ["收件箱", "发件箱"],
     messages: [],
     type: "",
     message: "",
     types: ["奖品兑换", "功能建议", "问题修复"],
-    expandedMessageIndex: -1
+    expandedMessageIndex: -1,
+    selectedMessageIndex: -1
   },
 
   onLoad() {
@@ -41,7 +41,7 @@ Page({
             formattedTime: this.formatTime(message.time) // Format time for each message
           };
         });
-  
+
         this.setData({
           inboxMessages: messages
         });
@@ -50,7 +50,7 @@ Page({
         console.error('Error loading messages:', err);
       });
   },
-  
+
   formatTime(time: number) {
     const date = new Date(time);
     const year = date.getFullYear();
@@ -61,15 +61,34 @@ Page({
     const formattedTime = `${year}-${month}-${day} ${hour}:${minute}`;
     return formattedTime;
   },
-  
+
   padZero(num: number) {
     return num < 10 ? '0' + num : num;
   },
-  
+
   toggleMessage(event: any) {
     const index = event.currentTarget.dataset.index;
+    const message = this.data.inboxMessages[index];
+
+    if (message.stage === 1) {
+      wx.setClipboardData({
+        data: message.response,
+        success(res) {
+          wx.getClipboardData({
+            success(res) {
+              console.log(res.data); // data
+              wx.showToast({
+                title: '内容已复制',
+                icon: 'success'
+              });
+            }
+          });
+        }
+      });
+    }
+
     this.setData({
-      expandedMessageIndex: this.data.expandedMessageIndex === index ? -1 : index
+      selectedMessageIndex: this.data.selectedMessageIndex === index ? -1 : index
     });
   },
 
@@ -86,9 +105,16 @@ Page({
   },
 
   submitMessage() {
-    console.log(this.data.openID);
     const { type, message, openID } = this.data;
-  
+
+    if (!type || !message) {
+      wx.showToast({
+        title: 'Please fill in all fields',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.requestSubscribeMessage({
       tmplIds: ['0E8lHFKjSYWUJMA9NB7iKEFnTWwg3ivKOS8XTXrOKRU','5wXvMNdaUfyr5TP_XsMxUeI4waBCtaPo_MRaJK6PkbQ'],
       success: (res) => {
@@ -99,7 +125,7 @@ Page({
             message,
             sender: openID,
             time: new Date(),
-            stage: 0 ,// 0 stands for processing state, and 1 stands for processed stage
+            stage: 0, // 0 stands for processing state, and 1 stands for processed stage
             response: "" // Set response to empty string for newly submitted messages
           }
         }).then(dbRes => {
@@ -107,7 +133,7 @@ Page({
             title: 'Message sent',
             icon: 'success'
           });
-  
+
           // Call cloud function to send the initial notification
           wx.cloud.callFunction({
             name: 'sendNotification',
@@ -120,7 +146,7 @@ Page({
           }).catch(cloudErr => {
             console.error('Error sending initial notification', cloudErr);
           });
-  
+
           this.setData({
             type: "",
             message: ""
@@ -139,5 +165,4 @@ Page({
       }
     });
   }
-  
 });
