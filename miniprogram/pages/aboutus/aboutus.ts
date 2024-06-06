@@ -23,21 +23,6 @@ Page({
     this.setData({
       u_openid : option.u_openid
     });
-    wx.cloud.callFunction({
-      name: 'getip',
-      success(res) {
-        if (res.result) {
-          console.log('IP Address:', res.result);
-        } else {
-          console.error('Error getting IP address');
-        }
-      },
-      fail(err) {
-        console.error('Cloud function call failed:', err);
-      }
-    });
-    
-
   },
   HandleSendCash() {
     if (!this.data.u_openid) {
