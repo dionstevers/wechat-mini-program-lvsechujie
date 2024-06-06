@@ -23,48 +23,73 @@ Page({
     this.setData({
       u_openid : option.u_openid
     });
+    wx.cloud.callFunction({
+      name: 'getip',
+      success(res) {
+        if (res.result) {
+          console.log('IP Address:', res.result);
+        } else {
+          console.error('Error getting IP address');
+        }
+      },
+      fail(err) {
+        console.error('Cloud function call failed:', err);
+      }
+    });
+    
 
   },
-  dailyOrderid(){
-    let reqtick = Date.parse(new Date().toString());
-    let openid = getApp().globalData.openID
-    return reqtick+openid;
-  },
-
-  HandleSendCash(){
-    if(this.data.u_openid == ''){
+  HandleSendCash() {
+    if (!this.data.u_openid) {
+      wx.showToast({
+        title: '缺少用户openid',
+        icon: 'error',
+        duration: 1000
+      });
       return;
     }
-    const u_openid = this.data.u_openid;
-    const uid = '10815051';
-    const orderid = this.dailyOrderid();
+  
+    const { u_openid } = this.data;
     const type = '0';
     const money = '50';
-    let reqtick = Date.parse(new Date().toString());
-    reqtick = reqtick/1000;
-    const openid = u_openid;
-    const apikey = 'carbclever';
-    const sig = hexMD5(uid + type + orderid + money + reqtick + openid + apikey);
-    wx.request({
-      url: 'https://mp001.yaoyaola.net/exapi/SendRedPackToOpenid?uid='+uid+'&type='+type+'&orderid='+orderid+'&money='+money+'&reqtick='+reqtick+'&openid='+openid+'&sign='+sig+'&title=现金发奖' + '&sendname=碳行家&wishing=心想事成',
-      success(res){
-        console.log('response from server',res)
-        wx.showModal({
-          title:'恭喜！',
-          content:'您的现金红包已发放',
-          showCancel:false
-        })
+
+    wx.cloud.callFunction({
+      name: 'sendCashReward',
+      data: {
+        u_openid,
+        type,
+        money
       },
-      fail(res){
-        console.log('response not found',res)
+      success: (res) => {
+        console.log('successful call',res.result);
+        if(res.result && typeof res.result === 'object' && 'success' in res.result){
+          if (res.result.success) {
+            wx.showModal({
+              title: '恭喜！',
+              content: '您的现金红包已发放',
+              showCancel: false
+            });
+          };
+        }else{
+          console.log('results in failure',res.result);
+          wx.showToast({
+            title: '请稍后再试',
+            icon: 'error',
+            duration: 1000
+          });
+        };
+      },
+      fail: (err) => {
         wx.showToast({
-          title:'请稍后再试',
-          icon:'error',
-          duration:1000
-        })
+          title: '请求失败',
+          icon: 'error',
+          duration: 1000
+        });
+        console.error('Failed to call cloud function:', err);
       }
-    })
+    });
   },
+  
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -86,7 +111,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.dailyOrderid();
     this.setData({
       userInfo : app.globalData.userInfo
     })
