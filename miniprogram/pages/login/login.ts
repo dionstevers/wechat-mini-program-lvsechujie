@@ -245,7 +245,7 @@ Page({
               credit:20,
               prizes:[],
               claimedprizes: [],
-              attempts:0
+              attempt:0
             }
           });      
           try {
