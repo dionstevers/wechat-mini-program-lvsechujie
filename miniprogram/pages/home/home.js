@@ -1,5 +1,7 @@
 // pages/home/home.ts
+import Dialog from '@vant/weapp/dialog/dialog';
 const app = getApp();
+
 Page({
   data: {
     testGroup: null,
@@ -355,11 +357,12 @@ Page({
         //   capacityModalHidden: false
         // });
       } else {
-        wx.showModal({
-          title: "提示",
-          content: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”"
-        }).then(modalRes => {
-          if (modalRes.confirm) {
+        Dialog.confirm({
+          title: '提示',
+          message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
+        })
+          .then(() => {
+            // on confirm
             wx.openSetting().then(settingRes => {
               if (settingRes.authSetting["scope.userLocationBackground"]) {
                 this.onTrack();
@@ -368,8 +371,27 @@ Page({
                 // });
               }
             });
-          }
-        });
+
+          })
+          .catch(() => {
+            // on cancel
+          });
+        // wx.showModal({
+        //   title: "提示",
+        //   content: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”"
+        // }).then(modalRes => {
+        //   if (modalRes.confirm) {
+        //     wx.authorize({scope: 'scope.userLocationBackground'}).catch(res=>{console.error(res)})
+        //     wx.openSetting().then(settingRes => {
+        //       if (settingRes.authSetting["scope.userLocationBackground"]) {
+        //         this.onTrack();
+        //         // this.setData({
+        //         //   capacityModalHidden: false
+        //         // });
+        //       }
+        //     });
+        //   }
+        // });
       }
     });
   },
@@ -659,7 +681,7 @@ Page({
       capacity: e.detail.value
     });
   },
-//
+  //
   onShow() {
     this.setData({
       isFront: true
@@ -710,10 +732,54 @@ Page({
             _this.setData({
               openID: res.result.data._openid
             });
+            wx.getSetting().then(res => {
+              if (res.authSetting["scope.userLocationBackground"]) {
+                // this.onTrack();
+                // this.setData({
+                //   capacityModalHidden: false
+                // });
+              } else {
+                Dialog.confirm({
+                  title: '提示',
+                  message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
+                })
+                  .then(() => {
+                    // on confirm
+                    wx.openSetting().then(settingRes => {
+                      if (settingRes.authSetting["scope.userLocationBackground"]) {
+                        this.onTrack();
+                        // this.setData({
+                        //   capacityModalHidden: false
+                        // });
+                      }
+                    });
+        
+                  })
+                  .catch(() => {
+                    // on cancel
+                  });
+                // wx.showModal({
+                //   title: "提示",
+                //   content: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”"
+                // }).then(modalRes => {
+                //   if (modalRes.confirm) {
+                //     wx.authorize({scope: 'scope.userLocationBackground'}).catch(res=>{console.error(res)})
+                //     wx.openSetting().then(settingRes => {
+                //       if (settingRes.authSetting["scope.userLocationBackground"]) {
+                //         this.onTrack();
+                //         // this.setData({
+                //         //   capacityModalHidden: false
+                //         // });
+                //       }
+                //     });
+                //   }
+                // });
+              }
+            });
             _this.setList();
             let now = new Date();
             now.setHours(0, 0, 0, 0);
-
+            // _this.startTrackConfirm()
             wx.getLocation({
               type: "gcj02",
               success(loc) {
@@ -721,7 +787,7 @@ Page({
                 let longitude = loc.longitude.toFixed(2);
                 console.log("Location: ", longitude, latitude);
                 console.log(loc.speed, "speed");
-
+                // this.startTrackConfirm()
                 wx.request({
                   url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
                   success: async function (res) {
@@ -734,7 +800,20 @@ Page({
                         let new_category = "";
                         let new_aqi = 0;
                         const airQuality = res.data.now.aqi;
-
+                        wx.cloud.callFunction({
+                          name: 'addLocation',
+                          data: {
+                            sendParams:{
+                              openid: app.globalData.openID,
+                              city_name,
+                              latitude,
+                              longitude
+                            }
+                          },
+                          fail: err => {
+                            console.log('error==',err)
+                          }
+                        });
                         // 处理空气质量数据
                         new_aqi = Math.min(
                           Math.round(
@@ -752,14 +831,14 @@ Page({
                           new_aqi <= 50
                             ? "优"//
                             : new_aqi <= 100
-                            ? "良"
-                            : new_aqi <= 150
-                            ? "轻度污染"
-                            : new_aqi <= 200
-                            ? "中度污染"
-                            : new_aqi <= 300
-                            ? "重度污染"
-                            : "严重污染";
+                              ? "良"
+                              : new_aqi <= 150
+                                ? "轻度污染"
+                                : new_aqi <= 200
+                                  ? "中度污染"
+                                  : new_aqi <= 300
+                                    ? "重度污染"
+                                    : "严重污染";
 
                         _this.setData({
                           name: city_name,
@@ -778,7 +857,7 @@ Page({
                 });
               },
               fail: function (err) {
-                console.log(err);
+                console.error(err);
               }
             });
 
@@ -826,3 +905,8 @@ Page({
     this.endTrack();
   }
 });
+
+//TODO: merch/database/debug
+//TODO: 排行榜-微信-社交网路-connections
+//TODO: onload-偷偷记一下-地理分布-记一次/每次都记-lists(date: geolocation)-push:database command
+//把可能会引起多重用户的bug的都改掉

@@ -25,7 +25,7 @@ Page({
       let res = (await db.collection('merch').get());
       console.log(res)
       // Map data excluding quantity
-      const prizes = res.data.map(item => ({
+      const prizes = res.data.filter(item=>{return item?.attribute!=='lottery'}).map(item => ({
         merch_id: item.merch_id,
         image: item.image_url,
         title: item.title,

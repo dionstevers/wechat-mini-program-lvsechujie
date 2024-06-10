@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "privacy-popup": "../../asset/privacyPopup/privacyPopup"
+    "privacy-popup": "../../asset/privacyPopup/privacyPopup",
+    "van-dialog": "@vant/weapp/dialog/index"
   },
   "disableScroll": true
 }

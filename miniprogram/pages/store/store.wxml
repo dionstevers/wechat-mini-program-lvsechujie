@@ -39,8 +39,8 @@
  <view class="detail"><text>京东E卡\n20元</text></view> -->
 
 
-    <view class="detail" wx:for="{{xml}}" style="{{item.style}}">
-      <text>{{fn.formatText(item.text)}}</text>
+    <view class="detail" wx:for="{{prizeList}}">
+      <text>{{fn.formatText(item.showTitle)}}</text>
     </view>
 
     <span style="transform:rotate({{trasn}}deg);"></span>

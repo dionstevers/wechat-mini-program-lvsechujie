@@ -1,6 +1,18 @@
 {
   "dependencies": {
+    "@vant/weapp": "^1.11.6",
     "axios": "^1.7.2",
     "request-promise": "^4.2.6"
-  }
+  },
+  "name": "carbon-footprint-mini-program",
+  "version": "1.0.0",
+  "description": "## Intro",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

@@ -23,17 +23,18 @@ Page({
     prizeProbabilities:[],
     luckylist: [{ time: "超过50%概率获得10元以上奖励！" }, { time: "奖品将于每月月底统一发放！" }, { time: "还等什么，快来抽奖吧！" }]
   },
+  
   async angleGenerator() {
     var angle = 0;
     var prize = 0;
     const prob = Math.floor(Math.random() * 100);
     const random = Math.random();
 
-    this.data.prizeProbabilities.forEach(item => {
-        const {ratio, value,sort,min,max} = item || {}
+    this.data.prizeList.forEach((item,index) => {
+        const {ratio, value,min,max} = item || {}
 
         if(prob > min && prob <= max){
-          prize = sort
+          prize = index
           angle = Math.floor(ratio + random * value);
         }
     });
@@ -115,31 +116,70 @@ Page({
             trasn: that.data.trasn + 2
           });
           if (that.data.angle <= that.data.trasn) {
+
             try {
               clearInterval(b);
               const db = wx.cloud.database();
               const _ = db.command;
               const prizeList = that.data.prizeList
               // const prizeList = ["placeholder", "京东E卡100元", "京东E卡50元", "京东E卡40元", "京东图书品类卡30元", "京东E卡20元", "京东E卡10元"];
-              await db
-                .collection("lottery")
-                .doc(that.data._id)
-                .update({
-                  data: {
-                    credit: _.inc(-that.data.cost),
-                    prizes: _.push([prizeList[that.data.prize]]),
-                    attempt: _.inc(1)
+              const openid = app.globalData.openID;
+              wx.cloud.callFunction({
+                name: 'claimMerch',
+                data: {
+                  openid,
+                  merch_id: prizeList[that.data.prize]?._id,
+                  price: 150,
+                  merch_name: prizeList[that.data.prize]?.title
+                },
+                success: res => {
+                  if (res.result !== undefined ) {
+                    that.setData({
+                      trasn: 0,
+                      spinning: false
+                    });
+                    wx.showModal({
+                      title: "恭喜中奖",
+                      content: "您获得：" + prizeList[that.data.prize]?.title,
+                      showCancel: false
+                    });
+
+                  } else {
+                    wx.showToast({
+                      title:'请稍后再试',
+                      icon: 'error',
+                      duration:2000
+                    })
                   }
-                });
-              that.setData({
-                trasn: 0,
-                spinning: false
+                },
+                fail: err => {
+                  console.error('Error calling cloud function:', err);
+                  wx.showToast({
+                    title: '请稍后再试',
+                    icon: 'error',
+                    duration: 2000,
+                  });
+                }
               });
-              wx.showModal({
-                title: "恭喜中奖",
-                content: "您获得：" + [prizeList[that.data.prize]],
-                showCancel: false
-              });
+              // await db
+              //   .collection("lottery")
+              //   .doc(that.data._id)
+              //   .update({
+              //     data: {
+              //       credit: _.inc(-that.data.cost),
+              //       prizes: _.push([prizeList[that.data.prize]?.title]),
+              //       attempt: _.inc(1)
+              //     }
+              //   });
+              // that.setData({
+              //   trasn: 0,
+              //   spinning: false
+              // });
+              // wx.showModal({
+              //   title: "恭喜中奖",
+              //   content: "您获得：" + prizeList[that.data.prize]?.title,
+              //   showCancel: false
+              // });
             } catch (err) {
               console.log(err);
             }
@@ -181,16 +221,18 @@ Page({
           }
         });
 
-
+        let res = (await db.collection('merch').where({
+          attribute: "lottery"
+        }).get());
         const {data = []} =  await db.collection("lotteryProbability").limit(1).get() || {}
         const [lotteryProbability]  = data
 
-        const {prizeList = [], prizeProbabilities = [], xml=[]} = lotteryProbability || {}
+        const { prizeProbabilities = [], xml=[]} = lotteryProbability || {}
 
  
 
         this.setData({
-          xml,prizeList,prizeProbabilities
+          prizeList: res?.data,prizeProbabilities
         })
 
     } catch (err) {
@@ -199,6 +241,8 @@ Page({
   },
   toMyprize() {
     var prizelist = JSON.stringify(this.data.prizes);
+
+
     var claimedprizes = JSON.stringify(this.data.claimedprizes);
 
     wx.navigateTo({

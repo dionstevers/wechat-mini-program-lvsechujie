@@ -6,6 +6,13 @@
       "typescript",
       "less"
     ],
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./package.json",
+        "miniprogramNpmDistDir": "./miniprogram/"
+      }
+    ],
     "urlCheck": true,
     "es6": true,
     "enhance": false,
@@ -34,8 +41,6 @@
     "enableEngineNative": false,
     "useIsolateContext": false,
     "userConfirmedBundleSwitch": false,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
     "minifyWXSS": true,
     "disableUseStrict": false,
     "minifyWXML": true,
