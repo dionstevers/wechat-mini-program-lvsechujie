@@ -38,8 +38,7 @@ Page({
     category: "",
     transporModalHidden: true,
     // capacityModalHidden: true,
-    speedBtwwon: [
-      {
+    speedBtwwon: [{
         label: "步行/跑步",
         min: 0,
         max: 2.78
@@ -104,13 +103,18 @@ Page({
   // Calculate the distance from aqi base station
   calcDist: async function (triplet, i) {
     const db = wx.cloud.database();
-    const { data } = await db
+    const {
+      data
+    } = await db
       .collection("monitor")
       .where({
         POI_ID: triplet[2][i].id
       })
       .get();
-    const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
+    const {
+      POI_Latitude: mlat,
+      POI_Longitude: mlng
+    } = data[0];
     return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
   // Find the closest aqi base station
@@ -358,9 +362,9 @@ Page({
         // });
       } else {
         Dialog.confirm({
-          title: '提示',
-          message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
-        })
+            title: '提示',
+            message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
+          })
           .then(() => {
             // on confirm
             wx.openSetting().then(settingRes => {
@@ -420,13 +424,15 @@ Page({
           }
         });
 
-        const { result = null } =
-          (await wx.cloud.callFunction({
-            name: "echo",
-            data: {
-              info: wx.cloud.CloudID(res.cloudID)
-            }
-          })) || {};
+        const {
+          result = null
+        } =
+        (await wx.cloud.callFunction({
+          name: "echo",
+          data: {
+            info: wx.cloud.CloudID(res.cloudID)
+          }
+        })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
@@ -497,14 +503,16 @@ Page({
     const db = wx.cloud.database();
     wx.getWeRunData({
       complete: async res => {
-        const { result = null } =
-          (await wx.cloud.callFunction({
-            name: "echo",
-            data: {
-              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-              info: wx.cloud.CloudID(res.cloudID)
-            }
-          })) || {};
+        const {
+          result = null
+        } =
+        (await wx.cloud.callFunction({
+          name: "echo",
+          data: {
+            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+            info: wx.cloud.CloudID(res.cloudID)
+          }
+        })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
@@ -543,7 +551,10 @@ Page({
               // Calculate the interval corresponding to each speed and count the quantity and time
               item.velos.forEach(speed => {
                 _this.data.speedBtwwon.forEach((item, key) => {
-                  const { min, max } = item || {};
+                  const {
+                    min,
+                    max
+                  } = item || {};
                   if (speed >= min && speed <= max) {
                     const currentEntry = result.get(key);
                     currentEntry.count += 1;
@@ -556,16 +567,24 @@ Page({
 
               // New logic
               // 步行或骑行 Walk or cycle//
-              const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
-              const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
+              const {
+                totalMeters: totalMetersWalk = 0
+              } = result.get(0) || {};
+              const {
+                totalMeters: totalMetersCycling = 0
+              } = result.get(1) || {};
               const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
 
               const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
               saving += total * savingRate[passenger - 1];
 
               // 公共交通 Public transportation
-              const { totalMeters: totalMetersCity = 0 } = result.get(4) || {};
-              const { totalMeters: totalMetersHighSpeed = 0 } = result.get(5) || {};
+              const {
+                totalMeters: totalMetersCity = 0
+              } = result.get(4) || {};
+              const {
+                totalMeters: totalMetersHighSpeed = 0
+              } = result.get(5) || {};
 
               const cityRate = 337.05;
               const highSpeedRate = 200.51;
@@ -595,9 +614,13 @@ Page({
               if (_this.data.transport === "驾驶电动汽车") {
                 transport = "驾驶电动汽车";
                 // 市区 City//
-                const { totalMeters: totalMetersCity = 0 } = result.get(2) || {};
+                const {
+                  totalMeters: totalMetersCity = 0
+                } = result.get(2) || {};
                 // 高速 Highway//
-                const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
+                const {
+                  totalMeters: totalMetersHighSpeed = 0
+                } = result.get(3) || {};
 
                 const cityTotal = _this.roundToTwoKM(totalMetersCity);
                 const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
@@ -683,14 +706,127 @@ Page({
   },
   //
   onShow() {
+    const _this = this
     this.setData({
       isFront: true
     });
+
     wx.setNavigationBarTitle({
       title: "碳行家｜行程记录"
     });
     this.setData({
       userInfo: app.globalData.userInfo
+    });
+    wx.getSystemInfo({
+      success(res) {
+        _this.setData({
+          brand: res.brand,
+          model: res.model,
+          system: res.system,
+          version: res.version,
+          platform: res.platform
+        });
+
+        wx.cloud.callFunction({
+          name: "login",
+          success: res => {
+            _this.setData({
+              openID: res.result.data._openid
+            });
+            wx.getSetting().then(res => {
+              if (res.authSetting["scope.userLocationBackground"]) {
+                // this.onTrack();
+                // this.setData({
+                //   capacityModalHidden: false
+                // });
+                wx.getLocation({
+                  type: "gcj02",
+                  success(loc) {
+                    let latitude = loc.latitude.toFixed(2);
+                    let longitude = loc.longitude.toFixed(2);
+                    console.log("Location: ", longitude, latitude);
+                    console.log(loc.speed, "speed");
+                    // this.startTrackConfirm()
+                    wx.request({
+                      url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                      success: async function (res) {
+                        console.log(res.data.location[0]);
+                        let city_id = res.data.location[0].id;
+                        let city_name = res.data.location[0].adm2 + res.data.location[0].name;
+                        wx.request({
+                          url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
+                          success: async function (res) {
+                            let new_category = "";
+                            let new_aqi = 0;
+                            const airQuality = res.data.now.aqi;
+                            wx.cloud.callFunction({
+                              name: 'addLocation',
+                              data: {
+                                sendParams: {
+                                  openid: app.globalData.openID,
+                                  city_name,
+                                  latitude,
+                                  longitude
+                                }
+                              },
+                              fail: err => {
+                                console.log('error==', err)
+                              }
+                            });
+                            // 处理空气质量数据
+                            new_aqi = Math.min(
+                              Math.round(
+                                Math.max(
+                                  (airQuality * 50) / 12,
+                                  ((airQuality - 12) * 50) / 13.5,
+                                  ((airQuality - 35.5) * 50) / 20,
+                                  ((airQuality - 55.5) * 50) / 95,
+                                  airQuality - 0 + 50
+                                ),
+                                500
+                              )
+                            );
+                            new_category =
+                              new_aqi <= 50 ?
+                              "优" //
+                              :
+                              new_aqi <= 100 ?
+                              "良" :
+                              new_aqi <= 150 ?
+                              "轻度污染" :
+                              new_aqi <= 200 ?
+                              "中度污染" :
+                              new_aqi <= 300 ?
+                              "重度污染" :
+                              "严重污染";
+
+                            _this.setData({
+                              name: city_name,
+                              aqi: res.data.now.aqi,
+                              category: res.data.now.category
+                            });
+                          },
+                          fail: function (err) {
+                            console.log(err);
+                          }
+                        });
+                      },
+                      fail: function (err) {
+                        console.log(err);
+                      }
+                    });
+                  },
+                  fail: function (err) {
+                    console.error(err);
+                  }
+                });
+              }
+            });
+            // _this.startTrackConfirm()
+          },
+          fail: console.error
+        });
+      }
     });
   },
   onHide() {
@@ -703,7 +839,7 @@ Page({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
     });
-    if (this.data.testGroup == 3) {
+    if (this?.data?.testGroup == 3) {
       wx.setNavigationBarColor({
         backgroundColor: "#D13A29",
         frontColor: "#ffffff"
@@ -738,22 +874,103 @@ Page({
                 // this.setData({
                 //   capacityModalHidden: false
                 // });
+                wx.getLocation({
+                  type: "gcj02",
+                  success(loc) {
+                    let latitude = loc.latitude.toFixed(2);
+                    let longitude = loc.longitude.toFixed(2);
+                    console.log("Location: ", longitude, latitude);
+                    console.log(loc.speed, "speed");
+                    // this.startTrackConfirm()
+                    wx.request({
+                      url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                      success: async function (res) {
+                        console.log(res.data.location[0]);
+                        let city_id = res.data.location[0].id;
+                        let city_name = res.data.location[0].adm2 + res.data.location[0].name;
+                        wx.request({
+                          url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
+                          success: async function (res) {
+                            let new_category = "";
+                            let new_aqi = 0;
+                            const airQuality = res.data.now.aqi;
+                            wx.cloud.callFunction({
+                              name: 'addLocation',
+                              data: {
+                                sendParams: {
+                                  openid: app.globalData.openID,
+                                  city_name,
+                                  latitude,
+                                  longitude
+                                }
+                              },
+                              fail: err => {
+                                console.log('error==', err)
+                              }
+                            });
+                            // 处理空气质量数据
+                            new_aqi = Math.min(
+                              Math.round(
+                                Math.max(
+                                  (airQuality * 50) / 12,
+                                  ((airQuality - 12) * 50) / 13.5,
+                                  ((airQuality - 35.5) * 50) / 20,
+                                  ((airQuality - 55.5) * 50) / 95,
+                                  airQuality - 0 + 50
+                                ),
+                                500
+                              )
+                            );
+                            new_category =
+                              new_aqi <= 50 ?
+                              "优" //
+                              :
+                              new_aqi <= 100 ?
+                              "良" :
+                              new_aqi <= 150 ?
+                              "轻度污染" :
+                              new_aqi <= 200 ?
+                              "中度污染" :
+                              new_aqi <= 300 ?
+                              "重度污染" :
+                              "严重污染";
+
+                            _this.setData({
+                              name: city_name,
+                              aqi: res.data.now.aqi,
+                              category: res.data.now.category
+                            });
+                          },
+                          fail: function (err) {
+                            console.log(err);
+                          }
+                        });
+                      },
+                      fail: function (err) {
+                        console.log(err);
+                      }
+                    });
+                  },
+                  fail: function (err) {
+                    console.error(err);
+                  }
+                });
               } else {
                 Dialog.confirm({
-                  title: '提示',
-                  message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
-                })
+                    title: '提示',
+                    message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
+                  })
                   .then(() => {
                     // on confirm
                     wx.openSetting().then(settingRes => {
                       if (settingRes.authSetting["scope.userLocationBackground"]) {
-                        this.onTrack();
+                        _this.onTrack();
                         // this.setData({
                         //   capacityModalHidden: false
                         // });
                       }
                     });
-        
+
                   })
                   .catch(() => {
                     // on cancel
@@ -780,86 +997,7 @@ Page({
             let now = new Date();
             now.setHours(0, 0, 0, 0);
             // _this.startTrackConfirm()
-            wx.getLocation({
-              type: "gcj02",
-              success(loc) {
-                let latitude = loc.latitude.toFixed(2);
-                let longitude = loc.longitude.toFixed(2);
-                console.log("Location: ", longitude, latitude);
-                console.log(loc.speed, "speed");
-                // this.startTrackConfirm()
-                wx.request({
-                  url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
-                  success: async function (res) {
-                    console.log(res.data.location[0]);
-                    let city_id = res.data.location[0].id;
-                    let city_name = res.data.location[0].adm2 + res.data.location[0].name;
-                    wx.request({
-                      url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
-                      success: async function (res) {
-                        let new_category = "";
-                        let new_aqi = 0;
-                        const airQuality = res.data.now.aqi;
-                        wx.cloud.callFunction({
-                          name: 'addLocation',
-                          data: {
-                            sendParams:{
-                              openid: app.globalData.openID,
-                              city_name,
-                              latitude,
-                              longitude
-                            }
-                          },
-                          fail: err => {
-                            console.log('error==',err)
-                          }
-                        });
-                        // 处理空气质量数据
-                        new_aqi = Math.min(
-                          Math.round(
-                            Math.max(
-                              (airQuality * 50) / 12,
-                              ((airQuality - 12) * 50) / 13.5,
-                              ((airQuality - 35.5) * 50) / 20,
-                              ((airQuality - 55.5) * 50) / 95,
-                              airQuality - 0 + 50
-                            ),
-                            500
-                          )
-                        );
-                        new_category =
-                          new_aqi <= 50
-                            ? "优"//
-                            : new_aqi <= 100
-                              ? "良"
-                              : new_aqi <= 150
-                                ? "轻度污染"
-                                : new_aqi <= 200
-                                  ? "中度污染"
-                                  : new_aqi <= 300
-                                    ? "重度污染"
-                                    : "严重污染";
 
-                        _this.setData({
-                          name: city_name,
-                          aqi: res.data.now.aqi,
-                          category: res.data.now.category
-                        });
-                      },
-                      fail: function (err) {
-                        console.log(err);
-                      }
-                    });
-                  },
-                  fail: function (err) {
-                    console.log(err);
-                  }
-                });
-              },
-              fail: function (err) {
-                console.error(err);
-              }
-            });
 
             db.collection("userInfo")
               .limit(1)
@@ -905,8 +1043,3 @@ Page({
     this.endTrack();
   }
 });
-
-//TODO: merch/database/debug
-//TODO: 排行榜-微信-社交网路-connections
-//TODO: onload-偷偷记一下-地理分布-记一次/每次都记-lists(date: geolocation)-push:database command
-//把可能会引起多重用户的bug的都改掉
