@@ -1,4 +1,3 @@
-// pages/login/login.ts
 export{}
 const app = getApp()
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
@@ -273,8 +272,8 @@ Page({
     
               // 延时跳转到指定页面
               setTimeout(function () {
-                wx.navigateTo({
-                  url: "/pages/journal/journal?typeq=1"
+                wx.switchTab({
+                  url: "/pages/information/information"
                 });
               }, 2000);
             } else {

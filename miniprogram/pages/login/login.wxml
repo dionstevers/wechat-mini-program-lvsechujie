@@ -57,7 +57,7 @@
 
  <view class="name">
  <text>昵称</text>
-  <input type="text" placeholder-style="color:white" placeholder="此处输入昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
+  <input type="nickname" placeholder-style="color:white" placeholder="此处输入昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
  </view>
  <view class='sex'>
     <text>性别</text>
