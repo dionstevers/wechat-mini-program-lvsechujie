@@ -10,7 +10,16 @@ Page({
     expandedMessageIndex: -1,
     selectedMessageIndex: -1
   },
+  onPullDownRefresh() {
+    wx.showNavigationBarLoading()
+    this.loadMessages();
+    //设置延时停止动画
+    setTimeout(() => {
+      wx.hideNavigationBarLoading();
+      wx.stopPullDownRefresh()
+    }, 1500);
 
+  },
   onLoad() {
     this.setData({
       openID: getApp().globalData.openID
