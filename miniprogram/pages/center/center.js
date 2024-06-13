@@ -239,7 +239,7 @@ Page({
   onSurvey(e) {
     logEvent('About Us')
     wx.navigateTo({
-      url: '/pages/test/test',
+      url: '/pages/aboutus/aboutus',
     })
 
   },

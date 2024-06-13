@@ -163,7 +163,7 @@ Page({
         duration:1500 });
         setTimeout(() => {
           wx.switchTab({
-            url : '/pages/center/center',
+            url : '/pages/information/information',
             complete: () => this.isNavigating = false
           })
         }, 1500);

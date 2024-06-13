@@ -1,3 +1,3 @@
 <!--pages/test/test.wxml-->
 
-<web-view src="https://mp001.yaoyaola.net/exapi/check_user/10815051?mp=1&url=/pages/aboutus/aboutus&flag=0"/>
+<web-view src="https://mp001.yaoyaola.net/exapi/check_user/10815051?mp=1&url=/pages/merchDetail/merchDetail?merch_id={{merch_id}}&flag=0"/>

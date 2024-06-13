@@ -5,14 +5,17 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    merch_id : 0,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-
+  onLoad(options) {
+    const merch_id = options.merch_id
+    this.setData({
+      merch_id : merch_id
+    })
   },
 
   /**
