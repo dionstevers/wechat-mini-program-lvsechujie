@@ -4,7 +4,7 @@
   <view class="center-box">
     <view class="welcome-text">
       <text>欢迎来到碳行家</text>
-      <text>Welcome to Carbon Master</text>
+      <text>Welcome to Carbon Clever</text>
     </view>
    
     <button bind:tap="HandleSignIn" class="login-button">登录</button>
