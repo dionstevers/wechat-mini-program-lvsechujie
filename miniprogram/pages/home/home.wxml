@@ -1,6 +1,6 @@
 <!--pages/home/home.wxml-->
 <wxs src="./home.wxs" module="m1"></wxs>
-<view class="page-background" id="home" style=" font-family:‘Times New Roman’, Times, serif; background:{{background}} ;">
+<view class="page-background" id="home" style="font-family:‘Times New Roman’, Times, serif; background:{{background}};">
 
   <view>
     <view wx:if="{{ name != '' }}" class="aqi-region">
@@ -113,16 +113,27 @@
   </modal>
 -->
 
+
   <modal title="出行方式" confirm-text="确定" cancel-text="取消" hidden="{{transporModalHidden}}" bindconfirm="transporModalConfirm" bindcancel="transporModalCancel" class="modal">
     <view class="picklist">
-      <text class="text">出行方式</text>
-      <picker bindchange="bindPickerChange" value="{{endIndex}}" range="{{endTransportList}}" class="picker picker-con">
+      <!-- <view class="text">出行方式</view> -->
+      <!-- <picker bindchange="bindPickerChange" value="{{endIndex}}" range="{{endTransportList}}" class="picker picker-con">
         <view class="picker">
           {{endTransportList[endIndex]}}
         </view>
         <view class="triangle"></view>
-      </picker>
+      </picker> -->
+
+
+      <checkbox-group bindchange="bindPickerChange">
+          <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="{{item.value}}">
+            <view class="weui-cell__hd">
+              <checkbox value="{{item.value}}" checked="{{item.checked}}"/>
+            </view>
+            <view class="weui-cell__bd">{{item.name}}</view>
+          </label>
+        </checkbox-group>
     </view>
   </modal>
 </view>
-<van-dialog id="van-dialog" />
+<van-dialog id="van-dialog" custom-class="home-dialog" />

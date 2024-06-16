@@ -40,7 +40,7 @@
 
 
     <view class="detail" wx:for="{{prizeList}}">
-      <text>{{fn.formatText(item.showTitle)}}</text>
+      <text>{{fn.formatText(item.show_title)}}</text>
     </view>
 
     <span style="transform:rotate({{trasn}}deg);"></span>

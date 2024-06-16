@@ -26,13 +26,46 @@ Page({
     curID: "",
     transport: "步行",
     transportList: ["步行或骑行", "公共交通", "驾驶电动汽车", "驾驶燃油汽车"],
-    endTransportList: ["未驾驶汽车", "驾驶电动汽车", "驾驶燃油汽车"],
+    // endTransportList: ["未驾驶汽车", "驾驶电动汽车", "驾驶燃油汽车"],
+    endTransportList: [{
+        value: '步行',
+        name: '步行'
+      },
+      {
+        value: '自行车(共享单车)',
+        name: '自行车(共享单车)'
+      },
+      {
+        value: '电动自行车',
+        name: '电动自行车'
+      },
+      {
+        value: '公交车',
+        name: '公交车'
+      },
+      {
+        value: '驾驶燃油汽车',
+        name: '驾驶燃油汽车'
+      },
+      {
+        value: '驾驶电动汽车',
+        name: '驾驶电动汽车'
+      },
+      {
+        value: '地铁',
+        name: '地铁'
+      },
+      {
+        value: '高铁',
+        name: '高铁'
+      }
+    ],
     index: 0,
     endIndex: 0,
     defaultIndex: 0,
     capacity: 0,
     capacityList: ["1", "2", "3", "4", "5+"],
-    isFront: true,
+    // isFront: true,
     aqi: "",
     name: "",
     category: "",
@@ -161,16 +194,16 @@ Page({
             if (item["date"]) item["date"] = item.date.getTime();
             if (item["endTime"]) item["endTime"] = item.endTime.getTime();
             let dist = 0;
-            for (let j in item["points"]) {
+            for (let j in item.record["points"]) {
               if (j == 0) continue;
               dist += _this.GetDistance(
-                item["points"][j - 1].latitude,
-                item["points"][j - 1].longitude,
-                item["points"][j].latitude,
-                item["points"][j].longitude
+                item.record["points"][j - 1].latitude,
+                item.record["points"][j - 1].longitude,
+                item.record["points"][j].latitude,
+                item.record["points"][j].longitude
               );
             }
-            item["distance"] = dist.toFixed(2);
+            item["distance"] = parseFloat(dist.toFixed(2));
             let passenger = 1; //parseInt(item["capacity"]) + 1;
 
             let saving = 0;
@@ -254,17 +287,17 @@ Page({
             if (item["date"]) item["date"] = item.date.getTime();
             if (item["endTime"]) item["endTime"] = item.endTime.getTime();
             let dist = 0;
-            for (let j in item["points"]) {
+            for (let j in item.record["points"]) {
               if (j == 0) continue;
               dist += _this.GetDistance(
-                item["points"][j - 1].latitude,
-                item["points"][j - 1].longitude,
-                item["points"][j].latitude,
-                item["points"][j].longitude
+                item.record["points"][j - 1].latitude,
+                item.record["points"][j - 1].longitude,
+                item.record["points"][j].latitude,
+                item.record["points"][j].longitude
               );
             }
 
-            item["distance"] = dist.toFixed(2);
+            item["distance"] = parseFloat(dist.toFixed(2));
             item["carbSum"] = item.carbSum.toFixed(2);
           });
 
@@ -300,16 +333,19 @@ Page({
         cnt = 0;
         try {
           const networkRes = await wx.getNetworkType();
+          console.log
           await db
             .collection("track")
             .doc(this.data.curID)
             .update({
               data: {
-                points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                velos: _.push(locationFn.speed),
-                timestamps: _.push(new Date()),
-                networkTypes: _.push(networkRes.networkType),
-                isFront: _.push(this.data.isFront)
+                // networkTypes: _.push(networkRes.networkType),
+                // isFront: _.push(this.data.isFront),
+                record: {
+                  points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                  velos: _.push(locationFn.speed),
+                  timestamps: _.push(new Date()),
+                }
               }
             });
         } catch (err) {
@@ -439,11 +475,13 @@ Page({
         const trackRes = await db.collection("track").add({
           data: {
             date: new Date(),
-            points: [],
-            velos: [],
-            timestamps: [],
-            networkTypes: [],
-            isFront: [],
+            record: {
+              points: [],
+              velos: [],
+              timestamps: [],
+            },
+            // networkTypes: [],
+            // isFront: [],
             brand: this.data.brand,
             model: this.data.model,
             system: this.data.system,
@@ -481,11 +519,13 @@ Page({
                 .doc(this.data.curID)
                 .update({
                   data: {
-                    points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                    velos: _.push(locationFn.speed),
-                    timestamps: _.push(new Date()),
-                    networkTypes: _.push(networkRes.networkType),
-                    isFront: _.push(this.data.isFront)
+                    // networkTypes: _.push(networkRes.networkType),
+                    // isFront: _.push(this.data.isFront),
+                    record: {
+                      points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
+                      velos: _.push(locationFn.speed),
+                      timestamps: _.push(new Date()),
+                    }
                   }
                 });
             } catch (err) {
@@ -521,13 +561,13 @@ Page({
           .get({
             success: function (res) {
               let dist = 0;
-              for (let j in res.data.points) {
+              for (let j in res.data.record.points) {
                 if (j == 0) continue;
                 dist += _this.GetDistance(
-                  res.data.points[j - 1].latitude,
-                  res.data.points[j - 1].longitude,
-                  res.data.points[j].latitude,
-                  res.data.points[j].longitude
+                  res.data.record.points[j - 1].latitude,
+                  res.data.record.points[j - 1].longitude,
+                  res.data.record.points[j].latitude,
+                  res.data.record.points[j].longitude
                 );
               }
               let item = res.data;
@@ -549,7 +589,7 @@ Page({
               }
 
               // Calculate the interval corresponding to each speed and count the quantity and time
-              item.velos.forEach(speed => {
+              item.record.velos.forEach(speed => {
                 _this.data.speedBtwwon.forEach((item, key) => {
                   const {
                     min,
@@ -611,8 +651,8 @@ Page({
               let transport = arr[maxEntry.key];
 
               // 驾驶电动汽车 Electric vehicle
-              if (_this.data.transport === "驾驶电动汽车") {
-                transport = "驾驶电动汽车";
+              if (_this.data.transport === "驾驶电动汽车" || _this.data.transport.includes("驾驶电动汽车")) {
+                // transport = "驾驶电动汽车";
                 // 市区 City//
                 const {
                   totalMeters: totalMetersCity = 0
@@ -639,9 +679,9 @@ Page({
                   data: {
                     endTime: new Date(),
                     endSteps: stepList ? stepList[30].step : null,
-                    distance: dist.toFixed(2),
+                    distance: parseFloat(dist.toFixed(2)),
                     carbSum: saving,
-                    transport
+                    transport: _this.data.transport
                   }
                 })
                 .then(res => {
@@ -695,7 +735,7 @@ Page({
   bindPickerChange: function (e) {
     this.setData({
       endIndex: e.detail.value,
-      transport: this.data.endTransportList[e.detail.value]
+      transport: e.detail.value
     });
   },
 
@@ -707,9 +747,9 @@ Page({
   //
   onShow() {
     const _this = this
-    this.setData({
-      isFront: true
-    });
+    // this.setData({
+    //   isFront: true
+    // });
 
     wx.setNavigationBarTitle({
       title: "碳行家｜行程记录"
@@ -815,6 +855,30 @@ Page({
                         console.log(err);
                       }
                     });
+
+                    // 温度/湿度获取
+                    wx.request({
+                      url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                      success: async function (res) {
+                        if (!res.data.now) return
+
+                        const db = wx.cloud.database();
+                        let now = new Date();
+                        now.setHours(0, 0, 0, 0);
+                        db.collection("weather").add({
+                          data: {
+                            longitude,
+                            latitude,
+                            date: new Date(),
+                            ...(res.data.now || {})
+                          }
+                        })
+                      },
+                      fail: function (err) {
+                        console.log(err);
+                      }
+                    });
+
                   },
                   fail: function (err) {
                     console.error(err);
@@ -830,9 +894,9 @@ Page({
     });
   },
   onHide() {
-    this.setData({
-      isFront: false
-    });
+    // this.setData({
+    //   isFront: false
+    // });
   },
   onLoad: async function () {
     this.setData({
@@ -1045,12 +1109,12 @@ Page({
   onShareAppMessage() {
     return {
       title: "快来一起低碳出街~",
-      path:"/pages/index/index?id=" + this.data.openID,
+      path: "/pages/index/index?id=" + this.data.openID,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      success: function(res){
+      success: function (res) {
         console.log(res.shareTickets[0])
       },
-      fail:function(res){
+      fail: function (res) {
         console.log('share failed')
       }
     }

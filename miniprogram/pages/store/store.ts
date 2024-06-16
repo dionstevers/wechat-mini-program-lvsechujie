@@ -31,7 +31,7 @@ Page({
     const random = Math.random();
 
     this.data.prizeList.forEach((item,index) => {
-        const {ratio, value,min,max} = item || {}
+        const {ratio, value, min, max} = item || {}
 
         if(prob > min && prob <= max){
           prize = index
@@ -121,7 +121,7 @@ Page({
               clearInterval(b);
               const db = wx.cloud.database();
               const _ = db.command;
-              const prizeList = that.data.prizeList
+              const prizeList = that.data.prizeList || []
               // const prizeList = ["placeholder", "京东E卡100元", "京东E卡50元", "京东E卡40元", "京东图书品类卡30元", "京东E卡20元", "京东E卡10元"];
               const openid = app.globalData.openID;
               wx.cloud.callFunction({
@@ -221,18 +221,17 @@ Page({
           }
         });
 
-        let res = (await db.collection('merch').where({
+        // let res = (await db.collection('merch').where({
+        //   attribute: "lottery"
+        // }).get());
+
+        let res = (await db.collection('lotteryProbability').where({
           attribute: "lottery"
-        }).get());
-        const {data = []} =  await db.collection("lotteryProbability").limit(1).get() || {}
-        const [lotteryProbability]  = data
+        }).orderBy("sort", "asc").get());
 
-        const { prizeProbabilities = [], xml=[]} = lotteryProbability || {}
-
- 
 
         this.setData({
-          prizeList: res?.data,prizeProbabilities
+          prizeList: res?.data
         })
 
     } catch (err) {

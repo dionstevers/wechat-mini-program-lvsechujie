@@ -1,6 +1,5 @@
 /* pages/home/home.wxss */
 .legend {
-  
   font-size: 18px;
   font-weight: bold;
   text-align: center;
@@ -8,7 +7,7 @@
   color:lightcyan;
 }
 .rank-container {
-  margin-top: -300rpx;
+  // margin-top: -246rpx;
   position: relative;
   margin-bottom: 0rpx;
   overflow-y: scroll;
@@ -114,19 +113,10 @@
   border-bottom-right-radius: 10rpx;
 }
 
-.picklist{
-  background: transparent;
-  display: flex;
-  justify-content: space-between;
-  align-content: center;
-  align-items: center;
-  padding: 40rpx;
-}
 
-.picklist text{
-  font-size: 28rpx;
-  color: #eee;
-}
+
+
+
 
 .picker-con{
   //height: 4.3vh;
@@ -231,30 +221,31 @@
 
 .list {
   width: 650rpx;
-  height: 40vh;
+  // height: 40vh;
   overflow: auto;
   margin: 0 auto;
 
 
   .listItem {
     width: 635rpx;
-    height: 160rpx;
+    // height: 160rpx;
+    padding: 16rpx 30rpx;
+    box-sizing: border-box;
     margin-bottom: 10rpx;
     border-radius: 20rpx;
     background-color: rgba(0, 0, 0, 0.315);
     position: relative;
 
     .title {
-      padding-top: 18rpx;
-      //text-align: center;
+      padding-top: 12rpx;
+      padding-bottom: 8rpx;
       font-size: 26rpx;
-      padding-left: 20rpx;
     }
 
     .content {
       font-size: 24rpx;
       margin-top: 5rpx;
-      padding: 0 20rpx;
+      padding-bottom: 8rpx;
     }
 
     .delete{
@@ -282,17 +273,32 @@
   }
 }
 
+// old
+// .picklist{
+//   background: transparent;
+//   display: flex;
+//   justify-content: space-between;
+//   align-content: center;
+//   align-items: center;
+//   padding: 40rpx;
+// }
 
+// .picklist text{
+//   font-size: 28rpx;
+//   color: #eee;
+// }
+
+// new
 .modal{
   .picklist{
-    display: flex;
-    .text{
-      color: #444;
-      
-      width: 85px;
-    }
-    .picker{
-      flex: 1;
+    .weui-cell.weui-check__label{
+      display: flex;
+      margin-bottom: 20rpx;
     }
   }
+}
+
+
+.home-dialog{
+  width: auto!important;
 }
