@@ -28,26 +28,18 @@ exports.main = async (event, context) => {
     }
 
     // Get merch entry
-    // const merchRes = await transaction.collection('merch').where({ merch_id }).get();
-    const lotteryProbabilityRes = await transaction.collection('lotteryProbability').where({ _id: merch_id }).get();
-    if (lotteryProbabilityRes.data.length === 0) {
+    const merchRes = await transaction.collection('merch').where({ merch_id }).get();
+    if (merchRes.data.length === 0) {
       throw new Error('Merch not found');
     }
-    const lotteryProbability = lotteryProbabilityRes.data[0];
-    const lottery_entry_id = lotteryProbability._id;
-    // const merch_entry_id = lotteryProbability._id;
-    // const quantity = merch.quantity;
+    const merch = merchRes.data[0];
+    const merch_entry_id = merch._id;
+    const quantity = merch.quantity;
 
-    // if (quantity < 1) {
-    //   throw new Error('Merch out of stock');
-    // }
+    if (quantity < 1) {
+      throw new Error('Merch out of stock');
+    }
 
-    // Update merch quantity
-    // await transaction.collection('merch').doc(merch_entry_id).update({
-    //   data: {
-    //     quantity: _.inc(-1),
-    //   },
-    // });
 
     // Update user credits
     await transaction.collection('lottery').doc(user_entry_id).update({
@@ -61,7 +53,7 @@ exports.main = async (event, context) => {
     await transaction.collection('claimedprize').add({
       data: {
         _openid: openid,
-        lottery_id: lottery_entry_id,
+        merch_id: merch_entry_id,
         date: new Date(),
       },
     });

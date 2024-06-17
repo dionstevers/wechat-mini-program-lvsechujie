@@ -125,12 +125,11 @@ Page({
               // const prizeList = ["placeholder", "京东E卡100元", "京东E卡50元", "京东E卡40元", "京东图书品类卡30元", "京东E卡20元", "京东E卡10元"];
               const openid = app.globalData.openID;
               wx.cloud.callFunction({
-                name: 'claimMerch',
+                name: 'lottery',
                 data: {
                   openid,
-                  merch_id: prizeList[that.data.prize]?._id,
-                  price: 150,
-                  merch_name: prizeList[that.data.prize]?.title
+                  lottery_probability_id: prizeList[that.data.prize]?._id,
+                  lottery_probability_name: prizeList[that.data.prize]?.title
                 },
                 success: res => {
                   if (res.result !== undefined ) {

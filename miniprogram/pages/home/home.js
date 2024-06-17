@@ -194,13 +194,13 @@ Page({
             if (item["date"]) item["date"] = item.date.getTime();
             if (item["endTime"]) item["endTime"] = item.endTime.getTime();
             let dist = 0;
-            for (let j in item.record["points"]) {
+            for (let j in item.record) {
               if (j == 0) continue;
               dist += _this.GetDistance(
-                item.record["points"][j - 1].latitude,
-                item.record["points"][j - 1].longitude,
-                item.record["points"][j].latitude,
-                item.record["points"][j].longitude
+                item.record[j - 1]["points"].latitude,
+                item.record[j - 1]["points"].longitude,
+                item.record[j]["points"].latitude,
+                item.record[j]["points"].longitude
               );
             }
             item["distance"] = parseFloat(dist.toFixed(2));
@@ -287,13 +287,13 @@ Page({
             if (item["date"]) item["date"] = item.date.getTime();
             if (item["endTime"]) item["endTime"] = item.endTime.getTime();
             let dist = 0;
-            for (let j in item.record["points"]) {
+            for (let j in item.record) {
               if (j == 0) continue;
               dist += _this.GetDistance(
-                item.record["points"][j - 1].latitude,
-                item.record["points"][j - 1].longitude,
-                item.record["points"][j].latitude,
-                item.record["points"][j].longitude
+                item.record[j - 1]["points"].latitude,
+                item.record[j - 1]["points"].longitude,
+                item.record[j]["points"].latitude,
+                item.record[j]["points"].longitude
               );
             }
 
@@ -341,11 +341,11 @@ Page({
               data: {
                 // networkTypes: _.push(networkRes.networkType),
                 // isFront: _.push(this.data.isFront),
-                record: {
-                  points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                  velos: _.push(locationFn.speed),
-                  timestamps: _.push(new Date()),
-                }
+                record: _.push({
+                  points: new db.Geo.Point(locationFn.longitude, locationFn.latitude),
+                  velos: locationFn.speed,
+                  timestamps: new Date(),
+                })
               }
             });
         } catch (err) {
@@ -475,11 +475,7 @@ Page({
         const trackRes = await db.collection("track").add({
           data: {
             date: new Date(),
-            record: {
-              points: [],
-              velos: [],
-              timestamps: [],
-            },
+            record: [],
             // networkTypes: [],
             // isFront: [],
             brand: this.data.brand,
@@ -521,11 +517,11 @@ Page({
                   data: {
                     // networkTypes: _.push(networkRes.networkType),
                     // isFront: _.push(this.data.isFront),
-                    record: {
-                      points: _.push(new db.Geo.Point(locationFn.longitude, locationFn.latitude)),
-                      velos: _.push(locationFn.speed),
-                      timestamps: _.push(new Date()),
-                    }
+                    record: _.push({
+                      points: new db.Geo.Point(locationFn.longitude, locationFn.latitude),
+                      velos: locationFn.speed,
+                      timestamps: new Date(),
+                    })
                   }
                 });
             } catch (err) {
@@ -561,13 +557,13 @@ Page({
           .get({
             success: function (res) {
               let dist = 0;
-              for (let j in res.data.record.points) {
+              for (let j in res.data.record) {
                 if (j == 0) continue;
                 dist += _this.GetDistance(
-                  res.data.record.points[j - 1].latitude,
-                  res.data.record.points[j - 1].longitude,
-                  res.data.record.points[j].latitude,
-                  res.data.record.points[j].longitude
+                  res.data.record[j - 1].points.latitude,
+                  res.data.record[j - 1].points.longitude,
+                  res.data.record[j].points.latitude,
+                  res.data.record[j].points.longitude
                 );
               }
               let item = res.data;
@@ -589,12 +585,16 @@ Page({
               }
 
               // Calculate the interval corresponding to each speed and count the quantity and time
-              item.record.velos.forEach(speed => {
+              item.record.forEach(item => {
                 _this.data.speedBtwwon.forEach((item, key) => {
                   const {
                     min,
                     max
                   } = item || {};
+                  const {
+                    velos: speed = 0
+                  } = item || {}
+
                   if (speed >= min && speed <= max) {
                     const currentEntry = result.get(key);
                     currentEntry.count += 1;
@@ -799,20 +799,46 @@ Page({
                             let new_category = "";
                             let new_aqi = 0;
                             const airQuality = res.data.now.aqi;
-                            wx.cloud.callFunction({
-                              name: 'addLocation',
-                              data: {
-                                sendParams: {
-                                  openid: app.globalData.openID,
-                                  city_name,
-                                  latitude,
-                                  longitude
-                                }
+
+                            // 温度/湿度获取
+                            wx.request({
+                              url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                              success: async function (weather) {
+                                if (!weather.data.now) return
+
+                                // now.setHours(0, 0, 0, 0);
+                                // db.collection("weather").add({
+                                //   data: {
+                                //     longitude,
+                                //     latitude,
+                                //     date: new Date(),
+                                //     ...(res.data.now || {})
+                                //   }
+                                // })
+
+                                wx.cloud.callFunction({
+                                  name: 'addLocation',
+                                  data: {
+                                    sendParams: {
+                                      openid: app.globalData.openID,
+                                      city_name,
+                                      latitude,
+                                      longitude,
+                                      weather: weather.data.now
+                                    }
+                                  },
+                                  fail: err => {
+                                    console.log('error==', err)
+                                  }
+                                });
                               },
-                              fail: err => {
-                                console.log('error==', err)
+                              fail: function (err) {
+                                console.log(err);
                               }
                             });
+
+
+
                             // 处理空气质量数据
                             new_aqi = Math.min(
                               Math.round(
@@ -856,28 +882,7 @@ Page({
                       }
                     });
 
-                    // 温度/湿度获取
-                    wx.request({
-                      url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
-                      success: async function (res) {
-                        if (!res.data.now) return
 
-                        const db = wx.cloud.database();
-                        let now = new Date();
-                        now.setHours(0, 0, 0, 0);
-                        db.collection("weather").add({
-                          data: {
-                            longitude,
-                            latitude,
-                            date: new Date(),
-                            ...(res.data.now || {})
-                          }
-                        })
-                      },
-                      fail: function (err) {
-                        console.log(err);
-                      }
-                    });
 
                   },
                   fail: function (err) {
@@ -958,20 +963,36 @@ Page({
                             let new_category = "";
                             let new_aqi = 0;
                             const airQuality = res.data.now.aqi;
-                            wx.cloud.callFunction({
-                              name: 'addLocation',
-                              data: {
-                                sendParams: {
-                                  openid: app.globalData.openID,
-                                  city_name,
-                                  latitude,
-                                  longitude
-                                }
-                              },
-                              fail: err => {
-                                console.log('error==', err)
+
+
+                            wx.request({
+                              url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                              success: async function (weather) {
+                                if (!weather.data.now) return
+
+
+                                wx.cloud.callFunction({
+                                  name: 'addLocation',
+                                  data: {
+                                    sendParams: {
+                                      openid: app.globalData.openID,
+                                      city_name,
+                                      latitude,
+                                      longitude,
+                                      weather: weather.data.now
+                                    }
+                                  },
+                                  fail: err => {
+                                    console.log('error==', err)
+                                  }
+                                });
                               }
-                            });
+
+
+
+                            })
+
+
                             // 处理空气质量数据
                             new_aqi = Math.min(
                               Math.round(
