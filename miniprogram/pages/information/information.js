@@ -288,7 +288,7 @@ Page({
 
       // 更新本地点击日期
       if (dayDiff > 0) {
-        console('Daily Update!')
+        console('Daily Update!').log
         localArticleRecommend.lastClickDate = currentDate;
         wx.setStorageSync('articleRecommend', localArticleRecommend);
       }

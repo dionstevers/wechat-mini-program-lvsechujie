@@ -299,8 +299,6 @@ Page({
             item["carbSum"] = item.carbSum.toFixed(2);
           });
 
-          console.log(list, "listlistlistlistlist");
-
           _this.setData({
             todayRecordList: list.reverse(),
             isRecordEmpty: list.length == 0
@@ -603,6 +601,7 @@ Page({
                 });
               });
 
+
               // New logic
               // 步行或骑行 Walk or cycle//
               const {
@@ -679,7 +678,8 @@ Page({
                     endSteps: stepList ? stepList[30].step : null,
                     distance: parseFloat(dist.toFixed(2)),
                     carbSum: saving,
-                    transport: _this.data.transport
+                    transport: _this.data.transport,
+                    calcTransport: transport
                   }
                 })
                 .then(res => {
