@@ -10,7 +10,7 @@
   </view>
 
   <!-- 测试用按钮 -->
-  <button bindtap="debugGenerateArticle" style="background-color: #ffffff; color: #000000;">测试: 生成文章</button>
+  <!--button bindtap="debugGenerateArticle" style="background-color: #ffffff; color: #000000;">测试: 生成文章</button-->
 
   <view>
     <view wx:for="{{arlist}}" wx:for-index="i" wx:key="i" class="container">

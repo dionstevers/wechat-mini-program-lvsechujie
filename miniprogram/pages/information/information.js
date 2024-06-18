@@ -282,14 +282,15 @@ Page({
     const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     if (localArticleRecommend !== ""){
-      // 计算日期差异
-      var timeDiff = Math.abs(currentDate.getTime() - (new Date(localArticleRecommend.lastClickDate)).getTime()); 
+      // 计算日期差异（每日凌晨4点检查）
+      var timeDiff = Math.abs(currentDate.getTime() - (new Date(localArticleRecommend.lastClickDate)).setHours(4,0,0,0)); 
       var dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
 
       // 更新本地点击日期
       if (dayDiff > 0) {
-        localArticleRecommend.lastClickDate = new Date();
-        wx.setStorageSync('articleRecommend', localArticleRecommend)
+        console('Daily Update!')
+        localArticleRecommend.lastClickDate = currentDate;
+        wx.setStorageSync('articleRecommend', localArticleRecommend);
       }
       
       this.dailyPushed = dayDiff > 0;
@@ -350,13 +351,13 @@ Page({
   async loadData(){
     // 初始化页面数据
     await this.fetchCloudData(false)
-    const localArticleRecommend = wx.getStorageSync('articleRecommend');
-    if (localArticleRecommend !== "") {
+    const articleRecommend = wx.getStorageSync('articleRecommend');
+    if (articleRecommend !== "") {
       this.setData({
         articleRecommend: {
-          frequencyScore: localArticleRecommend.frequencyScore,
-          articleCount: localArticleRecommend.articleCount,
-          readAmount: localArticleRecommend.readAmount
+          frequencyScore: articleRecommend.frequencyScore,
+          articleCount: articleRecommend.articleCount,
+          readAmount: articleRecommend.readAmount
         }
       })
     }
@@ -369,12 +370,12 @@ Page({
       this.getArticles(articleCountSum + 3);
 
       // 减少以往天数的推荐比重
+      const localArticleRecommend = wx.getStorageSync('articleRecommend');
       const frequencyScore = this.data.articleRecommend.frequencyScore;
       const minFrequencyScore = Math.min(...frequencyScore);
       const previousFrequencyScore = frequencyScore.map(
         element => (element - minFrequencyScore) * this.data.recommendWeights.residuals + minFrequencyScore
       );
-      console.log(minFrequencyScore)
 
       const readAmount = this.data.articleRecommend.readAmount;
       const previousReadAmount = readAmount.map(
