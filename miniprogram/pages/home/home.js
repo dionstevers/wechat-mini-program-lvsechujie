@@ -108,12 +108,10 @@ Page({
     this.setData({
       transporModalHidden: true
     });
+
+    const reasetEndTransportList = this.data.endTransportList.map(item => ({ ...item, checked: false }));
+    this.setData({ endTransportList: reasetEndTransportList });
     this.endTrack();
-  },
-  transporModalCancel() {
-    this.setData({
-      transporModalHidden: true
-    });
   },
   // Show carbon footprint savings in database top_n
   carbRanking() {
