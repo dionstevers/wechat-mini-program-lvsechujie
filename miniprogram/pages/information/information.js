@@ -60,10 +60,22 @@ Page({
 
     // 获取文章数据
     try {
-      let articles = (await db.collection('articles').orderBy('uploadTime', 'asc').get()).data;
+      const queryLimit = 20; // 微信单次获取上限为20
+      let articles = [];
+      let iterations = 0
+
+      while (true) {
+        let fetchedArticles = await db.collection('articles').skip(iterations * queryLimit).limit(queryLimit).get();
+        articles = articles.concat(fetchedArticles.data);
+        iterations++;
+
+        if (fetchedArticles.data.length < queryLimit) {
+          break;
+        }
+      }
 
       this.setData({
-        articles: articles,
+        articles: articles.sort((a, b) => new Date(a.uploadTime) - new Date(b.uploadTime))
       })
       
       console.log(`成功从云端获取${articles.length}篇文章`)
