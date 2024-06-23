@@ -222,7 +222,9 @@ Page({
           console.log(res.fileID);
           const path = res.fileID;
           const timestamp = new Date();
-          const userGroup = Math.floor(Math.random() * app.constData.totalTestGroupNumber) + 1;
+
+          // 分配不同版本（物理激励: 1; 金钱激励: 2; 信息激励: 3）
+          const userGroup = Math.floor(Math.random() * Object.keys(app.constData.totalTestGroupNumber).length) + 1;
           const basicInfo = e.detail.value;
 
           // 用户信息初始化

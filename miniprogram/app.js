@@ -25,15 +25,18 @@ App({
 
   // 全局常量
   constData: {
-    totalTestGroupNumber: 3
+    totalTestGroupNumber: {
+      '物理激励': 1,
+      '金钱激励': 2,
+      '信息激励': 3
+    }
   },
 
   // 全局用户数据
   globalData: {
     userInfo: null,
     openID: null,
-    testGroup : 0,
     background: null,
-    shareTicket:null
+    shareTicket: null
   }
 })

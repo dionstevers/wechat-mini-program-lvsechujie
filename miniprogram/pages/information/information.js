@@ -6,27 +6,42 @@ Page({
    * 页面的初始数据
    */
   data: {
-    testGroup: null,
+    testGroup: -1,
     userInfo:app.globalData.userInfo,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
+
+    /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
+
+    /** 文章推荐的权重 */
+    recommendWeights: {
+      frequencyScore: 3,
+      readAmount: 2,
+      version: 15,
+      dailyMultiplier: 0.75
+    },
+    
+    /** 把infoGroup对应上articleTypes的index */ 
+    infoGroup2ArticleType: {
+      0: -1, // 基础版
+      1: 0, // 森林版
+      2: 1 // 强国版
+    },
+
+    /** 文章种类对应的的index */
     articleTypes: {
-      "碳行家": -1,
-      "低碳我知道": 0,
-      "低碳强国": 1
+      '碳行家': -1,
+      '低碳我知道': 0,
+      '低碳强国': 1
     },
     articles: [],
+    arlist: [],
     articleRecommend: {
       frequencyScore: [],
       articleCount: [],
       readAmount: [],
-    },
-    recommendWeights: {
-      frequencyScore: 3,
-      readAmount: 2,
-      residuals: 0.75,
-    },
-    arlist: [],
+      infoGroup: 0
+    }
   },
 
   /**
@@ -51,11 +66,11 @@ Page({
         articles: articles,
       })
       
-      console.log('storage data set')
+      console.log(`成功从云端获取${articles.length}篇文章`)
     } catch (error) {
       console.error("获取文章时出错：", error);
     }
-    
+
     // 处理articleRecommend数据丢失情况 
     if (wx.getStorageSync("articleRecommend") === "" || isForced){
       try {
@@ -65,25 +80,33 @@ Page({
 
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
+          const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length;
+          const infoGroup = this.data.testGroup === totalInfoGroupNumber ? // 基础版: 0;森林版: 1 强国版: 2
+            Math.floor(Math.random() * totalInfoGroupNumber) : 0; 
           const articleRecommend = [
             Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 概率数组
               () => (100 / 4) / (Object.keys(this.data.articleTypes).length - 1)), 
             Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章存储数组
-              () => 1),
+              (_, articleTypeIndex) => infoGroup === 0 ? 
+              1 : (articleTypeIndex === this.data.infoGroup2ArticleType[infoGroup] ?
+              2 : 0)),
             Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章阅读量数组
-              () => 0)
+            () => 0),
           ];
+
           await db.collection('articleRecommend').add({
             data:{
               frequencyScore: articleRecommend[0],
               articleCount: articleRecommend[1],
               readAmount: articleRecommend[2],
+              infoGroup: infoGroup
             }
           });
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend[0],
             articleCount: articleRecommend[1],
             readAmount: articleRecommend[2],
+            infoGroup: infoGroup,
             lastClickDate: new Date()
           })
 
@@ -93,11 +116,13 @@ Page({
             frequencyScore: articleRecommendData[0].frequencyScore,
             articleCount: articleRecommendData[0].articleCount,
             readAmount: articleRecommendData[0].readAmount,
+            infoGroup: articleRecommendData[0].infoGroup
           }
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend.frequencyScore,
             articleCount: articleRecommend.articleCount,
             readAmount: articleRecommend.readAmount,
+            infoGroup: articleRecommend.infoGroup,
             lastClickDate: new Date()
           })
         }
@@ -125,7 +150,7 @@ Page({
       const db = wx.cloud.database();
       let articleRecommendData = (await db.collection('articleRecommend')
         .where({ _openid: getApp().globalData.openID })
-        .get()).data[0];
+        .get()).data;
 
       if (articleRecommendData.length === 0) {
         await db.collection('articleRecommend').add({
@@ -133,14 +158,18 @@ Page({
             frequencyScore: localArticleRecommend.frequencyScore,
             articleCount: localArticleRecommend.articleCount,
             readAmount: localArticleRecommend.readAmount,
+            infoGroup: localArticleRecommend.infoGroup
           }
         });
       } else {
-        await db.collection('articleRecommend').doc(articleRecommendData._id).update({
+        await db.collection('articleRecommend').doc(articleRecommendData[0]._id).update({
           data: {
             frequencyScore: localArticleRecommend.frequencyScore,
             articleCount: localArticleRecommend.articleCount,
             readAmount: localArticleRecommend.readAmount,
+
+            // TODO: 下面是处理旧用户，等所有数据库中都包含infoGroup后，可以移除
+            infoGroup: localArticleRecommend.infoGroup
           }
         });
       }
@@ -193,7 +222,10 @@ Page({
 
     const weightedAverage = normalizedFrequencyScore.map((fs, index) => { // 按照权重分配占比
       const normalizedRA = normalizedReadAmount[index];
-      return this.data.recommendWeights.frequencyScore * fs + this.data.recommendWeights.readAmount * normalizedRA;
+      const versionEffect = index === this.data.infoGroup2ArticleType[this.data.articleRecommend.infoGroup] ? 1 : 0;
+      return (this.data.recommendWeights.frequencyScore * fs + 
+              this.data.recommendWeights.readAmount * normalizedRA + 
+              this.data.recommendWeights.version * versionEffect);
     });
 
     const totalWeightedSum = weightedAverage.reduce((sum, value) => sum + value, 0); // 获取概率分布
@@ -215,21 +247,23 @@ Page({
   },
 
   /**
-   * 给用户分配文章 （每种类型总会至少生成一个）
-   * @param {number} totalArticleNumber 总共生成的额外的文章数
+   * 给用户分配文章 （普通版：每种类型总会至少生成1篇；森林版："低碳我知道"生成2篇；强国版："低碳强国"至少生成2篇 ...）
+   * @param {number} totalArticleNumber 总共生成的文章数 （第一篇“碳行家”文章除外）
    */
   getArticles(totalArticleNumber){
     const typeLength = Object.keys(this.data.articleTypes).length;
 
     try{
-      // 获取新文章
+      // 检查是否获取新文章
       const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
-      const iterations = (Math.max(totalArticleNumber, 3) - 1) - articleCountSum; // 每种类型总会至少生成一个
+      const iterations = (totalArticleNumber - 1) - articleCountSum;
 
+      // 若应当获取新文章，则告知需更新数据库
       if (iterations > 0) {
         this.shouldUpdateCloud = true;
       }
 
+      // 获取新文章
       for (let i = 0; i < iterations; i++) {
         let articleType = this.getArticleType();
         if (articleType != -1 && articleType < (typeLength - 1)) {
@@ -266,7 +300,7 @@ Page({
 
       // 转换时间并按照时间升序排序
       this.setData({
-        arlist: this.TimeConvert(articleList)
+        arlist: this.timeConvert(articleList)
       })
 
     } catch(err) {
@@ -328,7 +362,7 @@ Page({
    * 把文章日期格式化并排序
    * @param {Array} list 文章list
    */
-  TimeConvert(list){
+  timeConvert(list){
     // 格式化时间
     for (let index = 0; index < list.length; index++) {
       const element = list[index];
@@ -352,13 +386,33 @@ Page({
     // 初始化页面数据
     await this.fetchCloudData(false)
     const articleRecommend = wx.getStorageSync('articleRecommend');
-    if (articleRecommend !== "") {
+
+    // TODO: 下面的“后方判断（!==之后）”是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
+    if (articleRecommend.infoGroup == undefined) {
+      const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length
+      articleRecommend.infoGroup = this.data.testGroup === totalInfoGroupNumber ? // 基础版: 0;森林版: 1 强国版: 2
+        Math.floor(Math.random() * totalInfoGroupNumber) : 0; 
+      wx.setStorageSync('articleRecommend', articleRecommend);
+    }
+
+    // 设置页面实例数据
+    this.setData({
+      articleRecommend: {
+        frequencyScore: articleRecommend.frequencyScore,
+        articleCount: articleRecommend.articleCount,
+        readAmount: articleRecommend.readAmount,
+        infoGroup: articleRecommend.infoGroup
+      }
+    })
+
+    // 根据测试组不同，背景颜色不同 (强国组)
+    if(this.data.infoGroup2ArticleType[this.data.articleRecommend.infoGroup] === this.data.articleTypes['低碳强国']){
+      wx.setNavigationBarColor({
+        backgroundColor: "#D13A29",
+        frontColor: '#ffffff',
+      })
       this.setData({
-        articleRecommend: {
-          frequencyScore: articleRecommend.frequencyScore,
-          articleCount: articleRecommend.articleCount,
-          readAmount: articleRecommend.readAmount
-        }
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
       })
     }
 
@@ -374,12 +428,12 @@ Page({
       const frequencyScore = this.data.articleRecommend.frequencyScore;
       const minFrequencyScore = Math.min(...frequencyScore);
       const previousFrequencyScore = frequencyScore.map(
-        element => (element - minFrequencyScore) * this.data.recommendWeights.residuals + minFrequencyScore
+        element => (element - minFrequencyScore) * this.data.recommendWeights.dailyMultiplier + minFrequencyScore
       );
 
       const readAmount = this.data.articleRecommend.readAmount;
       const previousReadAmount = readAmount.map(
-        element => element * this.data.recommendWeights.residuals
+        element => element * this.data.recommendWeights.dailyMultiplier
       )
 
       localArticleRecommend.frequencyScore = previousFrequencyScore;
@@ -400,7 +454,7 @@ Page({
     // 加载文章数据
     this.setData({
       userInfo: app.globalData.userInfo,
-      testGroup :app.globalData.userInfo.testGroup
+      testGroup: app.globalData.userInfo.testGroup
     });
     this.loadData();
 
@@ -408,17 +462,6 @@ Page({
     const counterStored = wx.getStorageSync('articleClickCounter')
     if (counterStored !== "") {
       this.updateCounter = counterStored
-    }
-
-    // 根据测试组不同，背景颜色不同
-    if(this.data.testGroup == 3){
-      wx.setNavigationBarColor({
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
-      this.setData({
-        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })
     }
   }, 
 
