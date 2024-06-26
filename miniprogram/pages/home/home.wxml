@@ -76,8 +76,14 @@
         <view class="content">省碳量：{{item.carbSum}} g</view>
       </view>
     </view>
+
+    <view class="legend">低碳排行榜</view>
+    <view class="summary-line">
+      <text>你总共省碳 122.32kg</text>
+      <text>排名: 35</text>
+    </view>
+
     <view class="rank-container">
-      <view class="legend">低碳排行榜</view>
       <block wx:for="{{users}}" wx:key="id">
         <view class="user-item" style="background-color:{{userInfo.testGroup == 3 ? '#D13A29':'#23cfc9'}}">
           <image class="profile-image" src="{{item.avatar}}" />
@@ -86,11 +92,11 @@
             <view class="user-stats">
               <view class="carbon-saving">
                 <text class="stat-label">排名:</text>
-                <text class="stat-value">{{index+1}}</text>
+                <text class="stat-value">{{item.rank}}</text>
               </view>
               <view class="carbon-saving">
                 <text class="stat-label">省碳:</text>
-                <text class="stat-value">{{item.carbSum}}kg</text>
+                <text class="stat-value">{{item.totalCarbSum}}kg</text>
               </view>
             </view>
           </view>
