@@ -1,3 +1,5 @@
+import { formatTime } from '../../utils/time'
+
 Page({
   data: {
     openID: '',
@@ -47,7 +49,7 @@ Page({
         const messages = res.data.map((message: any) => {
           return {
             ...message,
-            formattedTime: this.formatTime(message.time) // Format time for each message
+            formattedTime: formatTime(message.time) // Format time for each message
           };
         });
 
@@ -60,20 +62,20 @@ Page({
       });
   },
 
-  formatTime(time: number) {
-    const date = new Date(time);
-    const year = date.getFullYear();
-    const month = this.padZero(date.getMonth() + 1);
-    const day = this.padZero(date.getDate());
-    const hour = this.padZero(date.getHours());
-    const minute = this.padZero(date.getMinutes());
-    const formattedTime = `${year}-${month}-${day} ${hour}:${minute}`;
-    return formattedTime;
-  },
+  // formatTime(time: number) {
+  //   const date = new Date(time);
+  //   const year = date.getFullYear();
+  //   const month = this.padZero(date.getMonth() + 1);
+  //   const day = this.padZero(date.getDate());
+  //   const hour = this.padZero(date.getHours());
+  //   const minute = this.padZero(date.getMinutes());
+  //   const formattedTime = `${year}-${month}-${day} ${hour}:${minute}`;
+  //   return formattedTime;
+  // },
 
-  padZero(num: number) {
-    return num < 10 ? '0' + num : num;
-  },
+  // padZero(num: number) {
+  //   return num < 10 ? '0' + num : num;
+  // },
 
   toggleMessage(event: any) {
     const index = event.currentTarget.dataset.index;
