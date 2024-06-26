@@ -183,7 +183,9 @@ Page({
         cloudPath: `avatar/${new Date().getTime()}.jpeg`,
         filePath: avatar,
         success: (res) => {
+          console.log(res)
           avatar = res.fileID;
+          this.uploadData(avatar,basicInfo,carbSum,testGroup);
         },
         fail: err => {
           console.log(err)
@@ -196,8 +198,11 @@ Page({
           return;
         }
       })      
+    }else{
+      this.uploadData(avatar,basicInfo,carbSum,testGroup);
     }
-    this.uploadData(avatar,basicInfo,carbSum,testGroup);
+    
+
 
   },
 
