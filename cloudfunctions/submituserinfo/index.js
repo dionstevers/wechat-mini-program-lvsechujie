@@ -18,11 +18,11 @@ exports.main = async (event, context) => {
         // User exists, update record
         const updateRes = await transaction.collection('userInfo').doc(userRecord.data[0]._id).update({
           data: {
-            _openid: openid,
+            // _openid: openid,
             avatar: avatar,
             basicInfo: basicInfo,
-            carbSum: carbSum,
-            testGroup: testGroup,
+            // carbSum: carbSum,
+            // testGroup: testGroup,
             updateDate: new Date(),
           }
         })

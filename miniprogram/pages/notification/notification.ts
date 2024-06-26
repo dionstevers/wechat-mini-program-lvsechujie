@@ -26,7 +26,6 @@ Page({
   },
   onLoad() {
     updateColor();
-
     this.setData({
       openID: getApp().globalData.openID
     })
