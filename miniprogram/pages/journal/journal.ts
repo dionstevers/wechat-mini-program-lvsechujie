@@ -1,8 +1,6 @@
-
-
-const app = getApp()
-export{}
 // pages/journal/journal.ts
+import { updateColor } from '../../utils/colorschema'
+const app = getApp()
 
 Page({
 
@@ -10,7 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
+    background: 'null',
     forminfo: '',
     num: 10,
     openID: '',
@@ -228,6 +226,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    updateColor();
+
     console.log(options.typeq)
     var typeq = parseInt(options.typeq!)
     this.fetchData(typeq)
@@ -255,9 +255,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    
-   
-  
+ 
   },
 
   /**

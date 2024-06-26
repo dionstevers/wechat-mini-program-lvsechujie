@@ -1,5 +1,6 @@
 
 import { hexMD5 } from '../../utils/md5.js';
+import { updateColor } from '../../utils/colorschema'
 // pages/survey/survey.ts
 export{}
 const app = getApp()
@@ -9,15 +10,14 @@ Page({
    */
   data: {
     userInfo: null,
-    background : 'linear-gradient(180deg, #00022a 0%,#009797 100%);',
-
-
+    background : null,
   },
   /**
    * 生命周期函数--监听页面加载
    */
 
   onLoad(option) {
+    updateColor();
   },
 
   
@@ -35,7 +35,6 @@ Page({
     wx.setNavigationBarTitle({
       title: '碳行家｜关于我们'
     })
-    // this.testApi()
   },
 
   /**

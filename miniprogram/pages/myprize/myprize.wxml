@@ -1,4 +1,4 @@
- <view class="page-background">
+ <view class="page-background" style="background: {{background}};">
 
 
  <view class="info" wx:if="{{prizelist.length>0||claimedprizes.length>0}}">

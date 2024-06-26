@@ -1,5 +1,5 @@
 <!--pages/quiz/quiz.wxml-->
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
 
   <view class="container">
   <view class="title">

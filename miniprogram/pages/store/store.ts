@@ -1,9 +1,11 @@
 // pages/store/store.ts
-const app = getApp();
+import { updateColor } from '../../utils/colorschema'
 import { logEvent } from "../../utils/log";
-export {};
+const app = getApp();
+
 Page({
   data: {
+    background: null,
     prize: 0,
     prizes: [],
     claimedprizes: [],
@@ -248,6 +250,8 @@ Page({
     });
   },
   onLoad() {
+    updateColor();
+
     const cost = 150;
 
     this.setData({

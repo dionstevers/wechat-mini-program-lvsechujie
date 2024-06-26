@@ -1,6 +1,7 @@
 // pages/detail/detail.ts
+import { updateColor } from '../../utils/colorschema'
 const app = getApp()
-export{}
+
 Page({
 
   /**
@@ -18,6 +19,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(option){
+    updateColor()
+
     const link = option.link
     const articleType = option.articleType
     const openTime  = new Date()

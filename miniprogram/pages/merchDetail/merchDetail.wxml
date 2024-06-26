@@ -1,4 +1,4 @@
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
   <view class="top-image-section">
     <image class="merch-image" src="{{merch.image}}"></image>
   </view>

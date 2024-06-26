@@ -1,4 +1,4 @@
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
   <view class="container">
     <view class="tabbar">
       <block wx:for="{{tabs}}" wx:key="index">

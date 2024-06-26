@@ -1,8 +1,9 @@
-
+import { updateColor } from '../../utils/colorschema'
 import { logEvent } from "../../utils/log";
 
 Page({
   data: {
+    background: null,
     flag: false,
     merch: {
       merch_id: '',
@@ -14,6 +15,8 @@ Page({
     }
   },
   onLoad(options) {
+    updateColor();
+
     const merchId = options.merch_id;
     this.getMerchDetail(merchId);
     const u_openid = options.u_openid

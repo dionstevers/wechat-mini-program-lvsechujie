@@ -1,6 +1,7 @@
 // pages/myprize/myprize.ts
+import { updateColor } from '../../utils/colorschema'
 const app = getApp()
-export{}
+
 Page({
 
   /**
@@ -9,6 +10,7 @@ Page({
   data: {
     prizelist:null,
     claimedprizes:null,
+    background: null
   },
   claimPrize(){
     var prizelist = JSON.stringify(this.data.prizelist)
@@ -17,6 +19,8 @@ Page({
     })
   },
   onLoad(options) {
+    updateColor();
+
     var prizelist = JSON.parse(options.prizelist!)
     var claimedprizes = JSON.parse(options.claimedprizes!)
     this.setData({

@@ -1,7 +1,7 @@
 <!--pages/triphistory/triphistory.wxml-->
 <wxs src="./triphistory.wxs" module="m1"></wxs>
 
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
   <view class="list-summary">今日共有<text>{{ todayRecordList.length }}</text>条出行记录</view>
   <view class="list">
     <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">

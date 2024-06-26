@@ -1,5 +1,5 @@
 // pages/picUp/picUp.ts
-export{}
+import { updateColor } from '../../utils/colorschema'
 const app = getApp()
 Page({
 
@@ -12,9 +12,7 @@ Page({
     picpath:'',
     modalHidden:true,
     userInfo: null,
-    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
-
-
+    background: null,
   },
   
 
@@ -132,7 +130,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    updateColor();
   },
 
   /**

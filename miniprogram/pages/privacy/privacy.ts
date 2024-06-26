@@ -1,5 +1,6 @@
 // pages/privacy/privacy.ts
-export{}
+import { updateColor } from '../../utils/colorschema'
+
 const app =getApp()
 Page({
 
@@ -8,13 +9,15 @@ Page({
    */
   data: {
       userInfo:null,
-      background: 'linear-gradient(180deg, #00022a 0%,#009797 100%);',
+      background: null,
   
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    updateColor();
+
     this.setData({
       userInfo: app.globalData.userInfo
     })

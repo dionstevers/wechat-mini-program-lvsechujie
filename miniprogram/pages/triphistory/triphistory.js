@@ -1,4 +1,7 @@
 // pages/triphistory/triphistory.ts
+import { updateColor } from "../../utils/colorschema";
+import { logEvent } from "../../utils/log";
+
 Page({
 
   /**
@@ -24,6 +27,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    updateColor();
+
     var _this = this
     wx.cloud.callFunction({
       name: 'login',

@@ -1,4 +1,5 @@
 import { formatTime } from '../../utils/time'
+import { updateColor } from '../../utils/colorschema'
 
 Page({
   data: {
@@ -10,7 +11,8 @@ Page({
     message: "",
     types: ["奖品兑换", "功能建议", "问题修复"],
     expandedMessageIndex: -1,
-    selectedMessageIndex: -1
+    selectedMessageIndex: -1,
+    background: null
   },
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
@@ -23,6 +25,8 @@ Page({
 
   },
   onLoad() {
+    updateColor();
+
     this.setData({
       openID: getApp().globalData.openID
     })

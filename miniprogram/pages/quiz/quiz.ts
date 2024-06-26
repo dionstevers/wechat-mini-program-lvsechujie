@@ -1,3 +1,4 @@
+import { updateColor } from '../../utils/colorschema'
 
 // Page初始化函数
 export{}
@@ -14,11 +15,14 @@ Page({
     ans: '',
     selectedChoiceIndex: null,  // 用户选择的选项索引 
     showingPrompt: false,     // 是否显示提示内容
-    openID: null
+    openID: null,
+    background: null
   },
 
   // 页面加载时触发
   onLoad(option) {
+    updateColor();
+
     // 从数据库中获取题目、选项和提示内容，然后更新data中的相应字段
     
     this.getDataFromDatabase();

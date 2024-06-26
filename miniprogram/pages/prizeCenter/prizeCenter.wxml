@@ -1,4 +1,4 @@
-<view class="page-background">
+<view class="page-background" style="background: {{background}};">
   <view class="top-section">
     <view class="user-credits" style="width: 300rpx; height: 178rpx; display: flex; box-sizing: border-box">
       <image src="../../asset/img/exchange.png" class="token-icon"></image>

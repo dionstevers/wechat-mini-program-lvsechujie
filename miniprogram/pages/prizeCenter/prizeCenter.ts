@@ -1,12 +1,16 @@
+import { updateColor } from '../../utils/colorschema'
+
 Page({
   data: {
     credits: 0,
     prizes:[],
     prizeList:[],
-    claimedprizes:[]
-
+    claimedprizes:[],
+    background: null
   },
   onLoad(){
+    updateColor();
+
     this.getLotteryInfo()
     this.getMerchData()
   },
