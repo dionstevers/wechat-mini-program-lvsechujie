@@ -79,8 +79,8 @@
 
     <view class="legend">低碳排行榜</view>
     <view class="summary-line">
-      <text>你总共省碳 122.32kg</text>
-      <text>排名: 35</text>
+      <text>你总共省碳 {{mysaving}}</text>
+      <text>排名: {{myranking}}</text>
     </view>
 
     <view class="rank-container">

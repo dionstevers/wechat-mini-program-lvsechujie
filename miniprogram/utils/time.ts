@@ -1,7 +1,5 @@
 
 
-
-
 function getWeekRange() {
   const currentDate = new Date();
   const first = currentDate.getDate() - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
