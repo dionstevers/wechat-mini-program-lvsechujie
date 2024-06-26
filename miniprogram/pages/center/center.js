@@ -140,6 +140,11 @@ Page({
       }
     })
   },
+  editProfile(){
+    wx.navigateTo({
+      url: '/pages/login/login',
+    })
+  },
   initChart() {
     let chart;
     if (this.randerComponent) {

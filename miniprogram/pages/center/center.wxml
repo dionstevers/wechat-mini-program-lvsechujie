@@ -1,7 +1,7 @@
 <!--pages/center/center.wxml-->
 <view class="page-background" id = "page" catchtouchmove="dealer" style=" font-family:‘Times New Roman’, Times, serif ;background: {{background}};">
 
-<view class="avatar-con" wx:if="{{ userInfo }}">
+<view class="avatar-con" bind:tap="editProfile" wx:if="{{ userInfo }}">
   <image class="avatar" src="{{userInfo.avatar}}"></image>
   <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
   <view class='avatar-info'>即刻开启你的低碳之旅</view>

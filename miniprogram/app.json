@@ -1,14 +1,13 @@
 {
   "pages": [
-    "pages/login/login",
     "pages/information/information",  
+    "pages/login/login",
     "pages/index/index",
     "pages/home/home",
     "pages/center/center",
     "pages/journal/journal",
     "pages/triphistory/triphistory",
     "pages/store/store",
-
     "pages/myprize/myprize",
     "pages/privacy/privacy",
     "pages/picUp/picUp",

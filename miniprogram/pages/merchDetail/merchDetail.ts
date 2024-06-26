@@ -1,5 +1,4 @@
-import { SceneDefaultComponents } from "XrFrame/elements";
-import { CREATE_INSTANCE } from "XrFrame/kanata/lib/kanata";
+
 import { logEvent } from "../../utils/log";
 
 Page({
