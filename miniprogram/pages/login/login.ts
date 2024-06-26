@@ -24,7 +24,6 @@ Page({
     dob: null,
     email:'',
     nickname:null,
-    info: '',
     sex: [
       { name: '0', value: '男', checked: 'true' },
       { name: '1', value: '女' },
@@ -35,7 +34,6 @@ Page({
       { name: '1', value: '否' }
     ],
     isSex: "0",
-    information: [],
     userSex: '',
     modalHidden: false
 
@@ -116,206 +114,122 @@ Page({
     })
   },
  
-  //表单提交
-  // 检验
-  checkSubmit(){
-    var email = this.data.email;
-    var nickname = this.data.nickname;
-    var car= this.data.car;
-    var dob= this.data.dob;
-    var occu = this.data.occu;
-    var grad = this.data.grad;
-    var trans = this.data.trans;
-    var avatar = this.data.avatarUrl
-    var reg1 =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    console.log(nickname)
-    if(avatar == defaultAvatarUrl){
+
+  
+
+
+  validateForm() {
+    const { nickname, dob, occu, grad, trans, car } = this.data
+    if (!nickname) {
       wx.showToast({
-        title: '头像未选择',
-        icon: 'error'
+        title: '请输入昵称',
+        icon: 'none'
       })
+      return false
     }
-    if(nickname == null){
+    if (!dob) {
       wx.showToast({
-        title:"昵称未填写",
-        icon:"error"
+        title: '请选择年龄段',
+        icon: 'none'
       })
-      return 1 
+      return false
     }
-    if(dob == null){
+    if (!occu) {
       wx.showToast({
-        title: '年龄未填写',
-        icon:"error"
+        title: '请选择职业',
+        icon: 'none'
       })
-      return 1
+      return false
     }
-    if(occu == null){
+    if (!grad) {
       wx.showToast({
-        title: '职业未填写',
-        icon:"error"
+        title: '请选择学历',
+        icon: 'none'
       })
-      return 1
+      return false
     }
-    if(grad == null){
+    if (!trans) {
       wx.showToast({
-        title: '学历未填写',
-        icon:"error"
+        title: '请选择交通方式',
+        icon: 'none'
       })
-      return 1
+      return false
     }
-    if(trans==null){
+    if (trans==2 && !car) {
       wx.showToast({
-        title: '出行方式未填写',
-        icon:"error"
+        title: '请选择汽车类型',
+        icon: 'none'
       })
-      return 1
+      return false
     }
-    if(trans==2&&car==null){
-      wx.showToast({
-        title: '能源形式未填写',
-        icon:"error"
-      })
-      return 1 
-    }
-    if (email!='') {
-      if(reg1.test(email)==false){
-        console.log('邮箱格式错误，请检查');
-        wx.showToast({
-          title: "邮箱格式错误",
-          icon: "error",
-          duration: 2000,
-          mask: true,
-        })
-        this.setData({
-          email:''
-        })
-        return 1;
-      }
-    }
-    return 2 
+    return true
   },
+
   login(e:any) {
      
-    console.log(e.detail.value)
-    var _this = this
-    var checkResult = _this.checkSubmit();
-    
-    if (checkResult == 2) {
-      console.log(_this.data.openID);
-      const db = wx.cloud.database();
-      const _ = db.command;
-      const avatar = _this.data.avatarUrl;
-    
-      // 显示数据更新中的提示
-      wx.showToast({
-        title: '数据更新中',
-        icon: 'loading',
-        duration: 10000, // 设置持续显示时间，单位毫秒，可根据实际上传时间调整
-        mask: true,
-      });
-    
+    if(!this.validateForm()){
+      return;
+    }
+    // data to be uploaded 
+    const basicInfo = e.detail.value;
+    console.log(basicInfo)
+    const carbSum = 0;
+    const testGroup = Math.floor(Math.random() * 3) + 1
+    let avatar = this.data.avatarUrl
+
+// if user upload the avatar, then we need to first upload it to cloud db
+    if(avatar != defaultAvatarUrl){
       wx.cloud.uploadFile({
-        cloudPath: 'avatar/' + new Date().getTime() + '.jpeg',
+        cloudPath: `avatar/${new Date().getTime()}.jpeg`,
         filePath: avatar,
-        success: async (res) => {
-          console.log('成功上传');
-          console.log(res.fileID);
-          const path = res.fileID;
-          const timestamp = new Date();
-
-          // 分配不同版本（物理激励: 1; 金钱激励: 2; 信息激励: 3）
-          const userGroup = Math.floor(Math.random() * Object.keys(app.constData.totalTestGroupNumber).length) + 1;
-          const basicInfo = e.detail.value;
-
-          // 用户信息初始化
-          await db.collection('userInfo').add({
-            data:{
-              testGroup: userGroup,
-              avatar: path,
-              basicInfo: basicInfo,
-              loginDate: timestamp,
-              carbSum: 0,
-              // todo: minimize the schema of this collection
-            }
-          })
-
-          // 抽奖初始化
-          await db.collection('lottery').add({
-            data:{
-              //TODO: subject to change: initial credit is set to 20
-              credit:20,
-              prizes:[],
-              claimedprizes: [],
-              attempt:0
-            }
-          });      
-          try {
-            // 上传完成后，从userInfo中获取用户信息
-            const userInfoData = {
-              testGroup: userGroup,
-              avatar: path,
-              basicInfo: basicInfo,
-              loginDate: timestamp,
-              carbSum: 0,
-              // todo: minimize the schema of this collection
-            };
-            if (userInfoData) {
-              // 更新 app.globalData.userInfo
-              app.globalData.userInfo = userInfoData;
-              // 隐藏数据更新中的提示
-              wx.hideToast();
-              // 显示提交成功的提示
-              wx.showToast({
-                title: '提交成功',
-                icon: 'success',
-                duration: 2000,
-                mask: true,
-              });
-    
-              // 延时跳转到指定页面
-              setTimeout(function () {
-                wx.switchTab({
-                  url: "/pages/information/information"
-                });
-              }, 2000);
-            } else {
-              // 如果找不到用户信息，显示错误提示
-              wx.hideToast();
-              wx.showToast({
-                title: '未找到用户信息',
-                icon: 'none',
-                duration: 2000,
-                mask: true,
-              });
-            }
-          } catch (error) {
-            // 处理获取用户信息失败的情况
-            wx.hideToast();
-            wx.showToast({
-              title: '获取用户信息失败',
-              icon: 'none',
-              duration: 2000,
-              mask: true,
-            });
-            console.error('获取用户信息失败', error);
-          }
+        success: (res) => {
+          avatar = res.fileID;
         },
-        fail: (error) => {
-          // 处理上传失败的情况
-          wx.hideToast(); // 隐藏数据更新中的提示
+        fail: err => {
+          console.log(err)
           wx.showToast({
-            title: '上传失败',
+            title: '上传头像失败',
             icon: 'none',
             duration: 2000,
             mask: true,
           });
-          console.error('上传失败', error);
+          return;
         }
-      });
+      })      
     }
-    
-    
+    this.uploadData(avatar,basicInfo,carbSum,testGroup);
 
+  },
+
+  uploadData: function( avatar: any,basicInfo: any, carbSum: any, testGroup: any){
+    wx.cloud.callFunction({
+      name:'submituserinfo',
+      data:{
+        avatar,
+        basicInfo,
+        carbSum,
+        testGroup
+      },
+      success:(res)=>{
+        const userInfo ={
+          avatar: avatar,
+          loginDate: new Date(),
+          basicInfo: basicInfo,
+          carbSum:carbSum,
+          testGroup: testGroup,
+        }
+        //set globalData
+        app.globalData.userInfo  = userInfo;
+        if(res.result && typeof res.result === 'object' && 'success' in res.result){
+            if(res.result.success){
+              wx.switchTab({
+                url:'/pages/information/information'
+              })
+            }
+        }
+      }
+    })
+    
   },
   onReady:function(){
 

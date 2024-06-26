@@ -120,7 +120,7 @@ Page({
     const db = wx.cloud.database();
     db.collection("userInfo")
       .orderBy("carbSum", "desc")
-      .limit(3)
+      .limit(10)
       .get({
         success: res => {
           const ranking = res.data.map(item => ({

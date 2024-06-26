@@ -48,10 +48,12 @@
   </view>
 
 <form bindsubmit="login" wx:if="{{modalHidden}}">
+
 <view class='list'>
 <view class="name">
   <text>点击右侧选择头像</text>
   <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" value = "{{ avatarUrl }}" name = "avatar">
+
   <image class="avatar" src="{{avatarUrl}}"></image>
 </button> </view>
 
