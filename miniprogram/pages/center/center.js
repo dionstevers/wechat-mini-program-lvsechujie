@@ -1,6 +1,7 @@
 // pages/center/center.ts
 import { logEvent } from '../../utils/log';
 import * as echarts from "../../asset/ec-canvas/echarts"
+import { onHandleSignIn } from '../../utils/login'
 const app = getApp();
 
 function initChart(canvas, width, height, dpr) {
@@ -295,6 +296,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    onHandleSignIn()
     logEvent('Center Page')
     wx.setNavigationBarTitle({
       title: '碳行家｜个人主页'

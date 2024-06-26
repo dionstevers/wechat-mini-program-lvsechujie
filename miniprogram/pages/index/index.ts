@@ -181,6 +181,23 @@ Page({
     }
   },
 
+  onDeleteAccount(){
+    wx.showModal({
+      title:'请您确认',
+      content:'点击确认按钮注销小程序，反之请点击取消',
+      success : (res) =>{
+        if(res.confirm){
+          wx.showToast({
+            title:'感谢使用碳行家',
+            icon:'success',
+            duration:2000,
+          })
+          
+        }
+      }
+      
+    })
+  },
   /**
    * 生命周期函数--监听页面显示
    */

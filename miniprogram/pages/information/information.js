@@ -1,5 +1,6 @@
-const app = getApp()
+
 const { logEvent } = require("../../utils/log");
+const { onHandleSignIn } = require("../../utils/login")
 Page({
 
   /**
@@ -7,7 +8,7 @@ Page({
    */
   data: {
     testGroup: -1,
-    userInfo:app.globalData.userInfo,
+    userInfo:getApp().globalData.userInfo,
     background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
 
     /** 文章点击此次数将上传数据库 */ 
@@ -462,13 +463,17 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
+
+
+
   onLoad() {
     // 加载文章数据
     this.setData({
-      userInfo: app.globalData.userInfo,
-      testGroup: app.globalData.userInfo.testGroup
+      userInfo: getApp().globalData.userInfo,
+      testGroup: getApp().globalData.userInfo.testGroup
     });
     this.loadData();
+    
 
     // 获取文章点击计数器
     const counterStored = wx.getStorageSync('articleClickCounter')
@@ -488,6 +493,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    onHandleSignIn()
     // 提交用户log
     logEvent('Information Center')
     console.log('info page showing up')

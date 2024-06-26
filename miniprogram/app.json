@@ -1,8 +1,8 @@
 {
-  "pages": [    
+  "pages": [   
+    "pages/information/information", 
     "pages/index/index",
     "pages/home/home",
-    "pages/information/information",
     "pages/center/center",
     "pages/journal/journal",
     "pages/triphistory/triphistory",

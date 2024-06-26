@@ -7,7 +7,8 @@
       <text>Welcome to Carbon Clever</text>
     </view>
    
-    <button bind:tap="HandleSignIn" class="login-button">登录</button>
-    <button bind:tap="HandleSignUp" class="register-button">注册</button>
+    <button bind:tap="HandleSignUp" class="login-button">注册</button>
+    <!-- <button bind:tap="HandleSignIn" class="login-button">登录</button> -->
+    <button bind:tap="onDeleteAccount" class="register-button">删除账号</button>
   </view>
 </view>

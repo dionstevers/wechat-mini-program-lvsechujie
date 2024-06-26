@@ -35,7 +35,18 @@
 }
 
 /* 修改按钮样式，将动画应用到每个按钮 */
-.register-button,
+.register-button {
+  background-color: #ff0000;
+  color: #fff;
+  font-size: 20px;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  opacity: 0; /* 初始不可见 */
+  animation: button-fly-in 0.5s ease forwards;
+}
 .login-button {
   background-color: #007AFF;
   color: #fff;

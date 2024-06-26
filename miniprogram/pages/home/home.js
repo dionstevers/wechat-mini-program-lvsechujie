@@ -1,5 +1,7 @@
 // pages/home/home.ts
 import Dialog from '@vant/weapp/dialog/dialog';
+import { onHandleSignIn } from '../../utils/login';
+
 const app = getApp();
 
 Page({
@@ -744,6 +746,7 @@ Page({
   },
   //
   onShow() {
+    onHandleSignIn();
     const _this = this
     // this.setData({
     //   isFront: true
