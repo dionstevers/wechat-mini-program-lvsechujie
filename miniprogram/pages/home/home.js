@@ -8,8 +8,6 @@ const app = getApp();
 
 Page({
   data: {
-    mysaving:0,
-    myranking: '未上榜',
     testGroup: null,
     background: null,
     users: [],
@@ -180,18 +178,6 @@ async updateWeeklyRanking() {
     console.log(rankedUsers)
 
     this.setData({ users: rankedUsers });
-    const currentUser = rankedUsers.find(user => user._openid === this.data.openID);
-    if(currentUser){
-      this.setData({
-        mysaving: currentUser.totalCarbSum,
-        myranking: currentUser.rank
-      })
-    }else{
-      this.setData({
-        mysaving: '<1',
-        myranking:'未上榜'
-      })
-    }
     return rankedUsers;
   } catch (error) {
     console.error("Error updating weekly ranking:", error);

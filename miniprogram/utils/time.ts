@@ -9,6 +9,7 @@ function getWeekRange() {
 
   const firstDayOfWeek = new Date(currentDate.setDate(first)).setHours(0, 0, 0, 0);
   const lastDayOfWeek = new Date(currentDate.setDate(last)).setHours(23, 59, 59, 999);
+
   return { firstDayOfWeek, lastDayOfWeek };
 }
 
