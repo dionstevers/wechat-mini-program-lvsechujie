@@ -467,6 +467,7 @@ Page({
 
 
   onLoad() {
+    // onHandleSignIn()
     // 加载文章数据
     this.setData({
       userInfo: getApp().globalData.userInfo,
@@ -493,7 +494,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    onHandleSignIn()
+    // onHandleSignIn()
     // 提交用户log
     logEvent('Information Center')
     console.log('info page showing up')

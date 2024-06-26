@@ -160,6 +160,7 @@ Page({
         wx.showToast({ 
         title:'正在登录中',
         icon:'loading',
+        mask:true,
         duration:1500 });
         setTimeout(() => {
           wx.switchTab({

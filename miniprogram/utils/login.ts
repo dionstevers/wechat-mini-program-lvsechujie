@@ -14,11 +14,6 @@ async function onHandleSignIn() {
       
     if (userInfoQuery.data.length === 1) {
       app.globalData.userInfo = userInfoQuery.data[0];
-      // return;
-      // // this.isNavigating = true;
-      if(app.globalData.userInfo.testGroup!=null){
-        console.log('data load success')
-      }
     } else{
       wx.showModal({
         title: '请您注册',
