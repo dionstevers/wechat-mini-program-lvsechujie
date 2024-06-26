@@ -3,7 +3,6 @@ const { onHandleSignIn } = require("../../utils/login")
 const { setColorStyle } = require("../../utils/colorschema")
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -11,6 +10,9 @@ Page({
     testGroup: -1,
     userInfo: null,
     background: null,
+
+    /** 是否维护中 */ 
+    isInMaintenance: false,
 
     /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
@@ -50,14 +52,14 @@ Page({
    * 页面实例数据
    */
   updateCounter: 0,
+  isInit: false,
   dailyPushed: false,
   shouldUpdateCloud: false,
 
   /**
-   * 获取云端数据
-   * @param {boolean} isForced 是否强行更新本地数据
+   * 获取云端文章
    */
-  async fetchCloudData(isForced){
+  async fetchCloudArticles(){
     const db = wx.cloud.database();
 
     // 获取文章数据
@@ -84,6 +86,22 @@ Page({
     } catch (error) {
       console.error("获取文章时出错：", error);
     }
+  },
+
+  /**
+   * 获取云端数据
+   * @param {boolean} isForced 是否强行更新本地数据
+   */
+  async fetchCloudData(isForced){
+    const db = wx.cloud.database();
+
+    // 未注册用户没有articleRecommend
+    if (!this.data.userInfo && !isForced) {
+      return;
+    }
+
+    // 获取文章
+    await this.fetchCloudArticles();
 
     // 处理articleRecommend数据丢失情况 
     if (wx.getStorageSync("articleRecommend") === "" || isForced){
@@ -394,9 +412,19 @@ Page({
   },
 
   /**
-   * 异步处理数据录入
+   * 异步处理数据初始化录入
    */
-  async loadData(){
+  async InitData(){
+    // 加载用户数据
+    this.setData({
+      userInfo: getApp().globalData.userInfo,
+      testGroup: getApp().globalData.userInfo.testGroup
+    });
+
+    if (!this.data.userInfo) {
+      return;
+    }
+
     // 初始化页面数据
     await this.fetchCloudData(false)
     const articleRecommend = wx.getStorageSync('articleRecommend');
@@ -428,8 +456,6 @@ Page({
     // 根据测试组不同，背景颜色不同 (强国组: 红色)
     if(this.data.articleRecommend.infoGroup === 2){
       setColorStyle('RED');
-    } else {
-      setColorStyle('CYAN');
     }
 
     // 每日更新 2 篇文章
@@ -466,16 +492,16 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-    // 加载用户数据
-    this.setData({
-      userInfo: getApp().globalData.userInfo,
-      testGroup: getApp().globalData.userInfo.testGroup
-    });
-
-    onHandleSignIn({
-      success: this.loadData()
-    })
+  async onLoad() {
+    if (!getApp().globalData.userInfo) {
+      setColorStyle('CYAN');
+      await this.fetchCloudArticles();
+      const firstArticles = Object.values(this.data.articles.reduce((acc, article) => 
+        (!acc[article.author] && (acc[article.author] = article), acc), {}));
+      this.setData({
+        arlist: this.timeConvert(firstArticles)
+      })
+    }
   }, 
 
   /**
@@ -489,7 +515,16 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // onHandleSignIn()
+    // 检查注册
+    onHandleSignIn({
+      success: () => {
+        if (!this.isInit) {
+          this.isInit = true;
+          this.InitData();
+        }
+      }
+    })
+
     // 提交用户log
     logEvent('Information Center')
     console.log('info page showing up')
@@ -520,8 +555,12 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
+    // 重新加载
+    if (this.data.userInfo) {
+      this.InitData();
+    }
+
     console.log("refreshing")
-    this.loadData();
   },
 
   /**

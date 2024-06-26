@@ -190,23 +190,27 @@ Page({
   },
 
   onTapFunction(e) {
-    console.log(e)
-    console.log(e.currentTarget.dataset)
-    let url = e.currentTarget.dataset.url
-    let title = e.currentTarget.dataset.title
-    if(url!=null & title !=null){
-      logEvent(title)
-      wx.navigateTo({
-        url: url,
-      })
-    }
-    // if (url && title ) {
-    //   logEvent(title)
-    //   wx.navigateTo({
-    //     url,
-    //   })
-    // }
-
+    onHandleSignIn({
+      message: '使用此功能需登录',
+      success: () => {
+        console.log(e)
+        console.log(e.currentTarget.dataset)
+        let url = e.currentTarget.dataset.url
+        let title = e.currentTarget.dataset.title
+        if(url!=null & title !=null){
+          logEvent(title)
+          wx.navigateTo({
+            url: url,
+          })
+        }
+        // if (url && title ) {
+        //   logEvent(title)
+        //   wx.navigateTo({
+        //     url,
+        //   })
+        // }
+      }
+    })
   },
   selectWithinCurMonth(items) {
     const currentDate = new Date();
@@ -261,8 +265,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    updateColor();
-
     wx.showShareMenu({
       withShareTicket:true,
       menus:["shareAppMessage"]
@@ -288,7 +290,8 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    onHandleSignIn()
+    updateColor();
+    onHandleSignIn();
     logEvent('Center Page')
     wx.setNavigationBarTitle({
       title: '碳行家｜个人主页'

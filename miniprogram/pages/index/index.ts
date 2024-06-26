@@ -182,12 +182,30 @@ Page({
     }
   },
 
+  // 游客登陆
+  onVisitorEnter() {
+    this.isNavigating = true;
+        wx.showToast({ 
+        title:'游客登录中',
+        icon:'loading',
+        mask:true,
+        duration:1500 });
+        setTimeout(() => {
+          wx.switchTab({
+            url : '/pages/information/information',
+            complete: () => this.isNavigating = false
+          })
+        }, 1500);
+  },
+
+  // 删除账户
   onDeleteAccount(){
     wx.showModal({
       title:'请您确认',
       content:'点击确认按钮注销小程序，反之请点击取消',
       success : (res) =>{
         if(res.confirm){
+          // TODO: 删除userinfo ??
           wx.showToast({
             title:'感谢使用碳行家',
             icon:'success',

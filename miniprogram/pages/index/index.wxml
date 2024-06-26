@@ -1,5 +1,3 @@
-
-
   <view class="page-background">
   <view class="center-box">
     <view class="welcome-text">
@@ -10,5 +8,6 @@
     <button bind:tap="HandleSignUp" class="login-button">注册</button>
     <!-- <button bind:tap="HandleSignIn" class="login-button">登录</button> -->
     <button bind:tap="onDeleteAccount" class="register-button">删除账号</button>
+    <button bind:tap="onVisitorEnter" class="visitor-button">游客登陆</button>
   </view>
 </view>

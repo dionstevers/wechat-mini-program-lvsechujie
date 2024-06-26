@@ -811,6 +811,7 @@ async updateWeeklyRanking() {
   },
   //
   onShow() {
+    updateColor();
     logEvent('Home Page')
     onHandleSignIn();
     const _this = this
@@ -971,8 +972,6 @@ async updateWeeklyRanking() {
     // });
   },
   onLoad: async function () {
-    updateColor();
-
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
