@@ -64,10 +64,10 @@ Page({
     const endTime = new Date()
     const startTime = new Date(this.data.openTime)
     const timeDifference = endTime.valueOf() - startTime.valueOf();
+    const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     // 更新本地readAmount
-    if (this.data.articleType !== -1){
-      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+    if (this.data.articleType !== -1){   
       if (localArticleRecommend !== "") {
         localArticleRecommend.readAmount[this.data.articleType] += Math.floor(timeDifference / 1000); // 阅读时间单位为：秒
         wx.setStorageSync('articleRecommend', localArticleRecommend)
@@ -84,8 +84,8 @@ Page({
         }
       })
   
-      // 强国版用户增加测试题
-      if (this.data.userInfo.testGroup == 3) {
+      // 信息激励强国版用户增加测试题
+      if (this.data.userInfo.testGroup === 3 && localArticleRecommend.infoGroup === 2) {
         wx.navigateTo({
           url: '/pages/quiz/quiz?link=' + this.data.link,
         })

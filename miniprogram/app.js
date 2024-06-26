@@ -54,7 +54,7 @@ App({
   globalData: {
     userInfo: null,
     openID: null,
-    backgroundColorStyle: 'CYAN', // 默认青色背景
+    backgroundColorStyle: null,
     shareTicket: null
   }
 })

@@ -419,9 +419,17 @@ Page({
       }
     })
 
+    // 获取文章点击计数器
+    const counterStored = wx.getStorageSync('articleClickCounter')
+    if (counterStored !== "") {
+      this.updateCounter = counterStored
+    }
+
     // 根据测试组不同，背景颜色不同 (强国组: 红色)
-    if(this.data.infoGroup2ArticleType[this.data.articleRecommend.infoGroup] === this.data.articleTypes['低碳强国']){
+    if(this.data.articleRecommend.infoGroup === 2){
       setColorStyle('RED');
+    } else {
+      setColorStyle('CYAN');
     }
 
     // 每日更新 2 篇文章
@@ -459,19 +467,15 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    // onHandleSignIn()
-    // 加载文章数据
+    // 加载用户数据
     this.setData({
       userInfo: getApp().globalData.userInfo,
       testGroup: getApp().globalData.userInfo.testGroup
     });
-    this.loadData();
 
-    // 获取文章点击计数器
-    const counterStored = wx.getStorageSync('articleClickCounter')
-    if (counterStored !== "") {
-      this.updateCounter = counterStored
-    }
+    onHandleSignIn({
+      success: this.loadData()
+    })
   }, 
 
   /**
