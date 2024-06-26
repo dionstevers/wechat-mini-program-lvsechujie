@@ -2,7 +2,7 @@
 import { logEvent } from '../../utils/log';
 import * as echarts from "../../asset/ec-canvas/echarts"
 import { onHandleSignIn } from '../../utils/login'
-import { setColor } from '../../utils/colorschema'
+import { updateColor } from '../../utils/colorschema'
 const app = getApp();
 
 function initChart(canvas, width, height, dpr) {
@@ -99,7 +99,7 @@ Page({
     credit: 0,
     percent : 0,
     testGroup: 0,
-    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
+    background: null,
     ec: {
       onInit: initChart
     },
@@ -261,10 +261,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    setColor()
-    this.setData({
-      background: app.globalData.background
-    })
+    updateColor();
+
     wx.showShareMenu({
       withShareTicket:true,
       menus:["shareAppMessage"]
@@ -277,22 +275,6 @@ Page({
     this.setUserinfo()
     this.updateCredit()
     this.initChart()
-    if(this.data.testGroup ==3 ) {
-      this.setData({
-        background : 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })
-      
-      wx.setTabBarStyle({
-        color: '#ffffff',
-        selectedColor: '#ffffff',
-        backgroundColor: '#D13A29',
-        borderStyle: 'white'
-        })
-      wx.setNavigationBarColor({
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
-    }
   },
 
   /**
@@ -313,10 +295,6 @@ Page({
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     this.curDate()
-
-    
-    
-
 
     //this.getdata();
   },

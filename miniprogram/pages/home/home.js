@@ -3,12 +3,13 @@ import Dialog from '@vant/weapp/dialog/dialog';
 import { logEvent } from '../../utils/log';
 import { getWeekRange} from '../../utils/time'
 import { onHandleSignIn } from '../../utils/login';
+import { updateColor } from '../../utils/colorschema';
 const app = getApp();
 
 Page({
   data: {
     testGroup: null,
-    background: "linear-gradient(180deg, #00022a 0%,#009797 100%)",
+    background: null,
     users: [],
     recordStatus: false,
     btnClass: "btn btn-default",
@@ -956,19 +957,13 @@ async updateWeeklyRanking() {
     // });
   },
   onLoad: async function () {
+    updateColor();
+
     this.setData({
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
     });
-    if (this?.data?.testGroup == 3) {
-      wx.setNavigationBarColor({
-        backgroundColor: "#D13A29",
-        frontColor: "#ffffff"
-      });
-      this.setData({
-        background: "linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)"
-      });
-    }
+    
     const db = wx.cloud.database();
     const _ = db.command;
     const _this = this;

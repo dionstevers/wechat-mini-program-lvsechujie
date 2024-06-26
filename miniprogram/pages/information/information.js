@@ -1,6 +1,7 @@
-
 const { logEvent } = require("../../utils/log");
 const { onHandleSignIn } = require("../../utils/login")
+const { setColorStyle } = require("../../utils/colorschema")
+
 Page({
 
   /**
@@ -8,8 +9,8 @@ Page({
    */
   data: {
     testGroup: -1,
-    userInfo:getApp().globalData.userInfo,
-    background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)',
+    userInfo: null,
+    background: null,
 
     /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
@@ -418,15 +419,9 @@ Page({
       }
     })
 
-    // 根据测试组不同，背景颜色不同 (强国组)
+    // 根据测试组不同，背景颜色不同 (强国组: 红色)
     if(this.data.infoGroup2ArticleType[this.data.articleRecommend.infoGroup] === this.data.articleTypes['低碳强国']){
-      wx.setNavigationBarColor({
-        backgroundColor: "#D13A29",
-        frontColor: '#ffffff',
-      })
-      this.setData({
-        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)'
-      })
+      setColorStyle('RED');
     }
 
     // 每日更新 2 篇文章
@@ -463,9 +458,6 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-
-
-
   onLoad() {
     // onHandleSignIn()
     // 加载文章数据
@@ -474,7 +466,6 @@ Page({
       testGroup: getApp().globalData.userInfo.testGroup
     });
     this.loadData();
-    
 
     // 获取文章点击计数器
     const counterStored = wx.getStorageSync('articleClickCounter')

@@ -25,18 +25,36 @@ App({
 
   // 全局常量
   constData: {
-    totalTestGroupNumber: {
-      '物理激励': 1,
-      '金钱激励': 2,
-      '信息激励': 3
+    /**
+     * 版本分组
+     */ 
+    TOTAL_TEST_GROUP_COUNT: {
+      PHYSICS: 1, // 物理激励
+      MONEY: 2, // 金钱激励
+      INFOMATION: 3, // 信息激励
+    },
+
+    /**
+     * 版本颜色
+     */ 
+    VERSION_STYLE_COLOR: {
+      CYAN: {
+        Bar: '#002443',
+        background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)'
+      },
+      RED: {
+        Bar: '#B82B1D',
+        background: 'linear-gradient(140deg, #D13A29 30%,#836c6c46 100%)',
+      }
     }
+    
   },
 
   // 全局用户数据
   globalData: {
     userInfo: null,
     openID: null,
-    background: null,
+    backgroundColorStyle: null,
     shareTicket: null
   }
 })
