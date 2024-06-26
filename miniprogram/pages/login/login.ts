@@ -174,7 +174,7 @@ Page({
     const basicInfo = e.detail.value;
     console.log(basicInfo)
     const carbSum = 0;
-    const testGroup = Math.floor(Math.random() * 3) + 1
+    const testGroup  = Math.floor(Math.random() * Object.keys(app.constData.totalTestGroupNumber).length) + 1; 
     let avatar = this.data.avatarUrl
 
 // if user upload the avatar, then we need to first upload it to cloud db

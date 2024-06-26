@@ -2,6 +2,7 @@
 import { logEvent } from '../../utils/log';
 import * as echarts from "../../asset/ec-canvas/echarts"
 import { onHandleSignIn } from '../../utils/login'
+import { setColor } from '../../utils/colorschema'
 const app = getApp();
 
 function initChart(canvas, width, height, dpr) {
@@ -260,6 +261,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    setColor()
+    this.setData({
+      background: app.globalData.background
+    })
     wx.showShareMenu({
       withShareTicket:true,
       menus:["shareAppMessage"]
