@@ -2,7 +2,7 @@ const app = getApp();
 
 /**
  * 检查用户是否有注册账号
- * @param message 默认提示"请您登录"的信息标题
+ * @param message 默认提示"请您注册"的信息标题
  * @param success 有账号的回调函数
  * @param fail 没有账号的回调函数
  * @param error 发生错误的回调函数

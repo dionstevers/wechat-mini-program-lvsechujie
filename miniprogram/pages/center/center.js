@@ -98,7 +98,6 @@ Page({
   data: {
     credit: 0,
     percent : 0,
-    testGroup: 0,
     background: null,
     ec: {
       onInit: initChart
@@ -142,9 +141,19 @@ Page({
     })
   },
   editProfile(){
-    wx.navigateTo({
-      url: '/pages/login/login',
-    })
+    if (app.globalData.userInfo) {
+      wx.showModal({
+        title: '您确认要修改您的个人信息吗？',
+        content: '点击确定按钮以重新编辑您的个人信息',
+        success: (res) => {
+          if(res.confirm) {
+            wx.navigateTo({
+              url:'/pages/login/login'
+            })
+          }
+        }
+      })
+    }
   },
   initChart() {
     let chart;
@@ -233,8 +242,7 @@ Page({
       
       console.log('userinfo', userInfo)
       this.setData({
-        userInfo: userInfo,
-        testGroup: userInfo.testGroup
+        userInfo: userInfo
       })
       console.log('userinfo updated!!', this.data.userInfo)
       return

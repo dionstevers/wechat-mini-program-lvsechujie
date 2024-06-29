@@ -39,11 +39,12 @@ Page({
       '低碳强国': 1
     },
     articles: [],
-    arlist: [],
+    articleShowList: [],
     articleRecommend: {
       frequencyScore: [],
       articleCount: [],
       readAmount: [],
+      readArticles: [],
       infoGroup: 0
     }
   },
@@ -79,7 +80,12 @@ Page({
       }
 
       this.setData({
-        articles: articles.sort((a, b) => new Date(a.uploadTime) - new Date(b.uploadTime))
+        articles: articles
+          .sort((a, b) => new Date(a.uploadTime) - new Date(b.uploadTime))
+          .map(art => ({
+            ...art,
+            isUnread: false // 默认设置为 false
+          }))
       })
       
       console.log(`成功从云端获取${articles.length}篇文章`)
@@ -113,8 +119,8 @@ Page({
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
           const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length;
-          const infoGroup = this.data.testGroup === totalInfoGroupNumber ? // 基础版: 0;森林版: 1 强国版: 2
-            Math.floor(Math.random() * totalInfoGroupNumber) : 0; 
+          const infoGroup = this.data.testGroup === getApp().constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
+            Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
           const articleRecommend = [
             Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 概率数组
               () => (100 / 4) / (Object.keys(this.data.articleTypes).length - 1)), 
@@ -131,6 +137,7 @@ Page({
               frequencyScore: articleRecommend[0],
               articleCount: articleRecommend[1],
               readAmount: articleRecommend[2],
+              readArticles: [],
               infoGroup: infoGroup
             }
           });
@@ -138,6 +145,7 @@ Page({
             frequencyScore: articleRecommend[0],
             articleCount: articleRecommend[1],
             readAmount: articleRecommend[2],
+            readArticles: [],
             infoGroup: infoGroup,
             lastClickDate: new Date()
           })
@@ -148,12 +156,14 @@ Page({
             frequencyScore: articleRecommendData[0].frequencyScore,
             articleCount: articleRecommendData[0].articleCount,
             readAmount: articleRecommendData[0].readAmount,
+            readArticles: articleRecommendData[0].readArticles,
             infoGroup: articleRecommendData[0].infoGroup
           }
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend.frequencyScore,
             articleCount: articleRecommend.articleCount,
             readAmount: articleRecommend.readAmount,
+            readArticles: articleRecommend.readArticles,
             infoGroup: articleRecommend.infoGroup,
             lastClickDate: new Date()
           })
@@ -190,6 +200,7 @@ Page({
             frequencyScore: localArticleRecommend.frequencyScore,
             articleCount: localArticleRecommend.articleCount,
             readAmount: localArticleRecommend.readAmount,
+            readArticles: localArticleRecommend.readArticles,
             infoGroup: localArticleRecommend.infoGroup
           }
         });
@@ -199,6 +210,7 @@ Page({
             frequencyScore: localArticleRecommend.frequencyScore,
             articleCount: localArticleRecommend.articleCount,
             readAmount: localArticleRecommend.readAmount,
+            readArticles: localArticleRecommend.readArticles,
 
             // TODO: 下面是处理旧用户，等所有数据库中都包含infoGroup后，可以移除
             infoGroup: localArticleRecommend.infoGroup
@@ -209,6 +221,43 @@ Page({
       // 更新失败
       console.log(err)
     }
+  },
+
+  /**
+   * 更新本地readArticles和未读文章高亮，并排序：未读文章在前、按照时间排序（升序）
+   * @link {string} 可增添的已读文章链接
+   */
+  updateLocalUnreadHighlight(link = null) {
+    // 增添新的已读文章
+    if (link !== null) {
+      this.data.articleRecommend.readArticles.push(link);
+
+      let localArticleRecommend = wx.getStorageSync('articleRecommend');
+      if (localArticleRecommend !== ""){
+        localArticleRecommend.readArticles = this.data.articleRecommend.readArticles;
+        wx.setStorageSync('articleRecommend', localArticleRecommend)
+      }
+    }
+
+    // 更新文章isUnread
+    let readArticles = [];
+    let unreadArticles = [];
+
+    // 遍历原始文章列表，根据 isUnread 属性分类存放到相应数组中
+    this.data.articleShowList.forEach(article => {
+      const isUnread = !this.data.articleRecommend.readArticles.includes(article.link);
+      if (isUnread) {
+        unreadArticles.push({ ...article, isUnread });
+      } else {
+        readArticles.push({ ...article, isUnread });
+      }
+    });
+
+    const updatedList = this.timeConvert(unreadArticles).concat(this.timeConvert(readArticles));
+
+    this.setData({
+      articleShowList: updatedList
+    });
   },
 
   /**
@@ -280,15 +329,16 @@ Page({
 
   /**
    * 给用户分配文章 （普通版：每种类型总会至少生成1篇；森林版："低碳我知道"生成2篇；强国版："低碳强国"至少生成2篇 ...）
-   * @param {number} totalArticleNumber 总共生成的文章数 （第一篇“碳行家”文章除外）
+   * @param {number} totalArticleNumber 总共生成的文章数 （“碳行家”文章除外）
    */
   getArticles(totalArticleNumber){
     const typeLength = Object.keys(this.data.articleTypes).length;
 
     try{
       // 检查是否获取新文章
+      const articleList = this.data.articles.filter(article => article.author === "碳行家");
       const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
-      const iterations = (totalArticleNumber - 1) - articleCountSum;
+      const iterations = (totalArticleNumber - articleList.length) - articleCountSum;
 
       // 若应当获取新文章，则告知需更新数据库
       if (iterations > 0) {
@@ -320,7 +370,7 @@ Page({
       }
     
       // 生成对应的文章给用户
-      const articleList = this.data.articles.filter(article => article.author === "碳行家");
+      
 
       for (let articleType = 0; articleType < (typeLength - 1); articleType++) {
         if (this.data.articleRecommend.articleCount[articleType] === 0) continue;
@@ -330,10 +380,12 @@ Page({
         articleList.push(...articleRes);
       }
 
-      // 转换时间并按照时间升序排序
       this.setData({
-        arlist: this.timeConvert(articleList)
+        articleShowList: articleList
       })
+
+      // 更新文章Unread状态，并排序：未读文章在前、按照时间排序
+      this.updateLocalUnreadHighlight();
 
     } catch(err) {
      console.log("分配文章失败: ", err)
@@ -371,22 +423,23 @@ Page({
     logEvent('Read Article')
     const author = e.currentTarget.dataset.author
     const link = e.currentTarget.dataset.link
-
-    // 更新本地推荐概率值
-    this.updateLocalFrequencyScore(this.data.articleTypes[author])
-    this.updateCounter++;
-
-    // 检查和存储counter，并更新数据库和新增文章
-    if (this.updateCounter >= this.data.updateCloudThreshold) {
-      this.updateCounter = 0;
-      this.shouldUpdateCloud = true;
-      this.getArticles(this.data.arlist.length + 1)
-    }
-    wx.setStorageSync('articleClickCounter', this.updateCounter)
     
     // 导航到对应链接
     wx.navigateTo({
       url:`/pages/detail/detail?link=${link}&articleType=${this.data.articleTypes[author]}`,
+      success: () => {
+        // 更新本地readArticles和未读文章高亮
+        this.updateLocalUnreadHighlight(link);
+
+        // 检查和存储counter，并允许更新数据库和新增文章
+        this.updateCounter++;
+        if (this.updateCounter >= this.data.updateCloudThreshold) {
+          this.updateCounter = 0;
+          this.shouldUpdateCloud = true;
+          this.getArticles(this.data.articleShowList.length + 1)
+        }
+        wx.setStorageSync('articleClickCounter', this.updateCounter)
+      }
     })
   },
 
@@ -429,11 +482,17 @@ Page({
     await this.fetchCloudData(false)
     const articleRecommend = wx.getStorageSync('articleRecommend');
 
-    // TODO: 下面的“后方判断（!==之后）”是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
+    // TODO: 这是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
     if (articleRecommend.infoGroup == undefined) {
       const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length
-      articleRecommend.infoGroup = this.data.testGroup === totalInfoGroupNumber ? // 基础版: 0;森林版: 1 强国版: 2
-        Math.floor(Math.random() * totalInfoGroupNumber) : 0; 
+      articleRecommend.infoGroup = this.data.testGroup === getApp().constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ? 
+        Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
+      wx.setStorageSync('articleRecommend', articleRecommend);
+    }
+
+    // TODO: 这是用来处理旧用户的，等到所有用户都有readArticles, 可以移除
+    if (articleRecommend.readArticles == undefined) {
+      articleRecommend.readArticles = []
       wx.setStorageSync('articleRecommend', articleRecommend);
     }
 
@@ -443,6 +502,7 @@ Page({
         frequencyScore: articleRecommend.frequencyScore,
         articleCount: articleRecommend.articleCount,
         readAmount: articleRecommend.readAmount,
+        readArticles: articleRecommend.readArticles,
         infoGroup: articleRecommend.infoGroup
       }
     })
@@ -456,6 +516,8 @@ Page({
     // 根据测试组不同，背景颜色不同 (强国组: 红色)
     if(this.data.articleRecommend.infoGroup === 2){
       setColorStyle('RED');
+    } else {
+      setColorStyle('CYAN');
     }
 
     // 每日更新 2 篇文章
@@ -495,11 +557,17 @@ Page({
   async onLoad() {
     if (!getApp().globalData.userInfo) {
       setColorStyle('CYAN');
+
       await this.fetchCloudArticles();
-      const firstArticles = Object.values(this.data.articles.reduce((acc, article) => 
-        (!acc[article.author] && (acc[article.author] = article), acc), {}));
+      const articleShowList = this.data.articles.filter(article => article.author === "碳行家");
+      const firstArticles = Object.values(this.data.articles
+        .filter(art => art.author !== "碳行家")
+        .reduce((acc, article) => 
+          (!acc[article.author] && (acc[article.author] = article), acc), {}
+        ));
+
       this.setData({
-        arlist: this.timeConvert(firstArticles)
+        articleShowList: this.timeConvert(articleShowList.concat(firstArticles))
       })
     }
   }, 
@@ -594,6 +662,6 @@ Page({
    * 测试用生成文章
    */
   debugGenerateArticle() {
-    this.getArticles(this.data.arlist.length + 1);
+    this.getArticles(this.data.articleShowList.length + 1);
   },
 })

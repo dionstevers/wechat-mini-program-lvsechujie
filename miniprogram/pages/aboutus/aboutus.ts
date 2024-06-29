@@ -17,7 +17,7 @@ Page({
    */
 
   onLoad(option) {
-    updateColor();
+
   },
 
   
@@ -29,6 +29,8 @@ Page({
   },
 
   onShow() {
+    updateColor();
+    
     this.setData({
       userInfo : app.globalData.userInfo
     })

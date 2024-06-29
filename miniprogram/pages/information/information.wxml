@@ -13,7 +13,7 @@
   <!--button bindtap="debugGenerateArticle" style="background-color: #ffffff; color: #000000;">测试: 生成文章</button-->
 
   <view>
-    <view wx:for="{{arlist}}" wx:for-index="i" wx:key="i" class="container">
+    <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
     <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}">
       <view class="image-con">
         <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />

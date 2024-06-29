@@ -85,7 +85,7 @@ Page({
       })
   
       // 信息激励强国版用户增加测试题
-      if (this.data.userInfo.testGroup === 3 && localArticleRecommend.infoGroup === 2) {
+      if (this.data.userInfo.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION && localArticleRecommend.infoGroup === 2) {
         wx.navigateTo({
           url: '/pages/quiz/quiz?link=' + this.data.link,
         })
