@@ -1,15 +1,15 @@
 // pages/home/home.ts
-import Dialog from '@vant/weapp/dialog/dialog';
-import { logEvent } from '../../utils/log';
-import { getWeekRange} from '../../utils/time'
-import { onHandleSignIn } from '../../utils/login';
-import { updateColor } from '../../utils/colorschema';
+import Dialog from "@vant/weapp/dialog/dialog";
+import { logEvent } from "../../utils/log";
+import { getWeekRange } from "../../utils/time";
+import { onHandleSignIn } from "../../utils/login";
+import { updateColor } from "../../utils/colorschema";
 const app = getApp();
 
 Page({
   data: {
-    mysaving:0,
-    myranking: '未上榜',
+    mysaving: 0,
+    myranking: "未上榜",
     testGroup: null,
     background: null,
     users: [],
@@ -32,38 +32,57 @@ Page({
     curID: "",
     transport: "步行",
     transportList: ["步行或骑行", "公共交通", "驾驶电动汽车", "驾驶燃油汽车"],
-    // endTransportList: ["未驾驶汽车", "驾驶电动汽车", "驾驶燃油汽车"],
-    endTransportList: [{
-        value: '步行',
-        name: '步行'
+    purpose: [],
+    purposes: [
+      {
+        value: "上班",
+        name: "上班"
       },
       {
-        value: '自行车(共享单车)',
-        name: '自行车(共享单车)'
+        value: "上学",
+        name: "上学"
       },
       {
-        value: '电动自行车',
-        name: '电动自行车'
+        value: "吃饭",
+        name: "吃饭"
       },
       {
-        value: '公交车',
-        name: '公交车'
+        value: "其他",
+        name: "其他"
+      }
+    ],
+    endTransportList: [
+      {
+        value: "步行",
+        name: "步行"
       },
       {
-        value: '驾驶燃油汽车',
-        name: '驾驶燃油汽车'
+        value: "自行车(共享单车)",
+        name: "自行车(共享单车)"
       },
       {
-        value: '驾驶电动汽车',
-        name: '驾驶电动汽车'
+        value: "电动自行车",
+        name: "电动自行车"
       },
       {
-        value: '地铁',
-        name: '地铁'
+        value: "公交车",
+        name: "公交车"
       },
       {
-        value: '高铁',
-        name: '高铁'
+        value: "驾驶燃油汽车",
+        name: "驾驶燃油汽车"
+      },
+      {
+        value: "驾驶电动汽车",
+        name: "驾驶电动汽车"
+      },
+      {
+        value: "地铁",
+        name: "地铁"
+      },
+      {
+        value: "高铁",
+        name: "高铁"
       }
     ],
     index: 0,
@@ -77,7 +96,8 @@ Page({
     category: "",
     transporModalHidden: true,
     // capacityModalHidden: true,
-    speedBtwwon: [{
+    speedBtwwon: [
+      {
         label: "步行/跑步",
         min: 0,
         max: 2.78
@@ -116,103 +136,97 @@ Page({
     });
 
     const reasetEndTransportList = this.data.endTransportList.map(item => ({ ...item, checked: false }));
-    this.setData({ endTransportList: reasetEndTransportList });
+    const reasetPurposesList = this.data.purposes.map(item => ({ ...item, checked: false }));
+    this.setData({ endTransportList: reasetEndTransportList, purposes: reasetPurposesList });
     this.endTrack();
   },
   // Show carbon footprint savings in database top_n
   // Import the function that gets the week range
 
+  // Function to update the weekly ranking
+  async updateWeeklyRanking() {
+    const db = wx.cloud.database();
+    var { firstDayOfWeek, lastDayOfWeek } = getWeekRange();
+    const $ = db.command.aggregate;
+    const _ = db.command;
+    try {
+      var f = new Date(firstDayOfWeek),
+        a = $.dateFromString({
+          dateString: f.toJSON()
+        });
+      const ranking = await db
+        .collection("track")
+        .aggregate()
+        .addFields({
+          matched: $.gte(["$endTime", a])
+        })
+        // Filter documents where 'matched' is true
+        .match({
+          matched: true
+        })
+        .group({
+          _id: "$_openid",
+          totalCarbSum: $.sum("$carbSum")
+        })
+        .sort({
+          totalCarbSum: -1
+        })
+        .limit(10)
+        .end();
+      console.log("the ranking", ranking);
 
-// Function to update the weekly ranking
-async updateWeeklyRanking() {
-  const db = wx.cloud.database();
-  var { firstDayOfWeek, lastDayOfWeek } = getWeekRange();
-  const $ = db.command.aggregate
-  const _ = db.command
-  try {
-    var f = new Date(firstDayOfWeek),
-    a = $.dateFromString({
-        dateString: f.toJSON()
-    })
-    const ranking = await db.collection("track")
-      .aggregate()   
-      .addFields({
-        matched: 
-          $.gte(['$endTime', a])
-      })
-      // Filter documents where 'matched' is true
-      .match({
-        matched: true
-      })
-      .group({
-        _id: '$_openid',
-        totalCarbSum:  $.sum('$carbSum')
-      })
-      .sort({
-        totalCarbSum: -1
-      })
-      .limit(10)
-      .end();
-    console.log('the ranking',ranking)
+      // Now, fetch user details from the userInfo collection for the top users
+      const topUserOpenIds = ranking.list.map(item => item._id);
+      const userDetails = await db
+        .collection("userInfo")
+        .where({
+          _openid: _.in(topUserOpenIds)
+        })
+        .get();
+      console.log("the users", userDetails);
+      // Combine user details with their total carb sums
+      const rankedUsers = userDetails.data.map(user => {
+        const userAggregate = ranking.list.find(agg => agg._id === user._openid);
+        return {
+          ...user,
+          totalCarbSum: Math.ceil(userAggregate ? userAggregate.totalCarbSum : 0),
+          rank: topUserOpenIds.indexOf(user._openid) + 1
+        };
+      });
+      console.log("the ranked users", rankedUsers);
+      // Optionally sort by rank (if needed, since they should already be in order)
+      rankedUsers.sort((a, b) => a.rank - b.rank);
+      console.log(rankedUsers);
 
-    // Now, fetch user details from the userInfo collection for the top users
-    const topUserOpenIds = ranking.list.map(
-      item => item._id
-      );
-    const userDetails = await db.collection("userInfo")
-      .where({
-        _openid: _.in(topUserOpenIds)
-      })
-      .get();
-    console.log('the users', userDetails)
-    // Combine user details with their total carb sums
-    const rankedUsers = userDetails.data.map(user => {
-      const userAggregate = ranking.list.find(agg => agg._id === user._openid);
-      return {
-        ...user,
-        totalCarbSum: Math.ceil(userAggregate ? userAggregate.totalCarbSum : 0),
-        rank: topUserOpenIds.indexOf(user._openid) + 1
-      };
-    });
-    console.log('the ranked users', rankedUsers)
-    // Optionally sort by rank (if needed, since they should already be in order)
-    rankedUsers.sort((a, b) => a.rank - b.rank);
-    console.log(rankedUsers)
-
-    this.setData({ users: rankedUsers });
-    const currentUser = rankedUsers.find(user => user._openid === this.data.openID);
-    if(currentUser){
-      this.setData({
-        mysaving: currentUser.totalCarbSum,
-        myranking: currentUser.rank
-      })
-    }else{
-      this.setData({
-        mysaving: '<1',
-        myranking:'未上榜'
-      })
+      this.setData({ users: rankedUsers });
+      const currentUser = rankedUsers.find(user => user._openid === this.data.openID);
+      if (currentUser) {
+        this.setData({
+          mysaving: currentUser.totalCarbSum,
+          myranking: currentUser.rank
+        });
+      } else {
+        this.setData({
+          mysaving: "<1",
+          myranking: "未上榜"
+        });
+      }
+      return rankedUsers;
+    } catch (error) {
+      console.error("Error updating weekly ranking:", error);
+      throw error;
     }
-    return rankedUsers;
-  } catch (error) {
-    console.error("Error updating weekly ranking:", error);
-    throw error;
-  }
-},
+  },
   // Calculate the distance from aqi base station
   calcDist: async function (triplet, i) {
     const db = wx.cloud.database();
-    const {
-      data
-    } = await db
+    const { data } = await db
       .collection("monitor")
       .where({
         POI_ID: triplet[2][i].id
       })
       .get();
-    const {
-      POI_Latitude: mlat,
-      POI_Longitude: mlng
-    } = data[0];
+    const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
     return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
   // Find the closest aqi base station
@@ -396,7 +410,7 @@ async updateWeeklyRanking() {
         cnt = 0;
         try {
           const networkRes = await wx.getNetworkType();
-          console.log
+          console.log;
           await db
             .collection("track")
             .doc(this.data.curID)
@@ -407,7 +421,7 @@ async updateWeeklyRanking() {
                 record: _.push({
                   points: new db.Geo.Point(locationFn.longitude, locationFn.latitude),
                   velos: locationFn.speed,
-                  timestamps: new Date(),
+                  timestamps: new Date()
                 })
               }
             });
@@ -461,9 +475,9 @@ async updateWeeklyRanking() {
         // });
       } else {
         Dialog.confirm({
-            title: '提示',
-            message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
-          })
+          title: "提示",
+          message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”"
+        })
           .then(() => {
             // on confirm
             wx.openSetting().then(settingRes => {
@@ -474,7 +488,6 @@ async updateWeeklyRanking() {
                 // });
               }
             });
-
           })
           .catch(() => {
             // on cancel
@@ -523,15 +536,13 @@ async updateWeeklyRanking() {
           }
         });
 
-        const {
-          result = null
-        } =
-        (await wx.cloud.callFunction({
-          name: "echo",
-          data: {
-            info: wx.cloud.CloudID(res.cloudID)
-          }
-        })) || {};
+        const { result = null } =
+          (await wx.cloud.callFunction({
+            name: "echo",
+            data: {
+              info: wx.cloud.CloudID(res.cloudID)
+            }
+          })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
@@ -583,7 +594,7 @@ async updateWeeklyRanking() {
                     record: _.push({
                       points: new db.Geo.Point(locationFn.longitude, locationFn.latitude),
                       velos: locationFn.speed,
-                      timestamps: new Date(),
+                      timestamps: new Date()
                     })
                   }
                 });
@@ -602,16 +613,14 @@ async updateWeeklyRanking() {
     const db = wx.cloud.database();
     wx.getWeRunData({
       complete: async res => {
-        const {
-          result = null
-        } =
-        (await wx.cloud.callFunction({
-          name: "echo",
-          data: {
-            // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
-            info: wx.cloud.CloudID(res.cloudID)
-          }
-        })) || {};
+        const { result = null } =
+          (await wx.cloud.callFunction({
+            name: "echo",
+            data: {
+              // info 字段在云函数 event 对象中会被自动替换为相应的敏感数据
+              info: wx.cloud.CloudID(res.cloudID)
+            }
+          })) || {};
 
         const stepList = result.info.data ? result.info.data.stepInfoList : null;
 
@@ -648,15 +657,10 @@ async updateWeeklyRanking() {
               }
 
               // Calculate the interval corresponding to each speed and count the quantity and time
-              item.record.forEach(item => {
+              item.record.forEach(recordItem => {
                 _this.data.speedBtwwon.forEach((item, key) => {
-                  const {
-                    min,
-                    max
-                  } = item || {};
-                  const {
-                    velos: speed = 0
-                  } = item || {}
+                  const { min, max } = item || {};
+                  const { velos: speed = 0 } = recordItem || {};
 
                   if (speed >= min && speed <= max) {
                     const currentEntry = result.get(key);
@@ -668,27 +672,19 @@ async updateWeeklyRanking() {
                 });
               });
 
-
               // New logic
               // 步行或骑行 Walk or cycle//
-              const {
-                totalMeters: totalMetersWalk = 0
-              } = result.get(0) || {};
-              const {
-                totalMeters: totalMetersCycling = 0
-              } = result.get(1) || {};
+              const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
+              const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
               const total = _this.roundToTwoKM(totalMetersWalk + totalMetersCycling);
+              console.log(total, "----total----");
 
               const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
               saving += total * savingRate[passenger - 1];
 
               // 公共交通 Public transportation
-              const {
-                totalMeters: totalMetersCity = 0
-              } = result.get(4) || {};
-              const {
-                totalMeters: totalMetersHighSpeed = 0
-              } = result.get(5) || {};
+              const { totalMeters: totalMetersCity = 0 } = result.get(4) || {};
+              const { totalMeters: totalMetersHighSpeed = 0 } = result.get(5) || {};
 
               const cityRate = 337.05;
               const highSpeedRate = 200.51;
@@ -714,17 +710,15 @@ async updateWeeklyRanking() {
               }
               let transport = arr[maxEntry.key];
 
+              console.log(result, "----result----");
+
               // 驾驶电动汽车 Electric vehicle
               if (_this.data.transport === "驾驶电动汽车" || _this.data.transport.includes("驾驶电动汽车")) {
                 // transport = "驾驶电动汽车";
                 // 市区 City//
-                const {
-                  totalMeters: totalMetersCity = 0
-                } = result.get(2) || {};
+                const { totalMeters: totalMetersCity = 0 } = result.get(2) || {};
                 // 高速 Highway//
-                const {
-                  totalMeters: totalMetersHighSpeed = 0
-                } = result.get(3) || {};
+                const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
 
                 const cityTotal = _this.roundToTwoKM(totalMetersCity);
                 const highSpeedTotal = _this.roundToTwoKM(totalMetersHighSpeed);
@@ -737,6 +731,8 @@ async updateWeeklyRanking() {
                 saving += highSpeedTotal * savingHighSpeedRate[passenger - 1];
               }
 
+              console.log(saving, "----saving----");
+
               db.collection("track")
                 .doc(_this.data.curID)
                 .update({
@@ -746,6 +742,7 @@ async updateWeeklyRanking() {
                     distance: parseFloat(dist.toFixed(2)),
                     carbSum: saving,
                     transport: _this.data.transport,
+                    purpose: _this.data.purpose,
                     calcTransport: transport
                   }
                 })
@@ -804,6 +801,12 @@ async updateWeeklyRanking() {
     });
   },
 
+  bindPurposeChange: function (e) {
+    this.setData({
+      purpose: e.detail.value
+    });
+  },
+
   bindCapacityChange: function (e) {
     this.setData({
       capacity: e.detail.value
@@ -812,9 +815,9 @@ async updateWeeklyRanking() {
   //
   onShow() {
     updateColor();
-    logEvent('Home Page')
+    logEvent("Home Page");
     onHandleSignIn();
-    const _this = this
+    const _this = this;
     // this.setData({
     //   isFront: true
     // });
@@ -870,9 +873,13 @@ async updateWeeklyRanking() {
 
                             // 温度/湿度获取
                             wx.request({
-                              url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                              url:
+                                "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" +
+                                longitude +
+                                "," +
+                                latitude,
                               success: async function (weather) {
-                                if (!weather.data.now) return
+                                if (!weather.data.now) return;
 
                                 // now.setHours(0, 0, 0, 0);
                                 // db.collection("weather").add({
@@ -885,7 +892,7 @@ async updateWeeklyRanking() {
                                 // })
 
                                 wx.cloud.callFunction({
-                                  name: 'addLocation',
+                                  name: "addLocation",
                                   data: {
                                     sendParams: {
                                       openid: app.globalData.openID,
@@ -896,7 +903,7 @@ async updateWeeklyRanking() {
                                     }
                                   },
                                   fail: err => {
-                                    console.log('error==', err)
+                                    console.log("error==", err);
                                   }
                                 });
                               },
@@ -904,8 +911,6 @@ async updateWeeklyRanking() {
                                 console.log(err);
                               }
                             });
-
-
 
                             // 处理空气质量数据
                             new_aqi = Math.min(
@@ -921,18 +926,17 @@ async updateWeeklyRanking() {
                               )
                             );
                             new_category =
-                              new_aqi <= 50 ?
-                              "优" //
-                              :
-                              new_aqi <= 100 ?
-                              "良" :
-                              new_aqi <= 150 ?
-                              "轻度污染" :
-                              new_aqi <= 200 ?
-                              "中度污染" :
-                              new_aqi <= 300 ?
-                              "重度污染" :
-                              "严重污染";
+                              new_aqi <= 50
+                                ? "优" //
+                                : new_aqi <= 100
+                                ? "良"
+                                : new_aqi <= 150
+                                ? "轻度污染"
+                                : new_aqi <= 200
+                                ? "中度污染"
+                                : new_aqi <= 300
+                                ? "重度污染"
+                                : "严重污染";
 
                             _this.setData({
                               name: city_name,
@@ -949,9 +953,6 @@ async updateWeeklyRanking() {
                         console.log(err);
                       }
                     });
-
-
-
                   },
                   fail: function (err) {
                     console.error(err);
@@ -976,11 +977,11 @@ async updateWeeklyRanking() {
       userInfo: app.globalData.userInfo,
       testGroup: app.globalData.userInfo.testGroup
     });
-    
+
     const db = wx.cloud.database();
     const _ = db.command;
     const _this = this;
-    this.updateWeeklyRanking()
+    this.updateWeeklyRanking();
     wx.getSystemInfo({
       success(res) {
         _this.setData({
@@ -1024,15 +1025,17 @@ async updateWeeklyRanking() {
                             let new_aqi = 0;
                             const airQuality = res.data.now.aqi;
 
-
                             wx.request({
-                              url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
+                              url:
+                                "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" +
+                                longitude +
+                                "," +
+                                latitude,
                               success: async function (weather) {
-                                if (!weather.data.now) return
-
+                                if (!weather.data.now) return;
 
                                 wx.cloud.callFunction({
-                                  name: 'addLocation',
+                                  name: "addLocation",
                                   data: {
                                     sendParams: {
                                       openid: app.globalData.openID,
@@ -1043,15 +1046,11 @@ async updateWeeklyRanking() {
                                     }
                                   },
                                   fail: err => {
-                                    console.log('error==', err)
+                                    console.log("error==", err);
                                   }
                                 });
                               }
-
-
-
-                            })
-
+                            });
 
                             // 处理空气质量数据
                             new_aqi = Math.min(
@@ -1067,18 +1066,17 @@ async updateWeeklyRanking() {
                               )
                             );
                             new_category =
-                              new_aqi <= 50 ?
-                              "优" //
-                              :
-                              new_aqi <= 100 ?
-                              "良" :
-                              new_aqi <= 150 ?
-                              "轻度污染" :
-                              new_aqi <= 200 ?
-                              "中度污染" :
-                              new_aqi <= 300 ?
-                              "重度污染" :
-                              "严重污染";
+                              new_aqi <= 50
+                                ? "优" //
+                                : new_aqi <= 100
+                                ? "良"
+                                : new_aqi <= 150
+                                ? "轻度污染"
+                                : new_aqi <= 200
+                                ? "中度污染"
+                                : new_aqi <= 300
+                                ? "重度污染"
+                                : "严重污染";
 
                             _this.setData({
                               name: city_name,
@@ -1102,9 +1100,9 @@ async updateWeeklyRanking() {
                 });
               } else {
                 Dialog.confirm({
-                    title: '提示',
-                    message: '请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”',
-                  })
+                  title: "提示",
+                  message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”"
+                })
                   .then(() => {
                     // on confirm
                     wx.openSetting().then(settingRes => {
@@ -1115,7 +1113,6 @@ async updateWeeklyRanking() {
                         // });
                       }
                     });
-
                   })
                   .catch(() => {
                     // on cancel
@@ -1142,7 +1139,6 @@ async updateWeeklyRanking() {
             let now = new Date();
             now.setHours(0, 0, 0, 0);
             // _this.startTrackConfirm()
-
 
             db.collection("userInfo")
               .limit(1)
@@ -1191,13 +1187,14 @@ async updateWeeklyRanking() {
     return {
       title: "快来一起低碳出街~",
       path: "/pages/index/index?id=" + this.data.openID,
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      imageUrl:
+        "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function (res) {
-        console.log(res.shareTickets[0])
+        console.log(res.shareTickets[0]);
       },
       fail: function (res) {
-        console.log('share failed')
+        console.log("share failed");
       }
-    }
+    };
   }
 });
