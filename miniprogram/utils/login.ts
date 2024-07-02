@@ -29,7 +29,6 @@ async function onHandleSignIn({
       const openID = (res.result as { data?: any }).data._openid;
       // this.setData({ openID });
       getApp().globalData.openID = openID;
-
       const userInfoQuery = await db.collection('userInfo')
         .where({ _openid: openID })
         .get();

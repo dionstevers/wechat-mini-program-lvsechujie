@@ -207,6 +207,11 @@ Page({
   },
 
   uploadData: function( avatar: any,basicInfo: any, carbSum: any, testGroup: any){
+    wx.showToast({
+      title:'正在登录',
+      icon:'loading',
+      duration:3000
+    })
     wx.cloud.callFunction({
       name:'submituserinfo',
       data:{
@@ -225,8 +230,10 @@ Page({
         }
         //set globalData
         app.globalData.userInfo  = userInfo;
+
         if(res.result && typeof res.result === 'object' && 'success' in res.result){
             if(res.result.success){
+              wx.hideToast()
               wx.switchTab({
                 url:'/pages/information/information'
               })
