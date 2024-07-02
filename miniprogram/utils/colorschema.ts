@@ -23,6 +23,7 @@ function updateColor() {
   const currentPage = pages[pages.length - 1];
   if (currentPage) {
     currentPage.setData({
+      colorStyle: app.globalData.backgroundColorStyle,
       background: app.constData.VERSION_STYLE_COLOR[app.globalData.backgroundColorStyle].background
     });
   }

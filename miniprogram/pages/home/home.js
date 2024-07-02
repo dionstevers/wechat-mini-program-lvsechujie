@@ -11,6 +11,7 @@ Page({
     mysaving: 0,
     myranking: "未上榜",
     testGroup: null,
+    colorStyle: null,
     background: null,
     users: [],
     recordStatus: false,
