@@ -6,93 +6,6 @@ import { getWeekRange } from "../../utils/time"
 import { updateColor } from '../../utils/colorschema'
 const app = getApp();
 
-// function initChart(canvas, width, height, dpr) {
-//   const chart = echarts.init(canvas, null, {
-//     width: width,
-//     height: height,
-//     devicePixelRatio: dpr // new
-//   });
-//   canvas.setChart(chart);
-//   const db = wx.cloud.database()
-//   const _ = db.command
-//   const $ = db.command.aggregate;
-//   var { firstDayOfWeek, lastDayOfWeek } = getWeekRange();
-//   var walking = 0
-//   var pub_transit = 0
-//   var driving = 0
-//   wx.cloud.callFunction({
-//     name: 'login',
-//     success: id_res => {
-//       db.collection('track').where({
-//         _openid: id_res.result.data._openid,
-//       })
-//       .orderBy('date', 'desc')
-//       .get({
-//         success: function (res) {
-//           let list = res.data
-//           console.log(id_res.result.data._openid)
-//           console.log('get list:', list);
-
-//           list.forEach(item => {
-//             if (item['transport'] == "步行/自行车" || item['transport'] == "电动自行车" || item['transport'] == "步行或骑行") cycling += 1
-//             else if (item['transport'] == "公交/出租车/网约车/轨道交通" || item['transport'] == "公共交通") pub_transit += 1
-//             else driving += 1
-//           })
-//           console.log(cycling)
-//           console.log(pub_transit)
-//           console.log(driving)
-//           var option = {
-//             backgroundColor: 'rgba(0, 0, 0, 0)',
-//             legend: {
-//               orient: 'vertical',
-//               x: 'left',
-//               data: ['步行/骑行','公交','开车'],
-//               textStyle: {
-//                 color: '#ffffff'
-//               }
-  
-//             },
-//             series: [{
-//             label: {
-//                 show: false,
-//                 position: 'center'
-//               },
-//             labelLine: {
-//                 show: false
-//               },
-//             avoidLabelOverlap: false,
-//             emphasis: {
-//                 label: {
-//                   show: true,
-//                   fontSize: '20',
-//                   fontWeight: 'bold',
-//                   fontColor: '#ffffff',
-//                   formatter: '{b} : {c}'
-//                 }
-//               },
-//               type: 'pie',
-//               center: ['50%', '50%'],
-//               radius: ['60%', '90%'],
-        
-//               data: [{
-//                 value: cycling,
-//                 name: '步行/骑行'
-//               }, {
-//                 value: pub_transit,
-//                 name: '公交'
-//               }, {
-//                 value: driving,
-//                 name: '开车'
-//               }]
-//             }]
-//           };
-//           chart.setOption(option);
-//         }
-//       })
-//     }
-//   })
-//   return chart;
-// }
 function initChart(canvas, width, height, dpr) {
   const chart = echarts.init(canvas, null, {
     width: width,
@@ -109,8 +22,6 @@ function initChart(canvas, width, height, dpr) {
     name: 'login',
     success: async (id_res) => {
       const userOpenId = id_res.result.data._openid;
-      const firstDayOfWeekDate = new Date(firstDayOfWeek).toJSON();
-
       try {
         var f = new Date(firstDayOfWeek),
         a = $.dateFromString({
