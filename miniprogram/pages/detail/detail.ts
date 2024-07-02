@@ -84,11 +84,17 @@ Page({
         }
       })
   
-      // 信息激励强国版用户增加测试题
+      // 信息激励强国版用户增加测试题 -- canceled now
       if (this.data.userInfo.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION && localArticleRecommend.infoGroup === 2) {
-        wx.navigateTo({
-          url: '/pages/quiz/quiz?link=' + this.data.link,
+        // wx.navigateTo({
+        //   url: '/pages/quiz/quiz?link=' + this.data.link,
+        // })
+        wx.showModal({
+          title: '阅读成功',
+          content:'低碳生活，携手同行！',
+          showCancel: false
         })
+
       }
       else{  
         wx.showModal({
