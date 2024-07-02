@@ -38,6 +38,7 @@ Page({
       '低碳我知道': 0,
       '低碳强国': 1
     },
+
     articles: [],
     articleShowList: [],
     articleRecommend: {
@@ -122,13 +123,18 @@ Page({
           const infoGroup = this.data.testGroup === getApp().constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
             Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
           const articleRecommend = [
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 概率数组
+            // 概率数组
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
               () => (100 / 4) / (Object.keys(this.data.articleTypes).length - 1)), 
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章存储数组
+
+            // 文章存储数组  （普通版：每种类型总会至少生成1篇；森林版："低碳我知道"生成2篇；强国版："低碳强国"至少生成2篇 ...）
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
               (_, articleTypeIndex) => infoGroup === 0 ? 
               1 : (articleTypeIndex === this.data.infoGroup2ArticleType[infoGroup] ?
               2 : 0)),
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) }, // 文章阅读量数组
+
+            // 文章阅读量数组
+            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
             () => 0),
           ];
 
@@ -287,7 +293,8 @@ Page({
   },
 
   /**
-   * 动态进行article分配
+   * 根据articleRecommend的数值，合理推荐文章种类
+   * @returns {number} 文章种类（细节见this.data中的articleTypes）
    */ 
   getArticleType() {
     // 计算各种文章概率分布
@@ -328,25 +335,20 @@ Page({
   },
 
   /**
-   * 给用户分配文章 （普通版：每种类型总会至少生成1篇；森林版："低碳我知道"生成2篇；强国版："低碳强国"至少生成2篇 ...）
-   * @param {number} totalArticleNumber 总共生成的文章数 （“碳行家”文章除外）
+   * 给用户分配文章，并添加在articleShowList中
+   * @param {number} newArticleCount 可增添的文章数量
    */
-  getArticles(totalArticleNumber){
+  getArticles(newArticleCount = 0){
     const typeLength = Object.keys(this.data.articleTypes).length;
 
     try{
-      // 检查是否获取新文章
-      const articleList = this.data.articles.filter(article => article.author === "碳行家");
-      const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
-      const iterations = (totalArticleNumber - articleList.length) - articleCountSum;
-
-      // 若应当获取新文章，则告知需更新数据库
-      if (iterations > 0) {
+      // 若要获取新文章，则告知需更新数据库
+      if (newArticleCount > 0) {
         this.shouldUpdateCloud = true;
       }
 
       // 获取新文章
-      for (let i = 0; i < iterations; i++) {
+      for (let i = 0; i < newArticleCount; i++) {
         let articleType = this.getArticleType();
         if (articleType != -1 && articleType < (typeLength - 1)) {
           // 检查文章是否已经达到上限
@@ -370,8 +372,7 @@ Page({
       }
     
       // 生成对应的文章给用户
-      
-
+      const articleList = this.data.articles.filter(article => article.author === "碳行家");
       for (let articleType = 0; articleType < (typeLength - 1); articleType++) {
         if (this.data.articleRecommend.articleCount[articleType] === 0) continue;
         let articleRes = this.data.articles
@@ -436,7 +437,7 @@ Page({
         if (this.updateCounter >= this.data.updateCloudThreshold) {
           this.updateCounter = 0;
           this.shouldUpdateCloud = true;
-          this.getArticles(this.data.articleShowList.length + 1)
+          this.getArticles(1)
         }
         wx.setStorageSync('articleClickCounter', this.updateCounter)
       }
@@ -522,10 +523,9 @@ Page({
 
     // 每日更新 2 篇文章
     this.CheckDailyUpdate();
-    const articleCountSum = this.data.articleRecommend.articleCount.reduce((a, b) => a + b, 0);
     
     if (this.dailyPushed) {
-      this.getArticles(articleCountSum + 3);
+      this.getArticles(2);
 
       // 减少以往天数的推荐比重
       const localArticleRecommend = wx.getStorageSync('articleRecommend');
@@ -544,7 +544,7 @@ Page({
       localArticleRecommend.readAmount = previousReadAmount;
       wx.setStorageSync('articleRecommend', localArticleRecommend)
     } else {
-      this.getArticles(articleCountSum + 1);
+      this.getArticles();
     }
 
     this.dailyPushed = false;
@@ -662,6 +662,6 @@ Page({
    * 测试用生成文章
    */
   debugGenerateArticle() {
-    this.getArticles(this.data.articleShowList.length + 1);
+    this.getArticles(1);
   },
 })
