@@ -517,7 +517,7 @@ Page({
   /**
    * 不喜欢按钮事件
    */
-  bindUnlike(e) {
+  bindDislike(e) {
     // 切换不喜欢状态
     const targetArticle = this.data.articleRecommend.readArticles.find(article => article.link === e.currentTarget.dataset.link);
     targetArticle.doDislike = !targetArticle.doDislike;

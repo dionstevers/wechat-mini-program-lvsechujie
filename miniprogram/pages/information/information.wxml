@@ -22,8 +22,8 @@
 
       <view class="preview-con">
         <view class="title">{{item.title}}</view>
-        <view class="unlike" wx:if="{{item.author !== '碳行家' && !item.isUnread}}">
-          <image class="unlike-img" src="{{item.doDislike ? '../../asset/img/unlike-highlight.png' : '../../asset/img/unlike.png'}}" catchtap="bindUnlike" data-link="{{item.link}}" data-author="{{item.author}}"></image>
+        <view class="dislike" wx:if="{{item.author !== '碳行家' && !item.isUnread}}">
+          <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}" data-author="{{item.author}}"></image>
         </view>
       </view>
     </view>
