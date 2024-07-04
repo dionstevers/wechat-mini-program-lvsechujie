@@ -50,22 +50,35 @@
   padding: 0 20rpx;
 }
 
-.preview-con{
-  width: 600rpx;
+.preview-con {
+  width: auto;
   position: relative;
   top: -20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 20rpx;
+  padding-right: 10rpx;
 
-  .title{
-    width: 550rpx;
-    margin: 0 auto;
+  .title {
+    width: auto;
+    margin: 0;
     font-size: 26rpx;
     text-align: left;
     font-weight: bold;
+    flex: 1;
   }
-  .ab{
-    width: 550rpx;
-    margin: 0 auto;
-    font-size: 24rpx;
-    text-align: left;
+
+  .unlike {
+    display: flex;
+    align-items: center;
+    
+
+    .unlike-img {
+      width: 50rpx;
+      height: 50rpx;
+    }
+
+
   }
 }
