@@ -1184,9 +1184,17 @@ Page({
     if (!this.data.recordStatus) return;
     this.endTrack();
   },
+  onShareTimeline(){
+    logEvent('Share App')
+    return{
+      title: "我本周已省碳"+this.data.mysaving+"kg,你也来试试吧！",
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
+    }
+  },
   onShareAppMessage() {
+    logEvent('Share App')
     return {
-      title: "快来一起低碳出街~",
+      title: "我本周已省碳"+this.data.mysaving+"kg,你也来试试吧！",
       path: "/pages/index/index?id=" + this.data.openID,
       imageUrl:
         "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",

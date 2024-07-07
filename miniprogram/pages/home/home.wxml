@@ -104,19 +104,6 @@
     </view>
   </view>
   
- <!--
-  <modal title="出行人数" confirm-text="确定" cancel-text="取消" hidden="{{capacityModalHidden}}" bindconfirm="capacityModalConfirm" bindcancel="capacityModalCancel" class="modal">
-    <view class="picklist" wx:if="{{index == 2 || index == 3}}">
-      <text class="text">出行人数</text>
-      <picker bindchange="bindCapacityChange" value="{{capacity}}" range="{{capacityList}}" class="picker picker-con">
-        <view class="picker">
-          {{capacityList[capacity]}}
-        </view>
-        <view class="triangle"></view>
-      </picker>
-    </view>
-  </modal>
--->
 
 
   <modal title="出行方式" confirm-text="确定" cancel-text="取消" hidden="{{transporModalHidden}}" bindconfirm="transporModalConfirm" bindcancel="transporModalCancel" class="modal">

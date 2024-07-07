@@ -351,7 +351,13 @@ Page({
   onUnload() {
 
   },
-
+  onShareTimeline(){
+    logEvent('Share App')
+    return{
+      title:'省碳领现金，快来试试吧～',
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
+    }
+  },
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
@@ -365,16 +371,14 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom() {
-
   },
-
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage() {
     logEvent('Share App')
     return {
-      title: "快来一起低碳出街~",
+      title: "省碳得现金，就用碳行家~",
       path:"/pages/index/index?id=" + this.data.openID,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
