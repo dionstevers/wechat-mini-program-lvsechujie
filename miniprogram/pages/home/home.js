@@ -32,7 +32,7 @@ Page({
     platform: "",
     curID: "",
     transport: "步行",
-    transportList: ["步行或骑行", "公共交通", "驾驶电动汽车", "驾驶燃油汽车"],
+    transportList: ["步行或骑行", "公共交通", "电动汽车", "燃油汽车"],
     purpose: [],
     purposes: [
       {
@@ -70,12 +70,12 @@ Page({
         name: "公交车"
       },
       {
-        value: "驾驶燃油汽车",
-        name: "驾驶燃油汽车"
+        value: "驾驶/乘坐燃油汽车",
+        name: "驾驶/乘坐燃油汽车"
       },
       {
-        value: "驾驶电动汽车",
-        name: "驾驶电动汽车"
+        value: "驾驶/乘坐电动汽车",
+        name: "驾驶/乘坐电动汽车"
       },
       {
         value: "地铁",
@@ -695,7 +695,7 @@ Page({
 
               saving += cityTotal * cityRate;
               saving += highSpeedTotal * highSpeedRate;
-              const arr = ["步行或骑行", "步行或骑行", "驾驶燃油汽车", "驾驶燃油汽车", "公共交通", "公共交通"];
+              const arr = ["步行或骑行", "步行或骑行", "燃油汽车", "燃油汽车", "公共交通", "公共交通"];
 
               let maxEntry = null;
               let maxMeters = -Infinity;
