@@ -44,7 +44,7 @@ exports.main = async (event, context) => {
         })
         if (!addRes._id) {
           throw new Error('Add user info failed')
-        }
+        } 
         
         // Initiate lottery entry as well
         const lotteryEntry = {
@@ -61,7 +61,16 @@ exports.main = async (event, context) => {
           throw new Error('Add lottery entry failed')
         }
       }
-
+        const connectionEntry = {
+          openid : openid,
+          friends: []
+        }
+        const connectionRes = await transaction.collection('relations').add({
+          data: connectionEntry
+        })
+        if(!connectionRes._id){
+          throw new Error ('Add connection failed')
+        }
       // Return true if successfully operated the commands
       return {
         success: true
