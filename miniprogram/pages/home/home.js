@@ -2,7 +2,7 @@
 import Dialog from "@vant/weapp/dialog/dialog";
 import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
-import { onHandleSignIn } from "../../utils/login";
+import { updateUserData, onCheckSignIn } from "../../utils/login";
 import { updateColor } from "../../utils/colorschema";
 const app = getApp();
 
@@ -13,6 +13,7 @@ Page({
     testGroup: null,
     colorStyle: null,
     background: null,
+    isFromShareTimeline: false,
     users: [],
     recordStatus: false,
     btnClass: "btn btn-default",
@@ -770,7 +771,7 @@ Page({
                     _this.setList();
                     //_this.calcCarbon()
                     _this.updateCarbon();
-                    _this.onLoad();
+                    _this.reloadData();
                   }
                 });
             }
@@ -813,11 +814,57 @@ Page({
       capacity: e.detail.value
     });
   },
-  //
+
+  /**
+   * 初始化本页面数据，此函数使用闭包，多次调用只会初始化一次
+   */
+  initData() {
+    if (!this.initData.executed) {
+      this.reloadData();
+
+      this.initData.executed = true;
+      console.log("home页面初始化成功！");
+    } else {
+      console.log("home页面已经初始化过了！");
+    }
+  },
+
+  onLoad(options) {
+    // 转发朋友圈链接，导航到登录页面
+    if (options.isFromShareTimeline) {
+      this.setData({
+        isFromShareTimeline: true
+      });
+      wx.navigateTo({
+        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
+        success: () => {
+          this.setData({
+            isFromShareTimeline: false
+          });
+        }
+      })
+    }
+  },
+
   onShow() {
+    // 朋友圈进来则不显示
+    if (this.data.isFromShareTimeline) {
+      return;
+    }
+
+    // 更新颜色
     updateColor();
+
+    // 检查登录状态
+    updateUserData();
+    onCheckSignIn({
+      message : '请您登录',
+      success : async () => {
+        this.initData();
+      }
+    });
+
     logEvent("Home Page");
-    onHandleSignIn();
     const _this = this;
     // this.setData({
     //   isFront: true
@@ -826,9 +873,7 @@ Page({
     wx.setNavigationBarTitle({
       title: "碳行家｜行程记录"
     });
-    this.setData({
-      userInfo: app.globalData.userInfo
-    });
+
     wx.getSystemInfo({
       success(res) {
         _this.setData({
@@ -968,17 +1013,14 @@ Page({
       }
     });
   },
+
   onHide() {
     // this.setData({
     //   isFront: false
     // });
   },
-  onLoad: async function () {
-    this.setData({
-      userInfo: app.globalData.userInfo,
-      testGroup: app.globalData.userInfo.testGroup
-    });
-
+  
+  async reloadData() {
     const db = wx.cloud.database();
     const _ = db.command;
     const _this = this;
@@ -1184,17 +1226,23 @@ Page({
     if (!this.data.recordStatus) return;
     this.endTrack();
   },
+
   onShareTimeline(){
     logEvent('Share App')
     return{
-      title: "我本周已省碳"+this.data.mysaving+"kg,你也来试试吧！",
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
+      title:"我本周已省碳" + this.data.mysaving + "kg，你也来试试吧！",
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      query:`sharedFromID=${this.data.openID}&isFromShareTimeline=true`,
+      success: function(res){
+        console.log(res)
+      },fail: function (res){console.log(res)}
     }
   },
+
   onShareAppMessage() {
     logEvent('Share App')
     return {
-      title: "我本周已省碳"+this.data.mysaving+"kg,你也来试试吧！",
+      title: "我本周已省碳" + this.data.mysaving + "kg，你也来试试吧！",
       path: "/pages/index/index?id=" + this.data.openID,
       imageUrl:
         "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",

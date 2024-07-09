@@ -19,8 +19,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(option){
-    updateColor()
-
     const link = option.link
     const articleType = option.articleType
     const openTime  = new Date()
@@ -46,7 +44,8 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    // 更新颜色
+    updateColor();
   },
 
   /**

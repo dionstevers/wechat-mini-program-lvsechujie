@@ -15,8 +15,6 @@ Page({
     }
   },
   onLoad(options) {
-    updateColor();
-
     const merchId = options.merch_id;
     this.getMerchDetail(merchId);
     const u_openid = options.u_openid
@@ -144,10 +142,11 @@ Page({
         url: `/pages/test/test?merch_id=${merch_id}`
       })
     }
-
-
-    
-  }
+  },
   
+  onShow() {
+    // 更新颜色
+    updateColor();
+  },
   
 });
