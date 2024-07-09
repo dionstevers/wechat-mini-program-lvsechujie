@@ -6,10 +6,7 @@ const db = wx.cloud.database()
 const _  = db.command
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const wxContext = cloud.getWXContext()
-  const receiverID = wxContext.OPENID
-  const senderID = event.OPENID
-
+  const { senderID, receiverID } = event;
   if (senderID === receiverID) {
     return { message: 'Sender and receiver cannot be the same.' }
   }

@@ -12,6 +12,7 @@ Page({
    */
 
   data: {
+    shareFromID:null,
     credit: 0,
     percent : 0,
     background: null,
@@ -167,21 +168,56 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(option) {
-    if(option.openID){
-      try{
-        wx.cloud.callFunction({
-          name:'netCreate',
-          data:{
-            openid: option.openID
-          }
+  // TODO: idReceiver function, testing..
+  // idReceiver(options){
+  //   const receiverID = getApp().globalData.openID;
+  //   // not authenticated
+  //   if(!receiverID){
+  //     console.log('no receiver openid')
+  //     return;
+  //   }
+  //   for (var key in options){
+  //     key = JSON.parse(key)
+  //     wx.showModal({
+  //       title: 'data received',
+  //       content: key.data
+  //     })
+  //     const senderID = key.data
+  //     //no sender
+  //     if(!senderID){
+  //       console.log('no sender openid')
+  //       return;
+  //     }
+  //     if(senderID && receiverID){
+  //       wx.cloud.callFunction({
+  //         name:'netCreate',
+  //         data:{
+  //           senderID: senderID,
+  //           receiverID: receiverID
+  //         },
+  //         success: function(res){
+  //           console.log(res)
+  //         },
+  //         fail: function(res){
+  //           console.log(res)
+  //         }
+  //       })
+  //     }
+  //   }
+  // },
+  onLoad(options) {
+    // TODO: id receiver function testing
+    // this.idReceiver(options)
+    // used to debug: share to time line 
+    for (var key in options){
+      key = JSON.parse(key);
+      if(key.data){
+        wx.showModal({
+          title: 'success',
+          content: key.data,
         })
-      }catch(err){
-        console.log(err)
       }
     }
-
-
     wx.showShareMenu({
       withShareTicket:true,
       menus:["shareAppMessage","shareTimeline"]
@@ -215,8 +251,6 @@ Page({
     })
     this.randerComponent = this.selectComponent('#mychart-dom-area');
 
-
-    //this.getdata();
   },
 
   /**
@@ -229,15 +263,21 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload() {
-
-  },
+  onUnload(){},
   onShareTimeline(){
     logEvent('Share App')
+    var query = {
+      data: this.data.openID
+    };
+    query = JSON.stringify(query);
+
     return{
       title:'省碳领现金，快来试试吧～',
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      query:'openID=xxx'+this.data.openID
+      query:query,
+      success: function(res){
+        console.log(res)
+      },fail: function (res){console.log(res)}
     }
   },
   /**
