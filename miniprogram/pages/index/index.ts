@@ -1,14 +1,24 @@
-import { onHandleSignIn } from "../../utils/login"
-
 // pages/index/index.ts
+export{}
 const app = getApp()
-
 Page({
+
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    userInfo: [],
+    openID: '',
+  },
+
   /**
    * 页面实例数据
    */
   isFetchingUserInfo: false,
   isNavigating: false,
+
+  
+  // Define the recordShare function
 
   /**
    * 生命周期函数--监听页面加载
@@ -34,7 +44,7 @@ Page({
         if(sharedFromid!=null){
           await this.recordShare(sharedFromid);
         }
-        // If the sender document does not exist, create it
+          // If the sender document does not exist, create it
       
       }catch(err){
         console.log(err)
@@ -45,13 +55,9 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady(){
-    // TODO: 切换自动登录
-    if (this.data.AUTOLOGIN) {
-      this.isFetchingUserInfo = true;
-      this.onHandleSignIn(true);
-    }
+    this.isFetchingUserInfo = true;
+    this.onHandleSignIn(true);
   },
-
   // record share relations
   async recordShare(sharedFromid: string) {
     const db = wx.cloud.database();
@@ -84,6 +90,7 @@ Page({
     }
   },
   
+
   // 注册
   HandleSignUp(){
     if (!this.isFetchingUserInfo && !this.isNavigating) {
@@ -130,34 +137,48 @@ Page({
   HandleSignIn(){
     if (!this.isFetchingUserInfo && !this.isNavigating) {
       this.isFetchingUserInfo = true;
-      onHandleSignIn({
-        success : () => {
-          this.isNavigating = true;
-          wx.showToast({ 
-            title:'正在登录中',
-            icon:'loading',
-            mask:true,
-            duration:500 });
-            setTimeout(() => {
-              wx.switchTab({
-                url : '/pages/information/information',
-                complete: () => this.isNavigating = false
-              })
-            }, 500);
-            this.isFetchingUserInfo = false;
-        },
-        failed : () => {
-          wx.showModal({
-            title: '您尚未注册',
-            content: '请点击下方注册按钮注册',
-            showCancel: false
+      this.onHandleSignIn(false);
+    }
+  },
+
+  // 登录-抓取
+  async onHandleSignIn(autoLogin: boolean) {
+    const db = wx.cloud.database();
+    try {
+      const res = await wx.cloud.callFunction({ name: 'login' });
+      const openID = (res.result as { data?: any }).data._openid;
+      this.setData({ openID });
+      getApp().globalData.openID = openID;
+
+      const userInfoQuery = await db.collection('userInfo')
+        .where({ _openid: openID })
+        .get();
+        
+      if (userInfoQuery.data.length === 1) {
+        app.globalData.userInfo = userInfoQuery.data[0];
+        this.isNavigating = true;
+        wx.showToast({ 
+        title:'正在登录中',
+        icon:'loading',
+        mask:true,
+        duration:1500 });
+        setTimeout(() => {
+          wx.switchTab({
+            url : '/pages/information/information',
+            complete: () => this.isNavigating = false
           })
-          this.isFetchingUserInfo = false;
-        },
-        error : () => {
-          this.isFetchingUserInfo = false;
-        }
-      })
+        }, 1500);
+      } else if (!autoLogin) {
+        wx.showModal({
+          title: '您尚未注册',
+          content: '请点击下方注册按钮注册',
+          showCancel: false
+        })
+      }
+    } catch(err) {
+      console.log(err)
+    } finally {
+      this.isFetchingUserInfo = false;
     }
   },
 
@@ -168,13 +189,13 @@ Page({
         title:'游客登录中',
         icon:'loading',
         mask:true,
-        duration:500 });
+        duration:1500 });
         setTimeout(() => {
           wx.switchTab({
             url : '/pages/information/information',
             complete: () => this.isNavigating = false
           })
-        }, 500);
+        }, 1500);
   },
 
   // 删除账户
@@ -190,11 +211,12 @@ Page({
             icon:'success',
             duration:2000,
           })
+          
         }
-      } 
+      }
+      
     })
   },
-
   /**
    * 生命周期函数--监听页面显示
    */

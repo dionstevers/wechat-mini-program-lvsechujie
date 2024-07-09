@@ -1,5 +1,4 @@
-const { updateColor } = require("../../utils/colorschema")
-const { onHandleSignIn } = require("../../utils/login")
+export{}
 const app = getApp()
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 Page({
@@ -114,6 +113,10 @@ Page({
       nickname: e.detail.value
     })
   },
+ 
+
+  
+
 
   validateForm() {
     const { nickname, dob, occu, grad, trans, car } = this.data
@@ -244,10 +247,7 @@ Page({
 
   },
   
+  
   onLoad() {
-    // 更新颜色
-    updateColor();
   },
-
-
 })

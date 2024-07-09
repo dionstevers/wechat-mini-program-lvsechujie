@@ -226,6 +226,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    updateColor();
+
     console.log(options.typeq)
     var typeq = parseInt(options.typeq!)
     this.fetchData(typeq)
@@ -253,8 +255,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 更新颜色
-    updateColor();
+ 
   },
 
   /**

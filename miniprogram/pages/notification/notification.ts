@@ -25,15 +25,11 @@ Page({
 
   },
   onLoad() {
+    updateColor();
     this.setData({
       openID: getApp().globalData.openID
     })
     this.loadMessages();
-  },
-
-  onShow() {
-    // 更新颜色
-    updateColor();
   },
 
   switchTab(event: any) {

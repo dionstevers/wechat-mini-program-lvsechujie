@@ -29,7 +29,6 @@ Page({
   },
 
   onShow() {
-    // 更新颜色
     updateColor();
     
     this.setData({

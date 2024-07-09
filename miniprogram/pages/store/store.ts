@@ -250,6 +250,8 @@ Page({
     });
   },
   onLoad() {
+    updateColor();
+
     const cost = 150;
 
     this.setData({
@@ -261,8 +263,5 @@ Page({
     this.getLotteryInfo();
   },
 
-  onShow() {
-    // 更新颜色
-    updateColor();
-  }
+  onShow() {}
 });

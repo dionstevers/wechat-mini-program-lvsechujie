@@ -1,45 +1,49 @@
-<view class="page-background" id="page" catchtouchmove="dealer" style="font-family:'Times New Roman', Times, serif; background: {{background}};">
-  <!-- 如果 isFromShareTimeline 为 true，则显示背景和图片 -->
-  <block wx:if="{{isFromShareTimeline}}">
-    <image class="QRcode" src="https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"></image>
-  </block>
+<!--pages/center/center.wxml-->
+<view class="page-background" id = "page" catchtouchmove="dealer" style=" font-family:‘Times New Roman’, Times, serif ;background: {{background}};">
 
-  <!-- 如果 isFromShareTimeline 为 false，则显示正常内容 -->
-  <block wx:else>
-    <view class="avatar-con" bind:tap="editProfile" wx:if="{{ userInfo }}">
-      <image class="avatar" src="{{userInfo.avatar}}"></image>
-      <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
-      <view class='avatar-info'>即刻开启你的低碳之旅</view>
-    </view>
-    <view class="avatar-con" wx:else>
-      <view class='avatar' bind:tap="editProfile">WX</view>
-      <view class='avatar-name' bind:tap="login">登录/注册</view>
-      <view class='avatar-info'>即刻开启你的低碳之旅</view>
-    </view>
+<view class="avatar-con" bind:tap="editProfile" wx:if="{{ userInfo }}">
+  <image class="avatar" src="{{userInfo.avatar}}"></image>
+  <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
+  <view class='avatar-info'>即刻开启你的低碳之旅</view>
+</view>
+<view class="avatar-con" wx:else>
+  <view class='avatar' bind:tap="onlogin">WX</view>
+  <view class='avatar-name' bind:tap="login">登录/注册</view>
+  <view class='avatar-info'>即刻开启你的低碳之旅</view>
+</view>
 
-    <view class="function-con">
-      <template name="function-item">
-        <view class="function-item" bindtap="onTapFunction" data-url="{{url}}" data-title="{{functionTitle}}">
-          <image src="{{functionSrc}}" mode="aspectFit"></image>
-          <view>{{functionTitle}}</view>
-        </view>
-      </template>
-      <template is="function-item" wx:for="{{functionList}}" wx:index="i" wx:key="i" data="{{...item}}"></template>
-    </view>
+<!-- <view class="user-config"  >
+  <image src="../../asset/img/more_ico.png" mode="aspectFill" />
+</view> -->
 
-    <view class='progress-con'>抽奖积分 ： {{credit}}
-      <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+<view class="function-con">
+  <template name="function-item">
+    <view class="function-item" bindtap="onTapFunction" data-url="{{url}}" data-title = "{{functionTitle}}">
+      <image src="{{functionSrc}}" mode="aspectFit"></image>
+      <view>{{functionTitle}}</view>
     </view>
+  </template>
+  <template is="function-item" wx:for="{{functionList}}" wx:index='i' wx:key="i" data="{{...item}}" ></template>
+</view>
 
-    <view class="heat-title">
-      一周出行分析 ：
-    </view>
 
-    <view class="heat-con">
-      <ec-canvas type="2d" class="container" id="mychart-dom-area" canvas-id="mychart-dom-area" ec="{{ec}}"> </ec-canvas>
-    </view>
 
-    <view class='menu-bar' bindtap='onSurvey'>关于我们</view>
-    <view class='menu-bar' bindtap="onPrivacy">隐私声明</view>
-  </block>
+<view class='progress-con'>抽奖积分 ： {{credit}}
+  <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+  <!-- <view class="progress-notice">还差 {{(1000-userInfo.credit)/10}}% 即可兑换低碳大奖</view> -->
+</view>
+
+
+
+<view class="heat-title">
+  一周出行分析 ：
+</view>
+ 
+<view  class="heat-con">
+  <ec-canvas type = "2d" class="container" id="mychart-dom-area" canvas-id="mychart-dom-area"  ec="{{ ec }}"> </ec-canvas>
+</view>
+
+<view class='menu-bar' bindtap='onSurvey'>关于我们</view>
+<!-- <view class='menu-bar'>授权管理</view> -->
+<view class='menu-bar' bindtap="onPrivacy">隐私声明</view>
 </view>

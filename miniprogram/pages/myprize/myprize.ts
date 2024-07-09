@@ -19,6 +19,8 @@ Page({
     })
   },
   onLoad(options) {
+    updateColor();
+
     var prizelist = JSON.parse(options.prizelist!)
     var claimedprizes = JSON.parse(options.claimedprizes!)
     this.setData({
@@ -38,8 +40,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 更新颜色
-    updateColor();
+    
   },
 
   /**

@@ -1,7 +1,6 @@
 const { logEvent } = require("../../utils/log");
-const { updateUserData, onCheckSignIn } = require("../../utils/login")
-const { updateColor, setColorStyle } = require("../../utils/colorschema")
-const app = getApp();
+const { onHandleSignIn } = require("../../utils/login")
+const { setColorStyle } = require("../../utils/colorschema")
 
 Page({
   /**
@@ -10,11 +9,10 @@ Page({
   data: {
     testGroup: -1,
     userInfo: null,
-    openID: null,
     background: null,
 
-    /** 是否从朋友圈转发进入 */
-    isFromShareTimeline: false,
+    /** 是否维护中 */ 
+    isInMaintenance: false,
 
     /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
@@ -23,7 +21,7 @@ Page({
     recommendWeights: {
       frequencyScore: 3.0,
       readAmount: 2.0,
-      dislike: -2.0,
+      dislike: -1.0,
       version: 15.0,
       dailyMultiplier: 0.75
     },
@@ -57,6 +55,7 @@ Page({
    * 页面实例数据
    */
   updateCounter: 0,
+  isInit: false,
   dailyPushed: false,
   shouldUpdateCloud: false,
 
@@ -118,13 +117,13 @@ Page({
     if (wx.getStorageSync("articleRecommend") === "" || isForced){
       try {
         let articleRecommendData = (await db.collection('articleRecommend')
-        .where({ _openid: this.data.openID })
+        .where({ _openid: getApp().globalData.openID })
         .get()).data;
 
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
           const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length;
-          const infoGroup = this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
+          const infoGroup = this.data.testGroup === getApp().constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
             Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
           const articleRecommend = [
             // 概率数组
@@ -201,7 +200,7 @@ Page({
     try {
       const db = wx.cloud.database();
       let articleRecommendData = (await db.collection('articleRecommend')
-        .where({ _openid: this.data.openID })
+        .where({ _openid: getApp().globalData.openID })
         .get()).data;
 
       if (articleRecommendData.length === 0) {
@@ -562,157 +561,123 @@ Page({
   },
 
   /**
-   * 初始化本页面数据，此函数使用闭包，多次调用只会初始化一次
+   * 异步处理数据初始化录入
    */
-  initData(){
-    // 异步处理数据初始化录入
-    const initialize = async () => {
-      try {
-        // 加载用户测试组数据
-        this.setData({
-          testGroup: this.data.userInfo.testGroup
-        });
+  async InitData(){
+    // 加载用户数据
+    this.setData({
+      userInfo: getApp().globalData.userInfo,
+      testGroup: getApp().globalData.userInfo.testGroup
+    });
 
-        // 未登录用户直接返回
-        if (!this.data.userInfo) {
-          return;
-        }
-
-        // 初始化页面数据
-        await this.fetchCloudData(false)
-        const articleRecommend = wx.getStorageSync('articleRecommend');
-
-        // TODO: 这是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
-        if (articleRecommend.infoGroup == undefined) {
-          const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length
-          articleRecommend.infoGroup = this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ? 
-            Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
-          wx.setStorageSync('articleRecommend', articleRecommend);
-        }
-
-        // TODO: 这是用来处理旧用户的，等到所有用户都有readArticles, 可以移除
-        if (articleRecommend.readArticles == undefined) {
-          articleRecommend.readArticles = []
-          wx.setStorageSync('articleRecommend', articleRecommend);
-        }
-
-        // 设置页面实例数据
-        this.setData({
-          articleRecommend: {
-            frequencyScore: articleRecommend.frequencyScore,
-            articleCount: articleRecommend.articleCount,
-            readAmount: articleRecommend.readAmount,
-            readArticles: articleRecommend.readArticles,
-            infoGroup: articleRecommend.infoGroup
-          }
-        })
-
-        // 获取文章点击计数器
-        const counterStored = wx.getStorageSync('articleClickCounter')
-        if (counterStored !== "") {
-          this.updateCounter = counterStored
-        }
-
-        // 根据测试组不同，背景颜色不同 (强国组: 红色，其他：青色)
-        if(this.data.articleRecommend.infoGroup === 2){
-          setColorStyle('RED');
-        } else {
-          setColorStyle('CYAN');
-        }
-
-        // 检查天数是否更新（每日凌晨4点）
-        this.CheckDailyUpdate(); 
-        if (this.dailyPushed) {
-          // 更新本地文章数据
-          await this.fetchCloudArticles();
-
-          // 每日更新 2 篇文章
-          this.getArticles(2);
-
-          // 减少以往天数的推荐比重
-          const localArticleRecommend = wx.getStorageSync('articleRecommend');
-          const frequencyScore = this.data.articleRecommend.frequencyScore;
-          const minFrequencyScore = Math.min(...frequencyScore);
-          const previousFrequencyScore = frequencyScore.map(
-            element => (element - minFrequencyScore) * this.data.recommendWeights.dailyMultiplier + minFrequencyScore
-          );
-
-          const readAmount = this.data.articleRecommend.readAmount;
-          const previousReadAmount = readAmount.map(
-            element => element * this.data.recommendWeights.dailyMultiplier
-          )
-
-          localArticleRecommend.frequencyScore = previousFrequencyScore;
-          localArticleRecommend.readAmount = previousReadAmount;
-          wx.setStorageSync('articleRecommend', localArticleRecommend)
-        } else {
-          this.getArticles();
-        }
-
-        this.dailyPushed = false;
-        await this.updateCloudStorage();
-        console.log("Information页面初始化成功！");
-      } catch (error) {
-        console.error("Information页面初始化错误", error);
-        this.initData.executed = false;
-      }
-    };
-
-    // 让该函数只能初始化一次
-    if (!this.initData.executed) {
-      initialize();
-      this.initData.executed = true;
-    } else {
-      console.log("Information页面已经初始化过了！");
+    // 未登录用户直接返回
+    if (!this.data.userInfo) {
+      return;
     }
+
+    // 初始化页面数据
+    await this.fetchCloudData(false)
+    const articleRecommend = wx.getStorageSync('articleRecommend');
+
+    // TODO: 这是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
+    if (articleRecommend.infoGroup == undefined) {
+      const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length
+      articleRecommend.infoGroup = this.data.testGroup === getApp().constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ? 
+        Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
+      wx.setStorageSync('articleRecommend', articleRecommend);
+    }
+
+    // TODO: 这是用来处理旧用户的，等到所有用户都有readArticles, 可以移除
+    if (articleRecommend.readArticles == undefined) {
+      articleRecommend.readArticles = []
+      wx.setStorageSync('articleRecommend', articleRecommend);
+    }
+
+    // 设置页面实例数据
+    this.setData({
+      articleRecommend: {
+        frequencyScore: articleRecommend.frequencyScore,
+        articleCount: articleRecommend.articleCount,
+        readAmount: articleRecommend.readAmount,
+        readArticles: articleRecommend.readArticles,
+        infoGroup: articleRecommend.infoGroup
+      }
+    })
+
+    // 获取文章点击计数器
+    const counterStored = wx.getStorageSync('articleClickCounter')
+    if (counterStored !== "") {
+      this.updateCounter = counterStored
+    }
+
+    // 根据测试组不同，背景颜色不同 (强国组: 红色，其他：青色)
+    if(this.data.articleRecommend.infoGroup === 2){
+      setColorStyle('RED');
+    } else {
+      setColorStyle('CYAN');
+    }
+
+    // 检查天数是否更新（每日凌晨4点）
+    this.CheckDailyUpdate(); 
+    if (this.dailyPushed) {
+      // 更新本地文章数据
+      await this.fetchCloudArticles();
+
+      // 每日更新 2 篇文章
+      this.getArticles(2);
+
+      // 减少以往天数的推荐比重
+      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+      const frequencyScore = this.data.articleRecommend.frequencyScore;
+      const minFrequencyScore = Math.min(...frequencyScore);
+      const previousFrequencyScore = frequencyScore.map(
+        element => (element - minFrequencyScore) * this.data.recommendWeights.dailyMultiplier + minFrequencyScore
+      );
+
+      const readAmount = this.data.articleRecommend.readAmount;
+      const previousReadAmount = readAmount.map(
+        element => element * this.data.recommendWeights.dailyMultiplier
+      )
+
+      localArticleRecommend.frequencyScore = previousFrequencyScore;
+      localArticleRecommend.readAmount = previousReadAmount;
+      wx.setStorageSync('articleRecommend', localArticleRecommend)
+    } else {
+      this.getArticles();
+    }
+
+    this.dailyPushed = false;
+    await this.updateCloudStorage();
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  async onLoad(options) {
-    // 转发朋友圈链接，导航到登录页面
-    if (options.isFromShareTimeline) {
-      this.setData({
-        isFromShareTimeline: true
-      });
-      wx.navigateTo({
-        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
-        success: () => {
-          this.setData({
-            isFromShareTimeline: false
-          });
-        }
-      })
-
-      return;
-    }
-
+  async onLoad() {
     // 游客登录初始化
-    onCheckSignIn({
-      failed : async () => {
-        // 游客登陆每种文章仅有一篇（‘碳行家’文章除外）
-        let localArticles = wx.getStorageSync('articles');
-        if (localArticles !== '') {
-          this.setData({
-            articles: localArticles
-          })
-        } else {
-          await this.fetchCloudArticles();
-        }
-        
-        const articleShowList = this.data.articles.filter(article => article.author === "碳行家");
-        const firstArticles = Object.values(this.data.articles
-          .filter(art => art.author !== "碳行家")
-          .reduce((acc, article) => 
-            (!acc[article.author] && (acc[article.author] = article), acc), {}
-          ));
+    if (!getApp().globalData.userInfo) {
+      setColorStyle('CYAN');
 
+      let localArticles = wx.getStorageSync('articles');
+      if (localArticles !== '') {
         this.setData({
-          articleShowList: this.timeConvert(articleShowList.concat(firstArticles))
+          articles: localArticles
         })
+      } else {
+        await this.fetchCloudArticles();
       }
-    })
+      
+      const articleShowList = this.data.articles.filter(article => article.author === "碳行家");
+      const firstArticles = Object.values(this.data.articles
+        .filter(art => art.author !== "碳行家")
+        .reduce((acc, article) => 
+          (!acc[article.author] && (acc[article.author] = article), acc), {}
+        ));
+
+      this.setData({
+        articleShowList: this.timeConvert(articleShowList.concat(firstArticles))
+      })
+    }
   }, 
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -725,25 +690,18 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 朋友圈进来则不显示
-    if (this.data.isFromShareTimeline) {
-      return;
-    }
-
-    // 更新颜色
-    updateColor();
-
-    // 检查登录状态
-    updateUserData();
-    onCheckSignIn({
-      message : '请您登录',
+    // 检查注册
+    onHandleSignIn({
       success: () => {
-        // 初始化数据
-        this.initData();
+        if (!this.isInit) {
+          this.isInit = true;
+          this.InitData();
+        }
 
         // 更新本地 data 阅读量 readAmount
         let localArticleRecommend = wx.getStorageSync('articleRecommend');
         this.data.articleRecommend.readAmount = localArticleRecommend.readAmount;
+
       }
     })
 
@@ -774,35 +732,39 @@ Page({
   },
 
   /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+    // 重新加载
+    if (this.data.userInfo) {
+      this.InitData();
+    }
+
+    console.log("refreshing")
+  },
+
+  /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom() {
 
   },
-
-  /**
-   * 朋友圈分享
-   */
   onShareTimeline(){
     logEvent('Share App')
     return{
       title:'有意思的低碳知识，尽在碳行家～',
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      query:`sharedFromID=${this.data.openID}&isFromShareTimeline=true`,
-      success: function(res){
-        console.log(res)
-      },fail: function (res){console.log(res)}
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"
     }
   },
-
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage() {
     logEvent('Share App')
+    const openid = getApp().globalData.openID
     return {
       title: "有意思的低碳知识，尽在碳行家～",
-      path:"/pages/index/index?id=" + this.data.openid,
+      path:"/pages/index/index?id=" + openid,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])

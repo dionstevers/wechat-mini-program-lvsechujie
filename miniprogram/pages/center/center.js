@@ -1,7 +1,7 @@
 // pages/center/center.ts
 import { logEvent } from '../../utils/log';
 import * as echarts from "../../asset/ec-canvas/echarts"
-import { updateUserData, onCheckSignIn } from '../../utils/login'
+import { onHandleSignIn } from '../../utils/login'
 import { updateColor } from '../../utils/colorschema'
 import {initChart} from '../../utils/chart'
 const app = getApp();
@@ -12,7 +12,7 @@ Page({
    */
 
   data: {
-    isFromShareTimeline: false,
+    shareFromID:null,
     credit: 0,
     percent : 0,
     background: null,
@@ -57,30 +57,21 @@ Page({
       }
     })
   },
-
-  editProfile(){
-    onCheckSignIn({
-      success : () => {
-        // wx.showModal({
-        //   title: '您确认要修改您的个人信息吗？',
-        //   content: '点击确定按钮以重新编辑您的个人信息',
-        //   success: (res) => {
-        //     if(res.confirm) {
-        //       wx.navigateTo({
-        //         url:'/pages/login/login'
-        //       })
-        //     }
-        //   }
-        // })
-      },
-      failed : () => {
-        wx.navigateTo({
-          url: '/pages/index/index',
-        })
-      }
-    }) 
-  },
-  
+  // editProfile(){
+  //   if (app.globalData.userInfo) {
+  //     wx.showModal({
+  //       title: '您确认要修改您的个人信息吗？',
+  //       content: '点击确定按钮以重新编辑您的个人信息',
+  //       success: (res) => {
+  //         if(res.confirm) {
+  //           wx.navigateTo({
+  //             url:'/pages/login/login'
+  //           })
+  //         }
+  //       }
+  //     })
+  //   }
+  // },
   initChart() {
     let chart;
     if (this.randerComponent) {
@@ -115,8 +106,9 @@ Page({
     return;
   },
 
+
   onTapFunction(e) {
-    onCheckSignIn({
+    onHandleSignIn({
       message: '使用此功能需登录',
       success: () => {
         console.log(e)
@@ -129,10 +121,37 @@ Page({
             url: url,
           })
         }
+        // if (url && title ) {
+        //   logEvent(title)
+        //   wx.navigateTo({
+        //     url,
+        //   })
+        // }
       }
     })
   },
+  setUserinfo() {
+    this.setData({
+      openID: app.globalData.openID,
+    })
+    if (app.globalData.userInfo != null) {
+      const userInfo = app.globalData.userInfo
+      
+      console.log('userinfo', userInfo)
+      this.setData({
+        userInfo: userInfo
+      })
+      console.log('userinfo updated!!', this.data.userInfo)
+      return
+    }
 
+  },
+  // this function is no longer in use
+  onlogin(e) {
+    wx.navigateTo({
+      url: '/pages/login/login',
+    })
+  },
   onSurvey(e) {
     logEvent('About Us')
     wx.navigateTo({
@@ -146,27 +165,59 @@ Page({
     })
 
   },
-
-  /**
-   * 初始化本页面数据，此函数使用闭包，多次调用只会初始化一次
-   */
-  initData() {
-    if (!this.initData.executed) {
-      this.updateCredit();
-      this.initChart();
-
-      this.initData.executed = true;
-      console.log("center页面初始化成功！");
-    } else {
-      console.log("center页面已经初始化过了！");
-    }
-  },
-
   /**
    * 生命周期函数--监听页面加载
    */
+  // TODO: idReceiver function, testing..
+  // idReceiver(options){
+  //   const receiverID = getApp().globalData.openID;
+  //   // not authenticated
+  //   if(!receiverID){
+  //     console.log('no receiver openid')
+  //     return;
+  //   }
+  //   for (var key in options){
+  //     key = JSON.parse(key)
+  //     wx.showModal({
+  //       title: 'data received',
+  //       content: key.data
+  //     })
+  //     const senderID = key.data
+  //     //no sender
+  //     if(!senderID){
+  //       console.log('no sender openid')
+  //       return;
+  //     }
+  //     if(senderID && receiverID){
+  //       wx.cloud.callFunction({
+  //         name:'netCreate',
+  //         data:{
+  //           senderID: senderID,
+  //           receiverID: receiverID
+  //         },
+  //         success: function(res){
+  //           console.log(res)
+  //         },
+  //         fail: function(res){
+  //           console.log(res)
+  //         }
+  //       })
+  //     }
+  //   }
+  // },
   onLoad(options) {
-    // 页面交互设置
+    // TODO: id receiver function testing
+    // this.idReceiver(options)
+    // used to debug: share to time line 
+    for (var key in options){
+      key = JSON.parse(key);
+      if(key.data){
+        wx.showModal({
+          title: 'success',
+          content: key.data,
+        })
+      }
+    }
     wx.showShareMenu({
       withShareTicket:true,
       menus:["shareAppMessage","shareTimeline"]
@@ -176,21 +227,9 @@ Page({
       scrollTop: 0,
       duration: 0,
     })
-
-    // 转发朋友圈链接，导航到登录页面
-    if (options.isFromShareTimeline) {
-      this.setData({
-        isFromShareTimeline: true
-      });
-      wx.navigateTo({
-        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
-        success: () => {
-          this.setData({
-            isFromShareTimeline: false
-          });
-        }
-      })
-    }
+    this.setUserinfo()
+    this.updateCredit()
+    this.initChart()
   },
 
   /**
@@ -204,30 +243,14 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 朋友圈进来则不显示
-    if (this.data.isFromShareTimeline) {
-      return;
-    }
-
-    // 更新颜色
     updateColor();
-
-    // 检查登录状态
-    updateUserData();
-    onCheckSignIn({
-      message : '请您登录',
-      success : () => {
-        this.initData();
-      }
-    });
-
-    // 页面显示更新
-    this.randerComponent = this.selectComponent('#mychart-dom-area');
+    onHandleSignIn();
+    logEvent('Center Page')
     wx.setNavigationBarTitle({
       title: '碳行家｜个人主页'
-    }) 
+    })
+    this.randerComponent = this.selectComponent('#mychart-dom-area');
 
-    logEvent('Center Page')
   },
 
   /**
@@ -240,25 +263,37 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload(){
-
-  },
-
-  /**
-   * 朋友圈分享
-   */
+  onUnload(){},
   onShareTimeline(){
     logEvent('Share App')
+    var query = {
+      data: this.data.openID
+    };
+    query = JSON.stringify(query);
+
     return{
       title:'省碳领现金，快来试试吧～',
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      query:`sharedFromID=${this.data.openID}&isFromShareTimeline=true`,
+      query:query,
       success: function(res){
         console.log(res)
       },fail: function (res){console.log(res)}
     }
   },
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
 
+
+  // onPullDownRefresh: function () {
+
+  // },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+  },
   /**
    * 用户点击右上角分享
    */

@@ -18,20 +18,15 @@ function setColorStyle(color: Colors) {
  * 更新当前页面颜色为全局颜色
  */
 function updateColor() {
+  // 更新页面颜色
   const pages = getCurrentPages();
   const currentPage = pages[pages.length - 1];
-
-  // 检查颜色更新
-  if (!currentPage || currentPage.data.colorStyle === app.globalData.backgroundColorStyle) {
-    return;
+  if (currentPage) {
+    currentPage.setData({
+      colorStyle: app.globalData.backgroundColorStyle,
+      background: app.constData.VERSION_STYLE_COLOR[app.globalData.backgroundColorStyle].background
+    });
   }
-
-  // 更新页面颜色
-  currentPage.setData({
-    colorStyle: app.globalData.backgroundColorStyle,
-    background: app.constData.VERSION_STYLE_COLOR[app.globalData.backgroundColorStyle].background
-  });
-
 
   // 更改顶部导航条颜色
   wx.setNavigationBarColor({
