@@ -63,7 +63,7 @@ exports.main = async (event, context) => {
       }
         const connectionEntry = {
           openid : openid,
-          friends: []
+          friends: [openid]
         }
         const connectionRes = await transaction.collection('relations').add({
           data: connectionEntry

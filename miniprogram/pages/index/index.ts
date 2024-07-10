@@ -15,25 +15,33 @@ Page({
    */
   async onLoad(options) {
     // share app message
-      console.log('the openid of the one who shared is ', options.id)
-      const sharedFromid = options.id
-      const db = wx.cloud.database()
-
+      const sharedFromid = options.sharedFromID
+      console.log('sharedFromID', options.sharedFromID)
+      
       try{
         const res = await wx.cloud.callFunction({ name: 'login' });
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
-        const openid = (res.result as {data?:any}).data._openid;
-        
         // now include sharedFromid upload
         if(sharedFromid==null){
           console.log('no share user')
           return;
+        }else{
+          try{
+            wx.cloud.callFunction({
+              name:'netCreate',
+              data:{
+                senderID: sharedFromid,
+                receiverID: this.data.openID
+              },
+              success: function(res){
+                console.log(res)
+              }
+            })
+          }catch(err){console.log(err)}
+         
         }
         // check if the sharedFromid is null
-        if(sharedFromid!=null){
-          await this.recordShare(sharedFromid);
-        }
         // If the sender document does not exist, create it
       
       }catch(err){
