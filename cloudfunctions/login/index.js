@@ -1,39 +1,26 @@
-// 云函数模板
-// 部署：在 cloud-functions/login 文件夹右击选择 “上传并部署”
+const cloud = require('wx-server-sdk');
 
-const cloud = require('wx-server-sdk')
-
-// 初始化 cloud
+// 初始化云开发环境
 cloud.init({
-  // API 调用都保持和云函数当前所在环境一致
-  env: cloud.DYNAMIC_CURRENT_ENV
-})
+  env: cloud.DYNAMIC_CURRENT_ENV // 使用当前云函数所在的环境
+});
 
-/**
- * 这个示例将经自动鉴权过的小程序用户 openid 返回给小程序端
- * 
- * event 参数包含小程序端调用传入的 data
- * 
- */
+// 云函数入口函数
 exports.main = async (event) => {
-  console.log(event)
-   
+  // 输出接收到的小程序端传入的 event 参数，方便调试
+  console.log(event);
 
-  // 可执行其他自定义逻辑
-  // console.log 的内容可以在云开发云函数调用日志查看
+  // 获取微信调用上下文，包括用户的 OPENID 和 APPID
+  const { OPENID } = cloud.getWXContext();
 
-  // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
-   
-  
-  const { OPENID } = cloud.getWXContext()
-  // 如果数据库存在当前用户信息--登录
-  // 初始化集合
-  const db = cloud.database()
-  var data = {
-    _openid : OPENID
+  // 初始化数据库操作对象
+  const db = cloud.database();
+
+  // 构造要返回的数据对象，包含用户的 OPENID
+  const data = {
+    _openid: OPENID
   };
-  return {data:data}
-  // 新增数据
- 
-   
-}
+
+  // 返回包含用户 OPENID 的数据对象给小程序端
+  return { data };
+};

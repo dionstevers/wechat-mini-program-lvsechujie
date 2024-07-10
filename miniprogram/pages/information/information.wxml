@@ -1,32 +1,35 @@
 <!--pages/information/information.wxml-->
-<view wx:if="{{isInMaintenance}}" class="page-background">
-<view style="font-family: 'Times New Roman', Times, serif; color: white; margin-top: 400rpx;text-align: center;">
-  页面维护中
-</view>
-</view>
-<view wx:if="{{!isInMaintenance}}"  class="page-background" style="background: {{background}};">
-  <view class="page-introduction" style="font-family: 'Times New Roman', Times, serif;">
-    为您提供最新的环境资讯和政策信息
+<block wx:if="{{isFromShareTimeline}}">
+  <view class="page-background">
+    <image class="QRcode" src="https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313"></image>
   </view>
+</block>
 
-  <!-- 测试用按钮 -->
-  <!-- <button bindtap="debugGenerateArticle" style="background-color: #ffffff; color: #000000;">测试: 生成文章</button> -->
+<block wx:else>
+  <view class="page-background" style="background: {{background}};">
+    <view class="page-introduction" style="font-family: 'Times New Roman', Times, serif;">
+      为您提供最新的环境资讯和政策信息
+    </view>
 
-  <view>
-    <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
-    <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}">
-      <view class="image-con">
-        <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />
-      </view>
-      <text class="info-con">{{item.date}} | {{item.author}}</text>
+    <!-- 测试用按钮 -->
+    <!-- <button bindtap="debugGenerateArticle" style="background-color: #ffffff; color: #000000;">测试: 生成文章</button> -->
 
-      <view class="preview-con">
-        <view class="title">{{item.title}}</view>
-        <view class="dislike" wx:if="{{item.author !== '碳行家' && !item.isUnread}}">
-          <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}" data-author="{{item.author}}"></image>
+    <view>
+      <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
+        <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}">
+          <view class="image-con">
+            <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />
+          </view>
+          <text class="info-con">{{item.date}} | {{item.author}}</text>
+
+          <view class="preview-con">
+            <view class="title">{{item.title}}</view>
+            <view class="dislike" wx:if="{{item.author !== '碳行家' && !item.isUnread}}">
+              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}" data-author="{{item.author}}"></image>
+            </view>
+          </view>
         </view>
       </view>
     </view>
-    </view>
   </view>
-</view>
+</block>

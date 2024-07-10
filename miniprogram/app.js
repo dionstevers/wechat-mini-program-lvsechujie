@@ -1,9 +1,7 @@
 //app.js
 
 App({
-
   onLaunch: function () {
- 
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
@@ -13,11 +11,8 @@ App({
       })
     }
 
-    this.globalData = {}
-    
   },
   onShow:function(e){
-
     console.log('event',e)
     this.globalData.shareTicket = e.shareTicket
     console.log('the share ticket is ', e.shareTicket)
@@ -54,7 +49,7 @@ App({
   globalData: {
     userInfo: null,
     openID: null,
-    backgroundColorStyle: null,
+    backgroundColorStyle: 'CYAN', // 默认青色背景
     shareTicket: null
   }
 })

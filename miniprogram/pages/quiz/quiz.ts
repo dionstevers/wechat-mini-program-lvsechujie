@@ -21,10 +21,7 @@ Page({
 
   // 页面加载时触发
   onLoad(option) {
-    updateColor();
-
     // 从数据库中获取题目、选项和提示内容，然后更新data中的相应字段
-    
     this.getDataFromDatabase();
     this.setData({
       openID : app.globalData.openID,
@@ -123,6 +120,11 @@ Page({
         mask: true
       })
     }
+  },
+
+  onShow() {
+    // 更新颜色
+    updateColor();
   },
 
   // 显示提示按钮触发的事件处理函数

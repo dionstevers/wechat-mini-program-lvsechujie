@@ -9,12 +9,13 @@ Page({
     background: null
   },
   onLoad(){
-    updateColor();
-
     this.getLotteryInfo()
     this.getMerchData()
   },
   onShow(){
+    // 更新颜色
+    updateColor();
+    
     this.getLotteryInfo()
   },
   navigateToLottery: function() {

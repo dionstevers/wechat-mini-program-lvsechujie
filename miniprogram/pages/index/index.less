@@ -36,31 +36,7 @@
 
 /* 修改按钮样式，将动画应用到每个按钮 */
 .register-button {
-  background-color: #ff0000;
-  color: #fff;
-  font-size: 20px;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  opacity: 0; /* 初始不可见 */
-  animation: button-fly-in 0.5s ease forwards;
-}
-.login-button {
-  background-color: #007AFF;
-  color: #fff;
-  font-size: 20px;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  opacity: 0; /* 初始不可见 */
-  animation: button-fly-in 0.5s ease forwards;
-}
-.visitor-button {
-  background-color: #48a4e0;
+  background-color: #1e5999;
   color: #fff;
   font-size: 20px;
   padding: 15px 30px;
@@ -73,13 +49,63 @@
 }
 
 .login-button {
-  animation-delay: 0.5s; /* 延迟登录按钮的动画 */
+  background-color: #2dcfd4;
+  color: #fff;
+  font-size: 20px;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  opacity: 0; /* 初始不可见 */
+  animation: button-fly-in 0.5s ease forwards;
+}
+
+.visitor-button {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background-color: #42a6d4;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  opacity: 0;
+  animation: button-fly-in 0.5s ease forwards;
+  max-width: 150px;
+}
+
+.delete-button {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background-color: #f12c12;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  opacity: 0;
+  animation: button-fly-in 0.5s ease forwards;
+  max-width: 150px;
 }
 
 .register-button {
-  animation-delay: 1s; /* 延迟注册按钮的动画 */
+  animation-delay: 0.25s;
+}
+
+.login-button {
+  animation-delay: 0.5s;
 }
 
 .visitor-button {
-  animation-delay: 1.5s; /* 延迟注册按钮的动画 */
+  animation-delay: 1.0s;
+}
+
+
+.delete-button {
+  animation-delay: 1.25s;
 }

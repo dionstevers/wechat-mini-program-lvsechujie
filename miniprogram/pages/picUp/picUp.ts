@@ -130,7 +130,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    updateColor();
   },
 
   /**
@@ -143,6 +142,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    // 更新颜色
+    updateColor();
+
     this.setData({
       userInfo: app.globalData.userInfo
     })
