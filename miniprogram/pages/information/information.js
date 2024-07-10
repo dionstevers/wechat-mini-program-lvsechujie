@@ -14,7 +14,7 @@ Page({
     background: null,
 
     /** 是否从朋友圈转发进入 */
-    isFromShareTimeline: false,
+    isFromShareTimeline: true,
 
     /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
@@ -673,9 +673,6 @@ Page({
   async onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
-      this.setData({
-        isFromShareTimeline: true
-      });
       wx.navigateTo({
         url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
         success: () => {
@@ -684,8 +681,11 @@ Page({
           });
         }
       })
-
       return;
+    } else {
+      this.setData({
+        isFromShareTimeline: false
+      });
     }
 
     // 游客登录初始化

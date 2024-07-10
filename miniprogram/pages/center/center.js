@@ -12,7 +12,7 @@ Page({
    */
 
   data: {
-    isFromShareTimeline: false,
+    isFromShareTimeline: true,
     credit: 0,
     percent : 0,
     background: null,
@@ -179,9 +179,6 @@ Page({
 
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
-      this.setData({
-        isFromShareTimeline: true
-      });
       wx.navigateTo({
         url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
         success: () => {
@@ -190,6 +187,10 @@ Page({
           });
         }
       })
+    } else {
+      this.setData({
+        isFromShareTimeline: false
+      });
     }
   },
 

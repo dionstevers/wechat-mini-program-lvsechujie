@@ -143,11 +143,6 @@ Component({
         .select('.ec-canvas')
         .fields({ node: true, size: true })
         .exec(res => {
-          // HSUAN-KAI LIAO 添加：防止wx:if的报错
-          if (!res[0]) {
-            return
-          }
-
           const canvasNode = res[0].node
           this.canvasNode = canvasNode
 

@@ -13,7 +13,7 @@ Page({
     testGroup: null,
     colorStyle: null,
     background: null,
-    isFromShareTimeline: false,
+    isFromShareTimeline: true,
     users: [],
     recordStatus: false,
     btnClass: "btn btn-default",
@@ -832,9 +832,6 @@ Page({
   onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
-      this.setData({
-        isFromShareTimeline: true
-      });
       wx.navigateTo({
         url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
         success: () => {
@@ -843,6 +840,10 @@ Page({
           });
         }
       })
+    } else {
+      this.setData({
+        isFromShareTimeline: false
+      });
     }
   },
 
