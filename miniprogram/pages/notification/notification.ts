@@ -123,20 +123,18 @@ Page({
   },
 
   submitMessage() {
+    const db = wx.cloud.database();
     const { type, message, openID } = this.data;
-
     if (!type || !message) {
       wx.showToast({
-        title: 'Please fill in all fields',
+        title: '请完整填写',
         icon: 'none'
       });
       return;
     }
-
     wx.requestSubscribeMessage({
-      tmplIds: ['0E8lHFKjSYWUJMA9NB7iKEFnTWwg3ivKOS8XTXrOKRU','5wXvMNdaUfyr5TP_XsMxUeI4waBCtaPo_MRaJK6PkbQ'],
+      tmplIds: ['wMLq-UxGYlMV9gp9UjaV3y4mjXtzerIVkMswu9BPNwM'],
       success: (res) => {
-        const db = wx.cloud.database();
         db.collection('messages').add({
           data: {
             type,
@@ -147,24 +145,11 @@ Page({
             response: "" // Set response to empty string for newly submitted messages
           }
         }).then(dbRes => {
-          wx.showToast({
-            title: 'Message sent',
-            icon: 'success'
-          });
-
-          // Call cloud function to send the initial notification
-          wx.cloud.callFunction({
-            name: 'sendNotification',
-            data: {
-              messageID: dbRes._id,
-              stage: 0, // Indicate this is the initial message creation stage
-            }
-          }).then(cloudRes => {
-            console.log('Initial notification sent', cloudRes);
-          }).catch(cloudErr => {
-            console.error('Error sending initial notification', cloudErr);
-          });
-
+          wx.showModal({
+            title:'发送成功',
+            content:'客服回复将在服务通知与消息中心处同步显示，请注意查收',
+            showCancel:false
+            })
           this.setData({
             type: "",
             message: ""
