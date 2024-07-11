@@ -4,7 +4,7 @@ import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
 import { updateUserData, onCheckSignIn } from "../../utils/login";
 import { updateColor } from "../../utils/colorschema";
-import {GetDistance} from '../../utils/homeUtils'
+import {GetDistance} from '../../utils/distance'
 const app = getApp();
 
 Page({
