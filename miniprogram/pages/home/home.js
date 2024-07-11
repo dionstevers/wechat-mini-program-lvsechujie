@@ -4,6 +4,7 @@ import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
 import { updateUserData, onCheckSignIn } from "../../utils/login";
 import { updateColor } from "../../utils/colorschema";
+import {GetDistance} from '../../utils/homeUtils'
 const app = getApp();
 
 Page({
@@ -229,7 +230,7 @@ Page({
       })
       .get();
     const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
-    return this.GetDistance(triplet[0], triplet[1], mlat, mlng);
+    return GetDistance(triplet[0], triplet[1], mlat, mlng);
   },
   // Find the closest aqi base station
   async findClosest(triplet) {
@@ -277,7 +278,7 @@ Page({
             let dist = 0;
             for (let j in item.record) {
               if (j == 0) continue;
-              dist += _this.GetDistance(
+              dist += GetDistance(
                 item.record[j - 1]["points"].latitude,
                 item.record[j - 1]["points"].longitude,
                 item.record[j]["points"].latitude,
@@ -370,7 +371,7 @@ Page({
             let dist = 0;
             for (let j in item.record) {
               if (j == 0) continue;
-              dist += _this.GetDistance(
+              dist += GetDistance(
                 item.record[j - 1]["points"].latitude,
                 item.record[j - 1]["points"].longitude,
                 item.record[j]["points"].latitude,
@@ -633,7 +634,7 @@ Page({
               let dist = 0;
               for (let j in res.data.record) {
                 if (j == 0) continue;
-                dist += _this.GetDistance(
+                dist += GetDistance(
                   res.data.record[j - 1].points.latitude,
                   res.data.record[j - 1].points.longitude,
                   res.data.record[j].points.latitude,
@@ -784,16 +785,7 @@ Page({
     if (num <= 0) return 0;
     return Math.round((num / 1000) * 100) / 100;
   },
-  GetDistance: function (lat1, lng1, lat2, lng2) {
-    let radLat1 = (lat1 * Math.PI) / 180.0;
-    let radLat2 = (lat2 * Math.PI) / 180.0;
-    let a = radLat1 - radLat2;
-    let b = (lng1 * Math.PI) / 180.0 - (lng2 * Math.PI) / 180.0;
-    let s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
-    s = s * 6378.137; // EARTH_RADIUS;
-    s = Math.round(s * 10000) / 10000;
-    return s;
-  },
+
 
   // Travel mode selection
   bindPickerChange: function (e) {
@@ -908,7 +900,7 @@ Page({
                     wx.request({
                       url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
                       success: async function (res) {
-                        console.log(res.data.location[0]);
+                        console.log('测试数据==',res.data.location[0]);
                         let city_id = res.data.location[0].id;
                         let city_name = res.data.location[0].adm2 + res.data.location[0].name;
                         wx.request({

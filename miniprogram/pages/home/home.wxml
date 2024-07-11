@@ -116,7 +116,7 @@
     <modal title="出行方式" confirm-text="确定" cancel-text="取消" hidden="{{transporModalHidden}}" bindconfirm="transporModalConfirm" bindcancel="transporModalCancel" class="modal">
       <view class="picklist">
         <checkbox-group bindchange="bindPickerChange">
-            <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="{{item.value}}">
+            <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="value">
               <view class="weui-cell__hd">
                 <checkbox value="{{item.value}}" checked="{{item.checked}}"/>
               </view>
@@ -127,7 +127,7 @@
       <view class="purpose">出行目的</view>
       <view class="picklist">
         <checkbox-group bindchange="bindPurposeChange">
-            <label class="weui-cell weui-check__label" wx:for="{{purposes}}" wx:key="{{item.value}}">
+            <label class="weui-cell weui-check__label" wx:for="{{purposes}}" wx:key="value">
               <view class="weui-cell__hd">
                 <checkbox value="{{item.value}}" checked="{{item.checked}}"/>
               </view>
