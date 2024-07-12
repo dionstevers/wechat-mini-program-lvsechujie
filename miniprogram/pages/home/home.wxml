@@ -76,11 +76,13 @@
           <view class="title">时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
             <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
           </view>
-          <view class="content">出行目的：<text>{{ item.purpose}}</text></view>
+          <view class="content">出行目的：<text>{{ item.purpose }}</text></view>
           <view class="content">
             时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
           <view class="content">省碳量：{{item.carbSum}} g</view>
+          <!-- <view class="point" wx:if="{{!item.purpose}}"></view> -->
         </view>
+
       </view>
 
       <view class="legend">低碳排行榜</view>
@@ -138,4 +140,5 @@
     </modal>
   </view>
   <van-dialog id="van-dialog" custom-class="home-dialog" />
+
 </block>

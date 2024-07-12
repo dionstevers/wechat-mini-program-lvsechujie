@@ -1,0 +1,146 @@
+export default {
+  mysaving: 0,
+  myranking: "未上榜",
+  testGroup: null,
+  colorStyle: null,
+  background: null,
+  isFromShareTimeline: true,
+  users: [],
+  recordStatus: false,
+  btnClass: "btn btn-default",
+  todayRecordList: [],
+  isRecordEmpty: true,
+  userInfo: null,
+  // Temporary record information
+  startTime: 0,
+  endTime: 0,
+  duration: 0,
+  // User data
+  brand: "",
+  model: "",
+  system: "", //Phone OS
+  version: "", //WeChat version
+  platform: "",
+  curID: "",
+  transport: "步行",
+  transportList: ["步行或骑行", "公共交通", "电动汽车", "燃油汽车"],
+  purpose: [],
+  // purposes: [
+  //   {
+  //     value: "上班",
+  //     name: "上班"
+  //   },
+  //   {
+  //     value: "上学",
+  //     name: "上学"
+  //   },
+  //   {
+  //     value: "吃饭",
+  //     name: "吃饭"
+  //   },
+  //   {
+  //     value: "其他",
+  //     name: "其他"
+  //   }
+  // ],
+
+  purposes: [
+    {
+      value: "通勤",
+      name: "通勤"
+    },
+    {
+      value: "休闲娱乐",
+      name: "休闲娱乐"
+    },
+    {
+      value: "医疗健康",
+      name: "医疗健康"
+    },
+    {
+      value: "旅游",
+      name: "旅游"
+    },
+    {
+      value: "其他",
+      name: "其他"
+    }
+  ],
+  endTransportList: [
+    {
+      value: "步行",
+      name: "步行"
+    },
+    {
+      value: "自行车(共享单车)",
+      name: "自行车(共享单车)"
+    },
+    {
+      value: "电动自行车",
+      name: "电动自行车"
+    },
+    {
+      value: "公交车",
+      name: "公交车"
+    },
+    {
+      value: "驾驶/乘坐燃油汽车",
+      name: "驾驶/乘坐燃油汽车"
+    },
+    {
+      value: "驾驶/乘坐电动汽车",
+      name: "驾驶/乘坐电动汽车"
+    },
+    {
+      value: "地铁",
+      name: "地铁"
+    },
+    {
+      value: "高铁",
+      name: "高铁"
+    }
+  ],
+  index: 0,
+  endIndex: 0,
+  defaultIndex: 0,
+  capacity: 0,
+  capacityList: ["1", "2", "3", "4", "5+"],
+  // isFront: true,
+  aqi: "",
+  name: "",
+  category: "",
+  transporModalHidden: true,
+  // capacityModalHidden: true,
+  speedBtwwon: [
+    {
+      label: "步行/跑步",
+      min: 0,
+      max: 2.78
+    },
+    {
+      label: "骑行",
+      min: 2.78,
+      max: 5.56
+    },
+    {
+      label: "汽车(市区)",
+      min: 5.56,
+      max: 13.89
+    },
+    {
+      label: "汽车(高速公路)",
+      min: 22.22,
+      max: 33.33
+    },
+    {
+      label: "公交车（市区）",
+      min: 4.17,
+      max: 8.33
+    },
+    {
+      label: "公交车（长途）",
+      min: 16.67,
+      max: 25
+    }
+  ]
+};

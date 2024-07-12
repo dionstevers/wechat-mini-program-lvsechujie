@@ -1,6 +1,6 @@
-function GetDistance(lat1, lng1, lat2, lng2) {
+export function getDistance(lat1, lng1, lat2, lng2) {
   // 将经纬度从度数转换为弧度
-  const toRadians = (degree) => (degree * Math.PI) / 180.0;
+  const toRadians = degree => (degree * Math.PI) / 180.0;
 
   // 地球半径，单位为千米
   const EARTH_RADIUS = 6378.137;
@@ -20,4 +20,8 @@ function GetDistance(lat1, lng1, lat2, lng2) {
 
   return parseFloat(distance);
 }
-export {GetDistance}
+
+export function roundToKM(num) {
+  if (num <= 0) return 0;
+  return Math.round((num / 1000) * 100) / 100;
+}

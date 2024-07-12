@@ -13,7 +13,7 @@
 
       <swiper class="tab-right" vertical="true" autoplay="true" circular="true" interval="2000">
 
-        <block wx:for='{{luckylist}}'>
+        <block wx:for='{{luckylist}}' wx:key="value">
           <swiper-item>
             <view class='content-item'>
               <view class="time">{{item.time}}</view>
@@ -39,7 +39,7 @@
  <view class="detail"><text>京东E卡\n20元</text></view> -->
 
 
-    <view class="detail" wx:for="{{prizeList}}">
+    <view class="detail" wx:for="{{prizeList}}" wx:key="value">
       <text>{{fn.formatText(item.show_title)}}</text>
     </view>
 
