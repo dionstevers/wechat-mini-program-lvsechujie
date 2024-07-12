@@ -1,4 +1,5 @@
 // pages/detail/detail.ts
+import { onCheckSignIn } from '../../utils/login'
 import { updateColor } from '../../utils/colorschema'
 const app = getApp()
 
@@ -10,7 +11,6 @@ Page({
   data: {
     link: '',
     articleType: null,
-    openid: '',
     openTime:'',
     userInfo:''
   },
@@ -18,19 +18,20 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(option){
-    const link = option.link
-    const articleType = option.articleType
+  onLoad: function(options){
+    const link = options.link
+    const articleType = options.articleType
+    const scrollAmount = options.scrollAmount
     const openTime  = new Date()
     this.setData({
       link: link,
       articleType: articleType,
-      openid: app.globalData.openID,
+      scrollAmount: scrollAmount,
       openTime: openTime,
       userInfo: app.globalData.userInfo
     })
 
-    console.log('the link is ', link, '\nthe article type is ', articleType)
+    console.log('the link is: ', link, '\nthe article type is: ', articleType, '\nthe scroll amount is: ', scrollAmount)
   },
 
   /**
@@ -66,8 +67,8 @@ Page({
     const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     // 更新本地readAmount
-    if (this.data.articleType !== -1){   
-      if (localArticleRecommend !== "") {
+    if (onCheckSignIn()){   
+      if (localArticleRecommend !== "" && this.data.articleType !== -1) {
         localArticleRecommend.readAmount[this.data.articleType] += Math.floor(timeDifference / 1000); // 阅读时间单位为：秒
         wx.setStorageSync('articleRecommend', localArticleRecommend)
       }
@@ -79,7 +80,8 @@ Page({
         data:{
           startTime: startTime,
           endTime: endTime,
-          link: this.data.link
+          link: this.data.link,
+          scrollAmount: this.data.scrollAmount
         }
       })
   

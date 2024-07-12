@@ -100,7 +100,7 @@ Page({
     const db = wx.cloud.database();
 
     // 未注册用户没有articleRecommend
-    if (!this.data.userInfo && !isForced) {
+    if (!onCheckSignIn() && !isForced) {
       return;
     }
 
@@ -467,13 +467,14 @@ Page({
     logEvent('Read Article')
     const author = e.currentTarget.dataset.author
     const link = e.currentTarget.dataset.link
-    
+    const scrollAmount = `<${this.data.articleShowList.findIndex(item => item.link === link) + 1}TH> IN <TOTAL: ${this.data.articleShowList.length + 1}>`;
+
     // 导航到对应链接
     wx.navigateTo({
-      url:`/pages/detail/detail?link=${link}&articleType=${this.data.articleTypes[author]}`,
+      url:`/pages/detail/detail?link=${link}&articleType=${this.data.articleTypes[author]}&scrollAmount=${scrollAmount}`,
       success: () => {
         // 未注册用户直接返回
-        if (!this.data.userInfo && !isForced) {
+        if (!onCheckSignIn()) {
           return;
         }
 
@@ -568,15 +569,15 @@ Page({
     // 异步处理数据初始化录入
     const initialize = async () => {
       try {
+        // 未登录用户直接返回
+        if (!onCheckSignIn()) {
+          return;
+        }
+
         // 加载用户测试组数据
         this.setData({
           testGroup: this.data.userInfo.testGroup
         });
-
-        // 未登录用户直接返回
-        if (!this.data.userInfo) {
-          return;
-        }
 
         // 初始化页面数据
         await this.fetchCloudData(false)
@@ -816,7 +817,7 @@ Page({
   /**
    * 测试用生成文章
    */
-  debugGenerateArticle() {
-    this.getArticles(1);
-  },
+  // debugGenerateArticle() {
+  //   this.getArticles(1);
+  // },
 })
