@@ -19,6 +19,10 @@ Page({
       console.log('sharedFromID', options.sharedFromID)
       
       try{
+        //get user location and ip
+        await wx.cloud.callFunction({
+          name: 'getUserip'
+        })
         const res = await wx.cloud.callFunction({ name: 'login' });
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
