@@ -27,9 +27,16 @@
       <template is="function-item" wx:for="{{functionList}}" wx:index="i" wx:key="i" data="{{...item}}"></template>
     </view>
 
-    <view class='progress-con'>抽奖积分 ： {{credit}}
-      <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" />
+    <view class='progress-con'>节省碳排 ： {{carbSavings}} g 
+      <!-- <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" /> -->
     </view>
+    <!-- <view class="progress-con">
+      <view class="points-container">
+        <text class="left-text">抽奖积分：{{credit}}</text>
+        <text class="right-text">总省碳量：{{carbSavings}}</text>
+      </view>
+    </view> -->
+
 
     <view class="heat-title">
       一周出行分析 ：

@@ -14,6 +14,7 @@ Page({
   data: {
     isFromShareTimeline: true,
     credit: 0,
+    carbSavings:0,
     percent : 0,
     background: null,
     ec: {
@@ -40,24 +41,31 @@ Page({
     CoinRatio: 0,
 
   },
+  // updateCredit(){
+  //   const db = wx.cloud.database()
+  //   db.collection('lottery').where({
+  //     _openid : this.data.openID
+  //   }).watch({
+  //     onChange:(snapshot) =>{
+  //       console.log('query result snapshot after the event', snapshot.docs[0])
+  //         this.setData({
+  //           credit : snapshot.docs[0].credit,
+  //           percent: Math.floor(snapshot.docs[0].credit/1.5)
+  //         })
+  //     },
+  //     onError:(err)=>{
+  //       console.log(err)
+  //     }
+  //   })
+  // },
   updateCredit(){
-    const db = wx.cloud.database()
-    db.collection('lottery').where({
-      _openid : this.data.openID
-    }).watch({
-      onChange:(snapshot) =>{
-        console.log('query result snapshot after the event', snapshot.docs[0])
-          this.setData({
-            credit : snapshot.docs[0].credit,
-            percent: Math.floor(snapshot.docs[0].credit/1.5)
-          })
-      },
-      onError:(err)=>{
-        console.log(err)
-      }
+    const info  = getApp().globalData.userInfo
+    console.log('info of user', info)
+    console.log('user Carb sum', info.carbSum)
+    this.setData({
+      carbSavings: info.carbSum
     })
   },
-
   editProfile(){
     onCheckSignIn({
       success : () => {
@@ -166,6 +174,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    
     // 页面交互设置
     wx.showShareMenu({
       withShareTicket:true,
@@ -191,6 +200,7 @@ Page({
       this.setData({
         isFromShareTimeline: false
       });
+      
     }
   },
 
@@ -205,6 +215,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
       return;
@@ -215,6 +226,7 @@ Page({
 
     // 检查登录状态
     updateUserData();
+    
     onCheckSignIn({
       message : '请您登录',
       success : () => {
