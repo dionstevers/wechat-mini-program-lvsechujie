@@ -7,7 +7,6 @@ ec-canvas {
 
 
 .avatar-con {
-  // width: 600rpx;
   height: 200rpx;
   // background-color: wheat;
   position: relative;
@@ -29,8 +28,8 @@ ec-canvas {
     top: 50rpx;
     left: 70rpx;
   }
-  .avatarImg{
-     
+
+  .avatarImg { 
     height: 120rpx;
     width: 120rpx;
     line-height: 120rpx;
@@ -46,6 +45,7 @@ ec-canvas {
     top: 50rpx;
     left: 70rpx;
   }
+
   .avatar-name {
     position: absolute;
     top: 60rpx;
@@ -60,6 +60,25 @@ ec-canvas {
     top: 120rpx;
     left: 220rpx;
     font-size: 28rpx;
+  }
+
+  .auto-login {
+    position: absolute;
+    top: 69rpx;
+    right: 75rpx;
+    text-align: center;
+
+    .icon {
+      width: 40rpx;
+      height: 40rpx;
+    }
+
+    .text {
+      margin-top: 3rpx;
+      color: rgb(201, 201, 201);
+      font-size: 28rpx;
+      text-align: center;
+    }
   }
 }
 
@@ -81,11 +100,27 @@ ec-canvas {
   }
 }
 
-.progress-con {
-  margin: 20rpx 70rpx;
+.progress-con-title {
+  margin: 40rpx 70rpx 0;
   color: white;
   font-size: 30rpx;
   font-weight: bold;
+}
+
+.progress-con {
+  height: 60rpx;
+  margin: 20rpx 70rpx;
+  border-radius: 20rpx;
+  color: white;
+  font-size: 26rpx;
+  text-align: center;
+  line-height: 65rpx;
+  background-color: #00000031;
+
+  .bold-text {
+    font-weight: bold;
+    color: #25e78c;
+  }
 
   .progress-notice {
     color: rgb(201, 201, 201);

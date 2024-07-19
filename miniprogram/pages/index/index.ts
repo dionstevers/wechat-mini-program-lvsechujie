@@ -58,9 +58,9 @@ Page({
    */
   onReady(){
     // TODO: 切换自动登录
-    if (this.data.AUTOLOGIN) {
-      this.isFetchingUserInfo = true;
-      this.onHandleSignIn(true);
+    let localAutoLogin = wx.getStorageSync('autoLogin');
+    if (localAutoLogin) {
+      this.HandleSignIn();
     }
   },
 
@@ -175,6 +175,10 @@ Page({
 
   // 游客登陆
   onVisitorEnter() {
+    if (this.isFetchingUserInfo || this.isNavigating) {
+      return;
+    }
+
     this.isNavigating = true;
         wx.showToast({ 
         title:'游客登录中',
@@ -191,6 +195,10 @@ Page({
 
   // 删除账户
   onDeleteAccount(){
+    if (this.isFetchingUserInfo || this.isNavigating) {
+      return;
+    }
+
     wx.showModal({
       title:'请您确认',
       content:'点击确认按钮注销小程序，反之请点击取消',

@@ -10,7 +10,12 @@
       <image class="avatar" src="{{userInfo.avatar}}"></image>
       <view class='avatar-name'>{{userInfo.basicInfo.nickname}}</view>
       <view class='avatar-info'>即刻开启你的低碳之旅</view>
+      <view class="auto-login" bind:tap="toggleAutoLogin">
+        <image class="icon" src= "{{isAutoLogin ? '../../asset/img/check-active.png' : '../../asset/img/check-inactive.png'}}" />
+        <view class="text">自动登录</view>
+      </view>
     </view>
+    
     <view class="avatar-con" wx:else>
       <view class='avatar' bind:tap="editProfile">WX</view>
       <view class='avatar-name' bind:tap="login">登录/注册</view>
@@ -27,7 +32,12 @@
       <template is="function-item" wx:for="{{functionList}}" wx:index="i" wx:key="i" data="{{...item}}"></template>
     </view>
 
-    <view class='progress-con'>节省碳排 ： {{carbSavings}} g 
+    <view class="progress-con-title">
+      总计节省碳排 ：
+    </view>
+
+    <view class='progress-con'>
+      您节省了 🌱 <text class='bold-text'>{{carbSavings}}</text> 克碳排放
       <!-- <progress percent="{{percent}}" show-info stroke-width="14rpx" activeColor="#00ffb9" backgroundColor="#6b7578" active="true" border-radius="20rpx" font-size="36rpx" /> -->
     </view>
     <!-- <view class="progress-con">

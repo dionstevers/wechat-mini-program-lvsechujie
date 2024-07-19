@@ -10,9 +10,9 @@ Page({
   /**
    * 页面的初始数据
    */
-
   data: {
     isFromShareTimeline: true,
+    isAutoLogin: false,
     credit: 0,
     carbSavings:0,
     percent : 0,
@@ -63,9 +63,10 @@ Page({
     console.log('info of user', info)
     console.log('user Carb sum', info.carbSum)
     this.setData({
-      carbSavings: info.carbSum
+      carbSavings: info.carbSum.toFixed(3) // 保留三位小数
     })
   },
+
   editProfile(){
     onCheckSignIn({
       success : () => {
@@ -87,6 +88,21 @@ Page({
         })
       }
     }) 
+  },
+
+  toggleAutoLogin() {
+    let localAutoLogin = wx.getStorageSync('autoLogin');
+    if (localAutoLogin !== ""){
+      wx.setStorageSync('autoLogin', !localAutoLogin)
+      this.setData({
+        isAutoLogin: !localAutoLogin,
+      })
+    } else {
+      wx.setStorageSync('autoLogin', true)
+      this.setData({
+        isAutoLogin: true,
+      })
+    }
   },
   
   initChart() {
@@ -162,6 +178,13 @@ Page({
     if (!this.initData.executed) {
       this.updateCredit();
       this.initChart();
+
+      let localAutoLogin = wx.getStorageSync('autoLogin');
+      if (localAutoLogin !== ""){
+        this.setData({
+          isAutoLogin: localAutoLogin,
+        })
+      }
 
       this.initData.executed = true;
       console.log("center页面初始化成功！");
