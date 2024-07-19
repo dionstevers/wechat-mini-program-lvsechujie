@@ -371,6 +371,47 @@ Page({
       }
     }
 
+    // 上传用户此次推荐的 features 到云端
+    const db = wx.cloud.database()
+    try {
+      db.collection('recommendFeatures').add({
+        data:{
+          rawFeatures : {
+            clickFrequency: Object.entries(this.data.articleTypes)
+                                  .reduce((acc, [key, value]) => (
+                                    value >= 0 ? (acc[key] = frequencyScore[value], acc) : acc
+                                  ), {}),
+            readDuration: Object.entries(this.data.articleTypes)
+                                .reduce((acc, [key, value]) => (
+                                  value >= 0 ? (acc[key] = readAmount[value], acc) : acc
+                                ), {}),
+            dislikeCount: Object.entries(this.data.articleTypes)
+                                .reduce((acc, [key, value]) => (
+                                  value >= 0 ? (acc[key] = dislikeCount[value], acc) : acc
+                                ), {}),
+            versionImpact: versionEffect.includes(1) ? Object.keys(this.data.articleTypes).find(
+                              key => this.data.articleTypes[key] === versionEffect.indexOf(1)
+                            ) : null
+          },
+          engineeredFeatures: {
+            frequencyDistribution_normalized: nFrequencyScore,
+            readDistribution_normalized: nReadAmount,
+            dislikeCount_minorDifference: minorDislikeCount,
+            versionEffect_oneHotEncoded: versionEffect
+          },
+          probabilityDistribution: Object.entries(this.data.articleTypes)
+                                         .reduce((acc, [key, value]) => (
+                                          value >= 0 ? (acc[key] = probabilities[value], acc) : acc
+                                         ), {}),
+          recommendedType: Object.keys(this.data.articleTypes).find(key => this.data.articleTypes[key] === pickedType),
+          time : new Date()
+        }
+      })
+    } catch(err) {
+      console.log("无法上传用户的推荐Features", err)
+    }
+
+    // 返回生成的文章类型
     return pickedType;
   },
 
@@ -817,7 +858,7 @@ Page({
   /**
    * 测试用生成文章
    */
-  // debugGenerateArticle() {
-  //   this.getArticles(1);
-  // },
+  debugGenerateArticle() {
+    this.getArticles(1);
+  },
 })

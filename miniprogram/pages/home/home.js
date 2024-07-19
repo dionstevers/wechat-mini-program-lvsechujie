@@ -279,14 +279,8 @@ Page({
         });
       }
     }
-    if (_this.data.userInfo != null) return;
-    wx.showModal({
-      title: "您尚未注册/登录",
-      content: "请先注册/登录并同意隐私条款",
-      success(res) {
-        if (!res.confirm) return;
-        wx.navigateTo({ url: "../login/login" });
-      }
+    onCheckSignIn({
+      message : "请先注册/登录并同意隐私条款"
     });
   },
   // 记录前隐私调用准备
