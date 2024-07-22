@@ -72,7 +72,7 @@
       </view>
 
       <view class="list">
-        <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
+        <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}" bindtap="onClickTrackCard">
           <view class="title">时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
             <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
           </view>
@@ -80,7 +80,17 @@
           <view class="content">
             时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
           <view class="content">省碳量：{{item.carbSum}} g</view>
-          <!-- <view class="point" wx:if="{{!item.purpose}}"></view> -->
+          <view class="point" wx:if="{{!item.purpose.length || showPoint}}"></view>
+        </view>
+
+        <view wx:if="{{!!showSchedules.length}}">
+          <view class="heat-title">
+            本次出行分析：
+          </view>
+
+          <view class="chart">
+            <view wx:for="{{showSchedules}}" wx:key="value" class="{{'chart-item ' + item.color}}" style="width: {{ item.percentage }}">{{ item.label + item.totalTime + 'min' }}</view>
+          </view>
         </view>
 
       </view>
@@ -112,30 +122,30 @@
         </block>
       </view>
     </view>
-    
+
 
 
     <modal title="出行方式" confirm-text="确定" cancel-text="取消" hidden="{{transporModalHidden}}" bindconfirm="transporModalConfirm" bindcancel="transporModalCancel" class="modal">
       <view class="picklist">
         <checkbox-group bindchange="bindPickerChange">
-            <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="value">
-              <view class="weui-cell__hd">
-                <checkbox value="{{item.value}}" checked="{{item.checked}}"/>
-              </view>
-              <view class="weui-cell__bd">{{item.name}}</view>
-            </label>
-          </checkbox-group>
+          <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="value">
+            <view class="weui-cell__hd">
+              <checkbox value="{{item.value}}" checked="{{item.checked}}" />
+            </view>
+            <view class="weui-cell__bd">{{item.name}}</view>
+          </label>
+        </checkbox-group>
       </view>
       <view class="purpose">出行目的</view>
       <view class="picklist">
         <checkbox-group bindchange="bindPurposeChange">
-            <label class="weui-cell weui-check__label" wx:for="{{purposes}}" wx:key="value">
-              <view class="weui-cell__hd">
-                <checkbox value="{{item.value}}" checked="{{item.checked}}"/>
-              </view>
-              <view class="weui-cell__bd">{{item.name}}</view>
-            </label>
-          </checkbox-group>
+          <label class="weui-cell weui-check__label" wx:for="{{purposes}}" wx:key="value">
+            <view class="weui-cell__hd">
+              <checkbox value="{{item.value}}" checked="{{item.checked}}" />
+            </view>
+            <view class="weui-cell__bd">{{item.name}}</view>
+          </label>
+        </checkbox-group>
       </view>
     </modal>
   </view>

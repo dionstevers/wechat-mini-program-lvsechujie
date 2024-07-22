@@ -25,25 +25,6 @@ export default {
   transport: "步行",
   transportList: ["步行或骑行", "公共交通", "电动汽车", "燃油汽车"],
   purpose: [],
-  // purposes: [
-  //   {
-  //     value: "上班",
-  //     name: "上班"
-  //   },
-  //   {
-  //     value: "上学",
-  //     name: "上学"
-  //   },
-  //   {
-  //     value: "吃饭",
-  //     name: "吃饭"
-  //   },
-  //   {
-  //     value: "其他",
-  //     name: "其他"
-  //   }
-  // ],
-
   purposes: [
     {
       value: "通勤",
@@ -111,7 +92,7 @@ export default {
   category: "",
   transporModalHidden: true,
   // capacityModalHidden: true,
-  speedBtwwon: [
+  speedBetween: [
     {
       label: "步行/跑步",
       min: 0,
@@ -141,6 +122,27 @@ export default {
       label: "公交车（长途）",
       min: 16.67,
       max: 25
+    },
+    {
+      label: "地铁",
+      min: 8.33,
+      max: 16.67
+    },
+    {
+      label: "高铁",
+      min: 55.56,
+      max: 111.11
     }
-  ]
+  ],
+
+  schedules: [
+    { label: "步行", color: "walk", totalTime: 0 },
+    { label: "骑行", color: "cycling", totalTime: 0 },
+    { label: "开车", color: "drive", totalTime: 0 },
+    { label: "公交", color: "bus", totalTime: 0 },
+    { label: "地铁", color: "subway", totalTime: 0 },
+    { label: "高铁", color: "train", totalTime: 0 }
+  ],
+  showSchedules: [],
+  showPoint: false
 };

@@ -1,7 +1,7 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/information/information",  
+    "pages/information/information",
     "pages/login/login",
     "pages/home/home",
     "pages/center/center",
@@ -11,16 +11,14 @@
     "pages/myprize/myprize",
     "pages/privacy/privacy",
     "pages/picUp/picUp",
-    "pages/detail/detail", 
+    "pages/detail/detail",
     "pages/quiz/quiz",
     "pages/notification/notification",
     "pages/prizeCenter/prizeCenter",
     "pages/merchDetail/merchDetail",
-    "pages/test/test",    
-    "pages/aboutus/aboutus"
-
-
-
+    "pages/test/test",
+    "pages/aboutus/aboutus",
+    "pages/track/track"
   ],
   "tabBar": {
     "list": [
@@ -57,20 +55,23 @@
     "backgroundTextStyle": "dark"
   },
   "sitemapLocation": "sitemap.json",
-  "style":"v2",
+  "style": "v2",
   "permission": {
     "scope.userLocation": {
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
-  "requiredBackgroundModes": ["location"],
-  "embeddedAppIdList": ["wxebadf544ddae62cb"],
+  "requiredBackgroundModes": [
+    "location"
+  ],
+  "embeddedAppIdList": [
+    "wxebadf544ddae62cb"
+  ],
   "requiredPrivateInfos": [
     "onLocationChange",
     "startLocationUpdateBackground",
     "getLocation",
     "startLocationUpdate"
   ],
-  "useExtendedLib": {
-  }
+  "useExtendedLib": {}
 }

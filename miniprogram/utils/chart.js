@@ -1,6 +1,6 @@
-import * as echarts from "../asset/ec-canvas/echarts"
-import { getWeekRange } from "../utils/time"
-function initChart(canvas, width, height, dpr) {
+import * as echarts from "../asset/ec-canvas/echarts";
+import { getWeekRange } from "../utils/time";
+export function initChart(canvas, width, height, dpr) {
   const chart = echarts.init(canvas, null, {
     width: width,
     height: height,
@@ -13,30 +13,31 @@ function initChart(canvas, width, height, dpr) {
   var { firstDayOfWeek } = getWeekRange();
 
   wx.cloud.callFunction({
-    name: 'login',
-    success: async (id_res) => {
+    name: "login",
+    success: async id_res => {
       const userOpenId = id_res.result.data._openid;
       try {
         var f = new Date(firstDayOfWeek),
-        a = $.dateFromString({
-          dateString: f.toJSON()
-        });
-        const result = await db.collection('track')
+          a = $.dateFromString({
+            dateString: f.toJSON()
+          });
+        const result = await db
+          .collection("track")
           .aggregate()
           .addFields({
             matched: $.gte(["$endTime", a])
           })
           .match({
             _openid: userOpenId,
-            matched:true
+            matched: true
           })
-          .unwind('$transport')
+          .unwind("$transport")
           .group({
-            _id: '$transport',
+            _id: "$transport",
             count: $.sum(1)
           })
           .end();
-        console.log('result of query',result)        
+        console.log("result of query", result);
         let walking = 0;
         let cycling = 0;
         let pub_transit = 0;
@@ -54,61 +55,64 @@ function initChart(canvas, width, height, dpr) {
         });
 
         var option = {
-          backgroundColor: 'rgba(0, 0, 0, 0)',
+          backgroundColor: "rgba(0, 0, 0, 0)",
           legend: {
-            orient: 'vertical',
-            x: 'left',
-            data: ['步行', '骑行', '公交', '开车'],
+            orient: "vertical",
+            x: "left",
+            data: ["步行", "骑行", "公交", "开车"],
             textStyle: {
-              color: '#ffffff'
+              color: "#ffffff"
             }
           },
-          series: [{
-            label: {
-              show: false,
-              position: 'center'
-            },
-            labelLine: {
-              show: false
-            },
-            avoidLabelOverlap: false,
-            emphasis: {
+          series: [
+            {
               label: {
-                show: true,
-                fontSize: '20',
-                fontWeight: 'bold',
-                fontColor: '#ffffff',
-                formatter: '{b} : {c}'
-              }
-            },
-            type: 'pie',
-            center: ['50%', '50%'],
-            radius: ['60%', '90%'],
-            data: [{
-              value: walking,
-              name: '步行'
-            }, 
-            {
-              value: cycling,
-              name: '骑行'
-            },
-            {
-              value: pub_transit,
-              name: '公交'
-            }, {
-              value: driving,
-              name: '开车'
-            }]
-          }]
+                show: false,
+                position: "center"
+              },
+              labelLine: {
+                show: false
+              },
+              avoidLabelOverlap: false,
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: "20",
+                  fontWeight: "bold",
+                  fontColor: "#ffffff",
+                  formatter: "{b} : {c}"
+                }
+              },
+              type: "pie",
+              center: ["50%", "50%"],
+              radius: ["60%", "90%"],
+              data: [
+                {
+                  value: walking,
+                  name: "步行"
+                },
+                {
+                  value: cycling,
+                  name: "骑行"
+                },
+                {
+                  value: pub_transit,
+                  name: "公交"
+                },
+                {
+                  value: driving,
+                  name: "开车"
+                }
+              ]
+            }
+          ]
         };
 
         chart.setOption(option);
       } catch (error) {
-        console.error('Error getting transportation data:', error);
+        console.error("Error getting transportation data:", error);
       }
     }
   });
   return chart;
 }
-
-export {initChart}

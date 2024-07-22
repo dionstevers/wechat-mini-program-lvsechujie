@@ -1,0 +1,65 @@
+<!--pages/track/track.wxml-->
+
+<view class="page-background" style="background: {{background}} ; font-family:'Times New Roman', Times, serif;" >
+  <wxs src="./track.wxs" module="m1"></wxs>
+
+<view wx:if="{{todayRecordList.length}}">
+
+    <view class="tab-title">
+            您今日的上一条出行记录
+          </view>
+  <view class="list">
+            <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
+          <view class="title">时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
+            <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
+          </view>
+          <view class="content">出行目的：<text>{{ item.purpose }}</text></view>
+          <view class="content">
+            时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
+          <view class="content">省碳量：{{item.carbSum}} g</view>
+        </view>
+        </view>
+        </view>
+
+              <view class="tab-title">
+            待处理异常记录
+          </view>
+
+  <view class="list">
+            <view wx:for="{{abnormals}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(abnormals,i)}}" 
+            data-item="{{item}}"
+            bindtap="onClickTrackCard">
+          <view class="title">时长 <text>{{ m1.convertStamp(item.endTime-item.date, "duration") }} </text> ·
+            <text>{{ item.distance > 0 ? item.distance : '未知' }} </text> km · {{ item.transport}}
+          </view>
+          <view class="content">出行目的：<text>{{ item.purpose }}</text></view>
+          <view class="content">
+            时间：<text>{{ m1.convertStamp(item.date) }} - {{ m1.convertStamp(item.endTime) }}</text></view>
+          <view class="content">省碳量：{{item.carbSum}} g</view>
+        </view>
+        </view>
+
+            <modal title="出行方式" confirm-text="确定" cancel-text="取消" hidden="{{transporModalHidden}}" bindconfirm="transporModalConfirm" bindcancel="transporModalCancel" class="modal">
+      <view class="picklist">
+        <checkbox-group bindchange="bindPickerChange">
+          <label class="weui-cell weui-check__label" wx:for="{{endTransportList}}" wx:key="value">
+            <view class="weui-cell__hd">
+              <checkbox value="{{item.value}}" checked="{{item.checked}}" />
+            </view>
+            <view class="weui-cell__bd">{{item.name}}</view>
+          </label>
+        </checkbox-group>
+      </view>
+      <view class="purpose">出行目的</view>
+      <view class="picklist">
+        <checkbox-group bindchange="bindPurposeChange">
+          <label class="weui-cell weui-check__label" wx:for="{{purposes}}" wx:key="value">
+            <view class="weui-cell__hd">
+              <checkbox value="{{item.value}}" checked="{{item.checked}}" />
+            </view>
+            <view class="weui-cell__bd">{{item.name}}</view>
+          </label>
+        </checkbox-group>
+      </view>
+    </modal>
+</view>
