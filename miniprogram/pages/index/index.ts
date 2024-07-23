@@ -15,7 +15,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-      try{
+      try {
         // get user location and ip
         await wx.cloud.callFunction({
           name: 'getUserip'
@@ -26,16 +26,13 @@ Page({
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
 
-        // share app message
-        // check if the sharedFromid is null
-        // If the sender document does not exist, create it
+        // share app message: Check if the sharedFromid is null, if the sender document does not exist, create it
         const sharedFromid = options.sharedFromID
         console.log('sharedFromID', options.sharedFromID)
         if(!sharedFromid){
           console.log('no share user')
-          return;
-        }else{
-          try{
+        } else { 
+          try {
             wx.cloud.callFunction({
               name:'netCreate',
               data:{
@@ -46,10 +43,23 @@ Page({
                 console.log(res)
               }
             })
-          }catch(err){console.log(err)}
-         
+          } catch(err) {
+            console.log(err)
+          }
         }
-      
+
+        // 文章分享跳转和自动登录
+        if (options.isFromArticleShared) {
+          wx.navigateTo({
+            url: `/pages/detail/detail?sharedFromID=${sharedFromid}&link=${options.articleLink}&articleType=${options.articleType}`,
+          })
+        } else {
+          let localAutoLogin = wx.getStorageSync('autoLogin');
+          if (localAutoLogin) {
+            this.HandleSignIn();
+          }
+        }
+
       }catch(err){
         console.log(err)
       } 
@@ -59,11 +69,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady(){
-    // TODO: 切换自动登录
-    let localAutoLogin = wx.getStorageSync('autoLogin');
-    if (localAutoLogin) {
-      this.HandleSignIn();
-    }
+
   },
 
   // record share relations
@@ -221,7 +227,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    console.log('index page showing up')
+    console.log('index page showing up');
   },
 
   /**
@@ -259,7 +265,7 @@ Page({
     logEvent("Share App")
     return {
       title: "快来一起低碳出街~",
-      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])

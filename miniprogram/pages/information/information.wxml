@@ -16,7 +16,7 @@
 
     <view>
       <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
-        <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}">
+        <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}" data-imgsrc="{{item.imgSrc}}">
           <view class="image-con">
             <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />
           </view>

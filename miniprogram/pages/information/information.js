@@ -508,11 +508,12 @@ Page({
     logEvent('Read Article')
     const author = e.currentTarget.dataset.author
     const link = e.currentTarget.dataset.link
+    const imgSrc = e.currentTarget.dataset.imgsrc
     const scrollAmount = `<${this.data.articleShowList.findIndex(item => item.link === link) + 1}TH> IN <TOTAL: ${this.data.articleShowList.length + 1}>`;
 
     // 导航到对应链接
     wx.navigateTo({
-      url:`/pages/detail/detail?link=${link}&articleType=${this.data.articleTypes[author]}&scrollAmount=${scrollAmount}`,
+      url:`/pages/detail/detail?articleType=${this.data.articleTypes[author]}&scrollAmount=${scrollAmount}&link=${link}&imgSrc=${imgSrc}`,
       success: () => {
         // 未注册用户直接返回
         if (!onCheckSignIn()) {
