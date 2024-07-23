@@ -830,7 +830,7 @@ Page({
     return{
       title:'有意思的低碳知识，尽在碳行家～',
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      query:`sharedFromID=${this.data.openID}&isFromShareTimeline=true`,
+      query:`sharedFromID=${app.globalData.openID}&isFromShareTimeline=true`,
       success: function(res){
         console.log(res)
       },fail: function (res){console.log(res)}
@@ -844,7 +844,7 @@ Page({
     logEvent('Share App')
     return {
       title: "有意思的低碳知识，尽在碳行家～",
-      path:"/pages/index/index?id=" + this.data.openid,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])

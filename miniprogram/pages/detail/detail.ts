@@ -1,6 +1,7 @@
 // pages/detail/detail.ts
 import { onCheckSignIn } from '../../utils/login'
 import { updateColor } from '../../utils/colorschema'
+import { logEvent } from '../../utils/log'
 const app = getApp()
 
 Page({
@@ -10,7 +11,7 @@ Page({
    */
   data: {
     link: '',
-    articleType: null,
+    articleType: -1,
     openTime:'',
     userInfo:''
   },
@@ -32,28 +33,6 @@ Page({
     })
 
     console.log('the link is: ', link, '\nthe article type is: ', articleType, '\nthe scroll amount is: ', scrollAmount)
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-    // 更新颜色
-    updateColor();
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-   
   },
 
   /**
@@ -86,7 +65,7 @@ Page({
       })
   
       // 信息激励强国版用户增加测试题 -- canceled now
-      if (this.data.userInfo.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION && localArticleRecommend.infoGroup === 2) {
+      if (onCheckSignIn() && this.data.userInfo.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION && localArticleRecommend.infoGroup === 2) {
         // wx.navigateTo({
         //   url: '/pages/quiz/quiz?link=' + this.data.link,
         // })
@@ -111,10 +90,11 @@ Page({
   },
 
   /**
-   * 页面相关事件处理函数--监听用户下拉动作
+   * 生命周期函数--监听页面显示
    */
-  onPullDownRefresh() {
-
+  onShow() {
+    // 更新颜色
+    updateColor();
   },
 
   /**
@@ -124,10 +104,18 @@ Page({
 
   },
 
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage() {
-
+    logEvent('Share App')
+    return {
+      title: "有意思的低碳知识，尽在碳行家~",
+      path:`/pages/detail/detail?sharedFromID=${app.globalData.openid}&link=${this.data.link}`,
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function(res){
+        console.log(res.shareTickets[0])
+      },
+      fail:function(res){
+        console.log('share failed')
+      }
+    }
   }
 })

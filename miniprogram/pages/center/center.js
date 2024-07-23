@@ -288,7 +288,7 @@ Page({
     return{
       title:'省碳领现金，快来试试吧～',
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      query:`sharedFromID=${this.data.openID}&isFromShareTimeline=true`,
+      query:`sharedFromID=${app.globalData.openID}&isFromShareTimeline=true`,
       success: function(res){
         console.log(res)
       },fail: function (res){console.log(res)}
@@ -302,7 +302,7 @@ Page({
     logEvent('Share App')
     return {
       title: "省碳得现金，就用碳行家~",
-      path:"/pages/index/index?id=" + this.data.openID,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])

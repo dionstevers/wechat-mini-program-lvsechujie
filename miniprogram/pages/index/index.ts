@@ -1,3 +1,4 @@
+import { logEvent } from "../../utils/log"
 import { onHandleSignIn } from "../../utils/login"
 
 // pages/index/index.ts
@@ -14,20 +15,23 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    // share app message
-      const sharedFromid = options.sharedFromID
-      console.log('sharedFromID', options.sharedFromID)
-      
       try{
-        //get user location and ip
+        // get user location and ip
         await wx.cloud.callFunction({
           name: 'getUserip'
         })
+
+        // Set user's openID
         const res = await wx.cloud.callFunction({ name: 'login' });
         this.setData({ openID: (res.result as {data?:any}).data._openid });
         app.globalData.openID = (res.result as {data?:any}).data._openid;
-        // now include sharedFromid upload
-        if(sharedFromid==null){
+
+        // share app message
+        // check if the sharedFromid is null
+        // If the sender document does not exist, create it
+        const sharedFromid = options.sharedFromID
+        console.log('sharedFromID', options.sharedFromID)
+        if(!sharedFromid){
           console.log('no share user')
           return;
         }else{
@@ -45,8 +49,6 @@ Page({
           }catch(err){console.log(err)}
          
         }
-        // check if the sharedFromid is null
-        // If the sender document does not exist, create it
       
       }catch(err){
         console.log(err)
@@ -254,9 +256,10 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
+    logEvent("Share App")
     return {
       title: "快来一起低碳出街~",
-      path:"/pages/index/index?id=" + this.data.openID,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])

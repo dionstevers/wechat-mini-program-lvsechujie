@@ -1,5 +1,6 @@
 const { updateColor } = require("../../utils/colorschema")
 const { onHandleSignIn } = require("../../utils/login")
+const { logEvent } = require("../../utils/log")
 const app = getApp()
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 Page({
@@ -10,8 +11,6 @@ Page({
   data: {
     avatarUrl: defaultAvatarUrl,
     carSelected: false,
-    _id: null,
-    openID: null,
     userInfo: null,
     dobarr: ["18-23岁","24-29岁","30-39岁","40-49岁","50-59","60岁及以上"],
     occupationArr: ["学生","事业单位工作人员","党政机关工作人员", "国有企业员工", "外资企业雇员", "民营企业雇员", "私企或个体经营户", "体力工人", "自由职业者", "商业，服务从业者","退休"],
@@ -226,7 +225,7 @@ Page({
           testGroup: testGroup,
         }
         //set globalData
-        app.globalData.userInfo  = userInfo;
+        app.globalData.userInfo = userInfo;
 
         if(res.result && typeof res.result === 'object' && 'success' in res.result){
             if(res.result.success){
@@ -249,5 +248,18 @@ Page({
     updateColor();
   },
 
-
+  onShareAppMessage() {
+    logEvent("Share App")
+    return {
+      title: "快来一起低碳出街~",
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function(res){
+        console.log(res.shareTickets[0])
+      },
+      fail:function(res){
+        console.log('share failed')
+      }
+    }
+  }
 })

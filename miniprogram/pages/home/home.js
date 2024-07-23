@@ -819,8 +819,12 @@ Page({
 
   onShareAppMessage() {
     logEvent("Share App");
-    return this.shareCommon();
+    return {
+      ...this.shareCommon(),
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+    }
   },
+  
   onClickTrackCard() {
     wx.navigateTo({ url: "/pages/track/track" });
   }

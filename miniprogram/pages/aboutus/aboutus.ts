@@ -1,8 +1,9 @@
 
+// pages/aboutus/aboutus.ts
+import { logEvent } from '../../utils/log'
 import { hexMD5 } from '../../utils/md5.js';
 import { updateColor } from '../../utils/colorschema'
-// pages/survey/survey.ts
-export{}
+
 const app = getApp()
 Page({
   /**
@@ -69,10 +70,18 @@ Page({
 
   },
 
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage() {
-
+    logEvent('Share App')
+    return {
+      title: "快来一起低碳出行~",
+      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function(res){
+        console.log(res.shareTickets[0])
+      },
+      fail:function(res){
+        console.log('share failed')
+      }
+    }
   }
 })
