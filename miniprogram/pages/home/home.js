@@ -821,7 +821,7 @@ Page({
     logEvent("Share App");
     return {
       ...this.shareCommon(),
-      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
     }
   },
   

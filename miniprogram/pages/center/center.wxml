@@ -53,7 +53,7 @@
     </view>
 
     <view class="heat-con">
-      <ec-canvas type="2d" class="container" id="mychart-dom-area" canvas-id="mychart-dom-area" ec="{{ec}}" wx:if="{{userInfo}}"> </ec-canvas>
+      <ec-canvas force-use-old-canvas="true" type="2d" id="mychart-dom-area" canvas-id="mychart-dom-area" ec="{{ec}}" wx:if="{{userInfo}}"> </ec-canvas>
     </view>
 
     <view class='menu-bar' bindtap='onSurvey'>关于我们</view>

@@ -1,9 +1,8 @@
 // pages/center/center.ts
 import { logEvent } from '../../utils/log';
-import * as echarts from "../../asset/ec-canvas/echarts"
 import { updateUserData, onCheckSignIn } from '../../utils/login'
 import { updateColor } from '../../utils/colorschema'
-import {initChart} from '../../utils/chart'
+import { initChart } from '../../utils/chart'
 const app = getApp();
 Page({
 
@@ -105,39 +104,35 @@ Page({
     }
   },
   
-  initChart() {
-    let chart;
-    if (this.randerComponent) {
+  // initChart() {
+  //   let chart;
+  //   if (this.randerComponent) {
+  //     this.randerComponent.init((canvas, width, height, dpr) => {
+  //       const getPixelRatio = () => {
+  //         let dpr = 0;
+  //         wx.getSystemInfo({
+  //           success: function (res) {
+  //             dpr = res.pixelRatio
+  //             console.log('dpr =  ', dpr)
+  //           },
+  //           fail: function () {
+  //             dpr = 2
+  //           }
+  //         })
+  //         return dpr
+  //       }
 
-      this.randerComponent.init((canvas, width, height, dpr) => {
-        const getPixelRatio = () => {
-          let dpr = 0;
-          wx.getSystemInfo({
-            success: function (res) {
-              dpr = res.pixelRatio
-              console.log('dpr =  ', dpr)
-            },
-            fail: function () {
-              dpr = 2
-            }
-          })
-          return dpr
-        }
-
-        chart = echarts.init(canvas, null, {
-          width: width,
-          height: height,
-          devicePixelRatio: getPixelRatio(),
-        });
-        setChartOption(chart);
-        this.chart = chart;
-        return chart
-      })
-    }
-  },
-  dealer() {
-    return;
-  },
+  //       chart = echarts.init(canvas, null, {
+  //         width: width,
+  //         height: height,
+  //         devicePixelRatio: getPixelRatio(),
+  //       });
+  //       setChartOption(chart);
+  //       this.chart = chart;
+  //       return chart
+  //     })
+  //   }
+  // },
 
   onTapFunction(e) {
     onCheckSignIn({
@@ -157,12 +152,20 @@ Page({
     })
   },
 
+  /**
+   * 处理touchmove事件
+   */
+  dealer() {
+    return;
+  },
+
   onSurvey(e) {
     logEvent('About Us')
     wx.navigateTo({
       url: '/pages/aboutus/aboutus',
     })
   },
+  
   onPrivacy(e) {
     logEvent('Privacy Statement')
     wx.navigateTo({
@@ -177,7 +180,7 @@ Page({
   initData() {
     if (!this.initData.executed) {
       this.updateCredit();
-      this.initChart();
+      // this.initChart();
 
       let localAutoLogin = wx.getStorageSync('autoLogin');
       if (localAutoLogin !== ""){
@@ -227,18 +230,11 @@ Page({
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
       return;
@@ -257,27 +253,13 @@ Page({
       }
     });
 
-    // 页面显示更新
+    // 更新页面
     this.randerComponent = this.selectComponent('#mychart-dom-area');
     wx.setNavigationBarTitle({
       title: '碳行家｜个人主页'
     }) 
 
     logEvent('Center Page')
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload(){
-
   },
 
   /**
@@ -302,7 +284,7 @@ Page({
     logEvent('Share App')
     return {
       title: "省碳得现金，就用碳行家~",
-      path:`/pages/index/index?sharedFromID=${app.globalData.openid}`,
+      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       success: function(res){
         console.log(res.shareTickets[0])
