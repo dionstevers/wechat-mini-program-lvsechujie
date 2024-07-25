@@ -33,57 +33,8 @@ Page({
   // Show carbon footprint savings in database top_n
   // Import the function that gets the week range
 
-  // Function to update the weekly ranking
-  async updateWeeklyRanking() {
-    const { firstDayOfWeek } = getWeekRange();
-    const $ = db.command.aggregate;
-    const _ = db.command;
-    try {
-      const ranking = await db
-        .collection("track")
-        .aggregate()
-        .addFields({ matched: $.gte(["$endTime", $.dateFromString({ dateString: new Date(firstDayOfWeek).toJSON() })]) })
-        // Filter documents where 'matched' is true
-        .match({ matched: true })
-        .group({ _id: "$_openid", totalCarbSum: $.sum("$carbSum") })
-        .sort({ totalCarbSum: -1 })
-        .limit(10)
-        .end();
-      console.log("the ranking", ranking);
 
-      // Now, fetch user details from the userInfo collection for the top users
-      const topUserOpenIds = ranking.list.map(item => item._id);
-      const userDetails = await db
-        .collection("userInfo")
-        .where({ _openid: _.in(topUserOpenIds) })
-        .get();
-      console.log("the users", userDetails);
-      // Combine user details with their total carb sums
-      const rankedUsers = userDetails.data.map(user => {
-        const userAggregate = ranking.list.find(agg => agg._id === user._openid);
-        return {
-          ...user,
-          totalCarbSum: Math.ceil(userAggregate ? userAggregate.totalCarbSum : 0),
-          rank: topUserOpenIds.indexOf(user._openid) + 1
-        };
-      });
-      console.log("the ranked users", rankedUsers);
-      // Optionally sort by rank (if needed, since they should already be in order)
-      rankedUsers.sort((a, b) => a.rank - b.rank);
-
-      this.setData({ users: rankedUsers });
-      const currentUser = rankedUsers.find(user => user._openid === app.globalData.openID);
-      if (currentUser) {
-        this.setData({ mysaving: currentUser.totalCarbSum, myranking: currentUser.rank });
-      } else {
-        this.setData({ mysaving: "<1", myranking: "未上榜" });
-      }
-      return rankedUsers;
-    } catch (error) {
-      console.error("Error updating weekly ranking:", error);
-      throw error;
-    }
-  },
+  
   // Calculate the distance from aqi base station
   async calcDist(triplet, i) {
     const { data } = await db.collection("monitor").where({ POI_ID: triplet[2][i].id }).get();
@@ -605,40 +556,12 @@ Page({
     }
   },
 
-  // 小程序初始化生命周期
-  onLoad(options) {
-    // 当程序切换到后台时触发
-    // TODO 待确定是否可用？
-    //wx.onAppHide(this.onHide);
-
-    // 转发朋友圈链接，导航到登录页面
-    if (options.isFromShareTimeline) {
-      wx.navigateTo({
-        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
-        success: () => this.setData({ isFromShareTimeline: false })
-      });
-    } else {
-      this.setData({ isFromShareTimeline: false });
-    }
-  },
-
-  onShow() {
-    // 朋友圈进来则不显示
-    if (this.data.isFromShareTimeline) return;
-
-    // 更新颜色
-    updateColor();
-    // 检查登录状态
-    updateUserData();
-    onCheckSignIn({ message: "请您登录", success: () => this.initData() });
-    logEvent("Home Page");
-    wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
-  },
+ 
 
   async reloadData() {
     const _ = db.command;
     const _this = this;
-    this.updateWeeklyRanking();
+    // this.updateWeeklyRanking();
 
     const res = await wx.getSystemInfo();
 
@@ -653,11 +576,12 @@ Page({
     const settingRes = await wx.getSetting();
     if (settingRes.authSetting["scope.userLocationBackground"]) {
       const sendParams = await this.setWeather();
-      wx.cloud.callFunction({
-        name: "addLocation",
-        data: { sendParams },
-        fail: err => console.log("error==", err)
-      });
+      // canceled geolocation function
+      // wx.cloud.callFunction({
+      //   name: "addLocation",
+      //   data: { sendParams },
+      //   fail: err => console.log("error==", err)
+      // });
     } else {
       Dialog.confirm({
         title: "提示",
@@ -695,7 +619,65 @@ Page({
     if (!prevTracking && _this.data.recordStatus) _this.keepTracking();
   },
 
-  // 获取温度并设置空气质量
+ // 小程序初始化生命周期
+ onLoad(options) {
+  // 当程序切换到后台时触发
+  // TODO 待确定是否可用？
+  //wx.onAppHide(this.onHide);
+
+  // 转发朋友圈链接，导航到登录页面
+  if (options.isFromShareTimeline) {
+    wx.navigateTo({
+      url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
+      success: () => this.setData({ isFromShareTimeline: false })
+    });
+  } else {
+    this.setData({ isFromShareTimeline: false });
+  }
+},
+
+  onShow() {
+    // 朋友圈进来则不显示
+    if (this.data.isFromShareTimeline) return;
+ 
+    // 更新颜色
+    updateColor();
+    // update the carbon ranking
+    
+    // 检查登录状态
+    updateUserData();
+    onCheckSignIn({ message: "请您登录", success: () => this.initData() });
+    logEvent("Home Page");
+    wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
+    this.updateWeeklyRanking();
+  },
+
+ // Function to update the weekly ranking
+  async updateWeeklyRanking() {
+      const { firstDayOfWeek } = getWeekRange();
+      try {
+        const result = await wx.cloud.callFunction({
+          name: 'updateweeklyranking',
+          data: { firstDayOfWeek }
+        });
+        const rankedUsers = result.result.rankedUsers;
+    
+        this.setData({ users: rankedUsers });
+        const currentUser = rankedUsers.find(user => user._openid === app.globalData.openID);
+        if (currentUser) {
+          this.setData({ mysaving: currentUser.totalCarbSum, myranking: currentUser.rank });
+        } else {
+          this.setData({ mysaving: "<1", myranking: "未上榜" });
+        }
+        return rankedUsers;
+      } catch (error) {
+        console.error("Error updating weekly ranking:", error);
+      }
+    },
+
+  // set geolocation, air quality index , and weather
+  // cloud function call : getlocation, setweather 
+
   setWeather() {
     return new Promise((resolve, reject) => {
       wx.getLocation({
@@ -740,9 +722,6 @@ Page({
     });
   },
   
-  
-
-
   // four functions below are dedicated for sharing 
   shareCommon() {
     return {

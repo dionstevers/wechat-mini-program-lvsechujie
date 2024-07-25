@@ -1,5 +1,5 @@
 // cloudfunctions/setWeather/index.js
-
+// this function sets api and weather index
 const cloud = require('wx-server-sdk');
 const axios = require('axios');
 
