@@ -1,4 +1,5 @@
 // pages/home/home.ts
+// TODO: refactor the page, move the database operations to backend
 import Dialog from "@vant/weapp/dialog/dialog";
 import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
@@ -627,11 +628,9 @@ Page({
 
     // 更新颜色
     updateColor();
-
     // 检查登录状态
     updateUserData();
     onCheckSignIn({ message: "请您登录", success: () => this.initData() });
-
     logEvent("Home Page");
     wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
   },
@@ -698,103 +697,53 @@ Page({
 
   // 获取温度并设置空气质量
   setWeather() {
-    const _this = this
-    return new Promise((resove, reject) => {
+    return new Promise((resolve, reject) => {
       wx.getLocation({
         type: "gcj02",
-        success(loc) {
-          let latitude = loc.latitude.toFixed(2);
-          let longitude = loc.longitude.toFixed(2);
-          console.log("Location: ", longitude, latitude);
-          console.log(loc.speed, "speed");
-
-          wx.request({
-            url: "https://geoapi.qweather.com/v2/city/lookup?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
-            success: async function (res) {
-              let city_id = res.data.location[0].id;
-              let city_name = res.data.location[0].adm2 + res.data.location[0].name;
-              wx.request({
-                url: "https://devapi.qweather.com/v7/air/now?key=df35576dc85c4dd19641b86b91b48190&location=" + city_id,
-                success: async function (res) {
-                  let new_category = "";
-                  let new_aqi = 0;
-                  const airQuality = res.data.now.aqi;
-
-                  // 处理空气质量数据
-                  new_aqi = Math.min(
-                    Math.round(
-                      Math.max(
-                        (airQuality * 50) / 12,
-                        ((airQuality - 12) * 50) / 13.5,
-                        ((airQuality - 35.5) * 50) / 20,
-                        ((airQuality - 55.5) * 50) / 95,
-                        airQuality - 0 + 50
-                      ),
-                      500
-                    )
-                  );
-                  new_category =
-                    new_aqi <= 50
-                      ? "优" //
-                      : new_aqi <= 100
-                      ? "良"
-                      : new_aqi <= 150
-                      ? "轻度污染"
-                      : new_aqi <= 200
-                      ? "中度污染"
-                      : new_aqi <= 300
-                      ? "重度污染"
-                      : "严重污染";
-
-                  _this.setData({
-                    name: city_name,
-                    aqi: res.data.now.aqi,
-                    category: res.data.now.category
-                  });
-
-                  wx.request({
-                    url: "https://devapi.qweather.com/v7/weather/now?key=df35576dc85c4dd19641b86b91b48190&location=" + longitude + "," + latitude,
-                    success: async function (weather) {
-                      if (!weather.data.now) return;
-
-                      resove({
-                        openid: app.globalData.openID,
-                        city_name,
-                        latitude,
-                        longitude,
-                        weather: weather.data.now
-                      });
-                    }
-                  });
-                },
-                fail: function (err) {
-                  console.log(err);
-                  reject(err);
-                }
+        success: (loc) => {
+          const latitude = loc.latitude.toFixed(2);
+          const longitude = loc.longitude.toFixed(2);
+          console.log("Location:", longitude, latitude);
+  
+          wx.cloud.callFunction({
+            name: 'setweather',
+            data: { latitude, longitude },
+            success: (res) => {
+              const { cityName, aqi, category, weather } = res.result;
+              this.setData({
+                name: cityName,
+                aqi,
+                category,
+                weather,
+                latitude,
+                longitude,
+              });
+              resolve({
+                openid: app.globalData.openID,
+                cityName,
+                latitude,
+                longitude,
+                weather,
               });
             },
-            fail: function (err) {
-              console.log(err);
+            fail: (err) => {
+              console.error('Error calling cloud function:', err);
               reject(err);
             }
           });
         },
-        fail: function (err) {
-          console.error(err);
+        fail: (err) => {
+          console.error('Error getting location:', err);
           reject(err);
         }
       });
     });
   },
+  
+  
 
 
-  // 小程序隐藏事件
-  //onHide() {
-    //if (!this.data.recordStatus) return;
-    // 结束行程并上传
-    //this.endTrack();
-  //},
-
+  // four functions below are dedicated for sharing 
   shareCommon() {
     return {
       title: "我本周已省碳" + this.data.mysaving + "kg，你也来试试吧！",
