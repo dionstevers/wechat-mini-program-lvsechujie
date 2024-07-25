@@ -97,7 +97,7 @@
 
       <view class="legend">低碳排行榜</view>
       <view class="summary-line">
-        <text>你总共省碳 {{mysaving}} kg</text>
+        <text>你总共省碳 {{mysaving}} g</text>
         <text>排名: {{myranking}}</text>
       </view>
 
@@ -114,7 +114,7 @@
                 </view>
                 <view class="carbon-saving">
                   <text class="stat-label">省碳:</text>
-                  <text class="stat-value">{{item.totalCarbSum}}kg</text>
+                  <text class="stat-value">{{item.totalCarbSum}}g</text>
                 </view>
               </view>
             </view>

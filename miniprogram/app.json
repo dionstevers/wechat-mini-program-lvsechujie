@@ -73,5 +73,13 @@
     "getLocation",
     "startLocationUpdate"
   ],
-  "useExtendedLib": {}
+  
+  "useExtendedLib": {
+  },
+  "plugins": {
+    "tfjsPlugin": {
+      "version": "0.2.0",
+      "provider": "wx6afed118d9e81df9"
+    }
+  }
 }
