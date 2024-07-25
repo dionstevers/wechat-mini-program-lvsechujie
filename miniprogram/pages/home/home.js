@@ -30,39 +30,7 @@ Page({
     this.setData({ endTransportList: reasetEndTransportList, purposes: reasetPurposesList });
   },
 
-  // Show carbon footprint savings in database top_n
-  // Import the function that gets the week range
 
-
-  
-  // Calculate the distance from aqi base station
-  async calcDist(triplet, i) {
-    const { data } = await db.collection("monitor").where({ POI_ID: triplet[2][i].id }).get();
-    const { POI_Latitude: mlat, POI_Longitude: mlng } = data[0];
-    return getDistance(triplet[0], triplet[1], mlat, mlng);
-  },
-  // Find the closest aqi base station
-  async findClosest(triplet) {
-    let closest = -1;
-    let closestDist = -1;
-
-    for (let i = 0; i < triplet[2].length; i++) {
-      const dist = await this.calcDist(triplet, i);
-      if (closest === -1 || dist < closestDist) {
-        closest = i;
-        closestDist = dist;
-      }
-    }
-    return closest;
-  },
-  // Update aqi data
-  updateAQI(res, closest) {
-    this.setData({
-      aqi: res.data.station[closest].aqi,
-      name: res.data.station[closest].name,
-      category: res.data.station[closest].category
-    });
-  },
   // Update the carbon saving list
   async updateCarbon() {
     const _this = this;
