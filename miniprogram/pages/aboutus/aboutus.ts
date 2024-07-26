@@ -18,8 +18,21 @@ Page({
    */
 
  onLoad(option) {
-
+    wx.cloud.callFunction({
+      name: 'testTransfer',
+      data: {
+        money: 5000,
+        _openid: 'oo0IS5owzqLpE1s8rroimwSBvFMk',
+      }
+    }).then(res => {
+      console.log(res.result);
+    }).catch(err => {
+      console.error(err);
+    });
+    
   },
+
+
   
 
   
