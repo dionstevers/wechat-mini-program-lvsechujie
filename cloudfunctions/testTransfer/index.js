@@ -2,45 +2,27 @@ const cloud = require('wx-server-sdk');
 const WechatPay = require('wechatpay-node-v3');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 // Initialize cloud
 cloud.init();
 
-const appid = 'wx501c20d4e2802733';
-const mchid = '1680661471'; // Your merchant ID
-const serialNumber = '5F2866F345F198FEC31F9FFE3C67C29A549A3BC1'; // Your WeChat Pay serial number
-
-// Function to download the key file from WeChat Cloud Storage
-async function downloadFile(cloudPath, localPath) {
-  const res = await cloud.downloadFile({
-    fileID: cloudPath,
-  });
-  fs.writeFileSync(localPath, res.fileContent);
-}
+const appid = 'wx501c20d4e2802733'; 
+const mchid = '1680661471'; // merchant ID
+const serialNumber = '5F2866F345F198FEC31F9FFE3C67C29A549A3BC1'; // WeChat Pay serial number
+const api_key = 'CarbonCleverDukeKunshanCHANGLAB3'
 
 exports.main = async (event, context) => {
   const { money, _openid } = event;
-
-  const keyFilePath = path.join('/tmp', 'apiclient_key.pem');
-  const certFilePath = path.join('/tmp', 'apiclient_cert.pem');
-
-  // Replace these URLs with your actual download links
-  const keyFileUrl = 'cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/certificates/apiclient_key.pem';
-  const certFileUrl = 'cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/certificates/apiclient_cert.pem';
-
-  // Download the keys from the provided URLs
-  await downloadFile(keyFileUrl, keyFilePath);
-  await downloadFile(certFileUrl, certFilePath);
 
   // Initialize WechatPay
   const wechatPayInstance = new WechatPay({
     appid: appid,
     mchid: mchid,
-    privateKey: fs.readFileSync(keyFilePath),
-    serialNumber: serialNumber,
-    certs: {
-      [serialNumber]: fs.readFileSync(certFilePath),
-    },
+    publicKey: fs.readFileSync('./apiclient_cert.pem'), 
+    privateKey: fs.readFileSync('./apiclient_key.pem'),
+    serial_no:serialNumber,
+    key: api_key
   });
 
   const outBatchNo = `batch${Date.now()}`;
@@ -61,15 +43,16 @@ exports.main = async (event, context) => {
     total_num: 1,
     transfer_detail_list: [transferDetail]
   };
-
+  const body = payload;
   const nonce_str = Math.random().toString(36).substr(2, 15);
   const timestamp = parseInt(+new Date() / 1000 + '').toString();
   const url = '/v3/transfer/batches';
 
   // 获取签名
-  const signature = wechatPayInstance.getSignature('POST', url, nonce_str, timestamp, payload);
+  const signature = wechatPayInstance.getSignature('POST', url,  timestamp, nonce_str,body);
   // 获取头部authorization 参数
   const authorization = wechatPayInstance.getAuthorization(nonce_str, timestamp, signature);
+
 
   try {
     const response = await axios.post(`https://api.mch.weixin.qq.com${url}`, payload, {
