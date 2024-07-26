@@ -587,6 +587,16 @@ Page({
     if (!prevTracking && _this.data.recordStatus) _this.keepTracking();
   },
 
+
+
+
+
+
+
+
+// code below are refactored
+
+
  // 小程序初始化生命周期
  onLoad(options) {
   // 当程序切换到后台时触发
