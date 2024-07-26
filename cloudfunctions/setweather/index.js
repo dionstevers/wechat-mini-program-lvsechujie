@@ -21,18 +21,7 @@ exports.main = async (event, context) => {
 
     const airRes = await axios.get(airApiUrl + cityId);
     const airQuality = airRes.data.now.aqi;
-    // let newAqi = Math.min(
-    //   Math.round(
-    //     Math.max(
-    //       (airQuality * 50) / 12,
-    //       ((airQuality - 12) * 50) / 13.5,
-    //       ((airQuality - 35.5) * 50) / 20,
-    //       ((airQuality - 55.5) * 50) / 95,
-    //       airQuality - 0 + 50
-    //     ),
-    //     500
-    //   )
-    // );
+
     let newAqi = airQuality
     let newCategory =
       newAqi <= 50
