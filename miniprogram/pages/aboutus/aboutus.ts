@@ -21,7 +21,7 @@ Page({
     wx.cloud.callFunction({
       name: 'transfer',
       data: {
-        money: 5000,
+        money: 100,
         _openid: 'oo0IS5owzqLpE1s8rroimwSBvFMk',
       }
     }).then(res => {
