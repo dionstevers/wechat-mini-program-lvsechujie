@@ -19,11 +19,42 @@ Page({
    */
 
  onLoad(option) {
-    const _openid = 'oo0IS5owzqLpE1s8rroimwSBvFMk'
+    // AN EXAMPLE FOR USAGE OF TRANSFER API ( CLIENT -SIDE )
+    const _openid = 'oo0IS5owzqLpE1s8rroimwSBvFMk' 
     const money  = 100 
     const batch_name = '低碳奖励金'
     const batch_remark = 'transfer test'
-    transfer(money,_openid,batch_name,batch_remark)
+    
+    transfer({
+      money,
+      _openid,
+      batch_name,
+      batch_remark,
+      success: (result) => {
+        console.log('Transfer successful:', result);
+        wx.showModal({
+          title:'提现成功',
+          content: '恭喜发财，红包拿来',
+          showCancel:false
+        })
+      },
+      failed: (error) => {
+        console.log('Transfer failed:', error);
+        wx.showModal({
+          title:'出问题了',
+          content: error.message,
+          showCancel:false
+        })
+      },
+      error: (err) => {
+        console.log('Error during transfer:', err);
+        wx.showModal({
+          title:'出问题了',
+          content: err.message,
+          showCancel:false
+        })
+      }
+    });
 
     
   },
