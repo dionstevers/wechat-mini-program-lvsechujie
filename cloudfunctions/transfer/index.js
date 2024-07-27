@@ -1,3 +1,21 @@
+// function to send cash to user using wechatpay api v3
+
+
+
+
+// 
+
+//input params：
+
+
+// _openid : unique identifier of user
+// money: the amount of money to send out, unit : cent
+// batch_name: the name appears on the client side of this transaction
+// batch_remark: the name appears on server side of this transaction 
+
+// 
+
+
 const cloud = require('wx-server-sdk');
 const WechatPay = require('wechatpay-node-v3');
 const fs = require('fs');
@@ -13,7 +31,7 @@ const serialNumber='14AD194FC3E19D5A880016589136D98B48A6B5BB'; // WeChat Pay ser
 const api_key = 'CarbonCleverDukeKunshanCHANGLAB3'
 
 exports.main = async (event, context) => {
-  const { money, _openid } = event;
+  const { money, _openid, batch_name, batch_remark} = event;
 
   // Initialize WechatPay
   const wechatPayInstance = new WechatPay({
@@ -32,14 +50,13 @@ exports.main = async (event, context) => {
     transfer_amount: money,
     transfer_remark: 'Test transfer',
     openid: _openid
-    // user_name: '757b340b45ebef5467rter35gf464344v3542sdf4t6re4tb4f54ty45t4yyry45' // Example encrypted user name
   };
 
   const payload = {
     appid: appid,
     out_batch_no: outBatchNo,
-    batch_name: 'Test Batch Transfer',
-    batch_remark: 'Testing batch transfer API',
+    batch_name: batch_name,
+    batch_remark: batch_remark,
     total_amount: money,
     total_num: 1,
     transfer_detail_list: [transferDetail]

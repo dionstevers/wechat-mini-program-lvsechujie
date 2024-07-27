@@ -2,6 +2,7 @@
 // pages/aboutus/aboutus.ts
 import { logEvent } from '../../utils/log'
 import { hexMD5 } from '../../utils/md5.js';
+import { transfer } from '../../utils/transfer'
 import { updateColor } from '../../utils/colorschema'
 
 const app = getApp()
@@ -18,17 +19,12 @@ Page({
    */
 
  onLoad(option) {
-    wx.cloud.callFunction({
-      name: 'transfer',
-      data: {
-        money: 100,
-        _openid: 'oo0IS5owzqLpE1s8rroimwSBvFMk',
-      }
-    }).then(res => {
-      console.log(res.result);
-    }).catch(err => {
-      console.error(err);
-    });
+    const _openid = 'oo0IS5owzqLpE1s8rroimwSBvFMk'
+    const money  = 100 
+    const batch_name = '低碳奖励金'
+    const batch_remark = 'transfer test'
+    transfer(money,_openid,batch_name,batch_remark)
+
     
   },
 
