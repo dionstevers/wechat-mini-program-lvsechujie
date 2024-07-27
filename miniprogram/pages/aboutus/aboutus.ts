@@ -19,7 +19,7 @@ Page({
 
  onLoad(option) {
     wx.cloud.callFunction({
-      name: 'testTransfer',
+      name: 'transfer',
       data: {
         money: 5000,
         _openid: 'oo0IS5owzqLpE1s8rroimwSBvFMk',
