@@ -16,6 +16,7 @@ interface TransferResult {
  * @param _openid OpenID of the recipient.
  * @param batch_name Name of the batch.
  * @param batch_remark Remark for the batch.
+ * @param transfer_remark Remark for the transfer to appear on client side 
  * @param success Callback function for successful transfer.
  * @param fail Callback function for failed transfer.
  * @param error Callback function for error during transfer.
@@ -26,6 +27,7 @@ async function transfer({
   _openid, 
   batch_name, 
   batch_remark, 
+  transfer_remark,
   success, 
   failed, 
   error 
@@ -34,6 +36,7 @@ async function transfer({
   _openid: string; 
   batch_name: string; 
   batch_remark: string; 
+  transfer_remark: string;
   success?: (result: any) => void | Promise<void>; 
   failed?: (error: any) => void | Promise<void>; 
   error?: (err: any) => void | Promise<void>; 
@@ -41,7 +44,7 @@ async function transfer({
   try {
     const result = await wx.cloud.callFunction({
       name: 'transfer',
-      data: { money, _openid, batch_name, batch_remark },
+      data: { money, _openid, batch_name, batch_remark,transfer_remark },
     }) as TransferResult;
 
     if (result.errMsg === "cloud.callFunction:ok") {

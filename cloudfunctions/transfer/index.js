@@ -11,7 +11,8 @@
 // _openid : unique identifier of user
 // money: the amount of money to send out, unit : cent
 // batch_name: the name appears on the client side of this transaction
-// batch_remark: the name appears on server side of this transaction 
+// batch_remark: the name appears on server side of this transaction  , same as transfer remark
+
 
 // 
 
@@ -31,7 +32,7 @@ const serialNumber='14AD194FC3E19D5A880016589136D98B48A6B5BB'; // WeChat Pay ser
 const api_key = 'CarbonCleverDukeKunshanCHANGLAB3'
 
 exports.main = async (event, context) => {
-  const { money, _openid, batch_name, batch_remark} = event;
+  const { money, _openid, batch_name, batch_remark,transfer_remark} = event;
 
   // Initialize WechatPay
   const wechatPayInstance = new WechatPay({
@@ -48,7 +49,7 @@ exports.main = async (event, context) => {
   const transferDetail = {
     out_detail_no: `detail${Date.now()}`,
     transfer_amount: money,
-    transfer_remark: 'Test transfer',
+    transfer_remark: transfer_remark,
     openid: _openid
   };
 
