@@ -13,3 +13,9 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 project.private.config.json
+cloudfunctions/transfer/apiclient_cert.pem
+cloudfunctions/testTransfer/apiclient_key.pem
+cloudfunctions/testTransfer/platform_certificate.pem
+cloudfunctions/testTransfer/apiclient_cert.pem
+cloudfunctions/transfer/platform_certificate.pem
+cloudfunctions/transfer/apiclient_key.pem
