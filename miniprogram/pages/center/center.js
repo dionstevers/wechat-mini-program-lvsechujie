@@ -24,7 +24,7 @@ Page({
     functionList: [{
         functionSrc: '../../asset/img/order_unread.png',
         functionTitle: '低碳问答',
-        url: '../journal/journal?typeq=2'
+        url: '../test/test'
       },
       {
         functionSrc: '../../asset/img/message_unread.png',

@@ -1,21 +1,62 @@
 // pages/test/test.ts
+const app = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    merch_id : 0,
+    code:'ilovecarbonclever',
+    input: null
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    const merch_id = options.merch_id
+
+  },
+  onInput(e){
+    console.log(e.detail.value)
     this.setData({
-      merch_id : merch_id
+      input:e.detail.value
     })
+  },
+  onSubmit(e){
+    const _openid = app.globalData.openID
+    const money  = 100 // 一元
+    const batch_name = '低碳奖励金'
+    const batch_remark = 'transfer test'
+    const transfer_remark = '低碳奖金'
+    if (this.data.code === this.data.input) {
+      wx.cloud.callFunction({
+        name:'transfer',
+        data:{
+          money,
+          _openid,
+          batch_name,
+          batch_remark,
+          transfer_remark,
+        },
+        success:(result)=>{
+          wx.showToast({
+            title:'领取成功',
+            icon:'success'
+          })
+          this.setData({
+            input:''
+          })
+        }
+      })
+    }else{
+      wx.showToast({
+        title:'答案错误',
+        icon: 'error'
+        })
+      this.setData({
+        input: ''
+      })
+    }
   },
 
   /**

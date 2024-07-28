@@ -1,3 +1,11 @@
-<!--pages/test/test.wxml-->
+<!-- pages/test/test.wxml -->
+<view class="page-background">
+  <view class="container">
+    <view class="title">输入口令，领取低碳红包</view>
+    <input class="input-box" placeholder="请输入口令" bindinput="onInput" value="{{input}}" />
+    <button class="submit-button" bindtap="onSubmit">领取红包</button>
+  
+  </view>
+</view>
 
-<web-view src="https://mp001.yaoyaola.net/exapi/check_user/10815051?mp=1&url=/pages/merchDetail/merchDetail?merch_id={{merch_id}}&flag=0"/>
+
