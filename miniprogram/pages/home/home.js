@@ -51,6 +51,9 @@ Page({
     this.updateLottery();
     // 更新用户总省碳量
     this.updateUserInfo(carbon);
+
+
+
   },
 
   // 计算碳总量
@@ -84,39 +87,11 @@ Page({
     return carbon;
   },
 
-  // 更新lottery
-  async updateLottery() {
-    const res = await db.collection("lottery").where({ _openid: app.globalData.openID }).get();
-    const userId = res.data[0]._id;
-    const four = new Date();
-    four.setHours(4, 0, 0, 0);
 
-    const { data: list = [] } =
-      (await db
-        .collection("track")
-        .where({ _openid: app.globalData.openID, date: db.command.gt(four) })
-        .get()) || {};
-
-    if (Array.isArray(list) && list.length) {
-      db.collection("lottery")
-        .doc(userId)
-        // 累加25积分
-        .update({ data: { credit: db.command.inc(25) } });
-    }
-  },
-
-  // 更新个人信息
-  async updateUserInfo(carbon) {
-    const res = await db.collection("userInfo").where({ _openid: app.globalData.openID }).get();
-    const userId = res.data[0]._id;
-
-    db.collection("userInfo")
-      .doc(userId)
-      // 累加省碳
-      .update({ data: { carbSum: db.command.inc(carbon) } });
-  },
 
   // Update recording list 今日出行记录
+
+  
   async setList() {
     let now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -229,9 +204,7 @@ Page({
       if (cnt >= 10) {
         cnt = 0;
         try {
-          await db
-            .collection("track")
-            .doc(this.data.curID)
+          await db.collection("track").doc(this.data.curID)
             .update({
               data: {
                 record: db.command.push({
@@ -490,6 +463,7 @@ Page({
 
           _this.setList();
           _this.updateCarbon();
+          // const carbon  = _this.calcCarbon(res)
           _this.reloadData();
         }
       }
@@ -594,7 +568,7 @@ Page({
 
 
 
-// code below are refactored
+// @DEMI : code below are already refactored by Yuandong
 
 
  // 小程序初始化生命周期
@@ -630,28 +604,7 @@ Page({
     this.updateWeeklyRanking();
   },
 
- // Function to update the weekly ranking
-  async updateWeeklyRanking() {
-      const { firstDayOfWeek } = getWeekRange();
-      try {
-        const result = await wx.cloud.callFunction({
-          name: 'updateweeklyranking',
-          data: { firstDayOfWeek }
-        });
-        const rankedUsers = result.result.rankedUsers;
-    
-        this.setData({ users: rankedUsers });
-        const currentUser = rankedUsers.find(user => user._openid === app.globalData.openID);
-        if (currentUser) {
-          this.setData({ mysaving: currentUser.totalCarbSum, myranking: currentUser.rank });
-        } else {
-          this.setData({ mysaving: "<1", myranking: "未上榜" });
-        }
-        return rankedUsers;
-      } catch (error) {
-        console.error("Error updating weekly ranking:", error);
-      }
-    },
+
 
   // set geolocation, air quality index , and weather
   // cloud function call : getlocation, setweather 
@@ -699,6 +652,28 @@ Page({
       });
     });
   },
+   // Function to update the weekly ranking
+  async updateWeeklyRanking() {
+    const { firstDayOfWeek } = getWeekRange();
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'updateweeklyranking',
+        data: { firstDayOfWeek }
+      });
+      const rankedUsers = result.result.rankedUsers;
+  
+      this.setData({ users: rankedUsers });
+      const currentUser = rankedUsers.find(user => user._openid === app.globalData.openID);
+      if (currentUser) {
+        this.setData({ mysaving: currentUser.totalCarbSum, myranking: currentUser.rank });
+      } else {
+        this.setData({ mysaving: "<1", myranking: "未上榜" });
+      }
+      return rankedUsers;
+    } catch (error) {
+      console.error("Error updating weekly ranking:", error);
+    }
+  },
   
   // four functions below are dedicated for sharing 
   shareCommon() {
@@ -733,5 +708,44 @@ Page({
   
   onClickTrackCard() {
     wx.navigateTo({ url: "/pages/track/track" });
-  }
+  },
+
+
+
+  //// @DEMI: these functions should be moved please see cloud function updateCredits
+
+    // 更新lottery
+    async updateLottery(credit) {
+      const res = await db.collection("lottery").where({ _openid: app.globalData.openID }).get();
+      const userId = res.data[0]._id;
+  
+      // 凌晨4点？ 
+      const four = new Date();
+      four.setHours(4, 0, 0, 0);
+  
+      const { data: list = [] } =
+        (await db
+          .collection("track")
+          .where({ _openid: app.globalData.openID, date: db.command.gt(four) })
+          .get()) || {};
+  
+      if (Array.isArray(list) && list.length) {
+        db.collection("lottery")
+          .doc(userId)
+          // 累加25积分
+          .update({ data: { credit: db.command.inc(credit) } });
+      }
+    },
+  
+    // 更新总省碳量
+    async updateUserInfo(carbon) {
+      const res = await db.collection("userInfo").where({ _openid: app.globalData.openID }).get();
+      const userId = res.data[0]._id;
+  
+      db.collection("userInfo")
+        .doc(userId)
+        // 累加省碳
+        .update({ data: { carbSum: db.command.inc(carbon) } });
+    },
 });
+
