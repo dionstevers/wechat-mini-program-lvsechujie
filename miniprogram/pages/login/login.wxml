@@ -107,7 +107,6 @@
   <input type="text" placeholder-style="color:white" placeholder="用于奖品发放" name = "email" bindinput="bindemailchange" value="{{ email }}"/> 
  </view>
 <view class='baseInfo'>
-  
   <text>出行方式</text>
 </view>
 <view class='sex'>

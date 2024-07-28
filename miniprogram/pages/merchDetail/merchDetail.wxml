@@ -10,10 +10,15 @@
     </view>
     <view class="merch-description">{{merch.description}}</view>
     <view class="merch-long-description">{{merch.longDescription}}</view>
-    <view class="claim-button" bindtap="claimMerch">
+    <!-- <button class="claim-button" bindtap="claimMerch" open-type="getRealtimePhoneNumber" bindgetrealtimephonenumber="getrealtimephonenumber">
       <image class="exchange-icon" src="../../asset/img/exchange.png" style="position: relative; left: -38rpx; top: 5rpx"></image>
       {{merch.price}} 兑换
-    </view>
+    </button> -->
+    <button class="claim-button" open-type="getRealtimePhoneNumber" bindgetrealtimephonenumber="getrealtimephonenumber">
+      <image class="exchange-icon" src="../../asset/img/exchange.png" style="position: relative; left: -38rpx; top: 5rpx"></image>
+      {{merch.price}} 兑换
+    </button>
+
 
   </view>
 </view>

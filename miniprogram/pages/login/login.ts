@@ -9,6 +9,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    code: null,
     avatarUrl: defaultAvatarUrl,
     carSelected: false,
     userInfo: null,
@@ -130,6 +131,13 @@ Page({
       })
       return false
     }
+    // if(!code){
+    //   wx.showModal({
+    //     title:'请授权手机号',
+    //     content:'您的手机号将被加密储存，用于发放奖品' ,
+    //     showCancel:false
+    //   })
+    // }
     if (!occu) {
       wx.showToast({
         title: '请选择职业',
@@ -201,6 +209,7 @@ Page({
 
 
   },
+
 
   uploadData: function( avatar: any,basicInfo: any, carbSum: any, testGroup: any){
     wx.showToast({

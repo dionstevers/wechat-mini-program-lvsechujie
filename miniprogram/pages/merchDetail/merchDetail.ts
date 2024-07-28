@@ -5,6 +5,7 @@ const app = getApp();
 Page({
   data: {
     background: null,
+    code:null,
     flag: false,
     merch: {
       merch_id: '',
@@ -18,70 +19,7 @@ Page({
   onLoad(options) {
     const merchId = options.merch_id;
     this.getMerchDetail(merchId);
-    const u_openid = options.u_openid
-    const price = this.data.merch.price;
-    if(u_openid){
-      const type = '0';
-      const money = price 
-      wx.cloud.callFunction({
-        name: 'sendCashReward',
-        data: {
-          u_openid,
-          type,
-          money
-        },
-        success: (res) => {
-          console.log('successful call',res.result);
-          if(res.result && typeof res.result === 'object' && 'success' in res.result){
-            if (res.result.success) {
-              if(res.result.data.errmsg ==='发放成功'){
-                wx.showModal({
-                  title: '恭喜！',
-                  content: '您的现金红包已发放',
-                  showCancel: false,
-                  success:(res)=>{
-                    if(res.confirm){
-                      wx.navigateTo({
-                        url:'/pages/prizeCenter/prizeCenter'
-                      })
-                    }
-                  }
-                });
-              }else{
-                wx.showModal({
-                  title: '测试错误',
-                  content: res.result.data.errmsg,
-                  showCancel: false,
-                  success:(res)=>{
-                    if(res.confirm){
-                      wx.navigateTo({
-                        url:'/pages/prizeCenter/prizeCenter'
-                      })
-                    }
-                  }
-                });
-              }
-              
-            };
-          }else{
-            console.log('results in failure',res.result);
-            wx.showToast({
-              title: '请稍后再试',
-              icon: 'error',
-              duration: 1000
-            });
-          };
-        },
-        fail: (err) => {
-          wx.showToast({
-            title: '请求失败',
-            icon: 'error',
-            duration: 1000
-          });
-          console.error('Failed to call cloud function:', err);
-        }
-      });
-    }
+
   },
   getMerchDetail(merchId) {
     const prizes = wx.getStorageSync('prizes');
@@ -90,6 +28,34 @@ Page({
       this.setData({ merch });
     }
   },
+  async getrealtimephonenumber (e) {
+    console.log(e.detail.code)  // 动态令牌
+    const code = e.detail.code
+    if(code){
+      this.setData({
+        code: code
+      })
+      this.claimMerch();
+    }
+    console.log(e.detail.errMsg) // 回调信息（成功失败都会返回）
+    console.log(e.detail.errno)  // 错误码（失败时返回）
+    wx.cloud.callFunction({
+      name:'getphoneno',
+      data:{
+        code:e.detail.code
+      },
+      success: function(res){
+        console.log(res)
+        // wx.showToast({
+        //   title:'授权成功',
+        //   icon:'success'
+        // })
+      },
+      fail:function(res){
+        console.log(res)
+      }
+    })
+  },
   async claimMerch() {
     const app = getApp();
     const openid = app.globalData.openID;
@@ -97,7 +63,7 @@ Page({
     const merch_id = this.data.merch.merch_id;
     const merch_name = this.data.merch.title;
     // TODO : this is just for testing, NO CHECKING CREDIT IMPLEMENTED SO FAR
-    if(merch_name!=='现金红包'){ 
+    if(this.data.code){ 
       wx.showModal({
       title:'请您确认' ,
       content: '以 ' + price + ' 积分兑换 ' + merch_name + '?',
@@ -139,8 +105,9 @@ Page({
         }
       }
     })}else{
-      wx.navigateTo({
-        url: `/pages/test/test?merch_id=${merch_id}`
+      wx.showModal({
+        title: '授权失败',
+        content:'请返回并再次点击兑换并授权手机号'
       })
     }
   },
