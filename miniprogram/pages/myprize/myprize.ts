@@ -1,6 +1,9 @@
 // pages/myprize/myprize.ts
 import { updateColor } from '../../utils/colorschema'
+import { logEvent } from '../../utils/log'
+
 const app = getApp()
+
 
 Page({
 

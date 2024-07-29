@@ -1,7 +1,8 @@
 // pages/test/test.ts
 const app = getApp()
-Page({
 
+Page({
+  
   /**
    * 页面的初始数据
    */
