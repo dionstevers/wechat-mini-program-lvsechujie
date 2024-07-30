@@ -30,9 +30,8 @@ Page({
     this.setData({ endTransportList: reasetEndTransportList, purposes: reasetPurposesList });
   },
 
-
   // Update the carbon saving list
-  async updateCarbon() {
+  async updateCarbon(carbon) {
     const _this = this;
 
     let now = new Date();
@@ -45,53 +44,47 @@ Page({
       .limit(1) //查一条
       .get();
 
-    // 计算省碳总量
-    const carbon = this.calcCarbon(res);
+    // 旧的计算省碳总量 不需要了  -> 可以删除（个人信息中的碳总量直接从计算中获取）
+    // const carbon = this.calcCarbon(res);
+
     // 计算积分 累加25
     this.updateLottery();
     // 更新用户总省碳量
     this.updateUserInfo(carbon);
-
-
-
   },
 
-  // 计算碳总量
-  calcCarbon(res) {
-    let carbon = 0;
-    let list = res.data;
-    list.forEach(item => {
-      if (item["date"]) item["date"] = item.date.getTime();
-      if (item["endTime"]) item["endTime"] = item.endTime.getTime();
-      let dist = 0;
-      for (let j in item.record) {
-        if (j == 0) continue;
-        dist += getDistance(
-          item.record[j - 1]["points"].latitude,
-          item.record[j - 1]["points"].longitude,
-          item.record[j]["points"].latitude,
-          item.record[j]["points"].longitude
-        );
-      }
-      item["distance"] = parseFloat(dist.toFixed(2));
-      let passenger = 1; //parseInt(item["capacity"]) + 1;
+  // 旧的计算碳总量 -> 可以删除
+  // calcCarbon(res) {
+  //   let carbon = 0;
+  //   let list = res.data;
+  //   list.forEach(item => {
+  //     if (item["date"]) item["date"] = item.date.getTime();
+  //     if (item["endTime"]) item["endTime"] = item.endTime.getTime();
+  //     let dist = 0;
+  //     for (let j in item.record) {
+  //       if (j == 0) continue;
+  //       dist += getDistance(
+  //         item.record[j - 1]["points"].latitude,
+  //         item.record[j - 1]["points"].longitude,
+  //         item.record[j]["points"].latitude,
+  //         item.record[j]["points"].longitude
+  //       );
+  //     }
+  //     item["distance"] = parseFloat(dist.toFixed(2));
+  //     let passenger = 1; //parseInt(item["capacity"]) + 1;
 
-      let saving = 0;
-      if (item["transport"] == "步行或骑行") saving = 292.4;
-      else if (item["transport"] == "驾驶电动汽车") saving = 292.4 - 181.5 / passenger;
-      else if (item["transport"] == "公共交通") saving = 292.4 - 20 / passenger;
-      else saving = 292.4 - 292.4 / passenger;
-      carbon += dist * saving;
-    });
+  //     let saving = 0;
+  //     if (item["transport"] == "步行或骑行") saving = 292.4;
+  //     else if (item["transport"] == "驾驶电动汽车") saving = 292.4 - 181.5 / passenger;
+  //     else if (item["transport"] == "公共交通") saving = 292.4 - 20 / passenger;
+  //     else saving = 292.4 - 292.4 / passenger;
+  //     carbon += dist * saving;
+  //   });
 
-    return carbon;
-  },
-
-
+  //   return carbon;
+  // },
 
   // Update recording list 今日出行记录
-
-  
   async setList() {
     let now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -204,7 +197,9 @@ Page({
       if (cnt >= 10) {
         cnt = 0;
         try {
-          await db.collection("track").doc(this.data.curID)
+          await db
+            .collection("track")
+            .doc(this.data.curID)
             .update({
               data: {
                 record: db.command.push({
@@ -238,7 +233,7 @@ Page({
       }
     }
     onCheckSignIn({
-      message : "请先注册/登录并同意隐私条款"
+      message: "请先注册/登录并同意隐私条款"
     });
   },
   // 记录前隐私调用准备 弹窗
@@ -462,7 +457,7 @@ Page({
           wx.offLocationChange();
 
           _this.setList();
-          _this.updateCarbon();
+          _this.updateCarbon(saving);
           // const carbon  = _this.calcCarbon(res)
           _this.reloadData();
         }
@@ -497,8 +492,6 @@ Page({
       console.log("home页面已经初始化过了！");
     }
   },
-
- 
 
   async reloadData() {
     const _ = db.command;
@@ -561,41 +554,33 @@ Page({
     if (!prevTracking && _this.data.recordStatus) _this.keepTracking();
   },
 
+  // @DEMI : code below are already refactored by Yuandong
 
+  // 小程序初始化生命周期
+  onLoad(options) {
+    // 当程序切换到后台时触发
+    // TODO 待确定是否可用？
+    //wx.onAppHide(this.onHide);
 
-
-
-
-
-
-// @DEMI : code below are already refactored by Yuandong
-
-
- // 小程序初始化生命周期
- onLoad(options) {
-  // 当程序切换到后台时触发
-  // TODO 待确定是否可用？
-  //wx.onAppHide(this.onHide);
-
-  // 转发朋友圈链接，导航到登录页面
-  if (options.isFromShareTimeline) {
-    wx.navigateTo({
-      url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
-      success: () => this.setData({ isFromShareTimeline: false })
-    });
-  } else {
-    this.setData({ isFromShareTimeline: false });
-  }
-},
+    // 转发朋友圈链接，导航到登录页面
+    if (options.isFromShareTimeline) {
+      wx.navigateTo({
+        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
+        success: () => this.setData({ isFromShareTimeline: false })
+      });
+    } else {
+      this.setData({ isFromShareTimeline: false });
+    }
+  },
 
   onShow() {
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) return;
- 
+
     // 更新颜色
     updateColor();
     // update the carbon ranking
-    
+
     // 检查登录状态
     updateUserData();
     onCheckSignIn({ message: "请您登录", success: () => this.initData() });
@@ -604,24 +589,22 @@ Page({
     this.updateWeeklyRanking();
   },
 
-
-
   // set geolocation, air quality index , and weather
-  // cloud function call : getlocation, setweather 
+  // cloud function call : getlocation, setweather
 
   setWeather() {
     return new Promise((resolve, reject) => {
       wx.getLocation({
         type: "gcj02",
-        success: (loc) => {
+        success: loc => {
           const latitude = loc.latitude.toFixed(2);
           const longitude = loc.longitude.toFixed(2);
           console.log("Location:", longitude, latitude);
-  
+
           wx.cloud.callFunction({
-            name: 'setweather',
+            name: "setweather",
             data: { latitude, longitude },
-            success: (res) => {
+            success: res => {
               const { cityName, aqi, category, weather } = res.result;
               this.setData({
                 name: cityName,
@@ -629,39 +612,39 @@ Page({
                 category,
                 weather,
                 latitude,
-                longitude,
+                longitude
               });
               resolve({
                 openid: app.globalData.openID,
                 cityName,
                 latitude,
                 longitude,
-                weather,
+                weather
               });
             },
-            fail: (err) => {
-              console.error('Error calling cloud function:', err);
+            fail: err => {
+              console.error("Error calling cloud function:", err);
               reject(err);
             }
           });
         },
-        fail: (err) => {
-          console.error('Error getting location:', err);
+        fail: err => {
+          console.error("Error getting location:", err);
           reject(err);
         }
       });
     });
   },
-   // Function to update the weekly ranking
+  // Function to update the weekly ranking
   async updateWeeklyRanking() {
     const { firstDayOfWeek } = getWeekRange();
     try {
       const result = await wx.cloud.callFunction({
-        name: 'updateweeklyranking',
+        name: "updateweeklyranking",
         data: { firstDayOfWeek }
       });
       const rankedUsers = result.result.rankedUsers;
-  
+
       this.setData({ users: rankedUsers });
       const currentUser = rankedUsers.find(user => user._openid === app.globalData.openID);
       if (currentUser) {
@@ -674,8 +657,8 @@ Page({
       console.error("Error updating weekly ranking:", error);
     }
   },
-  
-  // four functions below are dedicated for sharing 
+
+  // four functions below are dedicated for sharing
   shareCommon() {
     return {
       title: "我本周已省碳" + this.data.mysaving + "kg，你也来试试吧！",
@@ -702,50 +685,47 @@ Page({
     logEvent("Share App");
     return {
       ...this.shareCommon(),
-      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
-    }
+      path: `/pages/index/index?sharedFromID=${app.globalData.openID}`
+    };
   },
-  
+
   onClickTrackCard() {
     wx.navigateTo({ url: "/pages/track/track" });
   },
 
-
-
   //// @DEMI: these functions should be moved please see cloud function updateCredits
 
-    // 更新lottery
-    async updateLottery(credit) {
-      const res = await db.collection("lottery").where({ _openid: app.globalData.openID }).get();
-      const userId = res.data[0]._id;
-  
-      // 凌晨4点？ 
-      const four = new Date();
-      four.setHours(4, 0, 0, 0);
-  
-      const { data: list = [] } =
-        (await db
-          .collection("track")
-          .where({ _openid: app.globalData.openID, date: db.command.gt(four) })
-          .get()) || {};
-  
-      if (Array.isArray(list) && list.length) {
-        db.collection("lottery")
-          .doc(userId)
-          // 累加25积分
-          .update({ data: { credit: db.command.inc(credit) } });
-      }
-    },
-  
-    // 更新总省碳量
-    async updateUserInfo(carbon) {
-      const res = await db.collection("userInfo").where({ _openid: app.globalData.openID }).get();
-      const userId = res.data[0]._id;
-  
-      db.collection("userInfo")
-        .doc(userId)
-        // 累加省碳
-        .update({ data: { carbSum: db.command.inc(carbon) } });
-    },
-});
+  // 更新lottery
+  async updateLottery(credit) {
+    const res = await db.collection("lottery").where({ _openid: app.globalData.openID }).get();
+    const userId = res.data[0]._id;
 
+    // 凌晨4点？
+    const four = new Date();
+    four.setHours(4, 0, 0, 0);
+
+    const { data: list = [] } =
+      (await db
+        .collection("track")
+        .where({ _openid: app.globalData.openID, date: db.command.gt(four) })
+        .get()) || {};
+
+    if (Array.isArray(list) && list.length) {
+      db.collection("lottery")
+        .doc(userId)
+        // 累加25积分
+        .update({ data: { credit: db.command.inc(credit) } });
+    }
+  },
+
+  // 更新总省碳量
+  async updateUserInfo(carbon) {
+    const res = await db.collection("userInfo").where({ _openid: app.globalData.openID }).get();
+    const userId = res.data[0]._id;
+
+    db.collection("userInfo")
+      .doc(userId)
+      // 累加省碳
+      .update({ data: { carbSum: db.command.inc(carbon) } });
+  }
+});
