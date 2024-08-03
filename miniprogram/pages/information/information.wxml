@@ -16,7 +16,7 @@
 
     <view>
       <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
-        <view bindtap="bindInfo" data-link="{{item.link}}" data-author="{{item.author}}" data-imgsrc="{{item.imgSrc}}">
+        <view bindtap="bindInfo" data-link="{{item.link}}">
           <view class="image-con">
             <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />
           </view>
@@ -24,8 +24,8 @@
 
           <view class="preview-con">
             <view class="title">{{item.title}}</view>
-            <view class="dislike" wx:if="{{item.author !== '碳行家' && !item.isUnread && userInfo}}">
-              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}" data-author="{{item.author}}"></image>
+            <view class="dislike" wx:if="{{item.author !== articleAuthors[-1] && !item.isUnread && userInfo}}">
+              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}"></image>
             </view>
           </view>
         </view>

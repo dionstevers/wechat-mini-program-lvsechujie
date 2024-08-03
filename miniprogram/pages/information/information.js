@@ -8,10 +8,16 @@ Page({
    * 页面的初始数据
    */
   data: {
+    /** 页面基本信息 */
+    RECOMMENDATION_VERSION: 2.0, // 用来识别是否需要处理就用户的
+    updateCounter: 0,
+    shouldUpdateCloud: false,
+    background: null,
+
+    /** 用户基本信息 */
     testGroup: -1,
     userInfo: null,
     openID: null,
-    background: null,
 
     /** 是否从朋友圈转发进入 */
     isFromShareTimeline: true,
@@ -19,46 +25,90 @@ Page({
     /** 文章点击此次数将上传数据库 */ 
     updateCloudThreshold: 5,
 
+    /** 前一天推荐参数修正 */ 
+    dailyMultiplier: 0.75,
+
     /** 文章推荐的权重 */
     recommendWeights: {
       frequencyScore: 3.0,
       readAmount: 2.0,
-      dislike: -2.0,
-      version: 15.0,
-      dailyMultiplier: 0.75
-    },
-    
-    /** 把infoGroup对应上articleTypes的index */ 
-    infoGroup2ArticleType: {
-      0: -1, // 基础版
-      1: 0, // 森林版
-      2: 1 // 强国版
+      dislike: -2.0
     },
 
-    /** 文章种类对应的的index */
-    articleTypes: {
-      '碳行家': -1,
-      '低碳我知道': 0,
-      '低碳强国': 1
+    /** infoGroup对应的文章作者 */
+    articleAuthors: {
+      '-1': '碳行家',
+      '0' : '低碳个人',
+      '1' : '低碳森林',
+      '2' : '低碳强国'
     },
 
+    /** 文章种类对应的tags */
+    articleTags: {
+      '低碳个人': ['新能源汽车', '避雷', '攻略', '健康', '省钱'],
+      '低碳森林': ['动物', '海洋', '植物', '气候变化'],
+      '低碳强国': ['碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
+    },
+
+    articlesDefault: [],
     articles: [],
     articleShowList: [],
     articleRecommend: {
       frequencyScore: [],
       articleCount: [],
       readAmount: [],
-      readArticles: [],
-      infoGroup: 0
+      recommendedArticles: [],
+      infoGroup: -1
     }
   },
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 云数据处理 CLOUD HANDLING ///////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
-   * 页面实例数据
+   * 处理旧版本兼容
    */
-  updateCounter: 0,
-  dailyPushed: false,
-  shouldUpdateCloud: false,
+  async handleOldVersion() {
+    // 判断旧版本
+    const localArticleRecommend = wx.getStorageSync('articleRecommend')
+    if (localArticleRecommend == '' || localArticleRecommend.RECOMMENDATION_VERSION == this.data.RECOMMENDATION_VERSION) return;
+
+    // 更新新版本 （Note: 这里应该根据版本改变发生变动）
+    const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
+    const infoGroup = localArticleRecommend.infoGroup !== undefined ? 
+      localArticleRecommend.infoGroup : this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
+      Math.floor(Math.random() * totalInfoGroupNumber) : 0; // infoGroup 不改变, 没有则生成
+    const author = this.data.articleAuthors[infoGroup]
+    const articleRecommend = [
+      // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
+      Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+        () => 25 / (Object.keys(this.data.articleTags[author]).length)), 
+
+      // 文章数量存储数组
+      Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+        () => 0),
+
+      // 文章阅读量数组
+      Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+        () => 0),
+    ];
+
+    wx.removeStorageSync('articleRecommend')
+    wx.setStorageSync("articleRecommend", {
+      frequencyScore: articleRecommend[0],
+      articleCount: articleRecommend[1],
+      readAmount: articleRecommend[2],
+      recommendedArticles: [],
+      infoGroup: infoGroup,
+      lastClickDate: new Date(),
+
+      RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
+    })
+
+    await this.updateCloudStorage(this.data.RECOMMENDATION_VERSION);
+    console.log('处理旧版本成功！')
+  },
 
   /**
    * 获取云端文章
@@ -69,23 +119,24 @@ Page({
     // 获取文章数据
     try {
       const queryLimit = 20; // 微信单次获取上限为20
-      let articles = [];
+      let articles = (await db.collection('articlesNew').where({author: this.data.articleAuthors[-1]}).get()).data;
       let iterations = 0
 
-      while (true) {
-        let fetchedArticles = await db.collection('articles').skip(iterations * queryLimit).limit(queryLimit).get();
-        articles = articles.concat(fetchedArticles.data);
-        iterations++;
-
-        if (fetchedArticles.data.length < queryLimit) {
-          break;
+      if (onCheckSignIn()) {
+        while (true) {
+          let author = this.data.articleAuthors[this.data.articleRecommend.infoGroup]
+          let fetchedArticles = await db.collection('articlesNew').where({author: author}).skip(iterations * queryLimit).limit(queryLimit).get();
+  
+          articles = articles.concat(fetchedArticles.data);
+          iterations++;
+  
+          if (fetchedArticles.data.length < queryLimit) {
+            break;
+          }
         }
       }
 
-      articles.sort((a, b) => new Date(a.uploadTime) - new Date(b.uploadTime))  
-      this.setData({ articles: articles })
-      wx.setStorageSync("articles", articles)
-      
+      wx.setStorageSync("articles", articles)  
       console.log(`成功从云端获取${articles.length}篇文章`)
     } catch (error) {
       console.error("获取文章时出错：", error);
@@ -94,28 +145,17 @@ Page({
 
   /**
    * 获取云端数据
-   * @param {boolean} isForced 是否强行更新本地数据
    */
-  async fetchCloudData(isForced){
+  async fetchCloudData(){
     const db = wx.cloud.database();
 
     // 未注册用户没有articleRecommend
-    if (!onCheckSignIn() && !isForced) {
+    if (!onCheckSignIn()) {
       return;
     }
 
-    // 获取文章
-    let localArticles = wx.getStorageSync('articles');
-    if (localArticles !== '') {
-      this.setData({
-        articles: localArticles
-      })
-    } else {
-      await this.fetchCloudArticles();
-    }
-
     // 处理articleRecommend数据丢失情况 
-    if (wx.getStorageSync("articleRecommend") === "" || isForced){
+    if (wx.getStorageSync("articleRecommend") === ""){
       try {
         let articleRecommendData = (await db.collection('articleRecommend')
         .where({ _openid: this.data.openID })
@@ -123,23 +163,22 @@ Page({
 
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
-          const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length;
+          const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
           const infoGroup = this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
-            Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
+            Math.floor(Math.random() * totalInfoGroupNumber) : 0;
+          const author = this.data.articleAuthors[infoGroup]
           const articleRecommend = [
-            // 概率数组
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
-              () => (100 / 4) / (Object.keys(this.data.articleTypes).length - 1)), 
+            // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
+            Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+              () => 25 / (Object.keys(this.data.articleTags[author]).length)), 
 
-            // 文章存储数组（普通版：每种类型总会至少生成1篇；森林版："低碳我知道"生成2篇；强国版："低碳强国"至少生成2篇 ...）
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
-              (_, articleTypeIndex) => infoGroup === 0 ? 
-              1 : (articleTypeIndex === this.data.infoGroup2ArticleType[infoGroup] ?
-              2 : 0)),
+            // 文章数量存储数组
+            Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+              () => 0),
 
             // 文章阅读量数组
-            Array.from({ length: (Object.keys(this.data.articleTypes).length - 1) },
-            () => 0),
+            Array.from({ length: (Object.keys(this.data.articleTags[author]).length) },
+              () => 0),
           ];
 
           await db.collection('articleRecommend').add({
@@ -147,38 +186,45 @@ Page({
               frequencyScore: articleRecommend[0],
               articleCount: articleRecommend[1],
               readAmount: articleRecommend[2],
-              readArticles: [],
-              infoGroup: infoGroup
+              recommendedArticles: [],
+              infoGroup: infoGroup,
+
+              RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
             }
           });
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend[0],
             articleCount: articleRecommend[1],
             readAmount: articleRecommend[2],
-            readArticles: [],
+            recommendedArticles: [],
             infoGroup: infoGroup,
-            lastClickDate: new Date()
+            lastClickDate: new Date(),
+
+            RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
           })
 
-        // 仅本地数据丢失情况
+        // 仅更新本地数据情况
         } else {
           const articleRecommend = {
             frequencyScore: articleRecommendData[0].frequencyScore,
             articleCount: articleRecommendData[0].articleCount,
             readAmount: articleRecommendData[0].readAmount,
-            readArticles: articleRecommendData[0].readArticles,
-            infoGroup: articleRecommendData[0].infoGroup
+            recommendedArticles: articleRecommendData[0].recommendedArticles,
+            infoGroup: articleRecommendData[0].infoGroup,
+
+            RECOMMENDATION_VERSION: articleRecommendData[0].RECOMMENDATION_VERSION
           }
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend.frequencyScore,
             articleCount: articleRecommend.articleCount,
             readAmount: articleRecommend.readAmount,
-            readArticles: articleRecommend.readArticles,
+            recommendedArticles: articleRecommend.recommendedArticles,
             infoGroup: articleRecommend.infoGroup,
-            lastClickDate: new Date()
+            lastClickDate: new Date(),
+
+            RECOMMENDATION_VERSION: articleRecommend.RECOMMENDATION_VERSION
           })
         }
-
       } catch (error) {
         console.error("获取用户articleRecommend出错：", error);
       }
@@ -187,8 +233,9 @@ Page({
 
   /**
    * 更新云端articleRecommend
+   * @param UPDATED_RECOMMENDATION_VERSION 更新的推荐系统版本号（不填则不更新版本号）
    */
-  async updateCloudStorage(){
+  async updateCloudStorage(UPDATED_RECOMMENDATION_VERSION = null){
     const localArticleRecommend = wx.getStorageSync("articleRecommend");
 
     // 本地无存储则返回
@@ -200,30 +247,35 @@ Page({
     // 更新数据库
     try {
       const db = wx.cloud.database();
-      let articleRecommendData = (await db.collection('articleRecommend')
+      const articleRecommendData = (await db.collection('articleRecommend')
         .where({ _openid: this.data.openID })
         .get()).data;
 
+      // 更新新数据和去除旧数据
+      const updatedData = {
+        frequencyScore: localArticleRecommend.frequencyScore,
+        articleCount: localArticleRecommend.articleCount,
+        readAmount: localArticleRecommend.readAmount,
+        recommendedArticles: localArticleRecommend.recommendedArticles,
+        infoGroup: localArticleRecommend.infoGroup
+      };
+
+      // 添加推荐系统版本号
+      if (UPDATED_RECOMMENDATION_VERSION != null) updatedData['RECOMMENDATION_VERSION'] = UPDATED_RECOMMENDATION_VERSION
+
+      // 写入数据库
       if (articleRecommendData.length === 0) {
         await db.collection('articleRecommend').add({
-          data:{
-            frequencyScore: localArticleRecommend.frequencyScore,
-            articleCount: localArticleRecommend.articleCount,
-            readAmount: localArticleRecommend.readAmount,
-            readArticles: localArticleRecommend.readArticles,
-            infoGroup: localArticleRecommend.infoGroup
-          }
+          data: updatedData
         });
       } else {
+        const removedData = Object.keys(articleRecommendData[0]).reduce((acc, field) => 
+          (field !== '_openid' && field !== '_id' && field !== 'RECOMMENDATION_VERSION' && !(field in updatedData)) ? { ...acc, [field]: 'OUTDATED' } : acc, {});
+
         await db.collection('articleRecommend').doc(articleRecommendData[0]._id).update({
           data: {
-            frequencyScore: localArticleRecommend.frequencyScore,
-            articleCount: localArticleRecommend.articleCount,
-            readAmount: localArticleRecommend.readAmount,
-            readArticles: localArticleRecommend.readArticles,
-
-            // TODO: 下面是处理旧用户，等所有数据库中都包含infoGroup后，可以移除
-            infoGroup: localArticleRecommend.infoGroup
+            ...updatedData,
+            ...removedData
           }
         });
       }
@@ -232,6 +284,10 @@ Page({
       console.log(err)
     }
   },
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 本地数据处理 LOCAL DATA HANDLING ///////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * 更新本地 articleShowList 使其高亮未读文章，并排序：未读文章在前、按照时间排序（降序）
@@ -242,7 +298,7 @@ Page({
     let unreadArticles = [];
 
     // 遍历原始文章列表，根据 isUnread 属性分类存放到相应数组中
-    const readLinks = this.data.articleRecommend.readArticles.map(article => article.link);
+    const readLinks = this.data.articleRecommend.recommendedArticles.filter(art => !art.isUnread).map(article => article.link);
     this.data.articleShowList.forEach(article => {
       const isUnread = !readLinks.includes(article.link);
       if (isUnread) {
@@ -265,7 +321,7 @@ Page({
    */
   updateLocalDislike() {
     // 遍历原始文章列表，根据 doDislike 属性更新用户是否不喜爱这个文章
-    const dislikeLinks = this.data.articleRecommend.readArticles
+    const dislikeLinks = this.data.articleRecommend.recommendedArticles
       .filter(article => article.doDislike)
       .map(article => article.link);
 
@@ -279,37 +335,18 @@ Page({
     });
   },
 
-  /**
-   * 更新本地frequencyScore
-   * @param {number} pickedType 用户选择的articleType
-   */
-  updateLocalFrequencyScore(pickedType) {
-    if (pickedType === -1) {
-      return;
-    }
-
-    // 更新本地frequencyScore
-    const updateFactor = (100 / 4) / (Object.keys(this.data.articleTypes).length - 1);
-    this.data.articleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore.map((value, index) => {
-      if (index == pickedType) {
-        return Math.min(value + updateFactor, 100); // 选中类型的概率值增加updateFactor
-      } else {
-        return Math.max(value - updateFactor, updateFactor); // 未选中类型的概率值减少updateFactor
-      }
-    });
-
-    const localArticleRecommend = wx.getStorageSync('articleRecommend');
-    if (localArticleRecommend !== ""){
-      localArticleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore;
-      wx.setStorageSync('articleRecommend', localArticleRecommend)
-    }
-  },
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 文章推荐分配 RECOMMENDATION ///////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * 根据articleRecommend的数值，合理推荐文章种类
-   * @returns {number} 文章种类（细节见this.data中的articleTypes）
+   * 根据articleRecommend的数值，合理推荐文章
+   * @returns {object} 单次推荐的文章
    */ 
-  getArticleType() {
+  getArticle() {
+    const author = this.data.articleAuthors[this.data.articleRecommend.infoGroup];
+    const totalTags = this.data.articleTags[author];
+
     // 点击频率 frequencyScore 概率分布（归一化）
     const frequencyScore = this.data.articleRecommend.frequencyScore
     const totalFrequencyScore = frequencyScore.reduce((sum, value) => sum + value, 0);
@@ -323,87 +360,81 @@ Page({
       readAmount.map(value => value / totalReadAmount) : readAmount;
 
     // 用户是否不喜欢 doDislike 概率分布（最小差值）
-    const dislikeCount = new Array(Object.keys(this.data.articleTypes).length - 1).fill(0);
-    this.data.articleRecommend.readArticles.forEach(readArticleObj => {
-      const link = readArticleObj.link;
+    const dislikeCount = new Array(Object.keys(totalTags).length).fill(0);
+    this.data.articleRecommend.recommendedArticles.forEach(recommendedArt => {
+      const link = recommendedArt.link;
       const articleObj = this.data.articles.find(article => article.link === link);
       if (articleObj) {
-        const author = articleObj.author;
-        let i = this.data.articleTypes[author];
-        if (readArticleObj.doDislike) {
-          dislikeCount[i] += 1;
+        if (recommendedArt.doDislike) {
+          for (let tag of articleObj.tags) {
+            let i = totalTags.indexOf(tag);
+            if (i) dislikeCount[i] += 1;
+          }
         }
       }
     });
     const minValue = Math.min(...dislikeCount);
     const minorDislikeCount = dislikeCount.map(count => count - minValue); 
 
-    // 信息激励小版本 version 概率分布（归一化）
-    const versionEffect = new Array(Object.keys(this.data.articleTypes).length - 1).fill(0);
-    let j = this.data.infoGroup2ArticleType[this.data.articleRecommend.infoGroup];
-    if (j >= 0 && j < versionEffect.length) {
-      versionEffect[j] = 1;
-    }
-
     // 按照权重分配占比
     const weightedAverage = nFrequencyScore.map((fs, index) => { 
       return Math.max(0.01, this.data.recommendWeights.frequencyScore * fs + 
               this.data.recommendWeights.readAmount * nReadAmount[index] + 
-              this.data.recommendWeights.dislike * minorDislikeCount[index] +
-              this.data.recommendWeights.version * versionEffect[index]);
+              this.data.recommendWeights.dislike * minorDislikeCount[index]);
     });
 
     // 获取概率分布
     const totalWeightedSum = weightedAverage.reduce((sum, value) => sum + value, 0); 
     const probabilities = weightedAverage.map(value => value / totalWeightedSum);
 
-    console.log(`文章推荐指数分别为：\n\t'点击频率（归一化）'：[${nFrequencyScore}]\n\t'文章阅读量（归一化）'：[${nReadAmount}]\n\t'不喜欢计数（最小差值）'：[${minorDislikeCount}]\n\t'信息激励版本影响（独热编码）'：[${versionEffect}]\n\t'总概率分布（归一化）'：[${probabilities}]`)
+    console.log(`文章推荐指数分别为：\n\t'总标签'：[${totalTags}]\n\t'点击频率（归一化）'：[${nFrequencyScore}]\n\t'文章阅读量（归一化）'：[${nReadAmount}]\n\t'不喜欢计数（最小差值）'：[${minorDislikeCount}]\n\t'总概率分布（归一化）'：[${probabilities}]`)
 
-    // 返回文章类型，0是type1; 1是type2; 2是type3; ...
-    const randomValue = Math.random();
-    let pickedType = -1;
-    let cumulativeProbability = 0;
-    for (let i = 0; i < probabilities.length; i++) {
-      cumulativeProbability += probabilities[i];
-      if (randomValue <= cumulativeProbability) {
-        pickedType = i; 
-        break;
-      }
+    // 返回文章 （每个文章至多2个tags, 按照tags的分数加权总分进行概率分布)
+    const recommendedArticles = new Set(this.data.articleRecommend.recommendedArticles.map(article => article.link));
+    const unrecommendedArticles = this.data.articles.filter(article => 
+      article.author === author && !recommendedArticles.has(article.link)
+    );
+    if (unrecommendedArticles.length === 0) {
+      return null;
     }
+
+    const scores = unrecommendedArticles.map(article => 
+      article.tags.reduce((acc, tag) => {
+        let index = totalTags.indexOf(tag);
+        return index !== -1 ? acc + probabilities[index] : acc;
+      }, 0) * (article.tags.length === 1 ? 2 : 1) // 如果只有一个tag，则双倍分数
+    );
+    
+    const normalizedScores = scores.map(score => score / scores.reduce((acc, score) => acc + score, 0))
+    const cumulativeProbabilities = normalizedScores.reduce((acc, score) => {
+      const cumulative = (acc.length ? acc[acc.length - 1] : 0) + score;
+      acc.push(cumulative);
+      return acc;
+    }, []);
+
+    const random = Math.random()
+    const pickedArticle = unrecommendedArticles[cumulativeProbabilities.findIndex(prob => random < prob)];
 
     // 上传用户此次推荐的 features 到云端
     const db = wx.cloud.database()
     try {
       db.collection('recommendFeatures').add({
         data:{
+          infoGroup: author,
+          totalTags: totalTags,
           rawFeatures : {
-            clickFrequency: Object.entries(this.data.articleTypes)
-                                  .reduce((acc, [key, value]) => (
-                                    value >= 0 ? (acc[key] = frequencyScore[value], acc) : acc
-                                  ), {}),
-            readDuration: Object.entries(this.data.articleTypes)
-                                .reduce((acc, [key, value]) => (
-                                  value >= 0 ? (acc[key] = readAmount[value], acc) : acc
-                                ), {}),
-            dislikeCount: Object.entries(this.data.articleTypes)
-                                .reduce((acc, [key, value]) => (
-                                  value >= 0 ? (acc[key] = dislikeCount[value], acc) : acc
-                                ), {}),
-            versionImpact: versionEffect.includes(1) ? Object.keys(this.data.articleTypes).find(
-                              key => this.data.articleTypes[key] === versionEffect.indexOf(1)
-                            ) : null
+            clickFrequency: frequencyScore,
+            readDuration: readAmount,
+            dislikeCount: dislikeCount,
           },
           engineeredFeatures: {
             frequencyDistribution_normalized: nFrequencyScore,
             readDistribution_normalized: nReadAmount,
             dislikeCount_minorDifference: minorDislikeCount,
-            versionEffect_oneHotEncoded: versionEffect
           },
-          probabilityDistribution: Object.entries(this.data.articleTypes)
-                                         .reduce((acc, [key, value]) => (
-                                          value >= 0 ? (acc[key] = probabilities[value], acc) : acc
-                                         ), {}),
-          recommendedType: Object.keys(this.data.articleTypes).find(key => this.data.articleTypes[key] === pickedType),
+          probabilityDistribution: probabilities,
+          recommendedArticle: pickedArticle.link,
+          recommendedTags: pickedArticle.tags,
           time : new Date()
         }
       })
@@ -411,56 +442,64 @@ Page({
       console.log("无法上传用户的推荐Features", err)
     }
 
-    // 返回生成的文章类型
-    return pickedType;
+    // 返回生成的文章
+    return pickedArticle;
   },
 
   /**
-   * 给用户分配文章，并添加在articleShowList中
-   * @param {number} newArticleCount 可增添的文章数量
+   * 给用户生成新文章，并添加在articleShowList中
+   * @param {number} newArticleCount 增添的文章数量
    */
   getArticles(newArticleCount = 0){
-    const typeLength = Object.keys(this.data.articleTypes).length;
+    const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
     try{
-      // 若要获取新文章，则告知需更新数据库
-      if (newArticleCount > 0) {
-        this.shouldUpdateCloud = true;
-      }
-
       // 获取新文章
+      const author = this.data.articleAuthors[this.data.articleRecommend.infoGroup]
+      const totalTags = this.data.articleTags[author]
+
       for (let i = 0; i < newArticleCount; i++) {
-        let articleType = this.getArticleType();
-        if (articleType != -1 && articleType < (typeLength - 1)) {
-          // 检查文章是否已经达到上限
-          if (this.data.articleRecommend.articleCount[articleType] < 
-              this.data.articles.filter(article => this.data.articleTypes[article.author] === articleType).length) {
-                this.data.articleRecommend.articleCount[articleType] ++;
-                console.log(`生成${articleType}文章`);
-          } else {
-            console.log("已达文章上限");
+        let article = this.getArticle();
+        if (article != null) {
+          for (let tag of article.tags) {
+            let index = totalTags.indexOf(tag);
+            this.data.articleRecommend.articleCount[index]++;
           }
+
+          this.data.articleRecommend.recommendedArticles.push({
+            isUnread: true,
+            link: article.link
+          })
+
+          console.log(`生成'${article.author}'文章: [${article.title}]`);
         } else {
-          console.log("生成文章错误");
+          console.log("已达文章上限");
         }
       }
 
-      // 更新本地articleCount
-      const localArticleRecommend = wx.getStorageSync('articleRecommend');
+      // 添加碳行家'碳行家'文章到 articleShowList
+      const defaultArticles = this.data.articles.filter(art => art.author === this.data.articleAuthors[-1])
+      defaultArticles.forEach(art => {
+        if (!this.data.articleRecommend.recommendedArticles.some(article => article.link === art.link)) {
+          this.data.articleRecommend.recommendedArticles.push({
+            link: art.link,
+            isUnread: true
+          });
+        }
+      });
+
+      // 更新本地 articleRecommend
       if (localArticleRecommend !== ""){
+        localArticleRecommend.recommendedArticles = this.data.articleRecommend.recommendedArticles;
         localArticleRecommend.articleCount = this.data.articleRecommend.articleCount;
         wx.setStorageSync('articleRecommend', localArticleRecommend)
       }
     
       // 生成对应的文章给用户
-      const articleList = this.data.articles.filter(article => article.author === "碳行家");
-      for (let articleType = 0; articleType < (typeLength - 1); articleType++) {
-        if (this.data.articleRecommend.articleCount[articleType] === 0) continue;
-        let articleRes = this.data.articles
-          .filter(article => this.data.articleTypes[article.author] === articleType)
-          .slice(0, this.data.articleRecommend.articleCount[articleType])
-        articleList.push(...articleRes);
-      }
+      const articleList = []
+      const recommendedLinks = this.data.articleRecommend.recommendedArticles.map(article => article.link);
+      const recommendedArticles = this.data.articles.filter(article => recommendedLinks.includes(article.link))
+      articleList.push(...recommendedArticles);
 
       this.setData({
         articleShowList: articleList
@@ -479,6 +518,8 @@ Page({
 
   /**
    * 根据天数获取文章（检查时间：每日凌晨4点）
+   * 每次检查后，将会更新检查时间为明日
+   * @returns {boolean} 是否需要更新
    */
   CheckDailyUpdate() {
     const currentDate = new Date()
@@ -496,64 +537,79 @@ Page({
         wx.setStorageSync('articleRecommend', localArticleRecommend);
       }
       
-      this.dailyPushed = dayDiff > 0;
+      return dayDiff > 0;
     }
   },
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 界面交互 UI EVENT HANDLING ///////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * 文章按钮事件
    */
   bindInfo(e){
     logEvent('Read Article')
-    const author = e.currentTarget.dataset.author
-    const link = e.currentTarget.dataset.link
-    const imgSrc = e.currentTarget.dataset.imgsrc
+    const link = e.currentTarget.dataset.link;
+    const targetArticle = this.data.articles.find(article => article.link === link);
+
+    const author = targetArticle.author
+    const imgSrc = targetArticle.imgSrc
+    const tags = author === this.data.articleAuthors[-1] ? null : targetArticle.tags
+    const totalTags = author === this.data.articleAuthors[-1] ? null : this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]
     const scrollAmount = `<${this.data.articleShowList.findIndex(item => item.link === link) + 1}TH> IN <TOTAL: ${this.data.articleShowList.length + 1}>`;
 
     // 导航到对应链接
     wx.navigateTo({
-      url:`/pages/detail/detail?articleType=${this.data.articleTypes[author]}&scrollAmount=${scrollAmount}&link=${link}&imgSrc=${imgSrc}`,
+      url:`/pages/detail/detail?tags=${JSON.stringify(tags)}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&link=${encodeURIComponent(link)}&imgSrc=${encodeURIComponent(imgSrc)}`,
       success: () => {
         // 未注册用户直接返回
         if (!onCheckSignIn()) {
           return;
         }
 
-        // 新增已读文章
-        if (!this.data.articleRecommend.readArticles.some(article => article.link === link)) {
-          if (this.data.articleTypes[author] === -1) { // 碳行家文章只添加链接
-            this.data.articleRecommend.readArticles.push({
-              link: link
-            });
-          } else {
-            this.data.articleRecommend.readArticles.push({ // 其他文章添加链接和是否用户不喜欢的指标（默认不会不喜欢）
-              link: link,
-              doDislike: false
-            });
-          }
+        // 更新本地 recommendedArticles 的已读文章
+        let localArticleRecommend = wx.getStorageSync('articleRecommend');
+        this.data.articleRecommend.recommendedArticles.find(article => article.link == link).isUnread = false;
+        if (localArticleRecommend !== ""){
+          localArticleRecommend.recommendedArticles = this.data.articleRecommend.recommendedArticles;
         }
 
-        // 更新本地FrequencyScore, readArticles和未读文章高亮
-        this.updateLocalFrequencyScore(this.data.articleTypes[author]);
+        // 更新本地 frequencyScore
+        if (author !== this.data.articleAuthors[-1]) {
+          const totalTags = this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]];
+          const delta = 25 / (Object.keys(totalTags).length);
+          const tagIndices = new Set(tags.map(tag => totalTags.indexOf(tag)));
+          this.data.articleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore.map((value, index) => 
+            tagIndices.has(index) 
+              ? Math.min(value + delta, 100) 
+              : Math.max(value - delta, delta)
+          );
+        }
+        if (localArticleRecommend !== ""){
+          localArticleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore;
+        }
+
+        // 检查和更新本地存储 articleClickCounter ，并允许更新数据库和新增2篇文章
+        if (this.data.updateCounter + 1 >= this.data.updateCloudThreshold) {
+          this.setData({
+            updateCounter: 0,
+            shouldUpdateCloud: true
+          })
+          this.getArticles(2)
+        } else {
+          this.setData({
+            updateCounter: this.data.updateCounter + 1
+          })
+        }
+        if (localArticleRecommend !== ""){
+          localArticleRecommend.articleClickCounter = this.data.updateCounter;
+        }
+        wx.setStorageSync('articleRecommend', localArticleRecommend)
+
+        // 更新不喜欢文章和未读文章高亮
         this.updateLocalDislike();
         this.updateLocalUnreadHighlight();
-
-        // 更新本地存储 articleRecommend 的已读文章列表 readArticles
-        let localArticleRecommend = wx.getStorageSync('articleRecommend');
-        if (localArticleRecommend !== ""){
-          localArticleRecommend.readArticles = this.data.articleRecommend.readArticles;
-          wx.setStorageSync('articleRecommend', localArticleRecommend)
-        }
-
-        // 检查和更新本地存储 articleClickCounter ，并允许更新数据库和新增文章
-        this.updateCounter++;
-        if (this.updateCounter >= this.data.updateCloudThreshold) {
-          this.updateCounter = 0;
-          this.shouldUpdateCloud = true;
-          this.getArticles(1)
-        }
-        wx.setStorageSync('articleClickCounter', this.updateCounter)
       }
     })
   },
@@ -563,23 +619,34 @@ Page({
    */
   bindDislike(e) {
     // 切换不喜欢状态
-    const targetArticle = this.data.articleRecommend.readArticles.find(article => article.link === e.currentTarget.dataset.link);
+    const targetArticle = this.data.articleRecommend.recommendedArticles.find(article => article.link === e.currentTarget.dataset.link && !article.isUnread);
     targetArticle.doDislike = !targetArticle.doDislike;
     if (targetArticle.doDislike) {
       wx.showModal({
         title: '感谢您的反馈',
-        content:`为您减少'${e.currentTarget.dataset.author}'的推荐量`,
+        content:`为您减少相关文章的推荐量`,
         showCancel: false
       })
     }
     this.updateLocalDislike()
     
-    // 更新本地存储 articleRecommend 的已读文章列表 readArticles
+    // 更新本地存储 articleRecommend 的已读文章列表 recommendedArticles
     let localArticleRecommend = wx.getStorageSync('articleRecommend');
     if (localArticleRecommend !== ""){
-      localArticleRecommend.readArticles = this.data.articleRecommend.readArticles;
+      localArticleRecommend.recommendedArticles = this.data.articleRecommend.recommendedArticles;
       wx.setStorageSync('articleRecommend', localArticleRecommend)
     }
+  },
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 功能函数 LOCAL FUNCTIONAL METHOD ///////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * 测试用生成文章
+   */
+  debugGenerateArticle() {
+    this.getArticles(1);
   },
 
   /**
@@ -621,39 +688,46 @@ Page({
           testGroup: this.data.userInfo.testGroup
         });
 
-        // 初始化页面数据
-        await this.fetchCloudData(false)
-        const articleRecommend = wx.getStorageSync('articleRecommend');
-
-        // TODO: 这是用来处理旧用户的，等到所有用户都有infoGroup, 可以移除
-        if (articleRecommend.infoGroup == undefined) {
-          const totalInfoGroupNumber = Object.keys(this.data.infoGroup2ArticleType).length
-          articleRecommend.infoGroup = this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ? 
-            Math.floor(Math.random() * totalInfoGroupNumber) : 0; // 基础版: 0;森林版: 1 强国版: 2
-          wx.setStorageSync('articleRecommend', articleRecommend);
+        // 初始化 articleRecommend 数据
+        let articleRecommend = wx.getStorageSync('articleRecommend');
+        if (articleRecommend == '') {
+          await this.fetchCloudData(false)
         }
 
-        // TODO: 这是用来处理旧用户的，等到所有用户都有readArticles, 可以移除
-        if (articleRecommend.readArticles == undefined) {
-          articleRecommend.readArticles = []
-          wx.setStorageSync('articleRecommend', articleRecommend);
-        }
+        // 检查推荐系统版本
+        this.handleOldVersion()
+        articleRecommend = wx.getStorageSync('articleRecommend');
 
-        // 设置页面实例数据
+        // 更新页面 articleRecommend 数据
         this.setData({
           articleRecommend: {
             frequencyScore: articleRecommend.frequencyScore,
             articleCount: articleRecommend.articleCount,
             readAmount: articleRecommend.readAmount,
-            readArticles: articleRecommend.readArticles,
+            recommendedArticles: articleRecommend.recommendedArticles,
             infoGroup: articleRecommend.infoGroup
-          }
+          },
+        })
+
+        // 获取文章 articles, （若此前先从游客模式进入再登录（只有碳行家文章），则更新本地文章）
+        let localArticles = wx.getStorageSync('articles');
+        const articlesLength = localArticles.filter(article => article.author !== "碳行家").length
+        if (localArticles == '' || articlesLength === 0) {
+          await this.fetchCloudArticles();
+          localArticles = wx.getStorageSync('articles');
+        }
+
+        // 更新页面 articles 数据
+        this.setData({
+          articles: localArticles
         })
 
         // 获取文章点击计数器
-        const counterStored = wx.getStorageSync('articleClickCounter')
-        if (counterStored !== "") {
-          this.updateCounter = counterStored
+        const counterStored = articleRecommend.articleClickCounter
+        if (counterStored !== undefined) {
+          this.setData({
+            updateCounter: counterStored
+          })
         }
 
         // 根据测试组不同，背景颜色不同 (强国组: 红色，其他：青色)
@@ -664,35 +738,48 @@ Page({
         }
 
         // 检查天数是否更新（每日凌晨4点）
-        this.CheckDailyUpdate(); 
-        if (this.dailyPushed) {
+        if (this.CheckDailyUpdate()) {
           // 更新本地文章数据
-          await this.fetchCloudArticles();
+          if (articlesLength !== 0) {
+            await this.fetchCloudArticles();
+            localArticles = wx.getStorageSync('articles');
+            this.setData({
+              articles: localArticles
+            })
+          }
 
           // 每日更新 2 篇文章
           this.getArticles(2);
 
           // 减少以往天数的推荐比重
-          const localArticleRecommend = wx.getStorageSync('articleRecommend');
+          articleRecommend = wx.getStorageSync('articleRecommend');
           const frequencyScore = this.data.articleRecommend.frequencyScore;
-          const minFrequencyScore = Math.min(...frequencyScore);
+          const minFrequencyScore = 25 / (Object.keys(this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]).length)
           const previousFrequencyScore = frequencyScore.map(
-            element => (element - minFrequencyScore) * this.data.recommendWeights.dailyMultiplier + minFrequencyScore
+            element => (element - minFrequencyScore) * this.data.dailyMultiplier + minFrequencyScore
           );
 
           const readAmount = this.data.articleRecommend.readAmount;
           const previousReadAmount = readAmount.map(
-            element => element * this.data.recommendWeights.dailyMultiplier
+            element => element * this.data.dailyMultiplier
           )
 
-          localArticleRecommend.frequencyScore = previousFrequencyScore;
-          localArticleRecommend.readAmount = previousReadAmount;
-          wx.setStorageSync('articleRecommend', localArticleRecommend)
+          articleRecommend.frequencyScore = previousFrequencyScore;
+          articleRecommend.readAmount = previousReadAmount;
+          wx.setStorageSync('articleRecommend', articleRecommend);
+
+        // 不在每日更新情况
         } else {
-          this.getArticles();
+          // 若是新用户，则新增2篇文章
+          articleRecommend = wx.getStorageSync('articleRecommend');
+          if (articleRecommend.recommendedArticles.length <= this.data.articles.filter(art => 
+            art.author === this.data.articleAuthors[-1]).length) {
+              this.getArticles(2);
+            } else {
+              this.getArticles();
+            }
         }
 
-        this.dailyPushed = false;
         await this.updateCloudStorage();
         console.log("Information页面初始化成功！");
       } catch (error) {
@@ -710,10 +797,14 @@ Page({
     }
   },
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////// 页面周期函数 PAGE BUILT-IN FUNCTIONS ///////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * 生命周期函数--监听页面加载
    */
-  async onLoad(options) {
+  onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
       wx.navigateTo({
@@ -730,39 +821,29 @@ Page({
         isFromShareTimeline: false
       });
     }
+    
+    // 清除旧文章显示
+    this.setData({
+      articleShowList: []
+    })
 
     // 游客登录初始化
     onCheckSignIn({
       failed : async () => {
-        // 游客登陆每种文章仅有一篇（‘碳行家’文章除外）
+        // 游客登陆仅有‘碳行家’文章
+        await this.fetchCloudArticles();
         let localArticles = wx.getStorageSync('articles');
-        if (localArticles !== '') {
-          this.setData({
-            articles: localArticles
-          })
-        } else {
-          await this.fetchCloudArticles();
-        }
-        
+        this.setData({
+          articles: localArticles
+        })
         const articleShowList = this.data.articles.filter(article => article.author === "碳行家");
-        const firstArticles = Object.values(this.data.articles
-          .filter(art => art.author !== "碳行家")
-          .reduce((acc, article) => 
-            (!acc[article.author] && (acc[article.author] = article), acc), {}
-          ));
 
         this.setData({
-          articleShowList: this.timeConvert(articleShowList.concat(firstArticles))
+          articleShowList: this.timeConvert(articleShowList)
         })
       }
     })
   }, 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
 
   /**
    * 生命周期函数--监听页面显示
@@ -805,22 +886,12 @@ Page({
    */
   onHide() {
     // 检查是否需要更新
-    if (this.shouldUpdateCloud) {
+    if (this.data.shouldUpdateCloud) {
+      this.setData({
+        shouldUpdateCloud: false
+      })
       this.updateCloudStorage();
     }
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
   },
 
   /**
@@ -854,12 +925,5 @@ Page({
         console.log('share failed')
       }
     }
-  },
-
-  /**
-   * 测试用生成文章
-   */
-  debugGenerateArticle() {
-    this.getArticles(1);
   },
 })

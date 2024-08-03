@@ -11,7 +11,8 @@ Page({
    */
   data: {
     link: null,
-    articleType: -1,
+    articleTags: null,
+    totalTags: null,
     imgSrc: null,
     scrollAmount: null,
     sharedFromID: null,
@@ -23,23 +24,25 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options){
-    const link = options.link
-    const imgSrc = options.imgSrc
-    const articleType = options.articleType
+    const link = decodeURIComponent(options.link ?? '')
+    const imgSrc = decodeURIComponent(options.imgSrc ?? '')
+    const articleTags = options.tags ? JSON.parse(options.tags) : null
+    const totalTags = options.totalTags ? JSON.parse(options.totalTags) : null
     const scrollAmount = options.scrollAmount
-    const sharedFromID = options.sharedFromID ? options.sharedFromID : null
+    const sharedFromID = options.sharedFromID ?? null
     const openTime  = new Date()
     this.setData({
       link: link,
       imgSrc: imgSrc,
-      articleType: articleType,
+      articleTags: articleTags,
+      totalTags: totalTags,
       scrollAmount: scrollAmount,
       sharedFromID: sharedFromID,
       openTime: openTime,
       userInfo: app.globalData.userInfo
     })
 
-    console.log('the link is: ', link, '\nthe image source is: ', imgSrc, '\nthe article type is: ', articleType, '\nthe scroll amount is: ', scrollAmount, '\nthe shared from ID is: ', sharedFromID);
+    console.log("文章信息：\n\t'文章链接': ", link, "\n\t'图片链接': ", imgSrc, "\n\t'文章标签': ", articleTags, "\n\t'滚动参数': ", scrollAmount, "\n\t'分享openID': ", sharedFromID);
 
     if (sharedFromID) {
       wx.showModal({
@@ -62,8 +65,12 @@ Page({
 
     // 更新本地readAmount
     if (onCheckSignIn()){   
-      if (localArticleRecommend !== "" && this.data.articleType !== -1) {
-        localArticleRecommend.readAmount[this.data.articleType] += Math.floor(timeDifference / 1000); // 阅读时间单位为：秒
+      if (localArticleRecommend !== "" && this.data.totalTags !== null && this.data.articleTags != null) {
+        this.data.articleTags.forEach(tag => {
+          let index = this.data.totalTags.indexOf(tag);
+          if (index !== -1) localArticleRecommend.readAmount[index] += Math.floor(timeDifference / 1000);
+        });
+
         wx.setStorageSync('articleRecommend', localArticleRecommend)
       }
     }
@@ -75,8 +82,8 @@ Page({
           startTime: startTime,
           endTime: endTime,
           link: this.data.link,
-          scrollAmount: this.data.scrollAmount ? this.data.scrollAmount : null,
-          sharedFromID: this.data.sharedFromID ? this.data.sharedFromID : null
+          scrollAmount: this.data.scrollAmount ?? null,
+          sharedFromID: this.data.sharedFromID ?? null
         }
       })
       
@@ -94,30 +101,13 @@ Page({
             })
 
           // 普通用户
-          } else { 
+          } else {
             wx.showModal({
               title: '阅读成功',
               content:'低碳生活，携手同行！',
               showCancel: false
             })
           }
-        },
-        failed: () => {
-          wx.showModal({
-            title: '阅读成功',
-            content:'登陆即可阅读更多有趣的文章！',
-            showCancel: false,
-            success: (res) =>{
-              if(res.confirm){
-                let localAutoLogin = wx.getStorageSync('autoLogin');
-                if (localAutoLogin) {
-                  let indexPageInstance = getCurrentPages()
-                    .find(page => page.route === 'pages/index/index');
-                  indexPageInstance?.HandleSignIn();
-                }
-              }
-            }
-          })
         }
       }) 
       
