@@ -9,7 +9,7 @@ Page({
    */
   data: {
     /** 页面基本信息 */
-    RECOMMENDATION_VERSION: 2.0, // 用来识别是否需要处理就用户的
+    RECOMMENDATION_VERSION: 2.0, // 用来识别是否需要处理就用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
     updateCounter: 0,
     shouldUpdateCloud: false,
     background: null,
@@ -105,6 +105,10 @@ Page({
 
       RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
     })
+
+    // 移除本地文章库存
+    // TODO: 等到新文章放进数据库articles之后，可以移除
+    wx.removeStorageSync('articles')
 
     await this.updateCloudStorage(this.data.RECOMMENDATION_VERSION);
     console.log('处理旧版本成功！')
@@ -695,7 +699,7 @@ Page({
         }
 
         // 检查推荐系统版本
-        this.handleOldVersion()
+        await this.handleOldVersion()
         articleRecommend = wx.getStorageSync('articleRecommend');
 
         // 更新页面 articleRecommend 数据
@@ -711,8 +715,7 @@ Page({
 
         // 获取文章 articles, （若此前先从游客模式进入再登录（只有碳行家文章），则更新本地文章）
         let localArticles = wx.getStorageSync('articles');
-        const articlesLength = localArticles.filter(article => article.author !== "碳行家").length
-        if (localArticles == '' || articlesLength === 0) {
+        if (localArticles == '' || localArticles.filter(article => article.author !== "碳行家").length === 0) {
           await this.fetchCloudArticles();
           localArticles = wx.getStorageSync('articles');
         }
@@ -836,7 +839,7 @@ Page({
         this.setData({
           articles: localArticles
         })
-        const articleShowList = this.data.articles.filter(article => article.author === "碳行家");
+        const articleShowList = this.data.articles.filter(article => article.author === this.data.articleAuthors[-1]);
 
         this.setData({
           articleShowList: this.timeConvert(articleShowList)
