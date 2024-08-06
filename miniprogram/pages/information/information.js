@@ -715,7 +715,7 @@ Page({
 
         // 获取文章 articles, （若此前先从游客模式进入再登录（只有碳行家文章），则更新本地文章）
         let localArticles = wx.getStorageSync('articles');
-        if (localArticles == '' || localArticles.filter(article => article.author !== "碳行家").length === 0) {
+        if (localArticles == '' || localArticles.filter(article => article.author !== this.data.articleAuthors[-1]).length === 0) {
           await this.fetchCloudArticles();
           localArticles = wx.getStorageSync('articles');
         }
@@ -743,7 +743,7 @@ Page({
         // 检查天数是否更新（每日凌晨4点）
         if (this.CheckDailyUpdate()) {
           // 更新本地文章数据
-          if (articlesLength !== 0) {
+          if (localArticles.filter(article => article.author !== this.data.articleAuthors[-1]).length !== 0) {
             await this.fetchCloudArticles();
             localArticles = wx.getStorageSync('articles');
             this.setData({
