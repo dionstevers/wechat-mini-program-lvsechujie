@@ -25,3 +25,26 @@ export function roundToKM(num) {
   if (num <= 0) return 0;
   return Math.round((num / 1000) * 100) / 100;
 }
+
+export function todayStartDate() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now;
+}
+
+export function getLocation() {
+  return new Promise((resolve, reject) => {
+    wx.getLocation({
+      type: "gcj02",
+      success: loc => {
+        const latitude = loc.latitude.toFixed(2);
+        const longitude = loc.longitude.toFixed(2);
+        resolve({ latitude, longitude });
+      },
+      fail: err => {
+        console.error("Error getting location:", err);
+        reject(err);
+      }
+    });
+  });
+}

@@ -144,5 +144,6 @@ export default {
     { label: "高铁", color: "train", totalTime: 0 }
   ],
   showSchedules: [],
-  showPoint: false
+  showPoint: false,
+  lastTrack: null
 };
