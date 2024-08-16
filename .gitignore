@@ -19,3 +19,6 @@ cloudfunctions/testTransfer/platform_certificate.pem
 cloudfunctions/testTransfer/apiclient_cert.pem
 cloudfunctions/transfer/platform_certificate.pem
 cloudfunctions/transfer/apiclient_key.pem
+
+# Local Template
+/Template
