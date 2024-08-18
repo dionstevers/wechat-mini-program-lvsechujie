@@ -3,10 +3,9 @@
 
 
 <view class="page-background">
-
-  <view >
-  <modal title="知情同意" confirm-text="同意" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
-  <scroll-view scroll-y="true"  style="height:300px ; text-align: center;">
+  <view>
+    <modal title="知情同意" confirm-text="同意" cancel-text="取消" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCancel">
+    <scroll-view scroll-y="true"  style="height:300px ; text-align: center;">
     <text>\n隐私声明
 
 一、前言\n
@@ -31,15 +30,10 @@
 联系方式：charles.c.chang@dukekunshan.edu.cn \n
 
 感谢您的信任，我们会竭尽全力守护信息安全。
-</text>
-  </scroll-view>
-  </modal>
-  
-
-  
-</view>
-
-
+    </text>
+    </scroll-view>
+    </modal> 
+  </view>
 
   <view style="font-size:50rpx; padding: 20rpx; color: white;text-align: center; border-bottom: 5rpx solid #a5a4a4;">欢迎您使用低碳出街小助手！请完成注册开始您的低碳之旅</view>
 
@@ -61,15 +55,17 @@
  <text>昵称</text>
   <input type="nickname" placeholder-style="color:white" placeholder="此处输入昵称" name = "nickname" bindinput="bindnamechange" value="{{ nickname }}"/> 
  </view>
- <view class='sex'>
+
+ <!-- <view class='sex'>
     <text>性别</text>
     <radio-group class="radio-group" bindchange="radioChange" name="sex">
       <label class="radio" wx:for="{{sex}}" wx:key="index">
         <radio value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
       </label>
     </radio-group>
-  </view>
- <view class='name'>
+  </view> -->
+
+ <!-- <view class='name'>
    <text>年龄</text>
    <picker bindchange = "bindDobChange" value = "{{ dob }}" range = "{{ dobarr }}" name = "dob">
    <view wx:if = "{{ dob }}">
@@ -128,13 +124,10 @@
      <view wx:else style="color:white">请选择</view>
     
    </picker>
-  </view>
-
-
+  </view> -->
 </view>
 
 <button form-type='submit' class="submit" style="margin-bottom: 100rpx; margin-top: 50rpx;">提交</button>
 </form>
-
 
 </view>

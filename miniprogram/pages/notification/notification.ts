@@ -1,3 +1,4 @@
+import { logEvent } from "../../utils/log"
 import { formatTime } from '../../utils/time'
 import { updateColor } from '../../utils/colorschema'
 import  { logEvent } from '../../utils/log'
