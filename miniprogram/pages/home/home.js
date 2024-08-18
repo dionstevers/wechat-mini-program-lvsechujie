@@ -54,7 +54,7 @@ Page({
       });
     });
   },
-  
+
   // Travel mode selection
 
 
@@ -87,6 +87,7 @@ Page({
     const settingRes = await wx.getSetting();
     if (!settingRes.authSetting["scope.userLocationBackground"]) {
       await Dialog.confirm({ title: "提示", message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”" });
+      await wx.openSetting()
     } else {
       autoStart && this.onTrack();
 
@@ -288,7 +289,7 @@ Page({
     this.setWeather();
 
   },
-  
+
   // Function to update the weekly ranking
   async updateWeeklyRanking() {
     const { firstDayOfWeek } = getWeekRange();
