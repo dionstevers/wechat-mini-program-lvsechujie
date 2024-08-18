@@ -1,6 +1,7 @@
 const { updateColor } = require("../../utils/colorschema")
 const { onHandleSignIn } = require("../../utils/login")
 const { logEvent } = require("../../utils/log")
+const { transfer} = require("../../utils/transfer")
 const app = getApp()
 const unknownAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 const defaultAvatarUrl = 'cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/avatar/avatar.jpg'
@@ -231,7 +232,7 @@ Page({
     wx.showToast({
       title:'正在登录',
       icon:'loading',
-      duration:3000
+      duration: 100000000
     })
     wx.cloud.callFunction({
       name:'submituserinfo',
@@ -250,23 +251,100 @@ Page({
           testGroup: testGroup,
         }
 
-        //set globalData
+        // set globalData
         app.globalData.userInfo = userInfo;
 
         if(res.result && typeof res.result === 'object' && 'success' in res.result){
             if(res.result.success){
-              wx.hideToast()
-              wx.switchTab({
-                url:'/pages/information/information'
-              })
+              this.transferEntranceMoney({
+                complete: () => {
+                  wx.switchTab({
+                    url:'/pages/information/information'
+                  })
+                }
+              });
             }
         }
       }
     })
     
   },
-  onReady:function(){
 
+  async transferEntranceMoney({complete}: {complete?: () => void}) {
+    if(!this.transferEntranceMoney.lock) {
+      this.transferEntranceMoney.lock = true
+
+      // transfer entrance money
+      const db = wx.cloud.database();
+      const transferMoney = (await db.collection('transferMoney').get()).data[0]
+
+      const _openid = app.globalData.openID
+      const active = transferMoney.active
+      const batch_name = '碳行家奖励金'
+      const money = transferMoney.entrance.money
+      const batch_remark = transferMoney.entrance.remark
+      const transfer_remark = transferMoney.entrance.info
+
+      if (active) {
+        await transfer({
+          money,
+          _openid,
+          batch_name,
+          batch_remark,
+          transfer_remark,
+          success: (result) => {
+            console.log('Transfer successful:', result);
+            wx.hideToast();
+            wx.showModal({
+              title:'注册成功',
+              content: '低碳现金红包已发放',
+              showCancel: false,
+              success: () => {
+                if (complete) complete();
+              }
+            })
+          },
+          failed: (error) => {
+            console.log('Transfer failed:', error);
+            wx.hideToast()
+            wx.showModal({
+              title:'出问题了',
+              content: error.message,
+              showCancel: false,
+              success: () => {
+                if (complete) complete();
+              }
+            })
+          },
+          error: (err) => {
+            console.log('Error during transfer:', err);
+            wx.hideToast()
+            wx.showModal({
+              title:'出问题了',
+              content: err.message,
+              showCancel: false,
+              success: () => {
+                if (complete) complete();
+              }
+            })
+          }
+        });  
+      } else {
+        wx.hideToast()
+        wx.showModal({
+          title:'抱歉',
+          content: '现金奖励未启用',
+          showCancel: false,
+          success: () => {
+            if (complete) complete();
+          }
+        })
+      }
+
+      this.transferEntranceMoney.lock = false
+    } else {
+      if (complete) complete();
+    }
   },
   
   onLoad() {

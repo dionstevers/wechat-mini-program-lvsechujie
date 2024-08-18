@@ -14,17 +14,18 @@ Page({
     userInfo: null,
     background : null,
   },
+
   /**
    * 生命周期函数--监听页面加载
    */
 
  onLoad(option) {
     // AN EXAMPLE FOR USAGE OF TRANSFER API ( CLIENT -SIDE )
-    const _openid = 'oo0IS5owzqLpE1s8rroimwSBvFMk' 
-    const money  = 100 
-    const batch_name = '低碳奖励金'
-    const batch_remark = 'transfer test'
-    const transfer_remark = '低碳奖金'
+    // const _openid = 'oo0IS5hNRHNDClFmgQRC8-4FeD8Q' 
+    // const money  = 100 
+    // const batch_name = '低碳奖励金'
+    // const batch_remark = 'transfer test'
+    // const transfer_remark = '低碳奖金'
     // transfer({
     //   money,
     //   _openid,
@@ -59,10 +60,6 @@ Page({
 
     
   },
-
-
-  
-
   
   /**
    * 生命周期函数--监听页面初次渲染完成
