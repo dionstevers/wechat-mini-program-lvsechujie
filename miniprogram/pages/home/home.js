@@ -11,7 +11,53 @@ const db = wx.cloud.database();
 
 Page({
   data,
+  setWeather() {
+    return new Promise((resolve, reject) => {
+      wx.getLocation({
+        type: "gcj02",
+        success: (loc) => {
+          const latitude = loc.latitude.toFixed(2);
+          const longitude = loc.longitude.toFixed(2);
+          console.log("Location:", longitude, latitude);
+  
+          wx.cloud.callFunction({
+            name: 'setweather',
+            data: { latitude, longitude },
+            success: (res) => {
+              const { cityName, aqi, category, weather } = res.result;
+              this.setData({
+                name: cityName,
+                aqi,
+                category,
+                weather,
+                latitude,
+                longitude,
+              });
+              resolve({
+                openid: app.globalData.openID,
+                cityName,
+                latitude,
+                longitude,
+                weather,
+              });
+            },
+            fail: (err) => {
+              console.error('Error calling cloud function:', err);
+              reject(err);
+            }
+          });
+        },
+        fail: (err) => {
+          console.error('Error getting location:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+  
   // Travel mode selection
+
+
   bindPickerChange(e) {
     this.setData({ endIndex: e.detail.value, transport: e.detail.value });
   },
@@ -238,7 +284,10 @@ Page({
     this.updateWeeklyRanking();
     wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
     onCheckSignIn({ message: "请您登录", success: () => this.initData() });
+    this.setWeather();
+
   },
+  
   // Function to update the weekly ranking
   async updateWeeklyRanking() {
     const { firstDayOfWeek } = getWeekRange();
