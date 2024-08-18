@@ -13,9 +13,20 @@
           <view class="message-item {{selectedMessageIndex === index ? 'message-item-selected' : ''}}" data-index="{{index}}" bindtap="toggleMessage">
             <text class="type">信息类型：{{item.type}}</text>
             <text class="time">发送日期：{{item.formattedTime}}</text>
-            <text class="original-message">原信息：{{item.message}}</text>
-            <text class="stage">处理状态：{{item.stage === 0 ? '处理中' : '已处理'}}</text>
-            <text class="response" wx:if="{{item.stage === 1}}">平台回复：{{item.response}}</text>
+
+            <!-- Conditional rendering for "证书发放" type messages -->
+            <block wx:if="{{item.type === '证书发放'}}">
+              <image src="{{item.response}}" mode="widthFix" class="response-image"/>
+            </block>
+            <block wx:else>
+              <text class="original-message">原信息：{{item.message}}</text>
+              <text class="stage">处理状态：{{item.stage === 0 ? '处理中' : '已处理'}}</text>
+              <text class="response" wx:if="{{item.stage === 1}}">平台回复：{{item.response}}</text>
+            </block>
+
+
+            <!-- <text class="stage">处理状态：{{item.stage === 0 ? '处理中' : '已处理'}}</text>
+            <text class="response" wx:if="{{item.stage === 1}}">平台回复：{{item.response}}</text> -->
           </view>
         </block>
       </block>

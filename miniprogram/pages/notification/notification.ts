@@ -1,5 +1,6 @@
 import { formatTime } from '../../utils/time'
 import { updateColor } from '../../utils/colorschema'
+import  { logEvent } from '../../utils/log'
 const app = getApp()
 
 Page({
@@ -50,8 +51,8 @@ Page({
       .where({
         _openid: openid
       })
-      .orderBy('stage', 'asc')
-      .orderBy('time', 'asc')
+      .orderBy('stage', 'desc')
+      .orderBy('time', 'desc')
       .get()
       .then(res => {
         const messages = res.data.map((message: any) => {
@@ -90,6 +91,23 @@ Page({
     const message = this.data.inboxMessages[index];
 
     if (message.stage === 1) {
+      if(message.type === '证书发放'){
+        wx.setClipboardData({
+          data: message.response,
+          success(res) {
+            wx.getClipboardData({
+              success(res) {
+                console.log(res.data); // data
+                wx.showToast({
+                  title: '证书链接已复制',
+                  icon: 'success'
+                });
+              }
+            });
+          }
+        });
+        return;
+      }
       wx.setClipboardData({
         data: message.response,
         success(res) {
@@ -100,6 +118,7 @@ Page({
                 title: '内容已复制',
                 icon: 'success'
               });
+
             }
           });
         }
