@@ -2,7 +2,9 @@ const { updateColor } = require("../../utils/colorschema")
 const { onHandleSignIn } = require("../../utils/login")
 const { logEvent } = require("../../utils/log")
 const app = getApp()
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+const unknownAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+const defaultAvatarUrl = 'cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/avatar/avatar.jpg'
+
 Page({
  
   /**
@@ -12,7 +14,7 @@ Page({
     modalHidden: false,
 
     userInfo: null,
-    avatarUrl: defaultAvatarUrl,
+    avatarUrl: unknownAvatarUrl,
 
     // code: null,
     // carSelected: false,
@@ -197,7 +199,7 @@ Page({
     console.log(basicInfo)
     const carbSum = 0;
     const testGroup = Math.floor(Math.random() * Object.keys(app.constData.TOTAL_TEST_GROUP_COUNT).length) + 1; 
-    let avatar = this.data.avatarUrl
+    let avatar = this.data.avatarUrl === unknownAvatarUrl ? defaultAvatarUrl : this.data.avatarUrl
 
     // if user upload the avatar, then we need to first upload it to cloud db
     if(avatar != defaultAvatarUrl){
