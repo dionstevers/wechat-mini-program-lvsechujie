@@ -196,6 +196,7 @@ Page({
               RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
             }
           });
+          
           wx.setStorageSync("articleRecommend", {
             frequencyScore: articleRecommend[0],
             articleCount: articleRecommend[1],

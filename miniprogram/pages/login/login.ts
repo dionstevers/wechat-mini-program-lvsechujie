@@ -9,105 +9,115 @@ Page({
    * 页面的初始数据
    */
   data: {
-    code: null,
-    avatarUrl: defaultAvatarUrl,
-    carSelected: false,
-    userInfo: null,
-    dobarr: ["18-23岁","24-29岁","30-39岁","40-49岁","50-59","60岁及以上"],
-    occupationArr: ["学生","事业单位工作人员","党政机关工作人员", "国有企业员工", "外资企业雇员", "民营企业雇员", "私企或个体经营户", "体力工人", "自由职业者", "商业，服务从业者","退休"],
-    gradArr: ["小学以下", "小学", "初中", "高中", "职高/中专", "大专", "大学", "硕士", "博士"],
-    transArr: ["步行或骑行","公共交通","驾驶机动车"],
-    carArr:["纯燃油车", "混合动力汽车", "插电式混合动力车", "增程式电动汽车","纯电动汽车"],
-    car:null,
-    occu: null,
-    grad: null,
-    trans:null,
-    dob: null,
-    email:'',
-    nickname:null,
-    sex: [
-      { name: '0', value: '男', checked: 'true' },
-      { name: '1', value: '女' },
-      {name:'2', value:'保密'}
-    ],
-    choice: [
-      { name: '0', value: '是', checked: 'true' },
-      { name: '1', value: '否' }
-    ],
-    isSex: "0",
-    userSex: '',
-    modalHidden: false
+    modalHidden: false,
 
+    userInfo: null,
+    avatarUrl: defaultAvatarUrl,
+
+    // code: null,
+    // carSelected: false,
+    // dobarr: ["18-23岁","24-29岁","30-39岁","40-49岁","50-59","60岁及以上"],
+    // occupationArr: ["学生","事业单位工作人员","党政机关工作人员", "国有企业员工", "外资企业雇员", "民营企业雇员", "私企或个体经营户", "体力工人", "自由职业者", "商业，服务从业者","退休"],
+    // gradArr: ["小学以下", "小学", "初中", "高中", "职高/中专", "大专", "大学", "硕士", "博士"],
+    // transArr: ["步行或骑行","公共交通","驾驶机动车"],
+    // carArr:["纯燃油车", "混合动力汽车", "插电式混合动力车", "增程式电动汽车","纯电动汽车"],
+    // car:null,
+    // occu: null,
+    // grad: null,
+    // trans:null,
+    // dob: null,
+    // email:'',
+    // nickname:null,
+    // sex: [
+    //   { name: '0', value: '男', checked: 'true' },
+    //   { name: '1', value: '女' },
+    //   {name:'2', value:'保密'}
+    // ],
+    // choice: [
+    //   { name: '0', value: '是', checked: 'true' },
+    //   { name: '1', value: '否' }
+    // ],
+    // isSex: "0",
+    // userSex: ''
   },
+
   onChooseAvatar(e) {
     const { avatarUrl } = e.detail 
     this.setData({
       avatarUrl,
     })
   },
+
   modalConfirm(e){
     this.setData({
       modalHidden:true
     })
   },
+
   modalCancel(){
     wx.navigateBack({
       delta: 1
     })
   },
+
   //单选按钮发生变化
-  radioChange(e) {
-    console.log(e.detail.value);
-    var sexName = this.data.isSex
-    this.setData({
-      isSex: e.detail.value
-    })
-  },
+  // radioChange(e) {
+  //   console.log(e.detail.value);
+  //   var sexName = this.data.isSex
+  //   this.setData({
+  //     isSex: e.detail.value
+  //   })
+  // },
 
-  bindgradChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      grad: e.detail.value
-    })
-  },
-  bindcarChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      car: e.detail.value
-    })
-  },
-  bindtransChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      trans: e.detail.value
-    })
-    if (e.detail.value==2) {
-      this.setData({
-        carSelected: true
-      })
-    }else{this.setData({
-      carSelected: false
-    })}
-  },
-  bindOccuChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      occu: e.detail.value
-    })
-  },
-  bindDobChange: function (e) {
-    console.log(e.detail.value)
-    this.setData({
-      dob: e.detail.value
-    })
-  },
+  // bindgradChange: function (e) {
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     grad: e.detail.value
+  //   })
+  // },
 
-  bindemailchange: function(e){
-    console.log(e.detail.value)
-    this.setData({
-      email:e.detail.value
-    })
-  },
+  // bindcarChange: function (e) {
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     car: e.detail.value
+  //   })
+  // },
+
+  // bindtransChange: function (e) {
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     trans: e.detail.value
+  //   })
+  //   if (e.detail.value==2) {
+  //     this.setData({
+  //       carSelected: true
+  //     })
+  //   }else{this.setData({
+  //     carSelected: false
+  //   })}
+  // },
+
+  // bindOccuChange: function (e) {
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     occu: e.detail.value
+  //   })
+  // },
+
+  // bindDobChange: function (e) {
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     dob: e.detail.value
+  //   })
+  // },
+
+  // bindemailchange: function(e){
+  //   console.log(e.detail.value)
+  //   this.setData({
+  //     email:e.detail.value
+  //   })
+  // },
+
   bindnamechange: function(e){
     console.log(e.detail.value)
     this.setData({
@@ -116,7 +126,9 @@ Page({
   },
 
   validateForm() {
-    const { nickname, dob, occu, grad, trans, car } = this.data
+    // const { nickname, dob, occu, grad, trans, car } = this.data
+    const {nickname} = this.data
+
     if (!nickname) {
       wx.showToast({
         title: '请输入昵称',
@@ -124,13 +136,15 @@ Page({
       })
       return false
     }
-    if (!dob) {
-      wx.showToast({
-        title: '请选择年龄段',
-        icon: 'none'
-      })
-      return false
-    }
+
+    // if (!dob) {
+    //   wx.showToast({
+    //     title: '请选择年龄段',
+    //     icon: 'none'
+    //   })
+    //   return false
+    // }
+
     // if(!code){
     //   wx.showModal({
     //     title:'请授权手机号',
@@ -138,34 +152,37 @@ Page({
     //     showCancel:false
     //   })
     // }
-    if (!occu) {
-      wx.showToast({
-        title: '请选择职业',
-        icon: 'none'
-      })
-      return false
-    }
-    if (!grad) {
-      wx.showToast({
-        title: '请选择学历',
-        icon: 'none'
-      })
-      return false
-    }
-    if (!trans) {
-      wx.showToast({
-        title: '请选择交通方式',
-        icon: 'none'
-      })
-      return false
-    }
-    if (trans==2 && !car) {
-      wx.showToast({
-        title: '请选择汽车类型',
-        icon: 'none'
-      })
-      return false
-    }
+
+    // if (!occu) {
+    //   wx.showToast({
+    //     title: '请选择职业',
+    //     icon: 'none'
+    //   })
+    //   return false
+    // }
+
+    // if (!grad) {
+    //   wx.showToast({
+    //     title: '请选择学历',
+    //     icon: 'none'
+    //   })
+    //   return false
+    // }
+
+    // if (!trans) {
+    //   wx.showToast({
+    //     title: '请选择交通方式',
+    //     icon: 'none'
+    //   })
+    //   return false
+    // }
+    // if (trans==2 && !car) {
+    //   wx.showToast({
+    //     title: '请选择汽车类型',
+    //     icon: 'none'
+    //   })
+    //   return false
+    // }
     return true
   },
 
@@ -174,14 +191,15 @@ Page({
     if(!this.validateForm()){
       return;
     }
+
     // data to be uploaded 
     const basicInfo = e.detail.value;
     console.log(basicInfo)
     const carbSum = 0;
-    const testGroup  = Math.floor(Math.random() * Object.keys(app.constData.TOTAL_TEST_GROUP_COUNT).length) + 1; 
+    const testGroup = Math.floor(Math.random() * Object.keys(app.constData.TOTAL_TEST_GROUP_COUNT).length) + 1; 
     let avatar = this.data.avatarUrl
 
-// if user upload the avatar, then we need to first upload it to cloud db
+    // if user upload the avatar, then we need to first upload it to cloud db
     if(avatar != defaultAvatarUrl){
       wx.cloud.uploadFile({
         cloudPath: `avatar/${new Date().getTime()}.jpeg`,
@@ -202,16 +220,12 @@ Page({
           return;
         }
       })      
-    }else{
+    } else {
       this.uploadData(avatar,basicInfo,carbSum,testGroup);
     }
-    
-
-
   },
 
-
-  uploadData: function( avatar: any,basicInfo: any, carbSum: any, testGroup: any){
+  uploadData: function(avatar: any, basicInfo: any, carbSum: any, testGroup: any){
     wx.showToast({
       title:'正在登录',
       icon:'loading',
@@ -233,6 +247,7 @@ Page({
           carbSum:carbSum,
           testGroup: testGroup,
         }
+
         //set globalData
         app.globalData.userInfo = userInfo;
 

@@ -199,6 +199,7 @@ Page({
       console.log("home页面已经初始化过了！");
     }
   },
+  
   async reloadData() {
     // 系统信息
     const res = await wx.getSystemInfo();
