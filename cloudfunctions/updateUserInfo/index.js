@@ -7,8 +7,8 @@ const _ = db.command;
 const credit = 25; // 默认累加25积分
 
 exports.main = async event => {
+  const { carbon } = event ;
   const { OPENID } = cloud.getWXContext();
-
   const transaction = await db.startTransaction();
   try {
     const res = await transaction.collection("lottery").where({ _openid: OPENID }).get();
@@ -34,7 +34,7 @@ exports.main = async event => {
     transaction
       .collection("userInfo")
       .doc(userId)
-      .update({ data: { carbSum: db.command.inc(event.carbon) } });
+      .update({ data: { carbSum: _.inc(carbon) } });
   } catch (err) {
     await transaction.rollback();
     return { errMsg: "cloud.callFunction:fail", result: err };

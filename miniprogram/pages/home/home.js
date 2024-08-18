@@ -1,4 +1,5 @@
 import data from "./data";
+import {requestSubs} from "../../utils/requestSubs"
 import Dialog from "@vant/weapp/dialog/dialog";
 import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
@@ -139,6 +140,7 @@ Page({
     if (this.data.userInfo != null) {
       if (!this.data.recordStatus) {
         this.checkSetting(true);
+        requestSubs();
       } else {
         wx.showModal({
           title: "提示",
@@ -151,6 +153,7 @@ Page({
   },
   // Start recording
   onTrack() {
+    
     this.setData({
       btnClass: "btn btn-start",
       recordStatus: true,
