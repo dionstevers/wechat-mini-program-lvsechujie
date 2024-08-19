@@ -147,7 +147,7 @@ Page({
     if (this.data.userInfo != null) {
       if (!this.data.recordStatus) {
         this.checkSetting(true);
-        requestSubs();
+        // requestSubs();
       } else {
         wx.showModal({
           title: "提示",
