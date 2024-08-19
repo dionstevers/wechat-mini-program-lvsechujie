@@ -2,7 +2,8 @@ const { updateColor } = require("../../utils/colorschema");
 const { onHandleSignIn } = require("../../utils/login");
 const { logEvent } = require("../../utils/log");
 const { transfer } = require("../../utils/transfer");
-import Dialog from "@vant/weapp/dialog/dialog";
+//import Dialog from "@vant/weapp/dialog/dialog";
+import Dialog from "../../miniprogram_npm/@vant/weapp/dialog/dialog"
 
 
 const app = getApp();
