@@ -4,6 +4,7 @@ const { logEvent } = require("../../utils/log");
 const { transfer } = require("../../utils/transfer");
 import Dialog from "@vant/weapp/dialog/dialog";
 
+
 const app = getApp();
 const unknownAvatarUrl = "https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0";
 const defaultAvatarUrl = "cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/avatar/avatar.jpg";
@@ -62,12 +63,20 @@ Page({
       await Dialog.confirm({ title: "提示", message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”" });
       await wx.openSetting();
     }
-    // 如果需要使用，解开注释 未验证是否可运行，云函数setweather问题请联系yuandong处理
-    const { result: sendParams } = wx.cloud.callFunction({ name: "setweather" });
-    wx.cloud.callFunction({
-      name: "addLocation",
-      data: { sendParams },
-      fail: err => console.log("error==", err)
+
+    wx.getLocation({
+      type: "gcj02",
+      success: async loc => {
+        const latitude = loc.latitude.toFixed(2);
+        const longitude = loc.longitude.toFixed(2);
+
+        const { result: sendParams } = (await wx.cloud.callFunction({ name: "setweather", data: { longitude, latitude } })) || {};
+        wx.cloud.callFunction({
+          name: "addLocation",
+          data: { sendParams },
+          fail: err => console.log("error==", err)
+        });
+      }
     });
   },
 

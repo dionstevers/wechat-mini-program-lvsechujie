@@ -201,6 +201,8 @@ Page({
   },
 
   transporModalConfirm(e) {
+    if (!this.data.endTransportList.length && !this.data.purposes.length) return wx.showToast({ title: "请至少选择一项" });
+
     this.setData({ transporModalHidden: true });
     this.resetSelector();
     this.endTrack();
@@ -416,17 +418,18 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
-    logEvent("Share App")
+    logEvent("Share App");
     return {
       title: "快来一起低碳出街~",
-      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      success: function(res){
-        console.log(res.shareTickets[0])
+      path: `/pages/index/index?sharedFromID=${app.globalData.openID}`,
+      imageUrl:
+        "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function (res) {
+        console.log(res.shareTickets[0]);
       },
-      fail:function(res){
-        console.log('share failed')
+      fail: function (res) {
+        console.log("share failed");
       }
-    }
+    };
   }
 });

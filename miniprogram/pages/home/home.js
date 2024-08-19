@@ -1,5 +1,5 @@
 import data from "./data";
-import {requestSubs} from "../../utils/requestSubs"
+import { requestSubs } from "../../utils/requestSubs";
 import Dialog from "@vant/weapp/dialog/dialog";
 import { logEvent } from "../../utils/log";
 import { getWeekRange } from "../../utils/time";
@@ -16,15 +16,15 @@ Page({
     return new Promise((resolve, reject) => {
       wx.getLocation({
         type: "gcj02",
-        success: (loc) => {
+        success: loc => {
           const latitude = loc.latitude.toFixed(2);
           const longitude = loc.longitude.toFixed(2);
           console.log("Location:", longitude, latitude);
-  
+
           wx.cloud.callFunction({
-            name: 'setweather',
+            name: "setweather",
             data: { latitude, longitude },
-            success: (res) => {
+            success: res => {
               const { cityName, aqi, category, weather } = res.result;
               this.setData({
                 name: cityName,
@@ -32,24 +32,24 @@ Page({
                 category,
                 weather,
                 latitude,
-                longitude,
+                longitude
               });
               resolve({
                 openid: app.globalData.openID,
                 cityName,
                 latitude,
                 longitude,
-                weather,
+                weather
               });
             },
-            fail: (err) => {
-              console.error('Error calling cloud function:', err);
+            fail: err => {
+              console.error("Error calling cloud function:", err);
               reject(err);
             }
           });
         },
-        fail: (err) => {
-          console.error('Error getting location:', err);
+        fail: err => {
+          console.error("Error getting location:", err);
           reject(err);
         }
       });
@@ -57,7 +57,6 @@ Page({
   },
 
   // Travel mode selection
-
 
   bindPickerChange(e) {
     this.setData({ endIndex: e.detail.value, transport: e.detail.value });
@@ -74,6 +73,7 @@ Page({
     this.setData({ transporModalHidden: true });
   },
   transporModalConfirm() {
+    if (!this.data.endTransportList.length && !this.data.purposes.length) return wx.showToast({ title: "请至少选择一项" });
     this.resetSelector();
     this.setData({ transporModalHidden: true });
     this.endTrack();
@@ -88,29 +88,36 @@ Page({
     const settingRes = await wx.getSetting();
     if (!settingRes.authSetting["scope.userLocationBackground"]) {
       await Dialog.confirm({ title: "提示", message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”" });
-      await wx.openSetting()
+      await wx.openSetting();
     } else {
       autoStart && this.onTrack();
 
       // 如果需要使用，解开注释 未验证是否可运行，云函数setweather问题请联系yuandong处理
-        // const { result: sendParams } = wx.cloud.callFunction({ name: "setweather" });
-        // canceled geolocation function
-        // wx.cloud.callFunction({
-          // name: "addLocation",
-          // data: { sendParams },
-          // fail: err => console.log("error==", err)
-        // })
+      wx.getLocation({
+        type: "gcj02",
+        success: async loc => {
+          const latitude = loc.latitude.toFixed(2);
+          const longitude = loc.longitude.toFixed(2);
+
+          const { result: sendParams } = (await wx.cloud.callFunction({ name: "setweather", data: { longitude, latitude } })) || {};
+          wx.cloud.callFunction({
+            name: "addLocation",
+            data: { sendParams },
+            fail: err => console.log("error==", err)
+          });
+        }
+      });
     }
   },
   // 刷新今日最新出行记录
   async refreshLastTrack() {
     // 今日出行记录
-    const { result: {
-      showPoint, isRecordEmpty, list
-    } } = await wx.cloud.callFunction({ name: "getLastTrack" }) || {};
+    const {
+      result: { showPoint, isRecordEmpty, list }
+    } = (await wx.cloud.callFunction({ name: "getLastTrack" })) || {};
 
     // 行程百分比分析
-    const { result: showSchedules } = await wx.cloud.callFunction({ name: "getTrackRange", data: { list } }) || {};
+    const { result: showSchedules } = (await wx.cloud.callFunction({ name: "getTrackRange", data: { list } })) || {};
     this.setData({ showPoint, showSchedules, todayRecordList: list.reverse(), isRecordEmpty });
     return list;
   },
@@ -153,7 +160,6 @@ Page({
   },
   // Start recording
   onTrack() {
-    
     this.setData({
       btnClass: "btn btn-start",
       recordStatus: true,
@@ -202,17 +208,20 @@ Page({
         const stepList = resp.info.data ? resp.info.data.stepInfoList : null;
 
         const { latitude, longitude } = await getLocation();
-        const { result: {carbSum, trackRes} } = await wx.cloud.callFunction({
-          name: "endTrack",
-          data: {
-            stepList,
-            latitude,
-            longitude,
-            curID: _this.data.curID,
-            purpose: _this.data.purpose,
-            transport: _this.data.transport
-          }
-        }) || {};
+        const {
+          result: { carbSum, trackRes }
+        } =
+          (await wx.cloud.callFunction({
+            name: "endTrack",
+            data: {
+              stepList,
+              latitude,
+              longitude,
+              curID: _this.data.curID,
+              purpose: _this.data.purpose,
+              transport: _this.data.transport
+            }
+          })) || {};
 
         if (trackRes.stats.updated == 1) {
           console.log("行程记录成功！", trackRes);
@@ -249,7 +258,7 @@ Page({
       console.log("home页面已经初始化过了！");
     }
   },
-  
+
   async reloadData() {
     // 系统信息
     const res = await wx.getSystemInfo();
@@ -290,7 +299,6 @@ Page({
     wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
     onCheckSignIn({ message: "请您登录", success: () => this.initData() });
     this.setWeather();
-
   },
 
   // Function to update the weekly ranking
