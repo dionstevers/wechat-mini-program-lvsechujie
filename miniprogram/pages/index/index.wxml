@@ -12,4 +12,6 @@
     <button bind:tap="onDeleteAccount" class="delete-button">删除账号</button>
 
   </view>
+
+
 </view>

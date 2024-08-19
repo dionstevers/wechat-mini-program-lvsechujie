@@ -1,8 +1,8 @@
-import { logEvent } from "../../utils/log"
-import { onHandleSignIn } from "../../utils/login"
+import { logEvent } from "../../utils/log";
+import { onHandleSignIn } from "../../utils/login";
 
 // pages/index/index.ts
-const app = getApp()
+const app = getApp();
 
 Page({
   /**
@@ -15,128 +15,123 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-      try {
-        // get user location and ip
-        await wx.cloud.callFunction({
-          name: 'getUserip'
-        })
+    try {
+      // get user location and ip
+      await wx.cloud.callFunction({
+        name: "getUserip"
+      });
 
-        // Set user's openID
-        const res = await wx.cloud.callFunction({ name: 'login' });
-        this.setData({ openID: (res.result as {data?:any}).data._openid });
-        app.globalData.openID = (res.result as {data?:any}).data._openid;
+      // Set user's openID
+      const res = await wx.cloud.callFunction({ name: "login" });
+      this.setData({ openID: (res.result as { data?: any }).data._openid });
+      app.globalData.openID = (res.result as { data?: any }).data._openid;
 
-        // share app message: Check if the sharedFromid is null, if the sender document does not exist, create it
-        const sharedFromid = options.sharedFromID
-        console.log('sharedFromID', options.sharedFromID)
-        if(!sharedFromid){
-          console.log('no share user')
-        } else { 
-          try {
-            wx.cloud.callFunction({
-              name:'netCreate',
-              data:{
-                senderID: sharedFromid,
-                receiverID: this.data.openID
-              },
-              success: function(res){
-                console.log(res)
-              }
-            })
-          } catch(err) {
-            console.log(err)
-          }
+      // share app message: Check if the sharedFromid is null, if the sender document does not exist, create it
+      const sharedFromid = options.sharedFromID;
+      console.log("sharedFromID", options.sharedFromID);
+      if (!sharedFromid) {
+        console.log("no share user");
+      } else {
+        try {
+          wx.cloud.callFunction({
+            name: "netCreate",
+            data: {
+              senderID: sharedFromid,
+              receiverID: this.data.openID
+            },
+            success: function (res) {
+              console.log(res);
+            }
+          });
+        } catch (err) {
+          console.log(err);
         }
+      }
 
-        // 文章分享跳转和自动登录
-        if (options.isFromArticleShared) {
-          wx.navigateTo({
-            url: `/pages/detail/detail?sharedFromID=${sharedFromid}&link=${options.articleLink}&articleType=${options.articleType}`,
-          })
-        } else {
-          let localAutoLogin = wx.getStorageSync('autoLogin');
-          if (localAutoLogin) {
-            this.HandleSignIn();
-          }
+      // 文章分享跳转和自动登录
+      if (options.isFromArticleShared) {
+        wx.navigateTo({
+          url: `/pages/detail/detail?sharedFromID=${sharedFromid}&link=${options.articleLink}&articleType=${options.articleType}`
+        });
+      } else {
+        let localAutoLogin = wx.getStorageSync("autoLogin");
+        if (localAutoLogin) {
+          this.HandleSignIn();
         }
-
-      }catch(err){
-        console.log(err)
-      } 
+      }
+    } catch (err) {
+      console.log(err);
+    }
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady(){
-
-  },
+  onReady() {},
 
   // record share relations
   async recordShare(sharedFromid: string) {
     const db = wx.cloud.database();
     try {
       // Get the user's openid
-      const res = await wx.cloud.callFunction({ name: 'login' });
+      const res = await wx.cloud.callFunction({ name: "login" });
       const openid = (res.result as { data?: any }).data._openid;
       const createdAt = new Date();
-  
+
       // Add the connection
-      await db.collection('connections').add({
+      await db.collection("connections").add({
         data: {
           userA: sharedFromid,
           userB: openid,
-          createdAt: createdAt,
-        },
+          createdAt: createdAt
+        }
       });
-  
+
       return {
         success: true,
-        message: 'Share recorded successfully',
+        message: "Share recorded successfully"
       };
-  
     } catch (err) {
-      console.error('Error recording share:', err);
+      console.error("Error recording share:", err);
       return {
         success: false,
-        message: 'Error recording share',
+        message: "Error recording share"
       };
     }
   },
-  
+
   // 注册
-  HandleSignUp(){
+  HandleSignUp() {
     if (!this.isFetchingUserInfo && !this.isNavigating) {
       this.isFetchingUserInfo = true;
       this.onHandleSignUp();
     }
   },
-  
+
   // 注册-抓取
   async onHandleSignUp() {
     const db = wx.cloud.database();
+
     try {
-      const res = await wx.cloud.callFunction({ name: 'login' });
+      const res = await wx.cloud.callFunction({ name: "login" });
       const openID = (res.result as { data?: any }).data._openid;
       this.setData({ openID });
       getApp().globalData.openID = openID;
 
-      const userInfoQuery = await db.collection('userInfo')
-        .where({ _openid: openID })
-        .get();
+      const userInfoQuery = await db.collection("userInfo").where({ _openid: openID }).get();
 
       if (userInfoQuery.data.length === 1) {
         getApp().globalData.userInfo = userInfoQuery.data[0];
         wx.showModal({
-          title: '您已有账号',
-          content: '请直接点击登录按钮登录',
-          showCancel: false,
+          title: "您已有账号",
+          content: "请直接点击登录按钮登录",
+          showCancel: false
         });
       } else {
         this.isNavigating = true;
         wx.navigateTo({
-          url: '/pages/login/login',
-          complete: () => this.isNavigating = false
+          url: "/pages/login/login",
+          complete: () => (this.isNavigating = false)
         });
       }
     } catch (err) {
@@ -147,37 +142,38 @@ Page({
   },
 
   // 登录
-  HandleSignIn(){
+  HandleSignIn() {
     if (!this.isFetchingUserInfo && !this.isNavigating) {
       this.isFetchingUserInfo = true;
       onHandleSignIn({
-        success : () => {
+        success: () => {
           this.isNavigating = true;
-          wx.showToast({ 
-            title:'正在登录中',
-            icon:'loading',
-            mask:true,
-            duration:500 });
-            setTimeout(() => {
-              wx.switchTab({
-                url : '/pages/information/information',
-                complete: () => this.isNavigating = false
-              })
-            }, 500);
-            this.isFetchingUserInfo = false;
-        },
-        failed : () => {
-          wx.showModal({
-            title: '您尚未注册',
-            content: '请点击下方注册按钮注册',
-            showCancel: false
-          })
+          wx.showToast({
+            title: "正在登录中",
+            icon: "loading",
+            mask: true,
+            duration: 500
+          });
+          setTimeout(() => {
+            wx.switchTab({
+              url: "/pages/information/information",
+              complete: () => (this.isNavigating = false)
+            });
+          }, 500);
           this.isFetchingUserInfo = false;
         },
-        error : () => {
+        failed: () => {
+          wx.showModal({
+            title: "您尚未注册",
+            content: "请点击下方注册按钮注册",
+            showCancel: false
+          });
+          this.isFetchingUserInfo = false;
+        },
+        error: () => {
           this.isFetchingUserInfo = false;
         }
-      })
+      });
     }
   },
 
@@ -188,91 +184,85 @@ Page({
     }
 
     this.isNavigating = true;
-        wx.showToast({ 
-        title:'游客登录中',
-        icon:'loading',
-        mask:true,
-        duration:500 });
-        setTimeout(() => {
-          wx.switchTab({
-            url : '/pages/information/information',
-            complete: () => this.isNavigating = false
-          })
-        }, 500);
+    wx.showToast({
+      title: "游客登录中",
+      icon: "loading",
+      mask: true,
+      duration: 500
+    });
+    setTimeout(() => {
+      wx.switchTab({
+        url: "/pages/information/information",
+        complete: () => (this.isNavigating = false)
+      });
+    }, 500);
   },
 
   // 删除账户
-  onDeleteAccount(){
+  onDeleteAccount() {
     if (this.isFetchingUserInfo || this.isNavigating) {
       return;
     }
 
     wx.showModal({
-      title:'请您确认',
-      content:'点击确认按钮注销小程序，反之请点击取消',
-      success : (res) =>{
-        if(res.confirm){
+      title: "请您确认",
+      content: "点击确认按钮注销小程序，反之请点击取消",
+      success: res => {
+        if (res.confirm) {
           // TODO: 删除userinfo ??
           wx.showToast({
-            title:'感谢使用碳行家',
-            icon:'success',
-            duration:2000,
-          })
+            title: "感谢使用碳行家",
+            icon: "success",
+            duration: 2000
+          });
         }
-      } 
-    })
+      }
+    });
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    console.log('index page showing up');
+    console.log("index page showing up");
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide() {
-
-  },
+  onHide() {},
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload() {
-
-  },
+  onUnload() {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh() {
-
-  },
+  onPullDownRefresh() {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom() {
-
-  },
+  onReachBottom() {},
 
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage() {
-    logEvent("Share App")
+    logEvent("Share App");
     return {
       title: "快来一起低碳出街~",
-      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      success: function(res){
-        console.log(res.shareTickets[0])
+      path: `/pages/index/index?sharedFromID=${app.globalData.openID}`,
+      imageUrl:
+        "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function (res) {
+        console.log(res.shareTickets[0]);
       },
-      fail:function(res){
-        console.log('share failed')
+      fail: function (res) {
+        console.log("share failed");
       }
-    }
+    };
   }
-})
+});

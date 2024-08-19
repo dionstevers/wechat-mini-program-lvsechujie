@@ -1,13 +1,14 @@
-const { updateColor } = require("../../utils/colorschema")
-const { onHandleSignIn } = require("../../utils/login")
-const { logEvent } = require("../../utils/log")
-const { transfer} = require("../../utils/transfer")
-const app = getApp()
-const unknownAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-const defaultAvatarUrl = 'cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/avatar/avatar.jpg'
+const { updateColor } = require("../../utils/colorschema");
+const { onHandleSignIn } = require("../../utils/login");
+const { logEvent } = require("../../utils/log");
+const { transfer } = require("../../utils/transfer");
+import Dialog from "@vant/weapp/dialog/dialog";
+
+const app = getApp();
+const unknownAvatarUrl = "https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0";
+const defaultAvatarUrl = "cloud://iluvcarb-0gzvs45g82b57f98.696c-iluvcarb-0gzvs45g82b57f98-1315168954/avatar/avatar.jpg";
 
 Page({
- 
   /**
    * 页面的初始数据
    */
@@ -15,7 +16,7 @@ Page({
     modalHidden: false,
 
     userInfo: null,
-    avatarUrl: unknownAvatarUrl,
+    avatarUrl: unknownAvatarUrl
 
     // code: null,
     // carSelected: false,
@@ -45,22 +46,35 @@ Page({
   },
 
   onChooseAvatar(e) {
-    const { avatarUrl } = e.detail 
+    const { avatarUrl } = e.detail;
     this.setData({
-      avatarUrl,
-    })
+      avatarUrl
+    });
   },
 
-  modalConfirm(e){
+  async modalConfirm(e) {
     this.setData({
-      modalHidden:true
-    })
+      modalHidden: true
+    });
+
+    const settingRes = await wx.getSetting();
+    if (!settingRes.authSetting["scope.userLocationBackground"]) {
+      await Dialog.confirm({ title: "提示", message: "请前往右上角菜单，进入”设置“->“位置信息”并选择“使用小程序时和离开后允许”" });
+      await wx.openSetting();
+    }
+    // 如果需要使用，解开注释 未验证是否可运行，云函数setweather问题请联系yuandong处理
+    const { result: sendParams } = wx.cloud.callFunction({ name: "setweather" });
+    wx.cloud.callFunction({
+      name: "addLocation",
+      data: { sendParams },
+      fail: err => console.log("error==", err)
+    });
   },
 
-  modalCancel(){
+  modalCancel() {
     wx.navigateBack({
       delta: 1
-    })
+    });
   },
 
   //单选按钮发生变化
@@ -121,23 +135,23 @@ Page({
   //   })
   // },
 
-  bindnamechange: function(e){
-    console.log(e.detail.value)
+  bindnamechange: function (e) {
+    console.log(e.detail.value);
     this.setData({
       nickname: e.detail.value
-    })
+    });
   },
 
   validateForm() {
     // const { nickname, dob, occu, grad, trans, car } = this.data
-    const {nickname} = this.data
+    const { nickname } = this.data;
 
     if (!nickname) {
       wx.showToast({
-        title: '请输入昵称',
-        icon: 'none'
-      })
-      return false
+        title: "请输入昵称",
+        icon: "none"
+      });
+      return false;
     }
 
     // if (!dob) {
@@ -186,104 +200,102 @@ Page({
     //   })
     //   return false
     // }
-    return true
+    return true;
   },
 
-  login(e:any) {
-     
-    if(!this.validateForm()){
+  login(e: any) {
+    if (!this.validateForm()) {
       return;
     }
 
-    // data to be uploaded 
+    // data to be uploaded
     const basicInfo = e.detail.value;
-    console.log(basicInfo)
+    console.log(basicInfo);
     const carbSum = 0;
-    const testGroup = Math.floor(Math.random() * Object.keys(app.constData.TOTAL_TEST_GROUP_COUNT).length) + 1; 
-    let avatar = this.data.avatarUrl === unknownAvatarUrl ? defaultAvatarUrl : this.data.avatarUrl
+    const testGroup = Math.floor(Math.random() * Object.keys(app.constData.TOTAL_TEST_GROUP_COUNT).length) + 1;
+    let avatar = this.data.avatarUrl === unknownAvatarUrl ? defaultAvatarUrl : this.data.avatarUrl;
 
     // if user upload the avatar, then we need to first upload it to cloud db
-    if(avatar != defaultAvatarUrl){
+    if (avatar != defaultAvatarUrl) {
       wx.cloud.uploadFile({
         cloudPath: `avatar/${new Date().getTime()}.jpeg`,
         filePath: avatar,
-        success: (res) => {
-          console.log(res)
+        success: res => {
+          console.log(res);
           avatar = res.fileID;
-          this.uploadData(avatar,basicInfo,carbSum,testGroup);
+          this.uploadData(avatar, basicInfo, carbSum, testGroup);
         },
         fail: err => {
-          console.log(err)
+          console.log(err);
           wx.showToast({
-            title: '上传头像失败',
-            icon: 'none',
+            title: "上传头像失败",
+            icon: "none",
             duration: 2000,
-            mask: true,
+            mask: true
           });
           return;
         }
-      })      
+      });
     } else {
-      this.uploadData(avatar,basicInfo,carbSum,testGroup);
+      this.uploadData(avatar, basicInfo, carbSum, testGroup);
     }
   },
 
-  uploadData: function(avatar: any, basicInfo: any, carbSum: any, testGroup: any){
+  uploadData: function (avatar: any, basicInfo: any, carbSum: any, testGroup: any) {
     wx.showToast({
-      title:'正在登录',
-      icon:'loading',
+      title: "正在登录",
+      icon: "loading",
       duration: 100000000
-    })
+    });
     wx.cloud.callFunction({
-      name:'submituserinfo',
-      data:{
+      name: "submituserinfo",
+      data: {
         avatar,
         basicInfo,
         carbSum,
         testGroup
       },
-      success:(res)=>{
-        const userInfo ={
+      success: res => {
+        const userInfo = {
           avatar: avatar,
           loginDate: new Date(),
           basicInfo: basicInfo,
-          carbSum:carbSum,
-          testGroup: testGroup,
-        }
+          carbSum: carbSum,
+          testGroup: testGroup
+        };
 
         // set globalData
         app.globalData.userInfo = userInfo;
 
-        if(res.result && typeof res.result === 'object' && 'success' in res.result){
-            if(res.result.success){
-              this.transferEntranceMoney({
-                complete: () => {
-                  wx.switchTab({
-                    url:'/pages/information/information'
-                  })
-                }
-              });
-            }
+        if (res.result && typeof res.result === "object" && "success" in res.result) {
+          if (res.result.success) {
+            this.transferEntranceMoney({
+              complete: () => {
+                wx.switchTab({
+                  url: "/pages/information/information"
+                });
+              }
+            });
+          }
         }
       }
-    })
-    
+    });
   },
 
-  async transferEntranceMoney({complete}: {complete?: () => void}) {
-    if(!this.transferEntranceMoney.lock) {
-      this.transferEntranceMoney.lock = true
+  async transferEntranceMoney({ complete }: { complete?: () => void }) {
+    if (!this.transferEntranceMoney.lock) {
+      this.transferEntranceMoney.lock = true;
 
       // transfer entrance money
       const db = wx.cloud.database();
-      const transferMoney = (await db.collection('transferMoney').get()).data[0]
+      const transferMoney = (await db.collection("transferMoney").get()).data[0];
 
-      const _openid = app.globalData.openID
-      const active = transferMoney.active
-      const batch_name = '碳行家奖励金'
-      const money = transferMoney.entrance.money
-      const batch_remark = transferMoney.entrance.remark
-      const transfer_remark = transferMoney.entrance.info
+      const _openid = app.globalData.openID;
+      const active = transferMoney.active;
+      const batch_name = "碳行家奖励金";
+      const money = transferMoney.entrance.money;
+      const batch_remark = transferMoney.entrance.remark;
+      const transfer_remark = transferMoney.entrance.info;
 
       if (active) {
         await transfer({
@@ -292,78 +304,79 @@ Page({
           batch_name,
           batch_remark,
           transfer_remark,
-          success: (result) => {
-            console.log('Transfer successful:', result);
+          success: result => {
+            console.log("Transfer successful:", result);
             wx.hideToast();
             wx.showModal({
-              title:'注册成功',
-              content: '低碳现金红包已发放',
+              title: "注册成功",
+              content: "低碳现金红包已发放",
               showCancel: false,
               success: () => {
                 if (complete) complete();
               }
-            })
+            });
           },
-          failed: (error) => {
-            console.log('Transfer failed:', error);
-            wx.hideToast()
+          failed: error => {
+            console.log("Transfer failed:", error);
+            wx.hideToast();
             wx.showModal({
-              title:'出问题了',
+              title: "出问题了",
               content: error.message,
               showCancel: false,
               success: () => {
                 if (complete) complete();
               }
-            })
+            });
           },
-          error: (err) => {
-            console.log('Error during transfer:', err);
-            wx.hideToast()
+          error: err => {
+            console.log("Error during transfer:", err);
+            wx.hideToast();
             wx.showModal({
-              title:'出问题了',
+              title: "出问题了",
               content: err.message,
               showCancel: false,
               success: () => {
                 if (complete) complete();
               }
-            })
+            });
           }
-        });  
+        });
       } else {
-        wx.hideToast()
+        wx.hideToast();
         wx.showModal({
-          title:'抱歉',
-          content: '现金奖励未启用',
+          title: "抱歉",
+          content: "现金奖励未启用",
           showCancel: false,
           success: () => {
             if (complete) complete();
           }
-        })
+        });
       }
 
-      this.transferEntranceMoney.lock = false
+      this.transferEntranceMoney.lock = false;
     } else {
       if (complete) complete();
     }
   },
-  
+
   onLoad() {
     // 更新颜色
     updateColor();
   },
 
   onShareAppMessage() {
-    logEvent("Share App")
+    logEvent("Share App");
     return {
       title: "快来一起低碳出街~",
-      path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,
-      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      success: function(res){
-        console.log(res.shareTickets[0])
+      path: `/pages/index/index?sharedFromID=${app.globalData.openID}`,
+      imageUrl:
+        "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      success: function (res) {
+        console.log(res.shareTickets[0]);
       },
-      fail:function(res){
-        console.log('share failed')
+      fail: function (res) {
+        console.log("share failed");
       }
-    }
+    };
   }
-})
+});

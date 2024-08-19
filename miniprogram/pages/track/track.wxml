@@ -6,7 +6,7 @@
 <view wx:if="{{todayRecordList.length}}">
 
     <view class="tab-title">
-            您今日的上一条出行记录
+      <text style="font-size: 36rpx;">您今日的上一条出行记录</text>
           </view>
   <view class="list">
             <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="{{m1.classPicker(todayRecordList,i)}}">
@@ -22,7 +22,7 @@
         </view>
 
               <view class="tab-title">
-            待处理异常记录
+                <text style="font-size: 36rpx;">待处理异常记录</text>
           </view>
 
   <view class="list">
