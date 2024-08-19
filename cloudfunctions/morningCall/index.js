@@ -26,5 +26,6 @@ async function sendMorningCall(openid){
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID;
+  console.log(openid)
   return await sendMorningCall(openid)
 }

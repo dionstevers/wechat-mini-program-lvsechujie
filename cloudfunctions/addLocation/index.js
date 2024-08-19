@@ -36,10 +36,10 @@ exports.main = async (event, context) => {
 
     return {
       success: true,
-      message: "Merch claimed successfully"
+      message: 'Location Added',
     };
   } catch (error) {
-    console.error("Error claiming merch:", error);
+    console.error('Error adding Location:', error);
 
     // Rollback the transaction if any error occurs
     await transaction.rollback();

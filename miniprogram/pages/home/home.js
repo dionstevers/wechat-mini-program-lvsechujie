@@ -241,7 +241,11 @@ Page({
 
           // 重载数据
           _this.refreshLastTrack();
-          wx.cloud.callFunction({ name: "updateUserInfo", data: { carbon: carbSum } });
+          wx.cloud.callFunction({ 
+           name: "updateUserInfo",
+           data: { carbon: carbSum,
+                  credit: 25 // default increment
+          } });
         }
       }
     });
