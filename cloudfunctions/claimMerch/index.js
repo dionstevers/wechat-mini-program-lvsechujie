@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
     const user = userRes.data[0];
     const user_entry_id = user._id;
     const credit = user.credit;
-
+    //check existing credits
     if (credit < price) {
       throw new Error('Insufficient credits');
     }

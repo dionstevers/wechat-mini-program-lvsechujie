@@ -62,7 +62,6 @@ Page({
     const price = this.data.merch.price;
     const merch_id = this.data.merch.merch_id;
     const merch_name = this.data.merch.title;
-    // TODO : this is just for testing, NO CHECKING CREDIT IMPLEMENTED SO FAR
     if(this.data.code){ 
       wx.showModal({
       title:'请您确认' ,

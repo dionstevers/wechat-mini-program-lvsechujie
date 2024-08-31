@@ -71,10 +71,11 @@ Page({
       duration: 10000
     });
     const db = wx.cloud.database();
+    console.log('the openid is ', app.globalData.openID)
     try {
       db.collection("lottery")
         .where({
-          _openid: this.data.openID
+          _openid: app.globalData.openID
         })
         .watch({
           onChange: snapshot => {
