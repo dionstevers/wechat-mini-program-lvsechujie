@@ -274,12 +274,19 @@ Page({
     // 渲染今日最新数据
     const track = await this.refreshLastTrack();
     const userInfoRes = await db.collection("userInfo").limit(1).where({ _openid: app.globalData.openID }).get();
+    const [{ _id, endTime }] = Array.isArray(track) ? (track.length ? track : [{}]) : [{}];
     this.setData({
-      curID: track[0]._id,
-      isTracking: !track[0].endTime,
+      curID: _id,
+      isTracking: !endTime,
       index: userInfoRes.data[0].basicInfo.trans,
       defaultIndex: userInfoRes.data[0].basicInfo.trans
     });
+    // this.setData({
+    //   curID: track[0]._id,
+    //   isTracking: !track[0].endTime,
+    //   index: userInfoRes.data[0].basicInfo.trans,
+    //   defaultIndex: userInfoRes.data[0].basicInfo.trans
+    // });
   },
   onLoad(options) {
     // 转发朋友圈链接，导航到登录页面

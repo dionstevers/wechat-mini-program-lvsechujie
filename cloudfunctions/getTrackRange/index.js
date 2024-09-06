@@ -56,7 +56,7 @@ async function findAbnormal(isTotal = false) {
 }
 
 exports.main = async event => {
-  let list = event.list || []
+  let list = event.list || [];
   let showSchedules = [];
 
   const [{ result }] = list.length ? list : [{}];
@@ -77,5 +77,5 @@ exports.main = async event => {
     }));
   }
 
-  return showSchedules
+  return showSchedules;
 };

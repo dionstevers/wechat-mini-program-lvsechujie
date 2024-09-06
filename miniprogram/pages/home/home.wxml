@@ -89,7 +89,7 @@
           </view>
 
           <view class="chart">
-            <view wx:for="{{showSchedules}}" wx:key="value" class="{{'chart-item ' + item.color}}" style="width: {{ item.percentage }}">{{ item.label + item.totalTime + 'min' }}</view>
+            <view wx:for="{{showSchedules}}" wx:key="value" class="{{'chart-item ' + item.color}}" style="width: {{ item.percentage }}">{{ item.percentage }}</view>
           </view>
         </view>
 
