@@ -4,7 +4,6 @@ const cloud = require("wx-server-sdk");
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
-const { OPENID } = cloud.getWXContext();
 
 const schedules = [
   { label: "步行", color: "walk", totalTime: 0 },
@@ -29,6 +28,7 @@ function todayStartDate() {
 }
 
 async function findAbnormal(isTotal = false) {
+  const { OPENID } = cloud.getWXContext();
   if (isTotal) {
     const now = todayStartDate();
 

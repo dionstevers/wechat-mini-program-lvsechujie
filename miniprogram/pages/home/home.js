@@ -1,11 +1,10 @@
-import data from "./data";
-import { requestSubs } from "../../utils/requestSubs";
 import Dialog from "@vant/weapp/dialog/dialog";
-import { logEvent } from "../../utils/log";
-import { getWeekRange } from "../../utils/time";
-import { updateUserData, onCheckSignIn } from "../../utils/login";
 import { updateColor } from "../../utils/colorschema";
 import { getLocation } from "../../utils/home.util";
+import { logEvent } from "../../utils/log";
+import { onCheckSignIn, updateUserData } from "../../utils/login";
+import { getWeekRange } from "../../utils/time";
+import data from "./data";
 
 const app = getApp();
 const db = wx.cloud.database();
@@ -241,11 +240,30 @@ Page({
 
           // 重载数据
           _this.refreshLastTrack();
-          wx.cloud.callFunction({ 
-           name: "updateUserInfo",
-           data: { carbon: carbSum,
-                  credit: 25 // default increment
-          } });
+
+          // 方案一，根据省碳计算
+          // const { can, credit } = await calcCredit(carbSum)
+          // const params = can ? { credit, carbon: carbSum } : { carbon: carbSum }
+          // wx.cloud.callFunction({
+          //   name: "updateUserInfo",
+          //   data: params
+          // });
+
+          // 方案二，根据每日上限
+          // const { can, credit } = await calcDayCredit()
+          // const params = can ? { credit, carbon: carbSum } : { carbon: carbSum }
+          // wx.cloud.callFunction({
+          //   name: "updateUserInfo",
+          //   data: params
+          // });
+
+          wx.cloud.callFunction({
+            name: "updateUserInfo",
+            data: {
+              carbon: carbSum,
+              credit: 25 // default increment
+            }
+          });
         }
       }
     });

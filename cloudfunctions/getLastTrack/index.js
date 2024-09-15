@@ -2,7 +2,7 @@ const cloud = require("wx-server-sdk");
 
 // Initialize cloud
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
-const { OPENID } = cloud.getWXContext();
+
 
 const db = cloud.database();
 const _ = db.command;
@@ -37,6 +37,7 @@ function todayStartDate() {
 }
 
 async function findAbnormal(isTotal = false) {
+  const { OPENID } = cloud.getWXContext();
   if (isTotal) {
     const now = todayStartDate();
 
@@ -64,6 +65,7 @@ async function findAbnormal(isTotal = false) {
 }
 
 exports.main = async () => {
+  const { OPENID } = cloud.getWXContext();
   const now = todayStartDate();
   let isRecordEmpty = false;
   let showPoint = false;

@@ -121,7 +121,7 @@ function getDistKM(track) {
 }
 
 // 根据速度计算省碳量
-function calcCarbon(result,clientTransport) {
+function calcCarbon(result, clientTransport) {
   let carbSum = 0;
   // Passenger number
   const passenger = 1; //parseInt(item["capacity"]) + 1;
@@ -164,14 +164,15 @@ function calcCarbon(result,clientTransport) {
   let maxEntry = null;
   let maxMeters = -Infinity;
 
+  let totalMeters = 0;
   for (const [key, value] of result.entries()) {
+    totalMeters += value.totalMeters;
     if (value.totalMeters > maxMeters) {
       maxMeters = value.totalMeters;
       maxEntry = { key, value };
     }
   }
-
-  const calcTransport = arr[maxEntry.key];
+  let calcTransport = arr[maxEntry.key];
 
   // 驾驶电动汽车 Electric vehicle
   if (clientTransport === "驾驶电动汽车" || clientTransport.includes("驾驶电动汽车")) {
@@ -190,10 +191,41 @@ function calcCarbon(result,clientTransport) {
     carbSum += highSpeedTotal * savingHighSpeedRate[passenger - 1];
   }
 
+  if (totalMeters === 0) {
+    return {
+      isFail: true,
+      carbSum,
+      calcTransport
+    };
+  }
+
   return {
+    isFail: false,
     carbSum,
     calcTransport
   };
+}
+
+// 计算耗时和公里数算出大概速度
+function calculateMetersPerLabel(startTime, endTime, kilometers) {
+  // 将开始时间和结束时间转换为毫秒数
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+  // 计算时间差，转换为秒
+  const timeDiffInSeconds = (end - start) / 1000;
+  // 将公里转换为米
+  const meters = kilometers * 1000;
+  // 计算每秒的米数
+  const speedMetersPerSecond = meters / timeDiffInSeconds;
+
+  // 遍历 speedBetween 数组，检查速度是否在每个区间之间
+  for (let i = 0; i < speedBetween.length; i++) {
+    const { label, min, max } = speedBetween[i];
+    if (speedMetersPerSecond >= min && speedMetersPerSecond <= max) {
+      return label; // 返回匹配的标签
+    }
+  }
+  return "未知速度"; // 如果没有匹配的区间
 }
 
 exports.main = async event => {
@@ -202,11 +234,17 @@ exports.main = async event => {
   // 计算各个速度区间交通工具
   const result = calcResultMap(track);
 
+  console.log(result, track);
+
   // 计算省碳值
-  const { carbSum, calcTransport } = calcCarbon(result, event.transport);
+  let { isFail, carbSum, calcTransport } = calcCarbon(result, event.transport);
 
   // 获取所用距离KM
   const dist = getDistKM(track);
+
+  if (isFail) {
+    calcTransport = calculateMetersPerLabel(track.date, new Date(), parseFloat(dist.toFixed(2)));
+  }
 
   // 获取天气
   const { result: weather = null } = await cloud.callFunction({ name: "setweather", data: { latitude: event.latitude, longitude: event.longitude } });
@@ -228,5 +266,5 @@ exports.main = async event => {
       }
     });
 
-  return {carbSum, trackRes};
+  return { carbSum, trackRes };
 };

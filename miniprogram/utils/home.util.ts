@@ -48,3 +48,70 @@ export function getLocation() {
     });
   });
 }
+
+/**
+ * @description: 根据省碳量计算积分
+ * @return {*}
+ */
+export async function calcCredit(carbon: number) {
+  if (!carbon) return { can: false, credit: 0 };
+
+  let credit = 0;
+  if (carbon >= 200) {
+    // 200g以上-300分
+    credit = 300;
+  } else if (carbon >= 100) {
+    // 100g以上-200分
+    credit = 200;
+  } else if (carbon >= 50) {
+    // 50g以上-150分
+    credit = 150;
+  } else if (carbon >= 30) {
+    // 30g以上-100分
+    credit = 100;
+  } else if (carbon >= 10) {
+    // 10g以上-50分
+    credit = 50;
+  }
+
+  const { result } = wx.cloud.callFunction({
+    name: "getDailyCredit",
+    data: {
+      credit,
+      type: 1
+    }
+  });
+
+  const { can } = result || {};
+  if (!can) credit = 0;
+
+  return {
+    can,
+    credit
+  };
+}
+
+/**
+ * @description: 根据每日上限记录省碳量
+ * @return {*}
+ */
+export async function calcDayCredit(carbon: number) {
+  if (!carbon) return { can: false, credit: 0 };
+  let credit = 100;
+
+  const { result } = wx.cloud.callFunction({
+    name: "getDailyCredit",
+    data: {
+      credit,
+      type: 2
+    }
+  });
+
+  const { can } = result || {};
+  if (!can) credit = 0;
+
+  return {
+    can,
+    credit
+  };
+}
