@@ -1,11 +1,13 @@
 {
   "pages": [
-
+    "pages/home/home",
     "pages/index/index",
+
+    "pages/center/center",
     "pages/information/information",
     "pages/login/login",
-    "pages/home/home",
-    "pages/center/center",
+
+   
     "pages/journal/journal",
     "pages/triphistory/triphistory",
     "pages/store/store",
@@ -25,9 +27,9 @@
     "list": [
       {
         "pagePath": "pages/home/home",
+        "iconPath": "./asset/img/trip.png",
         "text": "行程记录",
-        "iconPath": "./asset/img/home.png",
-        "selectedIconPath": "./asset/img/home-highlight.png"
+        "selectedIconPath": "./asset/img/trip_highlight.png"
       },
       {
         "pagePath": "pages/information/information",
@@ -36,23 +38,32 @@
         "selectedIconPath": "./asset/img/info-highlight.png"
       },
       {
-        "pagePath": "pages/center/center",
-        "text": "个人主页",
+        "pagePath": "pages/prizeCenter/prizeCenter",
+        "text": "积分兑换",
         "iconPath": "./asset/img/center.png",
         "selectedIconPath": "./asset/img/center-highlight.png"
+      },
+      {
+        "pagePath":"pages/center/center",
+        "text": "个人中心",
+        "iconPath": "./asset/img/center.png",
+        "selectedIconPath": "./asset/img/center-highlight.png"
+
       }
+
+
     ],
     "position": "bottom",
     "color": "#FFFFFF",
-    "selectedColor": "#00ffb9",
-    "backgroundColor": "#002d3d",
+    "selectedColor": "#f9bc60",
+    "backgroundColor": "#419f8c",
     "borderStyle": "black"
   },
   "window": {
-    "navigationBarBackgroundColor": "#000220",
+    "navigationBarBackgroundColor": "#418f8c",
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "碳行家",
-    "backgroundColor": "#002443",
+    "backgroundColor": "#419f8c",
     "backgroundTextStyle": "dark"
   },
   "sitemapLocation": "sitemap.json",

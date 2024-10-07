@@ -374,5 +374,14 @@ Page({
       ...this.shareCommon(),
       path: `/pages/index/index?sharedFromID=${app.globalData.openID}`
     };
+  },
+
+//  functions for new UI starts here
+  selectTab(event){
+    const selectedTab = event.currentTarget.dataset.tab;
+    this.setData({
+      activeTab: selectedTab
+    });
   }
+
 });

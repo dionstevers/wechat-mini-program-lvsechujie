@@ -145,5 +145,12 @@ export default {
   ],
   showSchedules: [],
   showPoint: false,
-  lastTrack: null
+  lastTrack: null,
+
+
+
+  // data attribute for new UI starts here
+
+  activeTab: 'trip',
+  tracking: true
 };
