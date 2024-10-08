@@ -35,19 +35,19 @@
         "pagePath": "pages/information/information",
         "text": "信息中心",
         "iconPath": "./asset/img/info.png",
-        "selectedIconPath": "./asset/img/info-highlight.png"
+        "selectedIconPath": "./asset/img/info_highlight.png"
       },
       {
         "pagePath": "pages/prizeCenter/prizeCenter",
         "text": "积分兑换",
-        "iconPath": "./asset/img/center.png",
-        "selectedIconPath": "./asset/img/center-highlight.png"
+        "iconPath": "./asset/img/merch.png",
+        "selectedIconPath": "./asset/img/merch_highlight.png"
       },
       {
         "pagePath":"pages/center/center",
         "text": "个人中心",
-        "iconPath": "./asset/img/center.png",
-        "selectedIconPath": "./asset/img/center-highlight.png"
+        "iconPath": "./asset/img/personal.png",
+        "selectedIconPath": "./asset/img/personal_highlight.png"
 
       }
 
