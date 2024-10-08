@@ -1,3 +1,6 @@
+/* Reset box-sizing to include padding and borders */
+
+
 /* Header Image */
 .header-image {
   width: 100%;
@@ -130,6 +133,7 @@
   max-height: calc(100vh - 15% - 10% - 8%); /* Adjust height based on header and selection bar */
   padding: 10px 0; /* Optional: Add padding for better spacing */
   overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Legend Styling */
@@ -142,17 +146,16 @@
   position: relative;
 }
 
-
 /* Ranking Container */
 .rank-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 80%;
-  width: 100%;
+  width: 100%; /* Ensure it takes the full width of the parent */
   max-width: 750rpx;
   max-height: 600rpx;
-  overflow-y: scroll;
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
 /* User Entry for Ranking */
@@ -162,8 +165,8 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 70%;
-  max-width: 525rpx;
+  width: 100%; /* Set to 100% to use full width available */
+  max-width: 525rpx; /* Ensure it doesn't exceed this */
   height: 100rpx;
   padding: 10rpx 20rpx;
   margin-bottom: 20rpx;
@@ -172,7 +175,6 @@
 }
 
 .user-rank {
-  width: 30rpx;
   font-size: 32rpx;
   color: black;
   margin-right: 10rpx;
@@ -222,11 +224,12 @@
 .user-caption {
   display: flex;
   justify-content: space-between;
-  width: 130%;
+  gap:160rpx;
+  width: 100%; /* Adjust as needed for spacing */
 }
 
 .caption-text {
-  flex:1;
+  flex: 1;
   text-align: center;
   font-size: 28rpx;
   color: lightcyan;
@@ -243,17 +246,12 @@
   margin-top: 10rpx;
 }
 
-
-
 .user-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 80%;
   width: 100%;
-  padding-top: rpx;
+  padding-top: 20rpx;
   padding-bottom: 30rpx;
-  max-width: 750rpx;
-  max-height: 600rpx;
-  overflow-y: scroll;
 }
