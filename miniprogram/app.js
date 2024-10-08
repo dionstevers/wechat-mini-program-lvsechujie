@@ -35,7 +35,7 @@ App({
     VERSION_STYLE_COLOR: {
       CYAN: {
         Bar: '#419f8c',
-        background: 'linear-gradient(180deg, #00022a 0%,#009797 100%)'
+        background: '#97baaf'
       },
       RED: {
         Bar: '#B82B1D',

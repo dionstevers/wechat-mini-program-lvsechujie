@@ -152,5 +152,5 @@ export default {
   // data attribute for new UI starts here
 
   activeTab: 'trip',
-  tracking: true
+  tracking: false
 };

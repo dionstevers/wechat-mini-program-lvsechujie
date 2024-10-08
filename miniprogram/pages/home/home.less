@@ -1,54 +1,54 @@
+/* Header Image */
 .header-image {
   width: 100%;
   height: 15%;
   position: relative;
   overflow: hidden;
+
+  .people-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // Cover the container
+  }
 }
 
-.people-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Cover the container */
-}
-
+/* Selection Bar */
 .selection-bar {
   position: absolute;
-  top: calc(15% - 5%); /* Adjust to overlap by half its height */
+  top: calc(15% - 5%); // Adjust to overlap by half its height
   left: 50%;
   transform: translateX(-50%);
-  width: 80%; /* Adjust width as needed */
+  width: 80%;
   height: 10%;
   display: flex;
   justify-content: space-around;
   align-items: center;
   background-color: #ffffff;
   border-radius: 10px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 
   .tab {
-    flex-grow: 1; /* Make each button take equal space */
-    height: 100%; /* Match the height of the selection bar */
+    flex-grow: 1; // Equal space for each button
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 5px;
+    font-size: 16px;
     background-color: #ffffff;
     color: #000000;
-    font-size: 16px;
 
     &.active {
-      background-color: #ffd700; /* Gold color for active tab */
+      background-color: #ffd700; // Gold color for active tab
       color: #ffffff;
     }
   }
 }
 
-
-
-.prompt-container {
+/* Prompt and Record Container */
+.prompt-container,
+.record-container {
   width: 80%;
-  height: 20%;
-  background-color: #fffffe;
   border-radius: 10px;
   margin: 15% auto;
   padding: 15px;
@@ -57,84 +57,203 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+
+  &.record-container {
+    height: 30%;
+    background-color: transparent;
+    align-items: center;
+  }
 }
 
-.prompt-container .prompt-title {
+.prompt-container {
+  height: 20%;
+  background-color: #fffffe;
+
+  .prompt-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .prompt-content {
+    font-size: 14px;
+    color: #666666;
+  }
+}
+
+/* Circular Button Container */
+.btn-container {
+  width: 450rpx; // Circular button container
+  height: 450rpx;
+  position: absolute;
+  bottom: 8%; // Position relative to the above component
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%; // Makes it round
+  overflow: hidden; // Ensures the image stays within the circle
+  display: flex; // Centers inner image
+  justify-content: center;
+  align-items: center;
+
+  .btn-img {
+    width: 100%; // Full width of the button image
+    height: 100%; // Full height of the button image
+  }
+}
+
+/* Record Display */
+.record-duration,
+.record-start {
+  font-weight: bold;
+  color: white;
+
+  &.record-duration {
+    font-size: 80rpx;
+    margin-bottom: 5px;
+  }
+
+  &.record-start {
+    font-size: 60rpx;
+    margin-bottom: 5px;
+  }
+}
+
+.record-duration-label,
+.record-start-label {
+  font-size: 30rpx;
+  color: white;
+}
+
+/* Scrollable Container */
+.scroll-view {
+  width: 100%;
+  max-height: calc(100vh - 15% - 10% - 8%); /* Adjust height based on header and selection bar */
+  padding: 10px 0; /* Optional: Add padding for better spacing */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Legend Styling */
+.legend {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.prompt-container .prompt-content {
-  font-size: 14px;
-  color: #666666;
-}
-
-
-
-.btn-container {
-  width: 450rpx; /* Width of the container */
-  height: 450rpx; /* Height of the container, making it a circle */
-  position: absolute; /* Keeps it positioned relative to the nearest positioned ancestor */
-  bottom: 8%; /* Adjust this value to position it below the component above */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust to center the container */
-  border-radius: 50%; /* Makes the container round */
-  overflow: hidden; /* Ensures the image stays within the circle */
-  display: flex; /* Enables centering of the inner image */
-  justify-content: center; /* Centers the image horizontally */
-  align-items: center; /* Centers the image vertically */
-}
-
-.btn-img {
-  width: 100%; /* Width of the button image */
-  height: 100%; /* Height of the button image */
+  text-align: center;
+  margin-top: 70rpx;
+  color: lightcyan;
+  position: relative;
 }
 
 
+/* Ranking Container */
+.rank-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80%;
+  width: 100%;
+  max-width: 750rpx;
+  max-height: 600rpx;
+  overflow-y: scroll;
+}
 
+/* User Entry for Ranking */
+.user-item {
+  display: flex;
+  background-color: white;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+  max-width: 525rpx;
+  height: 100rpx;
+  padding: 10rpx 20rpx;
+  margin-bottom: 20rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
 
-.record-container {
-  width: 80%;
-  height: 30%;
-  background-color: transparent;
-  border-radius: 10px;
-  margin: 15% auto;
-  padding: 15px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+.user-rank {
+  width: 30rpx;
+  font-size: 32rpx;
+  color: black;
+  margin-right: 10rpx;
+}
+
+.profile-image {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%; /* Ensure round profile images */
+  margin-right: 20rpx;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: black;
+}
+
+.carbon-saving {
+  font-size: 32rpx;
+  color: black;
+}
+
+/* Summary Line for Current User */
+.summary-line {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items:center
+  align-items: center;
+  margin: 20rpx auto;
+  width: 100%;
+  max-width: 600rpx;
+  padding: 10rpx;
+  background-color: #002d3d;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  color: lightcyan;
 }
 
-.record-container .record-duration {
-  font-size: 80rpx;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: white;
+/* Captions for Current User */
+.user-caption {
+  display: flex;
+  justify-content: space-between;
+  width: 130%;
 }
 
-.record-container .record-duration-label {
-  font-size: 30rpx;
-  color: white;
+.caption-text {
+  flex:1;
+  text-align: center;
+  font-size: 28rpx;
+  color: lightcyan;
 }
 
-.record-container .record-start {
-  font-size: 60rpx;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: white;
+.current-user {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  margin-top: 10rpx;
 }
 
-.record-container .record-start-label {
-  font-size: 30rpx;
-  color: white;
+
+
+.user-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80%;
+  width: 100%;
+  padding-top: rpx;
+  padding-bottom: 30rpx;
+  max-width: 750rpx;
+  max-height: 600rpx;
+  overflow-y: scroll;
 }
-
-
-
-
-
-
-

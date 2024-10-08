@@ -18,11 +18,9 @@
       <text class="prompt-content">点击下方开始记录出行的行程，行程结束后小程序会根据您的出行数据计算省碳量与碳排放</text>
     </view>
 
-    
     <view class="btn-container" bindtap="onTrack">
       <image src="../../asset/img/start.png" class="btn-img"/>
     </view>
-
   </view>
 
   <view wx:if="{{tracking}}">
@@ -31,22 +29,65 @@
       <text class="record-duration-label">记录时长</text>
       <text class="record-start">13:22</text>
       <text class="record-start-label">开始时间</text>
-
     </view>
-      
 
     <view class="btn-container" bindtap="endTrack">
-        <image class="btn-img" src="../../asset/img/stop.png"></image>
+      <image class="btn-img" src="../../asset/img/stop.png"/>
     </view>
-
-
   </view>
 </view>
 
 <!-- when record -->
-<view wx:if="{{activeTab === 'record'}}"></view>
+<view wx:if="{{activeTab === 'record'}}">
+  <scroll-view scroll-y="true" class="scroll-view">
+    <!-- Add your record content here -->
+  </scroll-view>
+</view>
 
 <!-- when rank -->
-<view wx:if="{{activeTab === 'rank'}}"></view>
+<view wx:if="{{activeTab === 'rank'}}">
+  <view class="legend">本周累计省碳排名</view>
+  
+  <!-- Current User Entry -->
+  <view class="user-container">
+    <!-- Rank and Carbon Saving captions -->
+    <view class="user-caption">
+      <text class="caption-text">排名</text>
+      <text class="caption-text">省碳量</text>
+    </view>
 
+    <!-- Display the current user's rank, avatar, nickname, and saving -->
+    <view class="user-item">
+      <text class="user-rank">{{myranking === "未上榜" ? "?" : myranking}}</text>
+      <image class="profile-image" src="{{userInfo.avatar}}" />
+      <view class="user-info">
+        <text class="user-name">{{userInfo.basicInfo.nickname}}</text>
+      </view>
+      <text class="carbon-saving">{{mysaving === "<1" ? "?" : mysaving}}g</text>
+    </view>
+    
+  </view>
+
+  
+
+  <view class="rank-container">
+    <block wx:for="{{users}}" wx:key="id">
+      <view class="user-item">
+        <!-- Rank on the far left -->
+        <text class="user-rank">{{item.rank}}</text>
+
+        <!-- User avatar -->
+        <image class="profile-image" src="{{item.avatar}}" />
+
+        <!-- User nickname -->
+        <view class="user-info">
+          <text class="user-name">{{item.basicInfo.nickname}}</text>
+        </view>
+
+        <!-- Carbon saving on the far right -->
+        <text class="carbon-saving">{{item.totalCarbSum}}g</text>
+      </view>
+    </block>
+  </view>
+</view>
 </view>
