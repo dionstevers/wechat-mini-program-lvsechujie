@@ -255,3 +255,55 @@
   padding-top: 20rpx;
   padding-bottom: 30rpx;
 }
+
+.record-container {
+  width: 90%; // Set the container width to 80% of the screen
+  margin: 15% auto; // Center the container
+  padding: 0; // Remove padding for the container to prevent shrinking
+  display: flex; // Use flex for layout
+  flex-direction: column; // Arrange items in a column
+}
+
+.listItem {
+  display: flex; // Use flexbox for layout
+  width: 90%; // Full width for each item
+  height: 200rpx; // Set a fixed height for each item
+  padding: 10rpx; // Padding for the item
+  margin-top: 20rpx;
+  margin-bottom: 20rpx; // Space between items
+  border-radius: 10rpx; // Rounded corners for each item
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1); // Subtle shadow for depth
+  background-color: white; // Background color for the item
+}
+
+.icon-placeholder {
+  width: 20%; // 20% of the item width
+  height: 80%; // 80% of the item height
+  margin-top: 5%;
+  margin-right: 10rpx; // Space between icon and text
+  border-radius: 5rpx; // Rounded corners for the icon
+  display: flex; // Use flexbox to center the icon
+  justify-content: center; // Center the icon horizontally
+  align-items: center; // Center the icon vertically
+}
+
+.item-details {
+  flex: 1; // Take the remaining space
+  display: flex;
+  flex-direction: column; // Arrange details in a column
+  justify-content: center; // Center items vertically
+}
+
+.duration, .carbon-saving, .purpose {
+  font-size: 28rpx; // Adjust font size as needed
+  color: black; // Text color
+  margin: 2rpx 0; // Spacing between rows
+}
+
+.transport-method{
+  font-size: 40rpx; // Adjust font size as needed
+  color: black; // Text color
+  margin: 2rpx 0; // Spacing between rows
+  
+
+}

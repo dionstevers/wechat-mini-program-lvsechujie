@@ -152,5 +152,32 @@ export default {
   // data attribute for new UI starts here
 
   activeTab: 'trip',
-  tracking: false
+  tracking: false,
+
+  
+//   todayRecordList : [
+//     {
+//         transport: "公交",
+//         endTime: Date.now(),
+//         date: Date.now() - 45 * 60 * 1000, // 45 minutes ago
+//         carbSum: 15,
+//         purpose: "购物",
+//     },
+//     {
+//         transport: "步行",
+//         endTime: Date.now(),
+//         date: Date.now() - 120 * 60 * 1000, // 2 hours ago
+//         carbSum: 30,
+//         purpose: "出差",
+//     },
+//     {
+//         transport: "开车",
+//         endTime: Date.now(),
+//         date: Date.now() - 180 * 60 * 1000, // 3 hours ago
+//         carbSum: 50,
+//         purpose: "旅游",
+//     }
+// ]
+
+
 };
