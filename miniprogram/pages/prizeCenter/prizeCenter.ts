@@ -8,13 +8,38 @@ Page({
     prizes:[],
     prizeList:[],
     claimedprizes:[],
+    isFromShareTimeline: true,
     background: null
   },
-  onLoad(){
+  onLoad(options){
+    // 转发朋友圈链接，导航到登录页面
+    if (options.isFromShareTimeline) {
+      wx.redirectTo({
+        url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
+        success: () => {
+          this.setData({
+            isFromShareTimeline: false
+          });
+        }
+      })
+      return;
+    } else {
+      this.setData({
+        isFromShareTimeline: false
+      });
+    }
+
+    console.log("test2")
+
     this.getLotteryInfo()
     this.getMerchData()
   },
   onShow(){
+    // 朋友圈进来则不显示
+    if (this.data.isFromShareTimeline) {
+      return;
+    }
+
     // 更新颜色
     updateColor();
     
@@ -97,6 +122,21 @@ Page({
 
     } catch (err) {
       console.log(err);
+    }
+  },
+
+    /**
+   * 朋友圈分享
+   */
+  onShareTimeline(){
+    logEvent('Share App')
+    return{
+      title:'有意思的低碳知识，尽在碳行家～',
+      imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
+      query:`sharedFromID=${app.globalData.openID}&isFromShareTimeline=true`,
+      success: function(res){
+        console.log(res)
+      },fail: function (res){console.log(res)}
     }
   },
 

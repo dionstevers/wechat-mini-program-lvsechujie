@@ -811,7 +811,7 @@ Page({
   onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
-      wx.navigateTo({
+      wx.redirectTo({
         url: `/pages/index/index?sharedFromID=${options.sharedFromID}`,
         success: () => {
           this.setData({

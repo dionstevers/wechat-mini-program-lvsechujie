@@ -1,30 +1,41 @@
-<view class="page-background" style="background: {{background}};">
-  <view class="top-section">
-    <view class="user-credits" style="width: 300rpx; height: 178rpx; display: flex; box-sizing: border-box">
-      <image src="../../asset/img/exchange.png" class="token-icon"></image>
-      <text class="credits-text">{{credits}}</text>
-    </view>
-    <view class="navigation-buttons">
-      <button class="lottery-button" bindtap="navigateToLottery">抽奖转盘</button>
-      <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 9rpx">我的奖品</button>
-    </view>
+<!--pages/information/information.wxml-->
+<block wx:if="{{isFromShareTimeline}}">
+  <view class="page-background">
+    <image class="QRcode" src="https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG371.jpg?sign=1618ba30f1437e607318b76aa7335ad7&t=1720952079"></image>
   </view>
+</block>
 
-  <view class="divider">
-    <text class="divider-text">为您精选</text>
-  </view>
-
-  <view class="prizes-section">
-    <block wx:for="{{prizes}}" wx:key="index">
-      <view class="prize-box" style="width: 306rpx; height: 384rpx; display: flex; box-sizing: border-box" bind:tap="navigateToMerchs" data-id = "{{item.merch_id}}">
-        <image src="{{item.image}}" class="prize-image"></image>
-        <view class="prize-title">{{item.title}}</view>
-        <view class="prize-description">{{item.description}}</view>
-        <view class="prize-price">
-          <image src="../../asset/img/exchange_light.png" class="price-icon"></image>
-          <text class="price-text">{{item.price}}</text>
-        </view>
+<block wx:else>
+  <view class="page-background" style="background: {{background}};">
+    <view class="top-section">
+      <view class="user-credits" style="width: 300rpx; height: 178rpx; display: flex; box-sizing: border-box">
+        <image src="../../asset/img/exchange.png" class="token-icon"></image>
+        <text class="credits-text">{{credits}}</text>
       </view>
-    </block>
+      <view class="navigation-buttons">
+        <button class="lottery-button" bindtap="navigateToLottery">抽奖转盘</button>
+        <button class="prizes-button" bindtap="navigateToPrizes" style="position: relative; left: 0rpx; top: 9rpx">我的奖品</button>
+      </view>
+    </view>
+
+    <view class="divider">
+      <text class="divider-text">为您精选</text>
+    </view>
+
+    <view class="prizes-section">
+      <block wx:for="{{prizes}}" wx:key="index">
+        <view class="prize-box" style="width: 306rpx; height: 384rpx; display: flex; box-sizing: border-box" bind:tap="navigateToMerchs" data-id = "{{item.merch_id}}">
+          <image src="{{item.image}}" class="prize-image"></image>
+          <view class="prize-title">{{item.title}}</view>
+          <view class="prize-description">{{item.description}}</view>
+          <view class="prize-price">
+            <image src="../../asset/img/exchange_light.png" class="price-icon"></image>
+            <text class="price-text">{{item.price}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
   </view>
-</view>
+</block>
+
+
