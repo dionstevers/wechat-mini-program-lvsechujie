@@ -1,5 +1,6 @@
 import { updateColor } from '../../utils/colorschema'
 import {logEvent} from '../../utils/log'
+import {updateUserData, onCheckSignIn} from '../../utils/login'
 const app = getApp()
 
 Page({
@@ -11,6 +12,36 @@ Page({
     isFromShareTimeline: true,
     background: null
   },
+
+    /**
+   * 初始化本页面数据，此函数使用闭包，多次调用只会初始化一次
+   */
+  initData(){
+    // 异步处理数据初始化录入
+    const initialize = async () => {
+      try {
+        // 未登录用户直接返回
+        if (!onCheckSignIn()) {
+          return;
+        }
+
+        // 初始化奖品数据
+        this.getMerchData()  
+      } catch (error) {
+        console.error("Information页面初始化错误", error);
+        this.initData.executed = false;
+      }
+    };
+
+    // 让该函数只能初始化一次
+    if (!this.initData.executed) {
+      initialize();
+      this.initData.executed = true;
+    } else {
+      console.log("Information页面已经初始化过了！");
+    }
+  },
+
   onLoad(options){
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {
@@ -28,12 +59,8 @@ Page({
         isFromShareTimeline: false
       });
     }
-
-    console.log("test2")
-
-    this.getLotteryInfo()
-    this.getMerchData()
   },
+
   onShow(){
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
@@ -42,15 +69,21 @@ Page({
 
     // 更新颜色
     updateColor();
-    
-    this.getLotteryInfo()
+
+    // 检查登录状态
+    updateUserData();
+    onCheckSignIn({
+      message : '请您登录',
+      success: () => {
+        // 初始化数据
+        this.initData();
+
+        // 获取Lottery信息
+        this.getLotteryInfo()
+      }
+    })
   },
-  navigateToLottery: function() {
-    // Add your navigation logic here
-    wx.navigateTo({
-      url: '/pages/store/store'
-    });
-  },
+
   async getMerchData() {
     try {
       const db = wx.cloud.database();
@@ -73,6 +106,7 @@ Page({
       console.log(err);
     }
   },
+
   navigateToMerchs: function(e){ 
     const merchId = e.currentTarget.dataset.id;
     wx.navigateTo({
@@ -80,14 +114,32 @@ Page({
     });
     console.log(merchId);
   },
-  navigateToPrizes: function() {
-    var prizelist = JSON.stringify(this.data.prizeList);
-    var claimedprizes = JSON.stringify(this.data.claimedprizes);
-    // Add your navigation logic here
-    wx.navigateTo({
-      url: "/pages/myprize/myprize?prizelist=" + prizelist + "&claimedprizes=" + claimedprizes
-    });
+
+  navigateToLottery: function() {
+    onCheckSignIn({
+      message: '使用此功能需登录',
+      success: () => {
+        wx.navigateTo({
+          url: '/pages/store/store'
+        });
+      }
+    })
   },
+
+  navigateToPrizes: function() {
+    onCheckSignIn({
+      message: '使用此功能需登录',
+      success: () => {
+        var prizelist = JSON.stringify(this.data.prizeList);
+        var claimedprizes = JSON.stringify(this.data.claimedprizes);
+
+        wx.navigateTo({
+          url: "/pages/myprize/myprize?prizelist=" + prizelist + "&claimedprizes=" + claimedprizes
+        });
+      }
+    })
+  },
+
   async getLotteryInfo() {
     wx.showToast({
       title: "数据更新中",
@@ -131,7 +183,7 @@ Page({
   onShareTimeline(){
     logEvent('Share App')
     return{
-      title:'有意思的低碳知识，尽在碳行家～',
+      title:'积分兑现金好礼，尽在碳行家～',
       imageUrl: "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
       query:`sharedFromID=${app.globalData.openID}&isFromShareTimeline=true`,
       success: function(res){

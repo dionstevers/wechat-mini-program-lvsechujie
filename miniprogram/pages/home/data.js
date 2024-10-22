@@ -1,10 +1,12 @@
 export default {
-  mysaving: 0,
-  myranking: "未上榜",
-  testGroup: null,
+  // Page Settings
   colorStyle: null,
   background: null,
   isFromShareTimeline: true,
+
+  mysaving: 0,
+  myranking: "未上榜",
+  testGroup: null,
   users: [],
   recordStatus: false,
   btnClass: "btn btn-default",

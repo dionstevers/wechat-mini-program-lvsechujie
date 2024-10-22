@@ -41,7 +41,7 @@ function onCheckSignIn({
           content: '未注册用户将只能体验小程序部分功能，点击确定按钮注册以获得完整体验',
           success: (res) =>{
             if(res.confirm){
-              wx.navigateTo({
+              wx.reLaunch({
                 url:'/pages/index/index'
               })
             }
