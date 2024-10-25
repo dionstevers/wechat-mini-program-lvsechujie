@@ -7,26 +7,53 @@
 
 <block wx:else>
   <view class="page-background" style="background: {{background}};">
-    <view class="page-introduction" style="font-family: 'Times New Roman', Times, serif;">
-      为您提供最新的环境资讯和政策信息
+    <!-- 标题 -->
+    <view class="title-box">
+      <view class="title-text">
+          <text>来了解\n最新的环境咨询和政策信息吧</text>
+      </view>
     </view>
 
-    <view>
-      <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="container {{item.isUnread ? 'unread-highlight' : ''}}">
-        <view bindtap="bindInfo" data-link="{{item.link}}">
-          <view class="image-con">
-            <image src="{{item.imgSrc}}" alt="des" mode="scaleToFill" class="img" />
-          </view>
-          <text class="info-con">{{item.date}} | {{item.author}}</text>
+    <!-- 文章填充框 -->
+    <view class="articles-container">
+      <!-- 推荐文章副标题 -->
+      <view class="subtitle-recommend">
+        <text>推荐文章</text>
+      </view>
 
-          <view class="preview-con">
+      <!-- 推荐文章 -->
+      <view class="horizontal-articles-scroller">
+        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="horizontal-article" bindtap="bindInfo" data-link="{{item.link}}" data-mode="HORIZONTAL" wx:if="{{item.author == articleAuthors[-1] || item.isUnread}}">
+          <image class="article-image" src="{{item.imgSrc}}"></image>
+          <view class="article-text">
             <view class="title">{{item.title}}</view>
-            <view class="dislike" wx:if="{{item.author !== articleAuthors[-1] && !item.isUnread && userInfo}}">
-              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}"></image>
-            </view>
           </view>
         </view>
       </view>
+
+      <!-- 分格线 -->
+      <view class="horizontal-line" />
+
+      <!-- 标签筛选 -->
+      <view class="horizontal-tags-container">
+        <view wx:for="{{articleTags[articleAuthors[articleRecommend.infoGroup]]}}" wx:for-index="i" wx:key="i" class="horizontal-tag {{UISelectedTag === item ? 'active' : ''}}" bindtap="selectUITag" data-tag="{{item}}">{{item}}</view>
+      </view>
+
+      <!-- 标签文章分类 -->
+      <view class="vertical-articles-container">
+        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="vertical-article {{item.isUnread ? 'highlight' : ''}}" bindtap="bindInfo" data-link="{{item.link}}" data-mode="VERTICAL" data-tag="{{UISelectedTag}}" wx:if="{{item.isTagShow}}"> 
+          <view class="article-text">
+            <view class="circle">{{item.geolocation}}</view>
+            <view class="title">{{item.title}}</view>
+            <view class="dislike" wx:if="{{!item.isUnread && userInfo}}">
+              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}"/>
+            </view>
+          </view>
+          <image class="article-image" src="{{item.imgSrc}}"></image>
+        </view>
+      </view>
     </view>
+
+    
   </view>
 </block>

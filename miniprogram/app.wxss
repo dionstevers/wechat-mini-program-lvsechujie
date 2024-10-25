@@ -10,7 +10,6 @@
 }
 
 .page-introduction{
-  
   width: 650rpx;
   height: 50rpx;
   text-align: center;

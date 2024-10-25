@@ -14,6 +14,10 @@ Page({
     shouldUpdateCloud: false,
     background: null,
 
+    /** UI 相关 */
+    UISelectedTag: "",
+    articleShowList: [],
+
     /** 用户基本信息 */
     testGroup: -1,
     userInfo: null,
@@ -50,9 +54,7 @@ Page({
       '低碳强国': ['碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
     },
 
-    articlesDefault: [],
     articles: [],
-    articleShowList: [],
     articleRecommend: {
       frequencyScore: [],
       articleCount: [],
@@ -297,7 +299,7 @@ Page({
   /**
    * 更新本地 articleShowList 使其高亮未读文章，并排序：未读文章在前、按照时间排序（降序）
    */
-  updateLocalUnreadHighlight() {
+  updateLocalUnread() {
     // 更新文章isUnread
     let readArticles = [];
     let unreadArticles = [];
@@ -338,6 +340,20 @@ Page({
     this.setData({
       articleShowList: updatedList
     });
+  },
+
+  /**
+   * 更新本地 articleShowList 使其的TagShow对应到当前UI选择的Tag
+   */
+  updateLocalTagShow() {
+    const updatedList = this.data.articleShowList.map(article => {
+      article.isTagShow = article.tags?.includes(this.data.UISelectedTag) || false;
+      return article;
+    });
+
+    this.setData({
+      articleShowList: updatedList
+    })
   },
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,10 +527,13 @@ Page({
       })
 
       // 更新文章Unread状态，并排序：未读文章在前、按照时间排序
-      this.updateLocalUnreadHighlight();
+      this.updateLocalUnread();
 
       // 更新用户是否 dislike
       this.updateLocalDislike();
+
+      // 更新用户的 isTagShow 来判断当前UI是否应该显示该文章
+      this.updateLocalTagShow();
 
     } catch(err) {
      console.log("分配文章失败: ", err)
@@ -551,18 +570,37 @@ Page({
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
+   * UI 界面 Tag 切换
+   */
+  selectUITag(e){
+    this.setData({
+      UISelectedTag: e.currentTarget.dataset.tag
+    })
+
+    this.updateLocalTagShow();
+  },
+
+  /**
    * 文章按钮事件
    */
   bindInfo(e){
     logEvent('Read Article')
     const link = e.currentTarget.dataset.link;
+    const mode = e.currentTarget.dataset.mode;
+    const tag = e.currentTarget.dataset.tag;
+
     const targetArticle = this.data.articles.find(article => article.link === link);
+    const totalShownArticle = mode === "HORIZONTAL"
+    ? this.data.articleShowList.filter(item => item.author === this.data.articleAuthors[-1] || item.isUnread)
+    : this.data.articleShowList.filter(item => item.tags && item.tags.includes(tag))
 
     const author = targetArticle.author
     const imgSrc = targetArticle.imgSrc
     const tags = author === this.data.articleAuthors[-1] ? null : targetArticle.tags
     const totalTags = author === this.data.articleAuthors[-1] ? null : this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]
-    const scrollAmount = `<${this.data.articleShowList.findIndex(item => item.link === link) + 1}TH> IN <TOTAL: ${this.data.articleShowList.length + 1}>`;
+    const scrollAmount = tag === undefined 
+    ? `<${mode}: ${totalShownArticle.findIndex(item => item.link === link) + 1}TH> in <TOTAL: ${totalShownArticle.length}>`
+    : `<${mode}: ${totalShownArticle.findIndex(item => item.link === link) + 1}TH> in <TOTAL: ${totalShownArticle.length}> with <TAG: ${tag}>`
 
     // 导航到对应链接
     wx.navigateTo({
@@ -612,9 +650,10 @@ Page({
         }
         wx.setStorageSync('articleRecommend', localArticleRecommend)
 
-        // 更新不喜欢文章和未读文章高亮
+        // 更新不喜欢文章，未读文章高亮，和TagShow的文章
         this.updateLocalDislike();
-        this.updateLocalUnreadHighlight();
+        this.updateLocalUnread();
+        this.updateLocalTagShow();
       }
     })
   },
@@ -634,6 +673,7 @@ Page({
       })
     }
     this.updateLocalDislike()
+    this.updateLocalTagShow()
     
     // 更新本地存储 articleRecommend 的已读文章列表 recommendedArticles
     let localArticleRecommend = wx.getStorageSync('articleRecommend');
@@ -714,9 +754,10 @@ Page({
           localArticles = wx.getStorageSync('articles');
         }
 
-        // 更新页面 articles 数据
+        // 更新页面 articles 数据和初始化 UISelectedTag 为第一个Tag
         this.setData({
-          articles: localArticles
+          articles: localArticles,
+          UISelectedTag: this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]][0]
         })
 
         // 获取文章点击计数器
