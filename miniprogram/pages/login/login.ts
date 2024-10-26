@@ -281,7 +281,7 @@ Page({
           if (res.result.success) {
             this.transferEntranceMoney({
               complete: () => {
-                wx.switchTab({
+                wx.navigateTo({
                   url: "/pages/information/information"
                 });
               }

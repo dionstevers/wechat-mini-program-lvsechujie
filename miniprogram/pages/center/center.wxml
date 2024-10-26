@@ -60,3 +60,6 @@
     <view class='menu-bar' bindtap="onPrivacy">隐私声明</view>
   </block>
 </view>
+
+
+<tab-bar id="tabBar"></tab-bar>

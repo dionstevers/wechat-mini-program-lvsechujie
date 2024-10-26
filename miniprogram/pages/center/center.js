@@ -199,6 +199,9 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
+  onReady(){
+    this.selectComponent("#tabBar").select(3)
+  },
   onLoad(options) {
     
     // 页面交互设置

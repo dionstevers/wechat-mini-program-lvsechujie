@@ -39,3 +39,5 @@
 </block>
 
 
+
+<tab-bar id="tabBar"></tab-bar>

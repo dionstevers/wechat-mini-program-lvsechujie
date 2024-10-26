@@ -306,6 +306,10 @@ Page({
     //   defaultIndex: userInfoRes.data[0].basicInfo.trans
     // });
   },
+  onReady(){
+    this.selectComponent("#tabBar").select(0)
+  },
+
   onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
     if (!options.isFromShareTimeline) return this.setData({ isFromShareTimeline: false });
@@ -375,7 +379,7 @@ Page({
       path: `/pages/index/index?sharedFromID=${app.globalData.openID}`
     };
   },
-
+  
 //  functions for new UI starts here
   selectTab(event){
     const selectedTab = event.currentTarget.dataset.tab;
@@ -383,5 +387,5 @@ Page({
       activeTab: selectedTab
     });
   }
-
+  
 });

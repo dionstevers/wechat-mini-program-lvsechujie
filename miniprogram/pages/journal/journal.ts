@@ -153,7 +153,7 @@ Page({
             showCancel: false,
             success(res){
               if(res.confirm){
-                wx.switchTab({
+                wx.navigateTo({
                   url: '/pages/center/center'
                 });
               }
@@ -203,7 +203,7 @@ Page({
             showCancel: false,
             success(res){
               if(res.confirm){
-                wx.switchTab({
+                wx.navigateTo({
                   url: '/pages/center/center'
                 });
               }

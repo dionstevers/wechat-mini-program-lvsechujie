@@ -95,4 +95,8 @@
         </block>
     </view>
 </view>
+
 </view>
+
+
+<tab-bar id="tabBar"></tab-bar>

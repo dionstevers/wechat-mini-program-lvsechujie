@@ -103,7 +103,7 @@ Page({
           showCancel: false,
           success(res){
             if (res.confirm) {
-              wx.switchTab({
+              wx.navigateTo({
                 url: '/pages/information/information'
               })
             }
@@ -162,7 +162,7 @@ Page({
   },
 
   onShareAppMessage() {
-    logEvent("Share App")
+   
     return {
       title: "快来一起低碳出街~",
       path:`/pages/index/index?sharedFromID=${app.globalData.openID}`,

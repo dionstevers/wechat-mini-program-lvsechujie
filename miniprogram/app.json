@@ -1,13 +1,11 @@
 {
+  
   "pages": [
-    
-    "pages/index/index",
+
     "pages/home/home",
     "pages/center/center",
     "pages/information/information",
     "pages/login/login",
-
-   
     "pages/journal/journal",
     "pages/triphistory/triphistory",
     "pages/store/store",
@@ -19,46 +17,17 @@
     "pages/notification/notification",
     "pages/prizeCenter/prizeCenter",
     "pages/merchDetail/merchDetail",
-    "pages/test/test",
     "pages/aboutus/aboutus",
-    "pages/track/track"
+    "pages/track/track",
+    "pages/index/index"
   ],
-  "tabBar": {
-    "list": [
-      {
-        "pagePath": "pages/home/home",
-        "iconPath": "./asset/img/trip.png",
-        "text": "行程记录",
-        "selectedIconPath": "./asset/img/trip_highlight.png"
-      },
-      {
-        "pagePath": "pages/information/information",
-        "text": "信息中心",
-        "iconPath": "./asset/img/info.png",
-        "selectedIconPath": "./asset/img/info_highlight.png"
-      },
-      {
-        "pagePath": "pages/prizeCenter/prizeCenter",
-        "text": "积分兑换",
-        "iconPath": "./asset/img/merch.png",
-        "selectedIconPath": "./asset/img/merch_highlight.png"
-      },
-      {
-        "pagePath":"pages/center/center",
-        "text": "个人中心",
-        "iconPath": "./asset/img/personal.png",
-        "selectedIconPath": "./asset/img/personal_highlight.png"
-
-      }
-
-
-    ],
-    "position": "bottom",
-    "color": "#FFFFFF",
-    "selectedColor": "#f9bc60",
-    "backgroundColor": "#419f8c",
-    "borderStyle": "black"
+  "subPackages": [
+     
+  ],
+  "usingComponents": {
+    "tab-bar":"components/tab_bar/index"
   },
+
   "window": {
     "navigationBarBackgroundColor": "#418f8c",
     "navigationBarTextStyle": "white",

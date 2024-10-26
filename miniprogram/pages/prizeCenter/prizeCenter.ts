@@ -41,7 +41,9 @@ Page({
       console.log("Information页面已经初始化过了！");
     }
   },
-
+  onReady(){
+    this.selectComponent("#tabBar")?.select(2)
+  },
   onLoad(options){
     // 转发朋友圈链接，导航到登录页面
     if (options.isFromShareTimeline) {

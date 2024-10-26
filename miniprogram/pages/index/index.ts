@@ -155,7 +155,7 @@ Page({
             duration: 500
           });
           setTimeout(() => {
-            wx.switchTab({
+            wx.navigateTo({
               url: "/pages/information/information",
               complete: () => (this.isNavigating = false)
             });
@@ -191,7 +191,7 @@ Page({
       duration: 500
     });
     setTimeout(() => {
-      wx.switchTab({
+      wx.navigateTo({
         url: "/pages/information/information",
         complete: () => (this.isNavigating = false)
       });
