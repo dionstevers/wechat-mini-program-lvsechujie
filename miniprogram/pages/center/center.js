@@ -82,7 +82,7 @@ Page({
         // })
       },
       failed : () => {
-        wx.navigateTo({
+        wx.reLaunch({
           url: '/pages/index/index',
         })
       }

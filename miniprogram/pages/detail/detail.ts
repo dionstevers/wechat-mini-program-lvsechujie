@@ -10,6 +10,16 @@ Page({
    * 页面的初始数据
    */
   data: {
+    article: {
+      title: "标题模板",
+      geolocation: "全国",
+      uploadTime: "2024-11-11 11:11:11",
+      tags: ["#标签1", "#标签2"],
+      texts: ["这里放第一段文字，第一段文字下方是第一张图片，如果希望图片显示在最前，则第一段文字用\"\"，以此类推。",
+              "这里放第二段文字，第二段文字下方是第二张图片，如果希望两张图片紧接着显示，则第二段文字用\"\"，以此类推。"],
+      imgs: ["https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E9%AA%91%E8%A1%8C%E6%B1%BD%E8%BD%A6.png?sign=95e224f0caf96fa684c8bc06ef5b7094&t=1722219043",
+             "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E8%A1%A3%E9%A3%9F%E8%A1%8C.jpg?sign=49c273e74497c80274f9a7f387a57d4e&t=1722219019"]
+    },
     link: null,
     articleTags: null,
     totalTags: null,

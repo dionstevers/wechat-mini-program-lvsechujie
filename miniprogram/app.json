@@ -1,7 +1,7 @@
 {
   
   "pages": [
-
+    "pages/index/index",
     "pages/home/home",
     "pages/center/center",
     "pages/information/information",
@@ -18,8 +18,8 @@
     "pages/prizeCenter/prizeCenter",
     "pages/merchDetail/merchDetail",
     "pages/aboutus/aboutus",
-    "pages/track/track",
-    "pages/index/index"
+    "pages/track/track"
+
   ],
   "subPackages": [
      

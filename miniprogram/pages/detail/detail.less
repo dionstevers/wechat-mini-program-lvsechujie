@@ -1,1 +1,106 @@
 /* pages/detail/detail.wxss */
+
+/* Title Box */
+.title-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.title-text {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #012644;
+  text-align: left;
+  width: 700rpx;
+  white-space: nowrap;
+}
+
+/* Metadata Style */
+.metadata {
+  display: flex;
+  flex-direction: column;
+  font-size: 24rpx;
+  margin-bottom: 20rpx;
+
+  .location-time-box {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0f0f0;
+    padding: 10rpx 15rpx;
+    border-radius: 10rpx;
+    margin-bottom: 15rpx;
+
+    .geolocation, .upload-time {
+      font-size: 24rpx;
+      color: rgb(124, 124, 124);
+    }
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+
+    .tag {
+      background-color: #f0f0f0;
+      color: rgb(124, 124, 124);
+      border-radius: 20rpx;
+      padding: 5rpx 15rpx;
+      margin-right: 10rpx;
+      margin-bottom: 10rpx;
+      font-size: 24rpx;
+    }
+  }
+}
+
+/* Articles Container */
+.articles-container {
+  min-height: 90%;
+  max-width: 100%;
+  border-top-left-radius: 30rpx;
+  border-top-right-radius: 30rpx;
+  background-color: #FFFFFE;
+  box-shadow: 0 0 60rpx 50rpx rgba(255, 255, 255, 0.7);
+  padding: 45rpx;
+  padding-top: 8%;
+}
+
+/* Vertical Article (Text and Image) */
+.vertical-article {
+  width: 100%;
+  margin-bottom: 30rpx;
+  background-color: #FFFBF5;
+  border-radius: 15rpx;
+  overflow: hidden;
+  border: 5rpx solid #e5ded1;
+}
+
+.vertical-article .article-image {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vertical-article .article-text {
+  padding: 20rpx;
+  font-size: 20rpx;
+  color: #F9BC60;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: normal;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+}
+
+.vertical-article .article-text .content-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  text-align: left;
+  flex: 1;
+}

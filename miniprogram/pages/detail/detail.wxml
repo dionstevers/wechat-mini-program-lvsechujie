@@ -1,2 +1,39 @@
 <!--pages/detail/detail.wxml-->
-<web-view src="{{link}}"/>
+<!-- <web-view src="{{link}}"/> -->
+
+<view class="articles-container">
+  <!-- Title -->
+  <view class="title-box">
+    <text class="title-text">{{article.title}}</text>
+  </view>
+
+  <!-- Metadata (Geolocation and Upload Time in Gray Box, Tags Below) -->
+  <view class="metadata">
+    <view class="location-time-box">
+      <text class="geolocation">{{article.geolocation}}</text>
+      <text class="upload-time">{{article.uploadTime}}</text>
+    </view>
+    <view class="tags">
+      <text wx:for="{{article.tags}}" wx:key="tag" class="tag">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- Vertical Content: Text followed by Image -->
+  <block wx:for="{{article.texts}}" wx:key="*this" wx:for-index="index">
+    <block wx:if="{{article.texts[index]}}">
+      <!-- Text Section -->
+      <view class="vertical-article">
+        <view class="article-text">
+          <text class="content-title">{{article.texts[index]}}</text>
+        </view>
+      </view>
+    </block>
+
+    <block wx:if="{{article.imgs[index]}}">
+      <!-- Image Section -->
+      <view class="vertical-article">
+        <image class="article-image" src="{{article.imgs[index]}}" mode="widthFix"></image>
+      </view>
+    </block>
+  </block>
+</view>
