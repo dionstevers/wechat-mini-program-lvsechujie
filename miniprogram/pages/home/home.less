@@ -303,6 +303,152 @@
   font-size: 40rpx; // Adjust font size as needed
   color: black; // Text color
   margin: 2rpx 0; // Spacing between rows
-  
+}
 
+.heat-title{
+  font-size: 26rpx;
+  color: #fff;
+  padding: 20rpx 0;
+}
+
+.chart{
+  display: flex;
+  overflow: hidden;
+  border-radius: 32rpx;
+  font-size: 25rpx;
+  color: #333;
+
+  &-item{
+    height: 56rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.walk{
+      background-color: #5470c6;
+    }
+    &.cycling{
+      background-color:#91cc75;
+    }
+    &.drive{
+      background-color: #ee6666;
+    }
+    &.bus{
+      background-color: #fac858;
+    }
+    &.subway{
+      background-color: #9a60b4;
+    }
+    &.train{
+      background-color: #fc8452;
+    }
+  }
+}
+
+.rank{
+  padding-top: 36rpx;
+}
+
+
+.vant-dialog{
+  text-align: center;
+  .header{
+    padding: 5px;
+    color: #fff;
+    position: relative;
+    background-color: #419F8C;
+    .close-icon{
+      position: absolute;
+      left: 20rpx;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60rpx;
+      height: 60rpx;
+    }
+    .title{
+      font-weight: 700;
+    }
+    .desc{
+      font-size: 14px;
+    }
+  }
+
+  .body{
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    & > view{
+      padding: 6px;
+      box-sizing: border-box;
+      margin-right: 30px;
+      margin-top: 30px;
+      width: calc((100% - 60px) / 3);
+    }
+
+    & > view:nth-child(3n){
+      margin-right: 0;
+    }
+
+    &  > .active{
+      color: #fff;
+      background-color: #012644;
+    }
+
+    .label{
+      font-size: 12px;
+    }
+    .icon{
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+
+  .body-purposes{
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    & > view{
+      padding: 10px;
+      box-sizing: border-box;
+      width: 80%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #B7B7B7;
+    }
+
+
+
+    &  > .active{
+      color: #fff;
+      background-color: #012644;
+    }
+
+    .label{
+      font-size: 12px;
+    }
+    .icon{
+      width: 46px;
+      height: 46px;
+    }
+  }
+
+  .footer{
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    .btn{
+      padding: 8px 0;
+      width:60px;
+      border-radius: 6px;
+      background-color: #419F8C;
+      color: #fff;
+    }
+  }
+}
+.schedules{
+  padding: 0 40rpx;
 }

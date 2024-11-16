@@ -1,6 +1,6 @@
 import Dialog from "@vant/weapp/dialog/dialog";
 import { updateColor } from "../../utils/colorschema";
-import { getLocation } from "../../utils/home.util";
+import { getLocation, getNowTime } from "../../utils/home.util";
 import { logEvent } from "../../utils/log";
 import { onCheckSignIn, updateUserData } from "../../utils/login";
 import { getWeekRange } from "../../utils/time";
@@ -145,13 +145,17 @@ Page({
   onClickEvent() {
     if (this.data.userInfo != null) {
       if (!this.data.recordStatus) {
+        this.setData({ startNowTime: getNowTime() });
         this.checkSetting(true);
         // requestSubs();
       } else {
         wx.showModal({
           title: "提示",
           content: "要结束本次行程记录吗？",
-          success: res => res.confirm && this.setData({ transporModalHidden: false })
+          success: res => {
+            if (!res.confirm) return;
+            this.finishAndEndTrack();
+          }
         });
       }
     }
@@ -162,6 +166,7 @@ Page({
     this.setData({
       btnClass: "btn btn-start",
       recordStatus: true,
+      isTracking: true,
       startTime: +new Date(),
       myTimer: setInterval(() => {
         this.setData({ duration: +new Date() - this.data.startTime });
@@ -191,7 +196,7 @@ Page({
             }
           })) || {};
 
-        this.setData({ curID: trackId, isTracking: true });
+        this.setData({ curID: trackId });
         // 开始记录值
         this.startTracking();
       }
@@ -200,9 +205,11 @@ Page({
   // End recording
   endTrack() {
     const _this = this;
+
     // 该方法不支持Promise，仅支持回调
     wx.getWeRunData({
       complete: async res => {
+        this.setData({ isTracking: false });
         const { result: resp = null } = (await wx.cloud.callFunction({ name: "echo", data: { info: wx.cloud.CloudID(res.cloudID) } })) || {};
         const stepList = resp.info.data ? resp.info.data.stepInfoList : null;
 
@@ -291,11 +298,14 @@ Page({
 
     // 渲染今日最新数据
     const track = await this.refreshLastTrack();
+
     const userInfoRes = await db.collection("userInfo").limit(1).where({ _openid: app.globalData.openID }).get();
     const [{ _id, endTime }] = Array.isArray(track) ? (track.length ? track : [{}]) : [{}];
+
+    console.log(endTime);
     this.setData({
       curID: _id,
-      isTracking: !endTime,
+      // isTracking: !endTime,
       index: userInfoRes.data[0].basicInfo.trans,
       defaultIndex: userInfoRes.data[0].basicInfo.trans
     });
@@ -306,8 +316,8 @@ Page({
     //   defaultIndex: userInfoRes.data[0].basicInfo.trans
     // });
   },
-  onReady(){
-    this.selectComponent("#tabBar").select(0)
+  onReady() {
+    this.selectComponent("#tabBar").select(0);
   },
 
   onLoad(options) {
@@ -379,13 +389,59 @@ Page({
       path: `/pages/index/index?sharedFromID=${app.globalData.openID}`
     };
   },
-  
-//  functions for new UI starts here
-  selectTab(event){
+
+  //  functions for new UI starts here
+  selectTab(event) {
     const selectedTab = event.currentTarget.dataset.tab;
     this.setData({
       activeTab: selectedTab
     });
+  },
+
+  onClickTransportation(e) {
+    const arr = this.data.transport;
+    const index = arr.indexOf(e.currentTarget.dataset.tp);
+    if (index !== -1) {
+      arr.splice(index, 1);
+    } else {
+      arr.push(e.currentTarget.dataset.tp);
+    }
+    this.setData({ transport: arr });
+  },
+  onClickPurpose(e) {
+    const arr = this.data.purpose;
+    const index = arr.indexOf(e.currentTarget.dataset.purpose);
+    if (index !== -1) {
+      arr.splice(index, 1);
+    } else {
+      arr.push(e.currentTarget.dataset.purpose);
+    }
+    this.setData({ purpose: arr });
+  },
+  onTransportModalClose() {
+    this.setData({ show: false, transport: [] });
+  },
+  onPurposeModalClose() {
+    this.setData({ showPurposes: false, purpose: [] });
+  },
+  finishAndEndTrack() {
+    const transportFinish = this.data.transport.length;
+    const purposeFinish = this.data.purpose.length;
+
+    if (!transportFinish) return this.setData({ show: true });
+    if (!purposeFinish) return this.setData({ showPurposes: true });
+    const finish = transportFinish && purposeFinish;
+
+    finish && this.endTrack();
+  },
+  onConfirmTransport() {
+    if (!this.data.transport.length) return wx.showToast({ icon: "none", title: "请选择出行方式" });
+    this.setData({ show: false });
+    this.finishAndEndTrack();
+  },
+  onConfirmPurpose() {
+    if (!this.data.purpose.length) return wx.showToast({ icon: "none", title: "请选择出行方式" });
+    this.setData({ showPurposes: false });
+    this.finishAndEndTrack();
   }
-  
 });

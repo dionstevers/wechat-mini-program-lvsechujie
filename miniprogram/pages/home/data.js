@@ -4,6 +4,8 @@ export default {
   background: null,
   isFromShareTimeline: true,
 
+  show: false,
+  showPurposes: false,
   mysaving: 0,
   myranking: "未上榜",
   testGroup: null,
@@ -17,6 +19,7 @@ export default {
   startTime: 0,
   endTime: 0,
   duration: 0,
+  startNowTime: "",
   // User data
   brand: "",
   model: "",
@@ -24,31 +27,31 @@ export default {
   version: "", //WeChat version
   platform: "",
   curID: "",
-  transport: "步行",
-  transportList: ["步行或骑行", "公共交通", "电动汽车", "燃油汽车"],
   purpose: [],
-  purposes: [
-    {
-      value: "通勤",
-      name: "通勤"
-    },
-    {
-      value: "休闲娱乐",
-      name: "休闲娱乐"
-    },
-    {
-      value: "医疗健康",
-      name: "医疗健康"
-    },
-    {
-      value: "旅游",
-      name: "旅游"
-    },
-    {
-      value: "其他",
-      name: "其他"
-    }
-  ],
+  transport: [],
+  transportList: ["步行或骑行", "公共交通", "电动汽车", "燃油汽车"],
+  // purposes: [
+  //   {
+  //     value: "通勤",
+  //     name: "通勤"
+  //   },
+  //   {
+  //     value: "休闲娱乐",
+  //     name: "休闲娱乐"
+  //   },
+  //   {
+  //     value: "医疗健康",
+  //     name: "医疗健康"
+  //   },
+  //   {
+  //     value: "旅游",
+  //     name: "旅游"
+  //   },
+  //   {
+  //     value: "其他",
+  //     name: "其他"
+  //   }
+  // ],
   endTransportList: [
     {
       value: "步行",
@@ -149,37 +152,94 @@ export default {
   showPoint: false,
   lastTrack: null,
 
-
-
   // data attribute for new UI starts here
 
-  activeTab: 'trip',
-  tracking: false,
+  activeTab: "trip",
+  isTracking: false,
 
-  
-//   todayRecordList : [
-//     {
-//         transport: "公交",
-//         endTime: Date.now(),
-//         date: Date.now() - 45 * 60 * 1000, // 45 minutes ago
-//         carbSum: 15,
-//         purpose: "购物",
-//     },
-//     {
-//         transport: "步行",
-//         endTime: Date.now(),
-//         date: Date.now() - 120 * 60 * 1000, // 2 hours ago
-//         carbSum: 30,
-//         purpose: "出差",
-//     },
-//     {
-//         transport: "开车",
-//         endTime: Date.now(),
-//         date: Date.now() - 180 * 60 * 1000, // 3 hours ago
-//         carbSum: 50,
-//         purpose: "旅游",
-//     }
-// ]
+  activeTransportation: "",
+  transportations: [
+    {
+      label: "步行",
+      icon: "../../asset/img/walking.png"
+    },
+    {
+      label: "自行车(共享单车)",
+      icon: "../../asset/img/bike.png"
+    },
+    {
+      label: "电动自行车",
+      icon: "../../asset/img/bike1.png"
+    },
+    {
+      label: "公交车",
+      icon: "../../asset/img/bus.png"
+    },
+    {
+      label: "燃油汽车",
+      icon: "../../asset/img/car.png"
+    },
+    {
+      label: "电动汽车",
+      icon: "../../asset/img/electricCar.png"
+    },
+    {
+      label: "地铁",
+      icon: "../../asset/img/subway.png"
+    },
+    {
+      label: "高铁",
+      icon: "../../asset/img/train.png"
+    }
+  ],
+  purposes: [
+    {
+      label: "去上班",
+      icon: "../../asset/img/work.png"
+    },
+    {
+      label: "休闲娱乐",
+      icon: "../../asset/img/cinema.png"
+    },
+    {
+      label: "回家",
+      icon: "../../asset/img/house.png"
+    },
+    {
+      label: "购物",
+      icon: "../../asset/img/groceryCart.png"
+    },
+    {
+      label: "跑腿类杂事",
+      icon: "../../asset/img/runningErrands.png"
+    },
+    {
+      label: "其他",
+      icon: "../../asset/img/other.png"
+    }
+  ]
 
-
+  //   todayRecordList : [
+  //     {
+  //         transport: "公交",
+  //         endTime: Date.now(),
+  //         date: Date.now() - 45 * 60 * 1000, // 45 minutes ago
+  //         carbSum: 15,
+  //         purpose: "购物",
+  //     },
+  //     {
+  //         transport: "步行",
+  //         endTime: Date.now(),
+  //         date: Date.now() - 120 * 60 * 1000, // 2 hours ago
+  //         carbSum: 30,
+  //         purpose: "出差",
+  //     },
+  //     {
+  //         transport: "开车",
+  //         endTime: Date.now(),
+  //         date: Date.now() - 180 * 60 * 1000, // 3 hours ago
+  //         carbSum: 50,
+  //         purpose: "旅游",
+  //     }
+  // ]
 };

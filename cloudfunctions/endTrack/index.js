@@ -62,10 +62,21 @@ function calcResultMap(track) {
   }
 
   // Calculate the interval corresponding to each speed and count the quantity and time
-  track.record.forEach(recordItem => {
+  for (let i = 0; i < track?.record.length - 1; i++) {
+    const recordItem = track?.record[i];
+    const nextRecordItem = track?.record[i + 1];
+    if (!recordItem || !nextRecordItem) break;
+
+    const { points = {} } = recordItem || {};
+    const [lat1, lon1] = points?.coordinates || [];
+
+    const { points: nextPoints = {} } = nextRecordItem || {};
+    const [lat2, lon2] = nextPoints?.coordinates || [];
+
+    const speed = haversineDistance(lat1, lon1, lat2, lon2);
+
     speedBetween.forEach((item, key) => {
       const { min, max } = item || {};
-      const { velos: speed = 0 } = recordItem || {};
 
       if (speed >= min && speed <= max) {
         const currentEntry = result.get(key);
@@ -75,7 +86,7 @@ function calcResultMap(track) {
         result.set(key, currentEntry);
       }
     });
-  });
+  }
 
   return result;
 }
@@ -228,13 +239,30 @@ function calculateMetersPerLabel(startTime, endTime, kilometers) {
   return "未知速度"; // 如果没有匹配的区间
 }
 
+// 计算速度
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // 地球半径，单位为公里
+
+  // 将经纬度从度转换为弧度
+  const rlat1 = lat1 * (Math.PI / 180); // 纬度1
+  const rlat2 = lat2 * (Math.PI / 180); // 纬度2
+  const difflat = (lat2 - lat1) * (Math.PI / 180); // 纬度差
+  const difflon = (lon2 - lon1) * (Math.PI / 180); // 经度差
+
+  // 哈弗赛因公式
+  const a = Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  // 计算距离
+  const d = R * c; // 结果单位为公里
+  return d;
+}
+
 exports.main = async event => {
   const { data: track } = await db.collection("track").doc(event.curID).get();
 
   // 计算各个速度区间交通工具
   const result = calcResultMap(track);
-
-  console.log(result, track);
 
   // 计算省碳值
   let { isFail, carbSum, calcTransport } = calcCarbon(result, event.transport);

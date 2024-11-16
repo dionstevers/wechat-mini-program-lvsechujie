@@ -1,3 +1,4 @@
+<wxs src="./home.wxs" module="m1"></wxs>
 <view class="page-background" style="background: #97baaf">
 
 <view class="header-image">
@@ -12,26 +13,26 @@
 
 <!-- when selectedTab is trip -->
 <view wx:if="{{activeTab === 'trip'}}">
-    <view wx:if="{{!tracking}}">
+    <view wx:if="{{!isTracking}}">
         <view class="prompt-container">
             <text class="prompt-title">开始记录你的低碳出行吧</text>
             <text class="prompt-content">点击下方开始记录出行的行程，行程结束后小程序会根据您的出行数据计算省碳量与碳排放</text>
         </view>
 
-        <view class="btn-container" bindtap="onTrack">
+        <view class="btn-container" bindtap="onClickEvent">
             <image src="../../asset/img/start.png" class="btn-img" />
         </view>
     </view>
 
-    <view wx:if="{{tracking}}">
+    <view wx:if="{{isTracking}}">
         <view class="record-container">
-            <text class="record-duration">00:23:44</text>
+            <text class="record-duration">{{ m1.convertStamp(duration, "duration") }}</text>
             <text class="record-duration-label">记录时长</text>
-            <text class="record-start">13:22</text>
+            <text class="record-start">{{startNowTime}}</text>
             <text class="record-start-label">开始时间</text>
         </view>
 
-        <view class="btn-container" bindtap="endTrack">
+        <view class="btn-container" bindtap="onClickEvent">
             <image class="btn-img" src="../../asset/img/stop.png" />
         </view>
     </view>
@@ -41,7 +42,7 @@
 <view wx:if="{{activeTab === 'record'}}">
     <view class="record-container">
         <view wx:for="{{todayRecordList}}" wx:for-index="i" wx:key="i" class="listItem">
-            <image class="icon-placeholder" src="../../asset/img/walking.png" mode="aspectFit" />
+            <image class="icon-placeholder" src="{{ m1.getTransportImage(item.calcTransport) }}" mode="aspectFit" />
             <view class="item-details">
                 <view class="transport-method">{{ item.transport }}</view>
                 <view class="duration">时长: <text>{{ m1.convertStamp(item.endTime - item.date, "duration") }}</text></view>
@@ -50,10 +51,20 @@
             </view>
         </view>
     </view>
+
+            <view wx:if="{{!!showSchedules.length}}" class="schedules">
+          <view class="heat-title">
+            本次出行分析：
+          </view>
+
+          <view class="chart">
+            <view wx:for="{{showSchedules}}" wx:key="value" class="{{'chart-item ' + item.color}}" style="width: {{ item.percentage }}">{{ item.label + item.percentage }}</view>
+          </view>
+        </view>
 </view>
 
 <!-- when rank -->
-<view wx:if="{{activeTab === 'rank'}}">
+<view wx:if="{{activeTab === 'rank'}}" class="rank">
     <view class="legend">本周累计省碳排名</view>
 
     <!-- Current User Entry -->
@@ -95,6 +106,66 @@
         </block>
     </view>
 </view>
+
+<van-dialog
+  use-slot
+  width="680rpx"
+  show="{{ show }}"
+  show-confirm-button="{{false}}"
+  bind:close="onTransportModalClose"
+>
+
+  <view class="vant-dialog">
+    <view class="header">
+        <image class="close-icon" src="../../asset/img/close.png" bindtap="onTransportModalClose"/>
+        <view class="title">出行方式</view>
+        <view class="desc">可多选</view>
+    </view>
+
+    <view class="body">
+        <view wx:for="{{transportations}}" wx:for-index="i" wx:key="label" data-tp="{{item.label}}" bindtap="onClickTransportation" class="{{  m1.getActiveClassName(transport,item.label) }}">
+          <image class="icon" src="{{item.icon}}"  />
+        <view class="label">{{item.label}}</view>
+        </view>
+    </view>
+
+    <view class="footer">
+        <view class="btn" bindtap="onConfirmTransport">
+        确定
+    </view>
+    </view>
+  </view>
+</van-dialog>
+
+
+<van-dialog
+  use-slot
+  width="680rpx"
+  show="{{ showPurposes }}"
+  show-confirm-button="{{false}}"
+  bind:close="onPurposeModalClose"
+>
+  <view class="vant-dialog">
+    <view class="header">
+        <image class="close-icon" src="../../asset/img/close.png" bindtap="onPurposeModalClose"/>
+        <view class="title">出行目的</view>
+        <view class="desc">可多选</view>
+    </view>
+
+    <view class="body-purposes">
+        <view wx:for="{{purposes}}" wx:for-index="i" wx:key="label" data-purpose="{{item.label}}" bindtap="onClickPurpose" class="{{ m1.getActiveClassName(purpose,item.label) }}">
+          <image class="icon" src="{{item.icon}}"  />
+        <view class="label">{{item.label}}</view>
+        </view>
+    </view>
+
+    <view class="footer">
+        <view class="btn" bindtap="onConfirmPurpose">
+        确定
+    </view>
+    </view>
+  </view>
+</van-dialog>
 
 </view>
 

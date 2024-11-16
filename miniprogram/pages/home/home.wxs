@@ -24,5 +24,36 @@ var classPicker = function (list, index) {
     return "old listItem";
   }
 };
+
+var getTransportImage = function (calcTransport) {
+  var transports = [
+    { label: "步行/跑步", value: "../../asset/img/walking.png" },
+    { label: "骑行", value: "../../asset/img/bike.png" },
+    { label: "汽车(市区)", value: "../../asset/img/car.png" },
+    { label: "汽车(高速公路)", value: "../../asset/img/car.png" },
+    { label: "公交车（市区）", value: "../../asset/img/bus.png" },
+    { label: "公交车（长途）", value: "../../asset/img/bus.png" },
+    { label: "地铁", value: "../../asset/img/subway.png" },
+    { label: "高铁", value: "../../asset/img/train.png" }
+  ];
+
+  var transport = null;
+
+  for (var i = 0; i < transports.length; i++) {
+    if (transports[i].label === calcTransport) {
+      transport = transports[i];
+      break;
+    }
+  }
+
+  return transport ? transport.value : "../../asset/img/walking.png";
+};
+
+var getActiveClassName = function (arr, label) {
+  return arr.indexOf(label) !== -1 ? "active" : "";
+};
+
 module.exports.convertStamp = convertStamp;
 module.exports.classPicker = classPicker;
+module.exports.getTransportImage = getTransportImage;
+module.exports.getActiveClassName = getActiveClassName;

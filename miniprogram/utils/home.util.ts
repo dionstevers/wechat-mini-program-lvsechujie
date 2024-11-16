@@ -115,3 +115,15 @@ export async function calcDayCredit(carbon: number) {
     credit
   };
 }
+
+/**
+ * @description: 获取当前时间的小时和分钟
+ * @return {*}
+ */
+export function getNowTime(): string {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
