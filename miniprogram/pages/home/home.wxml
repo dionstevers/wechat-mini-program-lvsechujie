@@ -20,7 +20,7 @@
         </view>
 
         <view class="btn-container" bindtap="onClickEvent">
-            <image src="../../asset/img/start.png" class="btn-img" />
+            <image src="../../asset/img/start.svg" class="btn-img" />
         </view>
     </view>
 
@@ -33,7 +33,7 @@
         </view>
 
         <view class="btn-container" bindtap="onClickEvent">
-            <image class="btn-img" src="../../asset/img/stop.png" />
+            <image class="btn-img" src="../../asset/img/stop.svg" />
         </view>
     </view>
 </view>
@@ -117,7 +117,7 @@
 
   <view class="vant-dialog">
     <view class="header">
-        <image class="close-icon" src="../../asset/img/close.png" bindtap="onTransportModalClose"/>
+        <image class="close-icon" src="../../asset/img/close.svg" bindtap="onTransportModalClose"/>
         <view class="title">出行方式</view>
         <view class="desc">可多选</view>
     </view>
@@ -147,7 +147,7 @@
 >
   <view class="vant-dialog">
     <view class="header">
-        <image class="close-icon" src="../../asset/img/close.png" bindtap="onPurposeModalClose"/>
+        <image class="close-icon" src="../../asset/img/close.svg" bindtap="onPurposeModalClose"/>
         <view class="title">出行目的</view>
         <view class="desc">可多选</view>
     </view>

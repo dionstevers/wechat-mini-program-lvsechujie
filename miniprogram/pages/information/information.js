@@ -519,12 +519,14 @@ Page({
       // 生成对应的文章给用户
       const articleList = []
       const recommendedLinks = this.data.articleRecommend.recommendedArticles.map(article => article.link);
-      const recommendedArticles = this.data.articles.filter(article => recommendedLinks.includes(article.link))
+      const recommendedArticles = this.data.articles
       articleList.push(...recommendedArticles);
 
       this.setData({
         articleShowList: articleList
       })
+
+      console.log(recommendedArticles)
 
       // 更新文章Unread状态，并排序：未读文章在前、按照时间排序
       this.updateLocalUnread();
@@ -585,6 +587,7 @@ Page({
    */
   bindInfo(e){
     logEvent('Read Article')
+
     const link = e.currentTarget.dataset.link;
     const mode = e.currentTarget.dataset.mode;
     const tag = e.currentTarget.dataset.tag;

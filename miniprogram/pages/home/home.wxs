@@ -27,14 +27,14 @@ var classPicker = function (list, index) {
 
 var getTransportImage = function (calcTransport) {
   var transports = [
-    { label: "步行/跑步", value: "../../asset/img/walking.png" },
-    { label: "骑行", value: "../../asset/img/bike.png" },
-    { label: "汽车(市区)", value: "../../asset/img/car.png" },
-    { label: "汽车(高速公路)", value: "../../asset/img/car.png" },
-    { label: "公交车（市区）", value: "../../asset/img/bus.png" },
-    { label: "公交车（长途）", value: "../../asset/img/bus.png" },
-    { label: "地铁", value: "../../asset/img/subway.png" },
-    { label: "高铁", value: "../../asset/img/train.png" }
+    { label: "步行/跑步", value: "../../asset/img/walking.svg" },
+    { label: "骑行", value: "../../asset/img/bike.svg" },
+    { label: "汽车(市区)", value: "../../asset/img/car.svg" },
+    { label: "汽车(高速公路)", value: "../../asset/img/car.svg" },
+    { label: "公交车（市区）", value: "../../asset/img/bus.svg" },
+    { label: "公交车（长途）", value: "../../asset/img/bus.svg" },
+    { label: "地铁", value: "../../asset/img/subway.svg" },
+    { label: "高铁", value: "../../asset/img/train.svg" }
   ];
 
   var transport = null;
@@ -46,7 +46,7 @@ var getTransportImage = function (calcTransport) {
     }
   }
 
-  return transport ? transport.value : "../../asset/img/walking.png";
+  return transport ? transport.value : "../../asset/img/walking.svg";
 };
 
 var getActiveClassName = function (arr, label) {

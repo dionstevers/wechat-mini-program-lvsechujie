@@ -161,61 +161,61 @@ export default {
   transportations: [
     {
       label: "步行",
-      icon: "../../asset/img/walking.png"
+      icon: "../../asset/img/walking.svg"
     },
     {
       label: "自行车(共享单车)",
-      icon: "../../asset/img/bike.png"
+      icon: "../../asset/img/bike.svg"
     },
     {
       label: "电动自行车",
-      icon: "../../asset/img/bike1.png"
+      icon: "../../asset/img/bike1.svg"
     },
     {
       label: "公交车",
-      icon: "../../asset/img/bus.png"
+      icon: "../../asset/img/bus.svg"
     },
     {
       label: "燃油汽车",
-      icon: "../../asset/img/car.png"
+      icon: "../../asset/img/car.svg"
     },
     {
       label: "电动汽车",
-      icon: "../../asset/img/electricCar.png"
+      icon: "../../asset/img/electricCar.svg"
     },
     {
       label: "地铁",
-      icon: "../../asset/img/subway.png"
+      icon: "../../asset/img/subway.svg"
     },
     {
       label: "高铁",
-      icon: "../../asset/img/train.png"
+      icon: "../../asset/img/train.svg"
     }
   ],
   purposes: [
     {
       label: "去上班",
-      icon: "../../asset/img/work.png"
+      icon: "../../asset/img/work.svg"
     },
     {
       label: "休闲娱乐",
-      icon: "../../asset/img/cinema.png"
+      icon: "../../asset/img/cinema.svg"
     },
     {
       label: "回家",
-      icon: "../../asset/img/house.png"
+      icon: "../../asset/img/house.svg"
     },
     {
       label: "购物",
-      icon: "../../asset/img/groceryCart.png"
+      icon: "../../asset/img/groceryCart.svg"
     },
     {
       label: "跑腿类杂事",
-      icon: "../../asset/img/runningErrands.png"
+      icon: "../../asset/img/runningErrands.svg"
     },
     {
       label: "其他",
-      icon: "../../asset/img/other.png"
+      icon: "../../asset/img/other.svg"
     }
   ]
 
