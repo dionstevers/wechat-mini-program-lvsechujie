@@ -1,14 +1,14 @@
 /* 新的按钮飞入动画 */
-@keyframes button-fly-in {
-  0% {
-    transform: translateY(100%); /* 初始位置在底部 */
-    opacity: 0; /* 初始不可见 */
-  }
-  100% {
-    transform: translateY(0); /* 最终位置正常显示 */
-    opacity: 1; /* 最终完全可见 */
-  }
-}
+// @keyframes button-fly-in {
+//   0% {
+//     transform: translateY(100%); /* 初始位置在底部 */
+//     opacity: 0; /* 初始不可见 */
+//   }
+//   100% {
+//     transform: translateY(0); /* 最终位置正常显示 */
+//     opacity: 1; /* 最终完全可见 */
+//   }
+// }
 
 .page-background {
   display: flex;
@@ -17,96 +17,123 @@
   height: 100vh; /* 使用视口高度，确保充满整个屏幕 */
 }
 
-.center-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+// .center-box {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// }
 
-.welcome-text {
+// .welcome-text {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   color: #fff;
+//   font-size: 24px;
+//   height: 100%;
+//   margin-bottom: 40px; /* 修改为像素单位 */
+// }
+
+// /* 修改按钮样式，将动画应用到每个按钮 */
+// .register-button {
+//   background-color: #1e5999;
+//   color: #fff;
+//   font-size: 20px;
+//   padding: 15px 30px;
+//   border: none;
+//   border-radius: 25px;
+//   margin-bottom: 10px;
+//   cursor: pointer;
+//   opacity: 0; /* 初始不可见 */
+//   animation: button-fly-in 0.5s ease forwards;
+// }
+
+// .login-button {
+//   background-color: #2dcfd4;
+//   color: #fff;
+//   font-size: 20px;
+//   padding: 15px 30px;
+//   border: none;
+//   border-radius: 25px;
+//   margin-bottom: 10px;
+//   cursor: pointer;
+//   opacity: 0; /* 初始不可见 */
+//   animation: button-fly-in 0.5s ease forwards;
+// }
+
+// .visitor-button {
+//   position: fixed;
+//   bottom: 10px;
+//   left: 10px;
+//   background-color: #42a6d4;
+//   color: #fff;
+//   font-size: 16px;
+//   padding: 10px 20px;
+//   border: none;
+//   border-radius: 15px;
+//   cursor: pointer;
+//   opacity: 0;
+//   animation: button-fly-in 0.5s ease forwards;
+//   max-width: 150px;
+// }
+
+// .delete-button {
+//   position: fixed;
+//   bottom: 10px;
+//   right: 10px;
+//   background-color: #f12c12;
+//   color: #fff;
+//   font-size: 16px;
+//   padding: 10px 20px;
+//   border: none;
+//   border-radius: 15px;
+//   cursor: pointer;
+//   opacity: 0;
+//   animation: button-fly-in 0.5s ease forwards;
+//   max-width: 150px;
+// }
+
+// .register-button {
+//   animation-delay: 0.25s;
+// }
+
+// .login-button {
+//   animation-delay: 0.5s;
+// }
+
+// .visitor-button {
+//   animation-delay: 1.0s;
+// }
+
+// .delete-button {
+//   animation-delay: 1.25s;
+// }
+
+.container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 24px;
-  height: 100%;
-  margin-bottom: 40px; /* 修改为像素单位 */
+  align-items: center;
 }
 
-/* 修改按钮样式，将动画应用到每个按钮 */
-.register-button {
-  background-color: #1e5999;
-  color: #fff;
-  font-size: 20px;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  opacity: 0; /* 初始不可见 */
-  animation: button-fly-in 0.5s ease forwards;
+.loading-text {
+  font-size: 60rpx;
+  color: white;
+  margin-bottom: 30rpx;
+  text-align: center;
 }
 
-.login-button {
-  background-color: #2dcfd4;
-  color: #fff;
-  font-size: 20px;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  opacity: 0; /* 初始不可见 */
-  animation: button-fly-in 0.5s ease forwards;
+.center-image {
+  width: 200rpx;
+  height: auto;
+  margin-bottom: 30rpx;
 }
 
-.visitor-button {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  background-color: #42a6d4;
-  color: #fff;
-  font-size: 16px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  opacity: 0;
-  animation: button-fly-in 0.5s ease forwards;
-  max-width: 150px;
-}
-
-.delete-button {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  background-color: #f12c12;
-  color: #fff;
-  font-size: 16px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  opacity: 0;
-  animation: button-fly-in 0.5s ease forwards;
-  max-width: 150px;
-}
-
-.register-button {
-  animation-delay: 0.25s;
-}
-
-.login-button {
-  animation-delay: 0.5s;
-}
-
-.visitor-button {
-  animation-delay: 1.0s;
-}
-
-
-.delete-button {
-  animation-delay: 1.25s;
+.hint-text {
+  font-size: 30rpx;
+  color: rgb(230, 230, 230);
+  text-align: center;
+  padding-left: 100rpx;
+  padding-right: 100rpx;
 }
 

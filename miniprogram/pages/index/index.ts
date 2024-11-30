@@ -1,3 +1,4 @@
+import { setColorStyle, updateColor } from "../../utils/colorschema";
 import { logEvent } from "../../utils/log";
 import { onHandleSignIn } from "../../utils/login";
 
@@ -16,6 +17,9 @@ Page({
    */
   async onLoad(options) {
     try {
+      // 设置主题颜色
+      setColorStyle('CYAN');
+
       // get user location and ip
       await wx.cloud.callFunction({
         name: "getUserip"
@@ -50,14 +54,11 @@ Page({
 
       // 文章分享跳转和自动登录
       if (options.isFromArticleShared) {
-        wx.navigateTo({
+        wx.redirectTo({
           url: `/pages/detail/detail?sharedFromID=${sharedFromid}&link=${options.articleLink}&articleType=${options.articleType}`
         });
       } else {
-        let localAutoLogin = wx.getStorageSync("autoLogin");
-        if (localAutoLogin) {
-          this.HandleSignIn();
-        }
+        this.HandleSignIn();
       }
     } catch (err) {
       console.log(err);
@@ -129,7 +130,7 @@ Page({
         });
       } else {
         this.isNavigating = true;
-        wx.navigateTo({
+        wx.redirectTo({
           url: "/pages/login/login",
           complete: () => (this.isNavigating = false)
         });
@@ -148,27 +149,30 @@ Page({
       onHandleSignIn({
         success: () => {
           this.isNavigating = true;
-          wx.showToast({
-            title: "正在登录中",
-            icon: "loading",
-            mask: true,
-            duration: 500
-          });
+          // wx.showToast({
+          //   title: "正在登录中",
+          //   icon: "loading",
+          //   mask: true,
+          //   duration: 500
+          // });
           setTimeout(() => {
-            wx.navigateTo({
-              url: "/pages/information/information",
+            wx.redirectTo({
+              url: "/pages/home/home",
               complete: () => (this.isNavigating = false)
             });
           }, 500);
           this.isFetchingUserInfo = false;
         },
         failed: () => {
+          // 如果没有账号，自动跳转到注册
+
           wx.showModal({
             title: "您尚未注册",
-            content: "请点击下方注册按钮注册",
+            content: "跳转到注册",
             showCancel: false
           });
           this.isFetchingUserInfo = false;
+          this.HandleSignUp();
         },
         error: () => {
           this.isFetchingUserInfo = false;
@@ -191,8 +195,8 @@ Page({
       duration: 500
     });
     setTimeout(() => {
-      wx.navigateTo({
-        url: "/pages/information/information",
+      wx.redirectTo({
+        url: "/pages/home/home",
         complete: () => (this.isNavigating = false)
       });
     }, 500);
@@ -225,6 +229,9 @@ Page({
    */
   onShow() {
     console.log("index page showing up");
+
+    // 更新颜色
+    updateColor();
   },
 
   /**

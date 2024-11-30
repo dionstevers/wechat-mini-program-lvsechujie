@@ -10,7 +10,7 @@
     <!-- 标题 -->
     <view class="title-box">
       <view class="title-text">
-          <text>来了解\n最新的环境咨询和政策信息吧</text>
+          <text>来了解\n最新的环境资讯和政策信息吧</text>
       </view>
     </view>
 
@@ -45,7 +45,7 @@
           <view class="article-text">
             <view class="circle">{{item.geolocation}}</view>
             <view class="title">{{item.title}}</view>
-            <view class="dislike" wx:if="{{!item.isUnread && userInfo}}">
+            <view class="dislike" wx:if="{{!item.isUnread && userInfo && item.author != articleAuthors[-1]}}">
               <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}"/>
             </view>
           </view>

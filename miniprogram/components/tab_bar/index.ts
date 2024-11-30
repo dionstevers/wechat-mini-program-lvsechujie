@@ -39,10 +39,7 @@ Component({
         "text": "个人中心",
         "iconPath": "../../asset/img/personal.png",
         "selectedIconPath": "../../asset/img/personal_highlight.png"
-
       }
-
-
     ],
   },
 

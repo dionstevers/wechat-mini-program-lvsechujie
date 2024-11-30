@@ -19,7 +19,6 @@ Page({
     articleShowList: [],
 
     /** 用户基本信息 */
-    testGroup: -1,
     userInfo: null,
     openID: null,
 
@@ -49,9 +48,9 @@ Page({
 
     /** 文章种类对应的tags */
     articleTags: {
-      '低碳个人': ['新能源汽车', '避雷', '攻略', '健康', '省钱'],
-      '低碳森林': ['动物', '海洋', '植物', '气候变化'],
-      '低碳强国': ['碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
+      '低碳个人': ['全部', '新能源汽车', '避雷', '攻略', '健康', '省钱'],
+      '低碳森林': ['全部', '动物', '海洋', '植物', '气候变化'],
+      '低碳强国': ['全部', '碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
     },
 
     articles: [],
@@ -79,8 +78,7 @@ Page({
     // 更新新版本 （Note: 这里应该根据版本改变发生变动）
     const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
     const infoGroup = localArticleRecommend.infoGroup !== undefined ? 
-      localArticleRecommend.infoGroup : this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
-      Math.floor(Math.random() * totalInfoGroupNumber) : 0; // infoGroup 不改变, 没有则生成
+      localArticleRecommend.infoGroup : Math.floor(Math.random() * totalInfoGroupNumber); // infoGroup 不改变, 没有则生成
     const author = this.data.articleAuthors[infoGroup]
     const articleRecommend = [
       // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
@@ -170,8 +168,7 @@ Page({
         // 本地和云端都丢失则初始化云端数据库
         if (articleRecommendData.length === 0) {
           const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
-          const infoGroup = this.data.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION ?
-            Math.floor(Math.random() * totalInfoGroupNumber) : 0;
+          const infoGroup = Math.floor(Math.random() * totalInfoGroupNumber);
           const author = this.data.articleAuthors[infoGroup]
           const articleRecommend = [
             // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
@@ -347,7 +344,7 @@ Page({
    */
   updateLocalTagShow() {
     const updatedList = this.data.articleShowList.map(article => {
-      article.isTagShow = article.tags?.includes(this.data.UISelectedTag) || false;
+      article.isTagShow = article.tags?.includes(this.data.UISelectedTag) || this.data.UISelectedTag == '全部';
       return article;
     });
 
@@ -724,11 +721,6 @@ Page({
           return;
         }
 
-        // 加载用户测试组数据
-        this.setData({
-          testGroup: this.data.userInfo.testGroup
-        });
-
         // 初始化 articleRecommend 数据
         let articleRecommend = wx.getStorageSync('articleRecommend');
         if (articleRecommend == '') {
@@ -772,11 +764,11 @@ Page({
         }
 
         // 根据测试组不同，背景颜色不同 (强国组: 红色，其他：青色)
-        if(this.data.articleRecommend.infoGroup === 2){
-          setColorStyle('RED');
-        } else {
-          setColorStyle('CYAN');
-        }
+        // if(this.data.articleRecommend.infoGroup === 2){
+        //   setColorStyle('RED');
+        // } else {
+        //   setColorStyle('CYAN');
+        // }
 
         // 检查天数是否更新（每日凌晨4点）
         if (this.CheckDailyUpdate()) {
