@@ -15,15 +15,13 @@ Page({
       geolocation: "全国",
       uploadTime: "2024-11-11 11:11:11",
       tags: ["#标签1", "#标签2"],
-      texts: ["这里放第一段文字，第一段文字下方是第一张图片，如果希望图片显示在最前，则第一段文字用\"\"，以此类推。",
-              "这里放第二段文字，第二段文字下方是第二张图片，如果希望两张图片紧接着显示，则第二段文字用\"\"，以此类推。"],
+      texts: ["这里放第一段文字，第一段文字上方是第一张图片，如果希望图片显示在最前，则第一段文字用\"\"，以此类推。",
+              "这里放第二段文字，第二段文字上方是第二张图片，如果希望两张图片紧接着显示，则第二段文字用\"\"，以此类推。"],
       imgs: ["https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E9%AA%91%E8%A1%8C%E6%B1%BD%E8%BD%A6.png?sign=95e224f0caf96fa684c8bc06ef5b7094&t=1722219043",
              "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E8%A1%A3%E9%A3%9F%E8%A1%8C.jpg?sign=49c273e74497c80274f9a7f387a57d4e&t=1722219019"]
     },
-    link: null,
-    articleTags: null,
+
     totalTags: null,
-    imgSrc: null,
     scrollAmount: null,
     sharedFromID: null,
     openTime:null,
@@ -34,17 +32,30 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options){
-    const link = decodeURIComponent(options.link ?? '')
-    const imgSrc = decodeURIComponent(options.imgSrc ?? '')
+    const title = options.title ? decodeURIComponent(options.title) : null
+    const uploadTime = options.uploadTime ?? null
+    const texts = options.texts ? JSON.parse(options.texts).map(
+      text => { return decodeURIComponent(text) }
+    ) : null
+    const imgs = options.imgs ? JSON.parse(options.imgs).map(
+      img => { return decodeURIComponent(img) }
+    ) : null
+    const geolocation = options.geolocation ?? null
     const articleTags = options.tags ? JSON.parse(options.tags) : null
     const totalTags = options.totalTags ? JSON.parse(options.totalTags) : null
     const scrollAmount = options.scrollAmount
     const sharedFromID = options.sharedFromID ?? null
     const openTime  = new Date()
     this.setData({
-      link: link,
-      imgSrc: imgSrc,
-      articleTags: articleTags,
+      article: {
+        title: title,
+        geolocation: geolocation,
+        uploadTime: uploadTime,
+        tags: articleTags ? articleTags.map(tag => `#${tag}`) : ["#碳行家"],
+        texts: texts,
+        imgs: imgs
+      },
+
       totalTags: totalTags,
       scrollAmount: scrollAmount,
       sharedFromID: sharedFromID,
@@ -52,7 +63,7 @@ Page({
       userInfo: app.globalData.userInfo
     })
 
-    console.log("文章信息：\n\t'文章链接': ", link, "\n\t'图片链接': ", imgSrc, "\n\t'文章标签': ", articleTags, "\n\t'滚动参数': ", scrollAmount, "\n\t'分享openID': ", sharedFromID);
+    console.log("文章信息：\n\t'文章标题': ", title, "\n\t'图片链接': ", imgs[0], "\n\t'文章标签': ", articleTags, "\n\t'滚动参数': ", scrollAmount, "\n\t'分享openID': ", sharedFromID);
 
     if (sharedFromID) {
       wx.showModal({
@@ -75,8 +86,8 @@ Page({
 
     // 更新本地readAmount
     if (onCheckSignIn()){   
-      if (localArticleRecommend !== "" && this.data.totalTags !== null && this.data.articleTags != null) {
-        this.data.articleTags.forEach(tag => {
+      if (localArticleRecommend !== "" && this.data.totalTags !== null && this.data.article.tags != null) {
+        this.data.article.tags.forEach(tag => {
           let index = this.data.totalTags.indexOf(tag);
           if (index !== -1) localArticleRecommend.readAmount[index] += Math.floor(timeDifference / 1000);
         });
@@ -140,7 +151,7 @@ Page({
     return {
       title: "有意思的低碳知识，尽在碳行家~",
       path:`/pages/index/index?sharedFromID=${app.globalData.openID}&articleLink=${this.data.link}&articleType=${this.data.articleType}&isFromArticleShared=${true}`,
-      imageUrl: this.data.imgSrc,
+      imageUrl: this.data.article.imgs[0],
       success: function(res){
         console.log(res.shareTickets[0])
       },

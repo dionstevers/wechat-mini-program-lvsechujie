@@ -9,12 +9,13 @@ Page({
    */
   data: {
     /** 页面基本信息 */
-    RECOMMENDATION_VERSION: 2.0, // 用来识别是否需要处理就用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
+    RECOMMENDATION_VERSION: 2.1, // 用来识别是否需要处理就用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
     updateCounter: 0,
     shouldUpdateCloud: false,
     background: null,
 
     /** UI 相关 */
+    UITotalTags: [],
     UISelectedTag: "",
     articleShowList: [],
 
@@ -48,9 +49,9 @@ Page({
 
     /** 文章种类对应的tags */
     articleTags: {
-      '低碳个人': ['全部', '新能源汽车', '避雷', '攻略', '健康', '省钱'],
-      '低碳森林': ['全部', '动物', '海洋', '植物', '气候变化'],
-      '低碳强国': ['全部', '碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
+      '低碳个人': ['新能源汽车', '避雷', '攻略', '健康', '省钱'],
+      '低碳森林': ['动物', '海洋', '植物', '气候变化'],
+      '低碳强国': ['碳排放权交易', '生态环境部', '长江黄河', '生态文明建设', '生态文明思想']
     },
 
     articles: [],
@@ -123,13 +124,13 @@ Page({
     // 获取文章数据
     try {
       const queryLimit = 20; // 微信单次获取上限为20
-      let articles = (await db.collection('articlesNew').where({author: this.data.articleAuthors[-1]}).get()).data;
+      let articles = (await db.collection('articles').where({author: this.data.articleAuthors[-1]}).get()).data;
       let iterations = 0
 
       if (onCheckSignIn()) {
         while (true) {
           let author = this.data.articleAuthors[this.data.articleRecommend.infoGroup]
-          let fetchedArticles = await db.collection('articlesNew').where({author: author}).skip(iterations * queryLimit).limit(queryLimit).get();
+          let fetchedArticles = await db.collection('articles').where({author: author}).skip(iterations * queryLimit).limit(queryLimit).get();
   
           articles = articles.concat(fetchedArticles.data);
           iterations++;
@@ -302,9 +303,9 @@ Page({
     let unreadArticles = [];
 
     // 遍历原始文章列表，根据 isUnread 属性分类存放到相应数组中
-    const readLinks = this.data.articleRecommend.recommendedArticles.filter(art => !art.isUnread).map(article => article.link);
+    const readIDs = this.data.articleRecommend.recommendedArticles.filter(art => !art.isUnread).map(article => article._id);
     this.data.articleShowList.forEach(article => {
-      const isUnread = !readLinks.includes(article.link);
+      const isUnread = !readIDs.includes(article._id);
       if (isUnread) {
         unreadArticles.push({ ...article, isUnread });
       } else {
@@ -325,12 +326,12 @@ Page({
    */
   updateLocalDislike() {
     // 遍历原始文章列表，根据 doDislike 属性更新用户是否不喜爱这个文章
-    const dislikeLinks = this.data.articleRecommend.recommendedArticles
+    const dislikeIDs = this.data.articleRecommend.recommendedArticles
       .filter(article => article.doDislike)
-      .map(article => article.link);
+      .map(article => article._id);
 
     const updatedList = this.data.articleShowList.map(article => {
-      const doDislike = dislikeLinks.includes(article.link);
+      const doDislike = dislikeIDs.includes(article._id);
       return { ...article, doDislike }
     });
 
@@ -380,8 +381,8 @@ Page({
     // 用户是否不喜欢 doDislike 概率分布（最小差值）
     const dislikeCount = new Array(Object.keys(totalTags).length).fill(0);
     this.data.articleRecommend.recommendedArticles.forEach(recommendedArt => {
-      const link = recommendedArt.link;
-      const articleObj = this.data.articles.find(article => article.link === link);
+      const id = recommendedArt._id;
+      const articleObj = this.data.articles.find(article => article._id === id);
       if (articleObj) {
         if (recommendedArt.doDislike) {
           for (let tag of articleObj.tags) {
@@ -408,9 +409,9 @@ Page({
     console.log(`文章推荐指数分别为：\n\t'总标签'：[${totalTags}]\n\t'点击频率（归一化）'：[${nFrequencyScore}]\n\t'文章阅读量（归一化）'：[${nReadAmount}]\n\t'不喜欢计数（最小差值）'：[${minorDislikeCount}]\n\t'总概率分布（归一化）'：[${probabilities}]`)
 
     // 返回文章 （每个文章至多2个tags, 按照tags的分数加权总分进行概率分布)
-    const recommendedArticles = new Set(this.data.articleRecommend.recommendedArticles.map(article => article.link));
+    const recommendedArticles = new Set(this.data.articleRecommend.recommendedArticles.map(article => article._id));
     const unrecommendedArticles = this.data.articles.filter(article => 
-      article.author === author && !recommendedArticles.has(article.link)
+      article.author === author && !recommendedArticles.has(article._id)
     );
     if (unrecommendedArticles.length === 0) {
       return null;
@@ -451,7 +452,7 @@ Page({
             dislikeCount_minorDifference: minorDislikeCount,
           },
           probabilityDistribution: probabilities,
-          recommendedArticle: pickedArticle.link,
+          recommendedArticle: pickedArticle.title,
           recommendedTags: pickedArticle.tags,
           time : new Date()
         }
@@ -486,7 +487,7 @@ Page({
 
           this.data.articleRecommend.recommendedArticles.push({
             isUnread: true,
-            link: article.link
+            _id: article._id
           })
 
           console.log(`生成'${article.author}'文章: [${article.title}]`);
@@ -498,9 +499,9 @@ Page({
       // 添加碳行家'碳行家'文章到 articleShowList
       const defaultArticles = this.data.articles.filter(art => art.author === this.data.articleAuthors[-1])
       defaultArticles.forEach(art => {
-        if (!this.data.articleRecommend.recommendedArticles.some(article => article.link === art.link)) {
+        if (!this.data.articleRecommend.recommendedArticles.some(article => article._id === art._id)) {
           this.data.articleRecommend.recommendedArticles.push({
-            link: art.link,
+            _id: art._id,
             isUnread: true
           });
         }
@@ -515,8 +516,8 @@ Page({
     
       // 生成对应的文章给用户
       const articleList = []
-      const recommendedLinks = this.data.articleRecommend.recommendedArticles.map(article => article.link);
-      const recommendedArticles = this.data.articles
+      const recommendedIDs = this.data.articleRecommend.recommendedArticles.map(article => article._id);
+      const recommendedArticles = this.data.articles.filter(article => recommendedIDs.includes(article._id));
       articleList.push(...recommendedArticles);
 
       this.setData({
@@ -583,26 +584,34 @@ Page({
   bindInfo(e){
     logEvent('Read Article')
 
-    const link = e.currentTarget.dataset.link;
+    const articleID = e.currentTarget.dataset.id;
     const mode = e.currentTarget.dataset.mode;
     const tag = e.currentTarget.dataset.tag;
 
-    const targetArticle = this.data.articles.find(article => article.link === link);
+    const targetArticle = this.data.articles.find(article => article._id === articleID);
     const totalShownArticle = mode === "HORIZONTAL"
     ? this.data.articleShowList.filter(item => item.author === this.data.articleAuthors[-1] || item.isUnread)
     : this.data.articleShowList.filter(item => item.tags && item.tags.includes(tag))
 
+    const title = encodeURIComponent('【' + targetArticle.title + '】')
+    const uploadTime = new Date(targetArticle.uploadTime).toISOString().split('T')[0];
     const author = targetArticle.author
-    const imgSrc = targetArticle.imgSrc
+    const imgs = targetArticle.imgs.map(img => {
+      return encodeURIComponent(img);
+    });
+    const texts = targetArticle.texts.map(text => {
+      return encodeURIComponent(text);
+    });
+    const geolocation = targetArticle.geolocation
     const tags = author === this.data.articleAuthors[-1] ? null : targetArticle.tags
     const totalTags = author === this.data.articleAuthors[-1] ? null : this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]
     const scrollAmount = tag === undefined 
-    ? `<${mode}: ${totalShownArticle.findIndex(item => item.link === link) + 1}TH> in <TOTAL: ${totalShownArticle.length}>`
-    : `<${mode}: ${totalShownArticle.findIndex(item => item.link === link) + 1}TH> in <TOTAL: ${totalShownArticle.length}> with <TAG: ${tag}>`
+    ? `<${mode}: ${totalShownArticle.findIndex(item => item._id === articleID) + 1}TH> in <TOTAL: ${totalShownArticle.length}>`
+    : `<${mode}: ${totalShownArticle.findIndex(item => item._id === articleID) + 1}TH> in <TOTAL: ${totalShownArticle.length}> with <TAG: ${tag}>`
 
     // 导航到对应链接
     wx.navigateTo({
-      url:`/pages/detail/detail?tags=${JSON.stringify(tags)}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&link=${encodeURIComponent(link)}&imgSrc=${encodeURIComponent(imgSrc)}`,
+      url:`/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${JSON.stringify(tags)}&geolocation=${geolocation}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&texts=${JSON.stringify(texts)}&imgs=${JSON.stringify(imgs)}`,
       success: () => {
         // 未注册用户直接返回
         if (!onCheckSignIn()) {
@@ -611,7 +620,7 @@ Page({
 
         // 更新本地 recommendedArticles 的已读文章
         let localArticleRecommend = wx.getStorageSync('articleRecommend');
-        this.data.articleRecommend.recommendedArticles.find(article => article.link == link).isUnread = false;
+        this.data.articleRecommend.recommendedArticles.find(article => article._id == articleID).isUnread = false;
         if (localArticleRecommend !== ""){
           localArticleRecommend.recommendedArticles = this.data.articleRecommend.recommendedArticles;
         }
@@ -661,7 +670,7 @@ Page({
    */
   bindDislike(e) {
     // 切换不喜欢状态
-    const targetArticle = this.data.articleRecommend.recommendedArticles.find(article => article.link === e.currentTarget.dataset.link && !article.isUnread);
+    const targetArticle = this.data.articleRecommend.recommendedArticles.find(article => article._id === e.currentTarget.dataset._id && !article.isUnread);
     targetArticle.doDislike = !targetArticle.doDislike;
     if (targetArticle.doDislike) {
       wx.showModal({
@@ -747,10 +756,11 @@ Page({
           localArticles = wx.getStorageSync('articles');
         }
 
-        // 更新页面 articles 数据和初始化 UISelectedTag 为第一个Tag
+        // 更新页面 articles 数据和初始化 UISelectedTag 为'全部'
         this.setData({
           articles: localArticles,
-          UISelectedTag: this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]][0]
+          UITotalTags: ['全部'].concat(this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]),
+          UISelectedTag: '全部'
         })
 
         // 获取文章点击计数器

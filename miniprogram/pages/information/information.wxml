@@ -23,8 +23,8 @@
 
       <!-- 推荐文章 -->
       <view class="horizontal-articles-scroller">
-        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="horizontal-article" bindtap="bindInfo" data-link="{{item.link}}" data-mode="HORIZONTAL" wx:if="{{item.author == articleAuthors[-1] || item.isUnread}}">
-          <image class="article-image" src="{{item.imgSrc}}"></image>
+        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="horizontal-article" bindtap="bindInfo" data-id="{{item._id}}" data-mode="HORIZONTAL" wx:if="{{item.author == articleAuthors[-1] || item.isUnread}}">
+          <image class="article-image" src="{{item.imgs[0]}}"></image>
           <view class="article-text">
             <view class="title">{{item.title}}</view>
           </view>
@@ -36,20 +36,20 @@
 
       <!-- 标签筛选 -->
       <view class="horizontal-tags-container">
-        <view wx:for="{{articleTags[articleAuthors[articleRecommend.infoGroup]]}}" wx:for-index="i" wx:key="i" class="horizontal-tag {{UISelectedTag === item ? 'active' : ''}}" bindtap="selectUITag" data-tag="{{item}}">{{item}}</view>
+        <view wx:for="{{UITotalTags}}" wx:for-index="i" wx:key="i" class="horizontal-tag {{UISelectedTag === item ? 'active' : ''}}" bindtap="selectUITag" data-tag="{{item}}">{{item}}</view>
       </view>
 
       <!-- 标签文章分类 -->
       <view class="vertical-articles-container">
-        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="vertical-article {{item.isUnread ? 'highlight' : ''}}" bindtap="bindInfo" data-link="{{item.link}}" data-mode="VERTICAL" data-tag="{{UISelectedTag}}" wx:if="{{item.isTagShow}}"> 
+        <view wx:for="{{articleShowList}}" wx:for-index="i" wx:key="i" class="vertical-article {{item.isUnread ? 'highlight' : ''}}" bindtap="bindInfo" data-id="{{item._id}}" data-mode="VERTICAL" data-tag="{{UISelectedTag}}" wx:if="{{item.isTagShow}}"> 
           <view class="article-text">
             <view class="circle">{{item.geolocation}}</view>
             <view class="title">{{item.title}}</view>
             <view class="dislike" wx:if="{{!item.isUnread && userInfo && item.author != articleAuthors[-1]}}">
-              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-link="{{item.link}}"/>
+              <image class="dislike-img" src="{{item.doDislike ? '../../asset/img/dislike-highlight.png' : '../../asset/img/dislike.png'}}" catchtap="bindDislike" data-id="{{item._id}}"/>
             </view>
           </view>
-          <image class="article-image" src="{{item.imgSrc}}"></image>
+          <image class="article-image" src="{{item.imgs[0]}}"></image>
         </view>
       </view>
     </view>

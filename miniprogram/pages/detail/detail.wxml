@@ -18,21 +18,24 @@
     </view>
   </view>
 
+  <!-- 分格线 -->
+  <view class="horizontal-line" />
+
   <!-- Vertical Content: Text followed by Image -->
   <block wx:for="{{article.texts}}" wx:key="*this" wx:for-index="index">
+    <block wx:if="{{article.imgs[index]}}">
+      <!-- Image Section -->
+      <view class="vertical-article">
+        <image class="article-image" src="{{article.imgs[index]}}" mode="widthFix"></image>
+      </view>
+    </block>
+
     <block wx:if="{{article.texts[index]}}">
       <!-- Text Section -->
       <view class="vertical-article">
         <view class="article-text">
           <text class="content-title">{{article.texts[index]}}</text>
         </view>
-      </view>
-    </block>
-
-    <block wx:if="{{article.imgs[index]}}">
-      <!-- Image Section -->
-      <view class="vertical-article">
-        <image class="article-image" src="{{article.imgs[index]}}" mode="widthFix"></image>
       </view>
     </block>
   </block>
