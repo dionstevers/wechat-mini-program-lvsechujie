@@ -200,7 +200,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onReady(){
-    this.selectComponent("#tabBar").select(3)
+    
   },
   onLoad(options) {
     
@@ -238,6 +238,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    this.getTabBar()
+    if(typeof this.getTabBar === 'function' && this.getTabBar()){
+      this.getTabBar().setData({
+        selected:3
+      })
+    }
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
       return;

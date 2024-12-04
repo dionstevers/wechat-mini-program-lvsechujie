@@ -42,7 +42,7 @@ Page({
     }
   },
   onReady(){
-    this.selectComponent("#tabBar")?.select(2)
+    
   },
   onLoad(options){
     // 转发朋友圈链接，导航到登录页面
@@ -64,6 +64,12 @@ Page({
   },
 
   onShow(){
+    this.getTabBar()
+    if(typeof this.getTabBar === 'function' && this.getTabBar()){
+      this.getTabBar().setData({
+        selected:2
+      })
+    }
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
       return;

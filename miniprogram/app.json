@@ -21,11 +21,41 @@
     "pages/track/track"
 
   ],
+  "tabBar": {
+    "custom": true,
+    "color": "#FFFFFF",
+    "selectedColor": "#f9bc60",
+    "list":  [
+      {
+        "pagePath": "pages/home/home",
+        "iconPath": "asset/img/trip.png",
+        "text": "行程记录",
+        "selectedIconPath": "asset/img/trip_highlight.png"
+      },
+      {
+        "pagePath": "pages/information/information",
+        "text": "信息中心",
+        "iconPath": "asset/img/info.png",
+        "selectedIconPath": "asset/img/info_highlight.png"
+      },
+      {
+        "pagePath": "pages/prizeCenter/prizeCenter",
+        "text": "积分兑换",
+        "iconPath": "asset/img/merch.png",
+        "selectedIconPath": "asset/img/merch_highlight.png"
+      },
+      {
+        "pagePath":"pages/center/center",
+        "text": "个人中心",
+        "iconPath": "asset/img/personal.png",
+        "selectedIconPath": "asset/img/personal_highlight.png"
+      }
+    ]
+  },
   "subPackages": [
-     
   ],
   "usingComponents": {
-    "tab-bar":"components/tab_bar/index"
+    "tab-bar":"custom-tab-bar/index"
   },
 
   "window": {

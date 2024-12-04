@@ -156,7 +156,7 @@ Page({
           //   duration: 500
           // });
           setTimeout(() => {
-            wx.redirectTo({
+            wx.reLaunch({
               url: "/pages/home/home",
               complete: () => (this.isNavigating = false)
             });
@@ -195,7 +195,7 @@ Page({
       duration: 500
     });
     setTimeout(() => {
-      wx.redirectTo({
+      wx.reLaunch({
         url: "/pages/home/home",
         complete: () => (this.isNavigating = false)
       });

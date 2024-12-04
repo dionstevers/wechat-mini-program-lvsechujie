@@ -834,7 +834,7 @@ Page({
   /////////////////////////////////////////////// 页面周期函数 PAGE BUILT-IN FUNCTIONS ///////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   onReady(){
-    this.selectComponent("#tabBar").select(1)
+    
   },
   /**
    * 生命周期函数--监听页面加载
@@ -884,6 +884,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    this.getTabBar()
+    if(typeof this.getTabBar === 'function' && this.getTabBar()){
+      this.getTabBar().setData({
+        selected:1
+      })
+    }
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) {
       return;

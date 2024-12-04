@@ -317,7 +317,7 @@ Page({
     // });
   },
   onReady() {
-    this.selectComponent("#tabBar").select(0);
+   
   },
 
   onLoad(options) {
@@ -330,6 +330,12 @@ Page({
     });
   },
   onShow() {
+    this.getTabBar()
+    if(typeof this.getTabBar === 'function' && this.getTabBar()){
+      this.getTabBar().setData({
+        selected:0
+      })
+    }
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) return;
 
@@ -445,3 +451,4 @@ Page({
     this.finishAndEndTrack();
   }
 });
+
