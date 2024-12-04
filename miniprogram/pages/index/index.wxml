@@ -19,7 +19,7 @@
 <view class="page-background" style="background: {{background}};">
   <view class="container">
     <text class="loading-text">加载中...</text>
-    <image class="center-image" src="../../asset/img/loading-earth.gif" mode="widthFix" />
+    <image class="center-image" src="../../asset/img/loading_earth.svg" mode="widthFix" />
     <text class="hint-text">你知道吗，每人每年少买一件不必要的衣服可节能约2.5千克标准煤，相应减排二氧化碳6.4千克。</text>
   </view>
 </view>
