@@ -670,7 +670,7 @@ Page({
    */
   bindDislike(e) {
     // 切换不喜欢状态
-    const targetArticle = this.data.articleRecommend.recommendedArticles.find(article => article._id === e.currentTarget.dataset._id && !article.isUnread);
+    const targetArticle = this.data.articleRecommend.recommendedArticles.find(article => article._id === e.currentTarget.dataset.id && !article.isUnread);
     targetArticle.doDislike = !targetArticle.doDislike;
     if (targetArticle.doDislike) {
       wx.showModal({
