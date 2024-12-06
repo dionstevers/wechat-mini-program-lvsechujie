@@ -69,17 +69,23 @@ Page({
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * 处理旧版本兼容
+   * 处理旧版本兼容，或是 infoGroup 改变
    */
   async handleOldVersion() {
-    // 判断旧版本
+    // 获取数据
     const localArticleRecommend = wx.getStorageSync('articleRecommend')
-    if (localArticleRecommend == '' || localArticleRecommend.RECOMMENDATION_VERSION == this.data.RECOMMENDATION_VERSION) return;
+    const db = wx.cloud.database()
+    const cloudInfoGroup = (await db.collection('articleRecommend')
+    .where({ _openid: this.data.openID })
+    .get()).data[0].infoGroup;
+
+    // 判断旧版本或是更改infoGroup
+    if ((localArticleRecommend == '' || localArticleRecommend.RECOMMENDATION_VERSION == this.data.RECOMMENDATION_VERSION) && localArticleRecommend.infoGroup == cloudInfoGroup) return;
 
     // 更新新版本 （Note: 这里应该根据版本改变发生变动）
     const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
-    const infoGroup = localArticleRecommend.infoGroup !== undefined ? 
-      localArticleRecommend.infoGroup : Math.floor(Math.random() * totalInfoGroupNumber); // infoGroup 不改变, 没有则生成
+    const infoGroup = cloudInfoGroup !== undefined ? 
+      cloudInfoGroup : Math.floor(Math.random() * totalInfoGroupNumber); // infoGroup 不改变, 没有则生成
     const author = this.data.articleAuthors[infoGroup]
     const articleRecommend = [
       // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
