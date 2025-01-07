@@ -64,9 +64,7 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady() {
 
-  },
 
   onShow() {
     // 更新颜色
@@ -78,7 +76,42 @@ Page({
     wx.setNavigationBarTitle({
       title: '碳行家｜关于我们'
     })
+    // try {
+    //   console.log('calling container');
+    //   wx.cloud.callContainer({
+    //     "config": {
+    //       "env": "prod-5g9hyw5ua680d3fc"
+    //     },
+    //     "path": "/predict",
+    //     "header": {
+    //       "X-WX-SERVICE": "trip",
+    //       'X-WX-EXCLUDE-CREDENTIALS': 'unionid, cloudbase-access-token, openid'
+    //     },
+    //     "method": "POST",
+    //     "data": {
+    //       "speeds": [200,200,200,200,200]
+    //     },
+    //     success: (res) => {
+    //       console.log('Response received:', res);
+    //       // Handle the returned data here
+    //       if (res && res.data) {
+    //         console.log('Prediction result:', res.data);
+    //         // Process the prediction result
+    //       }
+    //     },
+    //     fail: (err) => {
+    //       console.error('Request failed:', err);
+    //       // Handle the error case
+    //     }
+    //   });
+    // } catch (e) {
+    //   console.error('Caught error:', e);
+    // }
+    
+
   },
+
+  
 
   /**
    * 生命周期函数--监听页面隐藏
