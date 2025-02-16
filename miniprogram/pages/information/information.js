@@ -9,7 +9,7 @@ Page({
    */
   data: {
     /** 页面基本信息 */
-    RECOMMENDATION_VERSION: 2.1, // 用来识别是否需要处理就用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
+    RECOMMENDATION_VERSION: 2.1, // 用来识别是否需要处理旧用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
     updateCounter: 0,
     shouldUpdateCloud: false,
     background: null,
@@ -71,7 +71,7 @@ Page({
   /**
    * 处理旧版本兼容，或是 infoGroup 改变
    */
-  async handleOldVersion() {
+  async CheckVersionUpdate() {
     // 获取数据
     const localArticleRecommend = wx.getStorageSync('articleRecommend')
     const db = wx.cloud.database()
@@ -84,8 +84,8 @@ Page({
 
     // 更新新版本 （Note: 这里应该根据版本改变发生变动）
     const totalInfoGroupNumber = Object.keys(this.data.articleAuthors).length - 1;
-    const infoGroup = cloudInfoGroup !== undefined ? 
-      cloudInfoGroup : Math.floor(Math.random() * totalInfoGroupNumber); // infoGroup 不改变, 没有则生成
+    const infoGroup = (cloudInfoGroup !== undefined) || (localArticleRecommend.RECOMMENDATION_VERSION == this.data.RECOMMENDATION_VERSION) ? 
+      cloudInfoGroup : Math.floor(Math.random() * totalInfoGroupNumber); // infoGroup 不改变且 RECOMMENDATION_VERSION 不改变, 没有则生成
     const author = this.data.articleAuthors[infoGroup]
     const articleRecommend = [
       // 点击频率数组 (25可以修改来改变点击频率的推荐占比)
@@ -113,10 +113,6 @@ Page({
       RECOMMENDATION_VERSION: this.data.RECOMMENDATION_VERSION
     })
 
-    // 移除本地文章库存
-    // TODO: 等到新文章放进数据库articles之后，可以移除
-    wx.removeStorageSync('articles')
-
     await this.updateCloudStorage(this.data.RECOMMENDATION_VERSION);
     console.log('处理旧版本成功！')
   },
@@ -126,33 +122,88 @@ Page({
    */
   async fetchCloudArticles(){
     const db = wx.cloud.database();
-
     // 获取文章数据
     try {
-      const queryLimit = 20; // 微信单次获取上限为20
-      let articles = (await db.collection('articles').where({author: this.data.articleAuthors[-1]}).get()).data;
-      let iterations = 0
-
-      if (onCheckSignIn()) {
-        while (true) {
-          let author = this.data.articleAuthors[this.data.articleRecommend.infoGroup]
-          let fetchedArticles = await db.collection('articles').where({author: author}).skip(iterations * queryLimit).limit(queryLimit).get();
-  
-          articles = articles.concat(fetchedArticles.data);
-          iterations++;
-  
-          if (fetchedArticles.data.length < queryLimit) {
-            break;
-          }
-        }
-      }
-
       wx.setStorageSync("articles", articles)  
       console.log(`成功从云端获取${articles.length}篇文章`)
     } catch (error) {
       console.error("获取文章时出错：", error);
     }
   },
+
+  
+  async fetchArticles({ author = "", tags = [], subtags = [], geolocation = "", excludedIDs = [], count = 10 }) {
+    const db = wx.cloud.database(); 
+    const $ = db.command.aggregate;
+
+    try {
+      const currentTimestamp = Date.now();
+      const res = await db.collection('article')
+        .aggregate()
+        // 1. 过滤作者和排除的ID
+        .match({
+          author: author,
+          _id: db.command.nin(excludedIDs)
+        })
+  
+        
+        .addFields({
+          // 2. 计算 tags 匹配比例的分数
+          tagsIntersectionScore: $.multiply($.size($.setIntersection([tags, "$tags"])), 3), // tags 权重 3
+
+          // 3. 计算 subtags 匹配比例的分数
+          subtagsIntersectionScore: $.multiply($.size($.setIntersection([subtags, "$subtags"])), 2), // subtags 权重 2
+
+          // 4. 计算 geolocation 匹配分数
+          geolocationScore: $.cond(
+            [$.eq(["$geolocation", geolocation]), 2, 0] // geolocation 权重 2
+          ),
+
+          // 5. 计算 uploadTime 距离当今的分数： 7天内 3；7-30天内 递减；30天以后 0
+          uploadTimeScore: $.cond([
+            // 7天内 3
+            $.lt([$.subtract([$.toLong(currentTimestamp), $.toLong("$uploadTime")]), 7 * 24 * 60 * 60 * 1000]),
+            3,
+            $.cond([
+              // 7-30天内 递减
+              $.lt([$.subtract([$.toLong(currentTimestamp), $.toLong("$uploadTime")]), 30 * 24 * 60 * 60 * 1000]),
+              $.multiply($.divide([$.subtract([30 * 24 * 60 * 60 * 1000, $.subtract([$.toLong(currentTimestamp), $.toLong("$uploadTime")])]), (30 - 7) * 24 * 60 * 60 * 1000]), 3),
+              // 30天以后 0
+              0
+            ])
+          ])
+        })
+
+        // 6. 统计所有分数
+        .addFields({
+          totalScore: $.add([
+            "$tagsIntersectionScore",
+            "$subtagsIntersectionScore",
+            "$geolocationScore",
+            "$uploadTimeScore"
+          ])
+        })
+  
+        // 7. 按总分排序，上传时间也优先
+        .sort({
+          totalScore: -1,
+          uploadTime: -1
+        })
+  
+        // 8. 限制返回数量
+        .limit(count)
+        .end();
+  
+      console.log(res.list);
+      return {
+        res
+      };
+    } catch (error) {
+      console.error("获取文章时出错：", error);
+      return { success: false, error: error.message };
+    }
+  },
+  
 
   /**
    * 获取云端数据
@@ -605,6 +656,7 @@ Page({
     const imgs = targetArticle.imgs.map(img => {
       return encodeURIComponent(img);
     });
+    console.log(targetArticle.text)
     const texts = targetArticle.texts.map(text => {
       return encodeURIComponent(text);
     });
@@ -729,6 +781,17 @@ Page({
     // 异步处理数据初始化录入
     const initialize = async () => {
       try {
+        // 测试
+        const result = await this.fetchArticles({
+          author: '强国版',  // 替换为您想查询的作者
+          tags: [],  // 替换为您要匹配的 tags
+          subtags: [],    // 替换为您要匹配的 subtags
+          geolocation: '',   // 替换为您要匹配的 geolocation
+          excludedIDs: [],  // 排除的文章 IDs
+          count: 10                // 要返回的最大文章数量
+        })
+        console.log(result.articles)
+
         // 未登录用户直接返回
         if (!onCheckSignIn()) {
           return;
@@ -741,7 +804,7 @@ Page({
         }
 
         // 检查推荐系统版本
-        await this.handleOldVersion()
+        await this.CheckVersionUpdate()
         articleRecommend = wx.getStorageSync('articleRecommend');
 
         // 更新页面 articleRecommend 数据
