@@ -9,9 +9,10 @@ export default {
 
   /** 文章推荐的权重 */
   RECOMMEND_FEATURE_WEIGHTS: {
+    articleCount: 2.0,
     frequencyScore: 3.0,
     readAmount: 2.0,
-    dislike: -2.0
+    dislikeAmount: -2.0
   },
 
   /** infoGroup对应的文章作者 */
@@ -19,6 +20,14 @@ export default {
     '-1': '碳行家',
     '0' : '个人版',
     '1' : '强国版'
+  },
+
+  /** 文章推荐分数权重 */
+  ARTICLE_WEIGHT_SCORES: {
+    'TAG': 3,
+    'SUBTAG': 2,
+    'GEOLOCATION': 2,
+    'TIME': 3
   },
 
   /** 文章种类对应的 tags （这个会显示） */
