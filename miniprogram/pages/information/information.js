@@ -11,12 +11,14 @@ Page({
    * 页面的初始数据
    */
   data: {
+    /** 常量数据 defaultData ，这个是给UI访问的 */
+    defaultData,
+
     /** 页面基本信息 */
     background: null,
 
     /** UI 相关 */
-    UITotalTags: [],
-    UISelectedTag: "",
+    UISelectedTag: '',
     articleShowList: [],
 
     /** 用户基本信息 */
@@ -123,6 +125,7 @@ Page({
 
     // 设置 articleRecommend 对象
     const articleRecommend = {
+      RECOMMENDATION_VERSION: defaultData.RECOMMENDATION_VERSION,
       infoGroup: infoGroup,
       features: features,
       recommendedIDs: []
@@ -140,7 +143,7 @@ Page({
    */
   async checkVersionUpdate() {
     // 判断旧版本
-    if (defaultData.RECOMMENDATION_VERSION == this.data.RECOMMENDATION_VERSION) {
+    if (defaultData.RECOMMENDATION_VERSION == this.data.articleRecommend.RECOMMENDATION_VERSION) {
       return;
     }
 
@@ -156,8 +159,9 @@ Page({
 
   /**
    * 获取云端文章
+   * @returns {Array} 返回推荐的文章列表
    */  
-  async fetchArticles({ author = "", tags = [], subtags = [], geolocation = "", excludedIDs = [], count = 3 }) {
+  async fetchArticles({ author = "", tags = [], subtags = [], geolocation = "", excludedIDs = [], count = 10 }) {
     const $ = db.command.aggregate;
 
     try {
@@ -218,13 +222,9 @@ Page({
         .limit(count)
         .end();
   
-      console.log(res.list);
-      return {
-        res
-      };
+      return res.list
     } catch (error) {
       console.error("获取文章时出错：", error);
-      return { success: false, error: error.message };
     }
   },
 
@@ -328,57 +328,37 @@ Page({
 
   /**
    * 给用户生成新文章，并添加在articleShowList中
-   * @param {number} newArticleCount 增添的文章数量
+   * @param {number} articleCount 除去碳行家文章数量
    */
-  async getArticles(newArticleCount = 3){
+  async getArticles(articleCount = 3){
     try {
       const author = defaultData.ARTICLE_AUTHORS[this.data.articleRecommend.infoGroup]
       const tags = this.getRecommendationTags(2);
       const subtags = this.getRecommendationSubTags(2);
       const excludedIDs = this.data.articleRecommend.recommendedIDs
 
-      const result = await this.fetchArticles({
+      // 碳行家默认文章
+      let articles = await this.fetchArticles({
+        author: defaultData.ARTICLE_AUTHORS[-1]
+      })
+
+      // 普通文章推荐
+      articles = articles.concat(await this.fetchArticles({
         author: author,
         tags: tags,
         subtags: subtags,
         geolocation: '', // TODO: 替换用户的地理位置
         excludedIDs: excludedIDs,
-        count: newArticleCount
+        count: articleCount
+      }))
+
+      this.setData({
+        articleShowList: articles
       })
 
-      console.log(result.articles)
-      console.log("文章分配成功")
-
-      return result.articles
+      console.log("文章分配成功：\n", articles)
     } catch(error) {
       console.error("分配文章失败: ", error)
-    }
-  },
-
-  /**
-   * 根据天数获取文章（检查时间：每日凌晨4点）
-   * 每次检查后，将会更新检查时间为明日
-   * TODO: Fix this
-   * 
-   * @returns {boolean} 是否需要更新
-   */
-  CheckDailyUpdate() {
-    const currentDate = new Date()
-    const localArticleRecommend = wx.getStorageSync('articleRecommend');
-
-    if (localArticleRecommend !== ""){
-      // 计算日期差异（每日凌晨4点检查）
-      var timeDiff = Math.abs(currentDate.getTime() - (new Date(localArticleRecommend.lastClickDate)).setHours(4,0,0,0)); 
-      var dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
-
-      // 更新本地点击日期
-      if (dayDiff > 0) {
-        console.log('Daily Update!')
-        localArticleRecommend.lastClickDate = currentDate;
-        wx.setStorageSync('articleRecommend', localArticleRecommend);
-      }
-      
-      return dayDiff > 0;
     }
   },
 
@@ -387,112 +367,15 @@ Page({
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * UI 界面 Tag 切换
+   * UI 界面的标签点击事件
    */
-  selectUITag(e){
+  bindSelectUITag(e){
     this.setData({
       UISelectedTag: e.currentTarget.dataset.tag
     })
 
-    this.updateLocalTagShow();
-  },
-
-  /**
-   * UI 切换到文章阅读事件
-   * TODO: 修理这个
-   */
-  bindInfo(e){
-    logEvent('Read Article')
-
-    const articleID = e.currentTarget.dataset.id;
-    const mode = e.currentTarget.dataset.mode;
-    const tag = e.currentTarget.dataset.tag;
-
-    const targetArticle = this.data.articles.find(article => article._id === articleID);
-    const totalShownArticle = mode === "HORIZONTAL"
-    ? this.data.articleShowList.filter(item => item.author === this.data.articleAuthors[-1] || item.isUnread)
-    : this.data.articleShowList.filter(item => item.tags && item.tags.includes(tag))
-
-    const title = encodeURIComponent('【' + targetArticle.title + '】')
-    const uploadTime = new Date(targetArticle.uploadTime).toISOString().split('T')[0];
-    const author = targetArticle.author
-    const imgs = targetArticle.imgs.map(img => {
-      return encodeURIComponent(img);
-    });
-    console.log(targetArticle.text)
-    const texts = targetArticle.texts.map(text => {
-      return encodeURIComponent(text);
-    });
-    const geolocation = targetArticle.geolocation
-    const tags = author === this.data.articleAuthors[-1] ? null : targetArticle.tags
-    const totalTags = author === this.data.articleAuthors[-1] ? null : this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]]
-    const scrollAmount = tag === undefined 
-    ? `<${mode}: ${totalShownArticle.findIndex(item => item._id === articleID) + 1}TH> in <TOTAL: ${totalShownArticle.length}>`
-    : `<${mode}: ${totalShownArticle.findIndex(item => item._id === articleID) + 1}TH> in <TOTAL: ${totalShownArticle.length}> with <TAG: ${tag}>`
-
-    // 导航到对应链接
-    wx.navigateTo({
-      url:`/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${JSON.stringify(tags)}&geolocation=${geolocation}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&texts=${JSON.stringify(texts)}&imgs=${JSON.stringify(imgs)}`,
-      success: () => {
-        // 未注册用户直接返回
-        if (!onCheckSignIn()) {
-          return;
-        }
-
-        // 更新本地 recommendedArticles 的已读文章
-        let localArticleRecommend = wx.getStorageSync('articleRecommend');
-        this.data.articleRecommend.recommendedArticles.find(article => article._id == articleID).isUnread = false;
-        if (localArticleRecommend !== ""){
-          localArticleRecommend.recommendedArticles = this.data.articleRecommend.recommendedArticles;
-        }
-
-        // 更新本地 frequencyScore
-        if (author !== this.data.articleAuthors[-1]) {
-          const totalTags = this.data.articleTags[this.data.articleAuthors[this.data.articleRecommend.infoGroup]];
-          const delta = 25 / (Object.keys(totalTags).length);
-          const tagIndices = new Set(tags.map(tag => totalTags.indexOf(tag)));
-          this.data.articleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore.map((value, index) => 
-            tagIndices.has(index) 
-              ? Math.min(value + delta, 100) 
-              : Math.max(value - delta, delta)
-          );
-        }
-        if (localArticleRecommend !== ""){
-          localArticleRecommend.frequencyScore = this.data.articleRecommend.frequencyScore;
-        }
-
-        // 检查和更新本地存储 articleClickCounter ，并允许更新数据库和新增2篇文章
-        if (this.data.updateCounter + 1 >= this.data.updateCloudThreshold) {
-          this.setData({
-            updateCounter: 0,
-            shouldUpdateCloud: true
-          })
-          this.getArticles(2)
-        } else {
-          this.setData({
-            updateCounter: this.data.updateCounter + 1
-          })
-        }
-        if (localArticleRecommend !== ""){
-          localArticleRecommend.articleClickCounter = this.data.updateCounter;
-        }
-        wx.setStorageSync('articleRecommend', localArticleRecommend)
-
-        // 更新不喜欢文章，未读文章高亮，和TagShow的文章
-        this.updateLocalDislike();
-        this.updateLocalUnread();
-        this.updateLocalTagShow();
-      }
-    })
-  },
-
-  /**
-   * 更新本地 articleShowList 使其的 TagShow 对应到当前 UI 选择的 Tag
-   * TODO: 修理这个
-   */
-  updateLocalTagShow() {
     const updatedList = this.data.articleShowList.map(article => {
-      article.isTagShow = article.tags?.includes(this.data.UISelectedTag) || this.data.UISelectedTag == '全部';
+      article.isTagShow = article.tags?.includes(this.data.UISelectedTag);
       return article;
     });
 
@@ -501,46 +384,73 @@ Page({
     })
   },
 
+  /**
+   * UI 的文章点击事件
+   */
+  bindClickArticle(e){
+    logEvent('Read Article')
+
+    // 获取点击的文章信息
+    const articleID = e.currentTarget.dataset.id;
+    const targetArticle = this.data.articleShowList.find(article => article._id === articleID);
+
+    // 文章属性打包
+    const title = encodeURIComponent(targetArticle.title)
+    const uploadTime = encodeURIComponent(new Date(targetArticle.uploadTime).toISOString().split('T')[0]);
+    const author = encodeURIComponent(targetArticle.author)
+    const geolocation = encodeURIComponent(targetArticle.geolocation)
+    const tags = encodeURIComponent(JSON.stringify(targetArticle.tags))
+    const subtags = encodeURIComponent(JSON.stringify(targetArticle.subtags))
+
+    // 文章图片和内容
+    const imgs = encodeURIComponent(JSON.stringify(targetArticle.imgs.map(img => {
+      return encodeURIComponent(img);
+    })));
+    const texts = encodeURIComponent(JSON.stringify(targetArticle.texts.map(text => {
+      return encodeURIComponent(text);
+    })));
+
+    // TODO 这里继续
+
+    // 构建URL
+    const url = `/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${tags}&geolocation=${geolocation}&totalTags=${encodeURIComponent(JSON.stringify(totalTags))}&scrollAmount=${scrollAmount}&texts=${encodeURIComponent(JSON.stringify(texts))}&imgs=${encodeURIComponent(JSON.stringify(imgs))}`;
+
+
+    // 导航到对应链接
+    wx.navigateTo({
+      url:`/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${JSON.stringify(tags)}&geolocation=${geolocation}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&texts=${JSON.stringify(texts)}&imgs=${JSON.stringify(imgs)}`,
+      success: () => {
+        // TODO: 更新文章 feature 分数
+      }
+    })
+  },
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////// 功能函数 LOCAL FUNCTIONAL METHOD ///////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * 把文章日期格式化并降序排序
-   * @param {Array} list 文章list
-   * @returns 更新的已排序的文章list
-   */
-  timeConvert(list){
-    // 格式化时间
-    for (let index = 0; index < list.length; index++) {
-      const element = list[index];
-      const date = new Date(element.uploadTime);
-      const formattedDate= date.toISOString().split("T")[0];
-      element.date = formattedDate
-    }
-
-    // 按照 date 属性进行排序
-    list.sort((a, b) => {
-      return new Date(b.date) - new Date(a.date);
-    });
-
-    return list
-  },
 
   /**
    * 初始化本页面数据
    */
   async initData(){
-    console.log(defaultData)
-
     // 获取用户云端数据
     await this.fetchUserCloudFromData();
 
     // 检查版本更新
     await this.checkVersionUpdate();
 
-    // 获取文章 测试
-    await this.getArticles(3);
+    // 获取文章
+    await this.getArticles(10);
+
+    // 更新 UI
+    this.bindSelectUITag({
+      currentTarget: {
+        dataset:{
+          tag: defaultData.ARTICLE_TAGS[defaultData.ARTICLE_AUTHORS[this.data.articleRecommend.infoGroup]][0]
+        }
+      }
+    })
   },
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -568,7 +478,10 @@ Page({
       });
     }
 
-    // TODO: 初始化页面信息
+    // 获取用户 openid 和 userInfo
+    updateUserData();
+
+    // 初始化页面信息
     this.initData();
   }, 
 
@@ -591,9 +504,6 @@ Page({
 
     // 更新颜色
     updateColor();
-
-    // 获取用户 openid 和 userInfo
-    updateUserData();
 
     // TODO: 更新阅读量
 

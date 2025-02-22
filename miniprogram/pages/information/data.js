@@ -52,7 +52,8 @@ export default {
 
   /** 数据库存储 Key */
   RECOMMENDATION_DATA_KEYS: {
-    infoGroup: '',
+    RECOMMENDATION_VERSION: -1,
+    infoGroup: -1,
     features: {},
     recommendedIDs: []
   }
