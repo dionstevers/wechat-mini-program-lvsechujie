@@ -1,0 +1,50 @@
+export default {
+  /** 文章推荐系统信息 */
+  RECOMMENDATION_VERSION: 2.1, // 用来识别是否需要处理旧用户的 （Note: 请勿轻易更改，会去除用户当前的articleRecommend信息）
+  ARTICLE_COLLECTION: 'article',
+  RECOMMENDATION_DATA_COLLECTION: 'articleRecommend',
+
+  /** 前一天推荐参数修正 */ 
+  DAILY_MULTIPLIER: 0.75,
+
+  /** 文章推荐的权重 */
+  RECOMMEND_FEATURE_WEIGHTS: {
+    frequencyScore: 3.0,
+    readAmount: 2.0,
+    dislike: -2.0
+  },
+
+  /** infoGroup对应的文章作者 */
+  ARTICLE_AUTHORS: {
+    '-1': '碳行家',
+    '0' : '个人版',
+    '1' : '强国版'
+  },
+
+  /** 文章种类对应的 tags （这个会显示） */
+  ARTICLE_TAGS: {
+    '个人版': ['新能源汽车', '出行避雷攻略', '健康', '省钱'],
+    '强国版': ['碳排放权交易', '生态环境部政策', '生态文明建设', '碳达峰']
+  },
+
+  /** 文章的副标签 subtags (这个不会显示) */
+  ARTICLE_SUBTAGS: {
+    '国家干预': ['国家干预', '非国家干预'],
+    '时效': ['以前', '最近'],
+    '正负': ['负面', '非负面']
+  },
+
+  /** 推荐系统的 features */
+  RECOMMENDATION_FEATURES: [
+    'articleCount',   // 推荐该持有该标签文章的数量
+    'frequencyScore', // 用户点击该标签文章的快慢
+    'readAmount',     // 用户阅读该标签文章的时间
+  ],
+
+  /** 数据库存储 Key */
+  RECOMMENDATION_DATA_KEYS: {
+    infoGroup: '',
+    features: {},
+    recommendedIDs: []
+  }
+}
