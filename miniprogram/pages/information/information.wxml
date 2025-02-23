@@ -38,7 +38,7 @@
 
       <!-- 标签筛选 -->
       <view class="horizontal-tags-container">
-        <view wx:for="{{defaultData.ARTICLE_TAGS[defaultData.ARTICLE_AUTHORS[articleRecommend.infoGroup]]}}" wx:for-index="i" wx:key="i" class="horizontal-tag {{UISelectedTag === item ? 'active' : ''}}" bindtap="bindSelectUITag" >{{item}}</view>
+        <view wx:for="{{defaultData.ARTICLE_TAGS[defaultData.ARTICLE_AUTHORS[articleRecommend.infoGroup]]}}" wx:for-index="i" wx:key="i" class="horizontal-tag {{UISelectedTag === item ? 'active' : ''}}" bindtap="bindSelectUITag" data-tag="{{item}}">{{item}}</view>
       </view>
 
       <!-- 标签文章分类 -->
