@@ -58,6 +58,7 @@ const speedBetween = [
 // 计算速度区间的交通工具合集
 function calcResultMap(track) {
   const result = new Map();
+  const speeds = [];
   for (let [key, value] of speedBetween.entries()) {
     result.set(key, { label: value.label, count: 0, totalTime: 0, totalMeters: 0 });
   }
@@ -70,14 +71,15 @@ function calcResultMap(track) {
 
     const { points = {} } = recordItem || {};
 
-    const {latitude:lat1, longitude:lon1} = points || {}
+    const { latitude: lat1, longitude: lon1 } = points || {};
     // const [lat1, lon1] = points?.coordinates || [];
 
     const { points: nextPoints = {} } = nextRecordItem || {};
     // const [lat2, lon2] = nextPoints?.coordinates || [];
-    const {latitude:lat2, longitude:lon2} = nextPoints || {}
+    const { latitude: lat2, longitude: lon2 } = nextPoints || {};
 
     const speed = haversineDistance(lat1, lon1, lat2, lon2);
+    speeds.push(haversineDistance(lat1, lon1, lat2, lon2));
 
     speedBetween.forEach((item, key) => {
       const { min, max } = item || {};
@@ -92,7 +94,7 @@ function calcResultMap(track) {
     });
   }
 
-  return result;
+  return { result, speeds };
 }
 
 // 转换公里数
@@ -144,7 +146,7 @@ function calcCarbon(result, clientTransport) {
   // 步行或骑行 Walk or cycle//
   const { totalMeters: totalMetersWalk = 0 } = result.get(0) || {};
   const { totalMeters: totalMetersCycling = 0 } = result.get(1) || {};
-  const total = totalMetersWalk + totalMetersCycling //roundToKM(totalMetersWalk + totalMetersCycling);
+  const total = totalMetersWalk + totalMetersCycling; //roundToKM(totalMetersWalk + totalMetersCycling);
 
   const savingRate = [368.68, 184.34, 122.89, 92.17, 67.09];
   carbSum += total * savingRate[passenger - 1];
@@ -156,8 +158,8 @@ function calcCarbon(result, clientTransport) {
   const cityRate = 337.05;
   const highSpeedRate = 200.51;
 
-  const cityTotal = totalMetersCity //roundToKM(totalMetersCity);
-  const highSpeedTotal = totalMetersHighSpeed //roundToKM(totalMetersHighSpeed);
+  const cityTotal = totalMetersCity; //roundToKM(totalMetersCity);
+  const highSpeedTotal = totalMetersHighSpeed; //roundToKM(totalMetersHighSpeed);
 
   carbSum += cityTotal * cityRate;
   carbSum += highSpeedTotal * highSpeedRate;
@@ -165,13 +167,13 @@ function calcCarbon(result, clientTransport) {
   // 地铁
   const { totalMeters: subwayTotalMeters = 0 } = result.get(6) || {};
   const subwayRate = 20;
-  const subwayTotal = subwayTotalMeters //roundToKM(subwayTotalMeters);
+  const subwayTotal = subwayTotalMeters; //roundToKM(subwayTotalMeters);
   carbSum += subwayTotal * subwayRate;
 
   // 高铁
   const { totalMeters: trainTotalMeters = 0 } = result.get(7) || {};
   const trainRate = 8;
-  const trainTotal = trainTotalMeters //roundToKM(trainTotalMeters);
+  const trainTotal = trainTotalMeters; //roundToKM(trainTotalMeters);
   carbSum += trainTotal * trainRate;
 
   const arr = ["步行或骑行", "步行或骑行", "燃油汽车", "燃油汽车", "公共交通", "公共交通", "地铁", "高铁"];
@@ -196,8 +198,8 @@ function calcCarbon(result, clientTransport) {
     // 高速 Highway
     const { totalMeters: totalMetersHighSpeed = 0 } = result.get(3) || {};
 
-    const cityTotal = totalMetersCity //roundToKM(totalMetersCity);
-    const highSpeedTotal = totalMetersHighSpeed // roundToKM(totalMetersHighSpeed);
+    const cityTotal = totalMetersCity; //roundToKM(totalMetersCity);
+    const highSpeedTotal = totalMetersHighSpeed; // roundToKM(totalMetersHighSpeed);
 
     const savingCityRate = [308.68, 154.34, 102.89, 77.17, 61.74, 56.12];
     const savingHighSpeedRate = [170.87, 85.44, 56.95, 42.72, 34.17, 31.07];
@@ -263,10 +265,10 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 exports.main = async event => {
-  const { data: track } = await db.collection("track").doc(event.curID).get() || {};
+  const { data: track } = (await db.collection("track").doc(event.curID).get()) || {};
 
   // 计算各个速度区间交通工具
-  const result = calcResultMap(track);
+  const { result, speeds } = calcResultMap(track);
 
   // 计算省碳值
   let { isFail, carbSum, calcTransport } = calcCarbon(result, event.transport);
@@ -298,5 +300,5 @@ exports.main = async event => {
       }
     });
 
-  return { carbSum, trackRes };
+  return { carbSum, trackRes, speeds };
 };

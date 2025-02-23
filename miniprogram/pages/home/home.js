@@ -215,7 +215,7 @@ Page({
 
         const { latitude, longitude } = await getLocation();
         const {
-          result: { carbSum, trackRes }
+          result: { carbSum, trackRes, speeds }
         } =
           (await wx.cloud.callFunction({
             name: "endTrack",
@@ -228,6 +228,30 @@ Page({
               transport: _this.data.transport
             }
           })) || {};
+
+        try {
+          const {
+            data: { prediction }
+          } = await wx.cloud.callContainer({
+            config: {
+              env: "prod-5g9hyw5ua680d3fc"
+            },
+            path: "/predict",
+            header: {
+              "X-WX-SERVICE": "trip",
+              "X-WX-EXCLUDE-CREDENTIALS": "unionid, cloudbase-access-token, openid"
+            },
+            method: "POST",
+            data: { speeds }
+          });
+
+          await wx.cloud.callFunction({
+            name: "updateTrackTransport",
+            data: { curID: _this.data.curID, prediction }
+          });
+        } catch (e) {
+          console.error("Caught error:", e);
+        }
 
         if (trackRes.stats.updated == 1) {
           console.log("行程记录成功！", trackRes);
@@ -247,6 +271,8 @@ Page({
 
           // 重载数据
           _this.refreshLastTrack();
+          _this.onTransportModalClose();
+          _this.onPurposeModalClose();
 
           // 方案一，根据省碳计算
           // const { can, credit } = await calcCredit(carbSum)
@@ -316,9 +342,7 @@ Page({
     //   defaultIndex: userInfoRes.data[0].basicInfo.trans
     // });
   },
-  onReady() {
-   
-  },
+  onReady() {},
 
   onLoad(options) {
     // 转发朋友圈链接，导航到登录页面
@@ -330,11 +354,11 @@ Page({
     });
   },
   onShow() {
-    this.getTabBar()
-    if(typeof this.getTabBar === 'function' && this.getTabBar()){
+    this.getTabBar();
+    if (typeof this.getTabBar === "function" && this.getTabBar()) {
       this.getTabBar().setData({
-        selected:0
-      })
+        selected: 0
+      });
     }
     // 朋友圈进来则不显示
     if (this.data.isFromShareTimeline) return;
@@ -451,4 +475,3 @@ Page({
     this.finishAndEndTrack();
   }
 });
-
