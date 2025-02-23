@@ -2,21 +2,13 @@
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
-    "useCompilerPlugins": [
-      "typescript",
-      "less"
-    ],
-    "packNpmManually": true,
-    "packNpmRelationList": [
-      {
-        "packageJsonPath": "./package.json",
-        "miniprogramNpmDistDir": "./miniprogram/"
-      }
-    ],
+    "useCompilerPlugins": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
     "urlCheck": true,
-    "es6": true,
+    "es6": false,
     "enhance": false,
-    "postcss": false,
+    "postcss": true,
     "preloadBackgroundData": false,
     "minified": true,
     "newFeature": true,
