@@ -397,28 +397,22 @@ Page({
     // 文章属性打包
     const title = encodeURIComponent(targetArticle.title)
     const uploadTime = encodeURIComponent(new Date(targetArticle.uploadTime).toISOString().split('T')[0]);
-    const author = encodeURIComponent(targetArticle.author)
     const geolocation = encodeURIComponent(targetArticle.geolocation)
     const tags = encodeURIComponent(JSON.stringify(targetArticle.tags))
-    const subtags = encodeURIComponent(JSON.stringify(targetArticle.subtags))
 
     // 文章图片和内容
-    const imgs = encodeURIComponent(JSON.stringify(targetArticle.imgs.map(img => {
-      return encodeURIComponent(img);
-    })));
-    const texts = encodeURIComponent(JSON.stringify(targetArticle.texts.map(text => {
-      return encodeURIComponent(text);
-    })));
+    const imgs = encodeURIComponent(JSON.stringify(targetArticle.imgs));
+    const texts = encodeURIComponent(JSON.stringify(targetArticle.texts));
 
     // TODO 这里继续
 
     // 构建URL
-    const url = `/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${tags}&geolocation=${geolocation}&totalTags=${encodeURIComponent(JSON.stringify(totalTags))}&scrollAmount=${scrollAmount}&texts=${encodeURIComponent(JSON.stringify(texts))}&imgs=${encodeURIComponent(JSON.stringify(imgs))}`;
+    const url = `/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&geolocation=${geolocation}&tags=${tags}&imgs=${imgs}&texts=${texts}`;
 
 
     // 导航到对应链接
     wx.navigateTo({
-      url:`/pages/detail/detail?title=${title}&uploadTime=${uploadTime}&tags=${JSON.stringify(tags)}&geolocation=${geolocation}&totalTags=${JSON.stringify(totalTags)}&scrollAmount=${scrollAmount}&texts=${JSON.stringify(texts)}&imgs=${JSON.stringify(imgs)}`,
+      url: url,
       success: () => {
         // TODO: 更新文章 feature 分数
       }

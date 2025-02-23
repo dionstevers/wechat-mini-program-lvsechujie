@@ -3,13 +3,18 @@ import { onCheckSignIn } from '../../utils/login'
 import { updateColor } from '../../utils/colorschema'
 import { logEvent } from '../../utils/log'
 const app = getApp()
+const db = wx.cloud.database()
 
 Page({
-
   /**
    * 页面的初始数据
    */
   data: {
+    /** 页面成员数据 */
+    sharedFromID: null,
+    openTime:null,
+
+    /** 文章模板 */
     article: {
       title: "标题模板",
       geolocation: "全国",
@@ -19,52 +24,46 @@ Page({
               "这里放第二段文字，第二段文字上方是第二张图片，如果希望两张图片紧接着显示，则第二段文字用\"\"，以此类推。"],
       imgs: ["https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E9%AA%91%E8%A1%8C%E6%B1%BD%E8%BD%A6.png?sign=95e224f0caf96fa684c8bc06ef5b7094&t=1722219043",
              "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/personalized/%E8%A1%A3%E9%A3%9F%E8%A1%8C.jpg?sign=49c273e74497c80274f9a7f387a57d4e&t=1722219019"]
-    },
-
-    totalTags: null,
-    scrollAmount: null,
-    sharedFromID: null,
-    openTime:null,
-    userInfo:null
+    }
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options){
-    const title = options.title ? decodeURIComponent(options.title) : null
-    const uploadTime = options.uploadTime ?? null
-    const texts = options.texts ? JSON.parse(options.texts).map(
-      text => { return decodeURIComponent(text) }
-    ) : null
-    const imgs = options.imgs ? JSON.parse(options.imgs).map(
-      img => { return decodeURIComponent(img) }
-    ) : null
-    const geolocation = options.geolocation ?? null
-    const articleTags = options.tags ? JSON.parse(options.tags) : null
-    const totalTags = options.totalTags ? JSON.parse(options.totalTags) : null
-    const scrollAmount = options.scrollAmount
+    // 页面成员数据录入
     const sharedFromID = options.sharedFromID ?? null
     const openTime  = new Date()
+
+    // 文章属性解包
+    const title = decodeURIComponent(options.title || '');
+    const uploadTime = decodeURIComponent(options.uploadTime || '');
+    const geolocation = decodeURIComponent(options.geolocation || '');
+    const tags = JSON.parse(decodeURIComponent(options.tags || '[]'));
+
+    console.log(tags)
+
+    // 文章图片和内容解包
+    const imgs = JSON.parse(decodeURIComponent(options.imgs || '[]'));
+    const texts = JSON.parse(decodeURIComponent(options.texts || '[]'));
+
     this.setData({
+      // 页面数据
+      sharedFromID: sharedFromID,
+      openTime: openTime,
+
+      // 文章
       article: {
         title: title,
         geolocation: geolocation,
         uploadTime: uploadTime,
-        tags: articleTags ? articleTags.map(tag => `#${tag}`) : ["#碳行家"],
+        tags: (tags.length === 1 && tags[0] === "") || (tags.length === 0) ? ["#碳行家"] : tags.map((tag: string) => `#${tag}`),
         texts: texts,
         imgs: imgs
       },
-
-      totalTags: totalTags,
-      scrollAmount: scrollAmount,
-      sharedFromID: sharedFromID,
-      openTime: openTime,
-      userInfo: app.globalData.userInfo
     })
 
-    console.log("文章信息：\n\t'文章标题': ", title, "\n\t'图片链接': ", imgs[0], "\n\t'文章标签': ", articleTags, "\n\t'滚动参数': ", scrollAmount, "\n\t'分享openID': ", sharedFromID);
-
+    // 处理转发进入
     if (sharedFromID) {
       wx.showModal({
       title: '欢迎阅读碳行家文章',
@@ -78,63 +77,26 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    const db = wx.cloud.database()
+    // 计算阅读时间
     const endTime = new Date()
     const startTime = new Date(this.data.openTime)
     const timeDifference = endTime.valueOf() - startTime.valueOf();
-    const localArticleRecommend = wx.getStorageSync('articleRecommend');
 
-    // 更新本地readAmount
-    if (onCheckSignIn()){   
-      if (localArticleRecommend !== "" && this.data.totalTags !== null && this.data.article.tags != null) {
-        this.data.article.tags.forEach(tag => {
-          let index = this.data.totalTags.indexOf(tag);
-          if (index !== -1) localArticleRecommend.readAmount[index] += Math.floor(timeDifference / 1000);
-        });
-
-        wx.setStorageSync('articleRecommend', localArticleRecommend)
-      }
-    }
-
+    // TODO 上传阅读记录在数据库
     // 更新云端阅读记录
-    try {
-      db.collection('readHistory').add({
-        data:{
-          startTime: startTime,
-          endTime: endTime,
-          link: this.data.link,
-          scrollAmount: this.data.scrollAmount ?? null,
-          sharedFromID: this.data.sharedFromID ?? null
-        }
-      })
-      
-      onCheckSignIn({
-        success: () => {
-          // 信息激励强国版用户增加测试题 -- canceled now
-          if (this.data.userInfo.testGroup === app.constData.TOTAL_TEST_GROUP_COUNT.INFOMATION && localArticleRecommend.infoGroup === 2) {
-            // wx.navigateTo({
-            //   url: '/pages/quiz/quiz?link=' + this.data.link,
-            // })
-            wx.showModal({
-              title: '阅读成功',
-              content:'低碳生活，携手同行！',
-              showCancel: false
-            })
-
-          // 普通用户
-          } else {
-            wx.showModal({
-              title: '阅读成功',
-              content:'低碳生活，携手同行！',
-              showCancel: false
-            })
-          }
-        }
-      }) 
-      
-    } catch(err) {
-      console.log("文章阅读记录失败：" + err)
-    }
+    // try {
+    //   db.collection('readHistory').add({
+    //     data:{
+    //       startTime: startTime,
+    //       endTime: endTime,
+    //       link: this.data.link,
+    //       scrollAmount: this.data.scrollAmount ?? null,
+    //       sharedFromID: this.data.sharedFromID ?? null
+    //     }
+    //   })
+    // } catch(err) {
+    //   console.log("文章阅读记录失败：" + err)
+    // }
     
   },
 
