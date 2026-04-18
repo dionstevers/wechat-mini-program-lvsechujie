@@ -86,4 +86,6 @@
   font-weight: bold;
   border: none;
   line-height: 96rpx;
+  text-align: center;
+  padding: 0;
 }
