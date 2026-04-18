@@ -1,6 +1,6 @@
 <view class="consent-page">
   <view wx:if="{{devMode}}" class="dev-banner">
-    <text class="dev-banner-text">DEV MODE — cloud calls mocked</text>
+    <text class="dev-banner-text">DEV MODE (LOCAL)</text>
   </view>
 
   <view class="consent-body">

@@ -111,6 +111,8 @@
   border: none;
   height: 88rpx;
   line-height: 88rpx;
+  text-align: center;
+  padding: 0;
 }
 
 .btn-agree {
@@ -123,4 +125,6 @@
   border: none;
   height: 88rpx;
   line-height: 88rpx;
+  text-align: center;
+  padding: 0;
 }
