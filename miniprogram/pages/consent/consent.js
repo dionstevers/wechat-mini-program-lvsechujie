@@ -1,8 +1,10 @@
 const app = getApp()
+const { CONSENT_RENDER } = require('../../config/consent.js')
 
 Page({
   data: {
     devMode: false,
+    content: CONSENT_RENDER,
   },
 
   onLoad() {
@@ -24,11 +26,12 @@ Page({
   },
 
   onDisagree() {
+    const m = CONSENT_RENDER.disagreeModal
     wx.showModal({
-      title: '感谢您的时间',
-      content: '您已选择不参与本研究。',
+      title: m.title,
+      content: m.content,
       showCancel: false,
-      confirmText: '退出',
+      confirmText: m.confirmText,
       success: () => {
         wx.cloud.callFunction({
           name: 'saveConsent',
