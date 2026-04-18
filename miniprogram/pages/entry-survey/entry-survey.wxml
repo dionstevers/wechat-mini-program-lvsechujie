@@ -1,3 +1,4 @@
+<dev-banner />
 <survey-engine
   config="{{surveyConfig}}"
   condition="{{condition}}"

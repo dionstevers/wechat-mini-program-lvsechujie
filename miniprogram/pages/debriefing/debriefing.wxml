@@ -1,4 +1,5 @@
 <view class="debrief-page">
+  <dev-banner />
 
   <scroll-view
     scroll-y

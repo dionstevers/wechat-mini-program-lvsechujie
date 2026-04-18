@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#419f8c",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "survey-engine": "../../components/survey-engine/index"
+    "survey-engine": "../../components/survey-engine/index",
+    "dev-banner": "../../components/dev-banner/dev-banner"
   }
 }

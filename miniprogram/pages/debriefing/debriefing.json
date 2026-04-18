@@ -2,5 +2,7 @@
   "navigationBarTitleText": "事后说明",
   "navigationBarBackgroundColor": "#419f8c",
   "navigationBarTextStyle": "white",
-  "usingComponents": {}
+  "usingComponents": {
+    "dev-banner": "../../components/dev-banner/dev-banner"
+  }
 }

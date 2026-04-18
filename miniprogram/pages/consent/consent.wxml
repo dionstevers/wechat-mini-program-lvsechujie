@@ -1,7 +1,5 @@
 <view class="consent-page">
-  <view wx:if="{{devMode}}" class="dev-banner">
-    <text class="dev-banner-text">DEV MODE (LOCAL)</text>
-  </view>
+  <dev-banner />
 
   <view class="consent-body">
     <view class="welcome-banner">

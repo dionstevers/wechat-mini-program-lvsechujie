@@ -1,4 +1,5 @@
 <view class="reg-page">
+  <dev-banner />
 
   <view class="reg-header">
     <text class="reg-title">感谢您同意参与本实验！</text>
