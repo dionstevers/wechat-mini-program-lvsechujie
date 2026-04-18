@@ -48,6 +48,7 @@ const ENTRY_SURVEY = {
           options: BIRTH_YEARS,
           required: true,
           nullValue: '拒绝回答',
+          defaultValue: '2000',
         },
         {
           id: 'Q1.3',

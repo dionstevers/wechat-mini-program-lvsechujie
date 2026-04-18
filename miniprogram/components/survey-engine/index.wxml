@@ -94,7 +94,7 @@
         <text class="question-text">{{item.text}}</text>
         <picker mode="selector" range="{{item.options}}"
                 bindchange="onDropdownChange" data-field="{{item.field}}" data-qid="{{item.id}}"
-                value="{{dropdownIndices[item.field]}}">
+                value="{{dropdownIndices[item.field] !== undefined ? dropdownIndices[item.field] : pickerDefaults[item.field]}}">
           <view class="picker-display">
             <text class="{{dropdownIndices[item.field] !== undefined ? 'picker-selected' : 'picker-placeholder'}}">
               {{dropdownIndices[item.field] !== undefined ? item.options[dropdownIndices[item.field]] : '请选择'}}

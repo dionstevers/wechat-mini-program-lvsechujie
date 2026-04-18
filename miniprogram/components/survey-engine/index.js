@@ -41,6 +41,7 @@ Component({
     multiAnswers: {},   // field → { value: bool } for multi_select
     matrixAnswers: {},  // rowField → value
     dropdownIndices: {},// field → index in options array
+    pickerDefaults: {}, // field → initial wheel index (used before user picks)
     totalCoins: 0,
     canAdvance: false,
     answeredThisBlock: {}, // qid → bool, tracks which questions in current block are answered
@@ -67,6 +68,23 @@ Component({
       })
 
       const totalBlocks = blocks.length
+
+      // Pre-compute picker wheel start index for each dropdown. Does NOT pre-fill
+      // answers — display text stays as placeholder until user commits a pick.
+      const pickerDefaults = {}
+      blocks.forEach(block => {
+        block.questions && block.questions.forEach(q => {
+          if (q.type === 'dropdown' && q.options) {
+            if (q.defaultValue !== undefined) {
+              const idx = q.options.indexOf(q.defaultValue)
+              pickerDefaults[q.field] = idx >= 0 ? idx : 0
+            } else {
+              pickerDefaults[q.field] = 0
+            }
+          }
+        })
+      })
+
       this.setData({
         blocks,
         totalBlocks,
@@ -77,6 +95,7 @@ Component({
         multiAnswers: {},
         matrixAnswers: {},
         dropdownIndices: {},
+        pickerDefaults,
         answeredThisBlock: {},
       })
       this._loadBlock(0, blocks)
