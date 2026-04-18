@@ -2,14 +2,12 @@
 // Collects name, phone, wechat_id; awards registration coins.
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
-const Dialog = require('@vant/weapp/dialog/dialog')
 
 Page({
   data: {
     form: { name: '', phone: '', wechat_id: '' },
     errors: {},
     submitting: false,
-    coinMessage: '',
   },
 
   onNameInput(e)   { this.setData({ 'form.name': e.detail.value, 'errors.name': '' }) },
@@ -30,10 +28,15 @@ Page({
         const result = res.result
         if (result.success) {
           const yuan = (result.coins_registration * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
-          this.setData({
-            coinMessage: `您已获得 ${result.coins_registration} 金币，相当于 ¥${yuan}`,
+          wx.showModal({
+            title: '🎉 获得金币奖励！',
+            content: `您已获得 ${result.coins_registration} 金币，相当于 ¥${yuan}`,
+            showCancel: false,
+            confirmText: '好的',
+            success: () => {
+              wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
+            },
           })
-          Dialog.alert({ selector: '#coin-dialog' })
         } else {
           this._showError()
         }
@@ -41,10 +44,6 @@ Page({
       fail: () => this._showError(),
       complete: () => this.setData({ submitting: false }),
     })
-  },
-
-  onCoinDialogConfirm() {
-    wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
   },
 
   _validate() {

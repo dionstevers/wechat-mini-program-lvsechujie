@@ -39,10 +39,4 @@
 
   <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交注册</button>
 
-  <!-- Coin award pop-up (shown once after successful registration) -->
-  <van-dialog id="coin-dialog" title="🎉 获得金币奖励！"
-              message="{{coinMessage}}"
-              confirm-button-text="好的"
-              bind:confirm="onCoinDialogConfirm" />
-
 </view>

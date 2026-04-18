@@ -3,7 +3,6 @@
   "navigationBarBackgroundColor": "#419f8c",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "van-dialog": "@vant/weapp/dialog/index",
     "dev-banner": "../../components/dev-banner/dev-banner"
   }
 }
