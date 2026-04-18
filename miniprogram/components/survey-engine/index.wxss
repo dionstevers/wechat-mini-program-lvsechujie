@@ -2,8 +2,11 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(180deg, #00022a 0%, #009797 100%);
   padding-bottom: 40rpx;
+  overflow-x: hidden;
 }
 
 .survey-header {
@@ -42,6 +45,8 @@
 
 .questions-scroll {
   flex: 1;
+  width: 100%;
+  box-sizing: border-box;
   padding: 20rpx 30rpx;
 }
 
@@ -51,6 +56,8 @@
   padding: 36rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .intro-card {
