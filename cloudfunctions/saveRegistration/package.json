@@ -1,0 +1,9 @@
+{
+  "name": "saveRegistration",
+  "version": "1.0.0",
+  "description": "Save participant registration data and award coins",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

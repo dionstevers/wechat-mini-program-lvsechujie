@@ -1,0 +1,7 @@
+<view class="coin-counter">
+  <view class="coin-icon">🪙</view>
+  <view class="coin-info">
+    <text class="coin-total">{{coins}} 金币</text>
+    <text class="coin-yuan">= ¥{{yuan}}</text>
+  </view>
+</view>

@@ -1,0 +1,5 @@
+<survey-engine
+  config="{{surveyConfig}}"
+  condition="{{condition}}"
+  bind:survey-complete="onSurveyComplete"
+/>

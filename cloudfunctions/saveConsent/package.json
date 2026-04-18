@@ -1,0 +1,9 @@
+{
+  "name": "saveConsent",
+  "version": "1.0.0",
+  "description": "Save participant consent decision",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

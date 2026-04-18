@@ -1,0 +1,40 @@
+.article-page {
+  height: 100vh;
+  background: #fff;
+}
+
+.article-body {
+  padding: 40rpx;
+}
+
+.article-title {
+  display: block;
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #012644;
+  line-height: 1.5;
+  margin-bottom: 30rpx;
+}
+
+.article-divider {
+  height: 2rpx;
+  background: #e0e0e0;
+  margin: 30rpx 0;
+}
+
+.article-lead {
+  display: block;
+  font-size: 30rpx;
+  color: #555;
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 30rpx;
+}
+
+.article-body-text {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.9;
+  white-space: pre-wrap;
+}

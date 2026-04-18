@@ -1,0 +1,9 @@
+<scroll-view scroll-y class="article-page">
+  <view class="article-body">
+    <text class="article-title">{{article.title}}</text>
+    <view class="article-divider"></view>
+    <text class="article-lead">{{article.lead}}</text>
+    <view class="article-divider"></view>
+    <text class="article-body-text">{{article.body}}</text>
+  </view>
+</scroll-view>

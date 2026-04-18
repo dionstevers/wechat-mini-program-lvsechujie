@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "问卷调查",
+  "navigationBarBackgroundColor": "#419f8c",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "survey-engine": "../../components/survey-engine/index"
+  }
+}

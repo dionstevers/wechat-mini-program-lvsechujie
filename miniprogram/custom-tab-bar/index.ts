@@ -15,6 +15,7 @@ Component({
     selected:0,
     color: "#FFFFFF",
     selectedColor: "#f9bc60",
+    devMode: false,
     list: [
       {
         "pagePath": "/pages/home/home",
@@ -42,7 +43,10 @@ Component({
       }
     ],
   },
-  attached(){},
+  attached() {
+    const app = getApp()
+    this.setData({ devMode: app.globalData && app.globalData.devMode })
+  },
   /**
    * 组件的方法列表
    */

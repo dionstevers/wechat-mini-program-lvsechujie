@@ -1,0 +1,33 @@
+<view class="reward-page">
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在计算奖励...</text>
+  </view>
+
+  <view wx:else class="reward-content">
+
+    <view class="reward-icon">🎉</view>
+
+    <text class="reward-title">感谢您的参与！</text>
+    <text class="reward-subtitle">您已完成本次研究，非常感谢您的时间与配合。</text>
+
+    <view class="reward-card">
+      <text class="card-label">您共获得</text>
+      <text class="coins-total">{{coinsTotal}} 金币</text>
+      <text class="yuan-equiv">可兑换 ¥{{rewardYuan}}</text>
+    </view>
+
+    <view class="instructions-card">
+      <text class="instructions-title">如何领取奖励</text>
+      <text class="instructions-body">请联系研究团队领取您的奖励。请保存您的确认编号，以便我们核实您的参与记录。</text>
+    </view>
+
+    <view class="confirmation-card">
+      <text class="confirmation-label">您的确认编号</text>
+      <text class="confirmation-id">{{confirmationId}}</text>
+    </view>
+
+  </view>
+
+</view>

@@ -1,0 +1,49 @@
+<view class="debrief-page">
+
+  <scroll-view
+    scroll-y
+    class="debrief-scroll"
+    bindscroll="onScroll"
+    enhanced="{{true}}"
+    show-scrollbar="{{false}}"
+  >
+    <view class="debrief-body">
+
+      <view class="debrief-banner">
+        <text class="banner-title">事后说明</text>
+      </view>
+
+      <view class="debrief-text">
+        <text class="para">非常感谢您参与本次研究，我们真诚地感谢您的时间与配合。在领取奖励之前，请您阅读以下说明：</text>
+
+        <text class="para">在这项研究中，您在一个数字信息流中看到了若干与中国环境及相关政策有关的新闻内容，其中包括较为积极的观点，也包括一些建设性的批评。研究开始时，部分参与者会看到一段与"国家认同"相关的简短内容，引导他们进行思考，另外一些参与者则不会看到这段内容。这是我们研究设计中的一个环节，目的是了解不同的阅读体验是否会影响人们在信息选择上的偏好。</text>
+
+        <text class="para">需要说明的是，您所看到的新闻内容仅部分基于真实的新闻来源，我们对其进行了适度编辑。这么做的目的，是为了更清楚地比较人们在面对不同类型的信息（例如赞扬中国在环境治理方面的进展，或对空气污染等问题提出建设性批评）时的选择特点。编辑这些内容仅用于研究分析，并不旨在影响您的个人观点。</text>
+
+        <text class="para">本研究的更广泛目标，是希望了解人们在数字平台上如何选择和接触信息。我们并不会对参与者进行评价，也没有意图引导参与者形成任何特定立场。我们只是希望借由研究，更好地理解在复杂的信息环境中，人们是如何进行阅读和判断的。</text>
+
+        <text class="para">同时，我们也鼓励您在思考这些议题时，多参考不同来源的信息，并保持独立、批判性的判断。环境问题较为复杂，人们对积极信息和批评性信息做出不同反应都是自然的现象。</text>
+
+        <text class="para">如果您对本研究有任何疑问，或希望进一步了解相关内容，欢迎随时与我们联系。再次感谢您的参与与支持。</text>
+      </view>
+
+      <view class="scroll-hint" wx:if="{{!buttonActive}}">
+        <text class="hint-text">↓ 请继续向下滑动以领取奖励</text>
+      </view>
+
+      <!-- Spacer so last paragraph clears the fixed button -->
+      <view class="bottom-spacer"></view>
+    </view>
+  </scroll-view>
+
+  <!-- Fixed bottom button -->
+  <view class="debrief-actions">
+    <button
+      class="btn-collect {{buttonActive ? 'active' : 'disabled'}}"
+      bindtap="onCollectReward"
+      loading="{{submitting}}"
+      disabled="{{!buttonActive}}"
+    >领取奖励</button>
+  </view>
+
+</view>

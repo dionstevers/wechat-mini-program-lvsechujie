@@ -1,0 +1,127 @@
+<!-- survey-engine component
+     Renders one block at a time. Fires 'survey-complete' event with all responses when done. -->
+
+<view class="survey-container">
+
+  <!-- Progress bar + coin counter -->
+  <view class="survey-header">
+    <view class="progress-bar-wrap">
+      <view class="progress-bar-fill" style="width: {{progressPct}}%"></view>
+    </view>
+    <view class="progress-label">
+      <text>{{currentBlockIndex + 1}} / {{totalBlocks}}</text>
+    </view>
+    <coin-counter coins="{{totalCoins}}" rate="{{coinRate}}" />
+  </view>
+
+  <!-- Block intro text (optional) -->
+  <view wx:if="{{currentBlock.introText}}" class="block-intro">
+    <text>{{currentBlock.introText}}</text>
+  </view>
+
+  <!-- Questions in current block -->
+  <scroll-view scroll-y class="questions-scroll">
+    <block wx:for="{{currentQuestions}}" wx:key="id">
+
+      <!-- INTRO type -->
+      <view wx:if="{{item.type === 'intro'}}" class="question-card intro-card">
+        <text class="intro-text">{{item.text}}</text>
+      </view>
+
+      <!-- SINGLE SELECT -->
+      <view wx:elif="{{item.type === 'single_select'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <radio-group bindchange="onSingleSelect" data-field="{{item.field}}" data-qid="{{item.id}}">
+          <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row">
+            <radio value="{{opt.value}}" checked="{{answers[item.field] === opt.value}}" color="#419f8c"/>
+            <text class="option-label">{{opt.label}}</text>
+          </view>
+        </radio-group>
+      </view>
+
+      <!-- MULTI SELECT -->
+      <view wx:elif="{{item.type === 'multi_select'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
+              bindtap="onMultiSelect" data-field="{{item.field}}" data-value="{{opt.value}}" data-exclusive="{{opt.exclusive}}">
+          <checkbox value="{{opt.value}}"
+                    checked="{{multiAnswers[item.field][opt.value]}}"
+                    color="#419f8c" />
+          <text class="option-label">{{opt.label}}</text>
+        </view>
+      </view>
+
+      <!-- SLIDER -->
+      <view wx:elif="{{item.type === 'slider'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <view class="slider-labels">
+          <text class="slider-min-label">{{item.minLabel}} ({{item.min}})</text>
+          <text class="slider-max-label">{{item.maxLabel}} ({{item.max}})</text>
+        </view>
+        <slider min="{{item.min}}" max="{{item.max}}" step="1"
+                value="{{answers[item.field] !== undefined ? answers[item.field] : -1}}"
+                show-value block-color="#419f8c" active-color="#419f8c"
+                bindchange="onSliderChange" data-field="{{item.field}}" data-qid="{{item.id}}" />
+        <view wx:if="{{answers[item.field] === undefined}}" class="slider-placeholder">
+          <text>请拖动滑块作答</text>
+        </view>
+      </view>
+
+      <!-- MATRIX -->
+      <view wx:elif="{{item.type === 'matrix'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <view class="matrix-wrap">
+          <!-- Header row -->
+          <view class="matrix-header-row">
+            <view class="matrix-row-label"></view>
+            <view wx:for="{{item.scaleLabels}}" wx:for-item="lbl" wx:key="index" class="matrix-col-label">
+              <text>{{lbl}}</text>
+            </view>
+          </view>
+          <!-- Data rows -->
+          <view wx:for="{{item.rows}}" wx:for-item="row" wx:key="id" class="matrix-data-row">
+            <view class="matrix-row-label"><text>{{row.label}}</text></view>
+            <view wx:for="{{item.scaleValues}}" wx:for-item="val" wx:key="index" class="matrix-cell"
+                  bindtap="onMatrixSelect" data-rowfield="{{row.field}}" data-value="{{val}}" data-qid="{{item.id}}">
+              <view class="matrix-radio {{matrixAnswers[row.field] === val ? 'matrix-radio-selected' : ''}}"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- DROPDOWN -->
+      <view wx:elif="{{item.type === 'dropdown'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <picker mode="selector" range="{{item.options}}"
+                bindchange="onDropdownChange" data-field="{{item.field}}" data-qid="{{item.id}}"
+                value="{{dropdownIndices[item.field]}}">
+          <view class="picker-display">
+            <text class="{{dropdownIndices[item.field] !== undefined ? 'picker-selected' : 'picker-placeholder'}}">
+              {{dropdownIndices[item.field] !== undefined ? item.options[dropdownIndices[item.field]] : '请选择'}}
+            </text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- OPEN TEXT -->
+      <view wx:elif="{{item.type === 'open_text'}}" class="question-card">
+        <text class="question-text">{{item.text}}</text>
+        <textarea class="open-text-input" placeholder="请在此输入您的回答"
+                  bindinput="onTextInput" data-field="{{item.field}}" data-qid="{{item.id}}"
+                  value="{{answers[item.field] || ''}}" auto-height />
+      </view>
+
+    </block>
+  </scroll-view>
+
+  <!-- Navigation buttons -->
+  <view class="nav-buttons">
+    <button wx:if="{{currentBlockIndex > 0}}" class="btn-back" bindtap="onPrevBlock">上一页</button>
+    <button wx:if="{{!isLastBlock}}" class="btn-next {{canAdvance ? '' : 'btn-disabled'}}"
+            bindtap="onNextBlock" disabled="{{!canAdvance}}">下一页</button>
+    <button wx:if="{{isLastBlock}}" class="btn-submit {{canAdvance ? '' : 'btn-disabled'}}"
+            bindtap="onSubmit" disabled="{{!canAdvance}}">提交</button>
+  </view>
+
+</view>

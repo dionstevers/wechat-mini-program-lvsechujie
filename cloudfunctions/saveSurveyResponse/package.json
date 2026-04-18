@@ -1,0 +1,9 @@
+{
+  "name": "saveSurveyResponse",
+  "version": "1.0.0",
+  "description": "Incrementally save survey block responses and award coins",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

@@ -1,6 +1,14 @@
 {
   
   "pages": [
+    "pages/consent/consent",
+    "pages/registration/registration",
+    "pages/entry-survey/entry-survey",
+    "pages/news-feed/news-feed",
+    "pages/article-viewer/article-viewer",
+    "pages/exit-survey/exit-survey",
+    "pages/debriefing/debriefing",
+    "pages/reward/reward",
     "pages/index/index",
     "pages/home/home",
     "pages/center/center",
@@ -86,11 +94,5 @@
   ],
   
   "useExtendedLib": {
-  },
-  "plugins": {
-    "tfjsPlugin": {
-      "version": "0.2.0",
-      "provider": "wx6afed118d9e81df9"
-    }
   }
 }

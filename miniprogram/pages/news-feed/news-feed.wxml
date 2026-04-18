@@ -1,0 +1,62 @@
+<view class="feed-page">
+
+  <!-- ── Full-screen video overlay (conditions 1–3) ───────────────────── -->
+  <view wx:if="{{showOverlay}}" class="video-overlay">
+    <video
+      id="treatment-video"
+      src="{{videoSrc}}"
+      autoplay
+      controls="{{false}}"
+      show-play-btn="{{false}}"
+      show-center-play-btn="{{false}}"
+      show-mute-btn="{{false}}"
+      show-fullscreen-btn="{{false}}"
+      objectFit="contain"
+      class="treatment-video"
+      bindended="onVideoEnded"
+      binderror="onVideoError"
+    />
+    <button wx:if="{{showContinueBtn}}" class="btn-continue" bindtap="onContinue">继续</button>
+  </view>
+
+  <!-- ── News feed ──────────────────────────────────────────────────────── -->
+  <scroll-view scroll-y class="feed-scroll" enable-passive>
+
+    <view class="feed-header">
+      <text class="feed-title">信息中心</text>
+      <text class="feed-subtitle">来了解 / 最新的环境资讯和政策信息吧</text>
+    </view>
+
+    <!-- Article cards -->
+    <view class="articles-list">
+      <view wx:for="{{displayArticles}}" wx:key="id"
+            class="article-card"
+            bindtap="onArticleTap"
+            data-article-id="{{item.id}}">
+        <image class="article-thumb" src="{{item.thumbnail}}" mode="aspectFill" />
+        <view class="article-info">
+          <text class="article-title">{{item.title}}</text>
+          <text class="article-lead">{{item.lead}}</text>
+        </view>
+      </view>
+    </view>
+
+  </scroll-view>
+
+  <!-- ── Bottom navigation (visual only, non-interactive during experiment) -->
+  <view class="bottom-nav">
+    <view class="nav-item">
+      <image src="/asset/img/trip.png" class="nav-icon" />
+      <text>行程记录</text>
+    </view>
+    <view class="nav-item active">
+      <image src="/asset/img/info_highlight.png" class="nav-icon" />
+      <text>信息中心</text>
+    </view>
+    <view class="nav-item">
+      <image src="/asset/img/personal.png" class="nav-icon" />
+      <text>个人积分</text>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "assignCondition",
+  "version": "1.0.0",
+  "description": "Randomly assign treatment condition and article combination",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

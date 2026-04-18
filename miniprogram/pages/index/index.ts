@@ -1,275 +1,67 @@
-import { setColorStyle, updateColor } from "../../utils/colorschema";
-import { logEvent } from "../../utils/log";
-import { onHandleSignIn } from "../../utils/login";
-
 // pages/index/index.ts
-const app = getApp();
+// Experiment entry point — routes participants to the correct step based on
+// their existing record in experiment_participants collection.
+
+const app = getApp()
+const STEP_ROUTES: Record<string, string> = {
+  registration:  '/pages/registration/registration',
+  entry_survey:  '/pages/entry-survey/entry-survey',
+  news_feed:     '/pages/news-feed/news-feed',
+  exit_survey:   '/pages/exit-survey/exit-survey',
+  debriefing:    '/pages/debriefing/debriefing',
+  reward:        '/pages/reward/reward',
+  complete:      '/pages/reward/reward',
+}
 
 Page({
-  /**
-   * 页面实例数据
-   */
-  isFetchingUserInfo: false,
-  isNavigating: false,
+  data: {
+    openID: '',
+  },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  async onLoad(options) {
+  async onLoad() {
+    wx.showLoading({ title: '加载中...', mask: true })
     try {
-      // 设置主题颜色
-      setColorStyle('CYAN');
+      // 1. Get OpenID
+      const loginRes = await wx.cloud.callFunction({ name: 'login' })
+      const openID = (loginRes.result as any).data._openid
+      app.globalData.openID = openID
+      this.setData({ openID })
 
-      // get user location and ip
-      await wx.cloud.callFunction({
-        name: "getUserip"
-      });
+      // 2. Look up participant record
+      const db = wx.cloud.database()
+      const query = await db.collection('experiment_participants')
+        .where({ _openid: openID })
+        .get()
 
-      // Set user's openID
-      const res = await wx.cloud.callFunction({ name: "login" });
-      this.setData({ openID: (res.result as { data?: any }).data._openid });
-      app.globalData.openID = (res.result as { data?: any }).data._openid;
+      wx.hideLoading()
 
-      // share app message: Check if the sharedFromid is null, if the sender document does not exist, create it
-      const sharedFromid = options.sharedFromID;
-      console.log("sharedFromID", options.sharedFromID);
-      if (!sharedFromid) {
-        console.log("no share user");
-      } else {
-        try {
-          wx.cloud.callFunction({
-            name: "netCreate",
-            data: {
-              senderID: sharedFromid,
-              receiverID: this.data.openID
-            },
-            success: function (res) {
-              console.log(res);
-            }
-          });
-        } catch (err) {
-          console.log(err);
-        }
+      if (query.data.length === 0) {
+        // New participant → start at consent
+        wx.redirectTo({ url: '/pages/consent/consent' })
+        return
       }
 
-      // 文章分享跳转和自动登录
-      if (options.isFromArticleShared) {
-        wx.redirectTo({
-          url: `/pages/detail/detail?sharedFromID=${sharedFromid}&link=${options.articleLink}&articleType=${options.articleType}`
-        });
-      } else {
-        this.HandleSignIn();
-      }
+      const participant = query.data[0]
+      app.globalData.participantData = participant
+
+      // 3. Route to the correct step
+      const step = participant.current_step || 'registration'
+      const route = STEP_ROUTES[step] || '/pages/consent/consent'
+      wx.redirectTo({ url: route })
     } catch (err) {
-      console.log(err);
+      wx.hideLoading()
+      console.error('Index routing error', err)
+      wx.showModal({
+        title: '加载失败',
+        content: '请检查网络连接后重试',
+        showCancel: false,
+      })
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  // record share relations
-  async recordShare(sharedFromid: string) {
-    const db = wx.cloud.database();
-    try {
-      // Get the user's openid
-      const res = await wx.cloud.callFunction({ name: "login" });
-      const openid = (res.result as { data?: any }).data._openid;
-      const createdAt = new Date();
-
-      // Add the connection
-      await db.collection("connections").add({
-        data: {
-          userA: sharedFromid,
-          userB: openid,
-          createdAt: createdAt
-        }
-      });
-
-      return {
-        success: true,
-        message: "Share recorded successfully"
-      };
-    } catch (err) {
-      console.error("Error recording share:", err);
-      return {
-        success: false,
-        message: "Error recording share"
-      };
-    }
-  },
-
-  // 注册
-  HandleSignUp() {
-    if (!this.isFetchingUserInfo && !this.isNavigating) {
-      this.isFetchingUserInfo = true;
-      this.onHandleSignUp();
-    }
-  },
-
-  // 注册-抓取
-  async onHandleSignUp() {
-    const db = wx.cloud.database();
-
-    try {
-      const res = await wx.cloud.callFunction({ name: "login" });
-      const openID = (res.result as { data?: any }).data._openid;
-      this.setData({ openID });
-      getApp().globalData.openID = openID;
-
-      const userInfoQuery = await db.collection("userInfo").where({ _openid: openID }).get();
-
-      if (userInfoQuery.data.length === 1) {
-        getApp().globalData.userInfo = userInfoQuery.data[0];
-        wx.showModal({
-          title: "您已有账号",
-          content: "请直接点击登录按钮登录",
-          showCancel: false
-        });
-      } else {
-        this.isNavigating = true;
-        wx.redirectTo({
-          url: "/pages/login/login",
-          complete: () => (this.isNavigating = false)
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      this.isFetchingUserInfo = false;
-    }
-  },
-
-  // 登录
-  HandleSignIn() {
-    if (!this.isFetchingUserInfo && !this.isNavigating) {
-      this.isFetchingUserInfo = true;
-      onHandleSignIn({
-        success: () => {
-          this.isNavigating = true;
-          // wx.showToast({
-          //   title: "正在登录中",
-          //   icon: "loading",
-          //   mask: true,
-          //   duration: 500
-          // });
-          setTimeout(() => {
-            wx.reLaunch({
-              url: "/pages/home/home",
-              complete: () => (this.isNavigating = false)
-            });
-          }, 500);
-          this.isFetchingUserInfo = false;
-        },
-        failed: () => {
-          // 如果没有账号，自动跳转到注册
-
-          wx.showModal({
-            title: "您尚未注册",
-            content: "跳转到注册",
-            showCancel: false
-          });
-          this.isFetchingUserInfo = false;
-          this.HandleSignUp();
-        },
-        error: () => {
-          this.isFetchingUserInfo = false;
-        }
-      });
-    }
-  },
-
-  // 游客登陆
-  onVisitorEnter() {
-    if (this.isFetchingUserInfo || this.isNavigating) {
-      return;
-    }
-
-    this.isNavigating = true;
-    wx.showToast({
-      title: "游客登录中",
-      icon: "loading",
-      mask: true,
-      duration: 500
-    });
-    setTimeout(() => {
-      wx.reLaunch({
-        url: "/pages/home/home",
-        complete: () => (this.isNavigating = false)
-      });
-    }, 500);
-  },
-
-  // 删除账户
-  onDeleteAccount() {
-    if (this.isFetchingUserInfo || this.isNavigating) {
-      return;
-    }
-
-    wx.showModal({
-      title: "请您确认",
-      content: "点击确认按钮注销小程序，反之请点击取消",
-      success: res => {
-        if (res.confirm) {
-          // TODO: 删除userinfo ??
-          wx.showToast({
-            title: "感谢使用碳行家",
-            icon: "success",
-            duration: 2000
-          });
-        }
-      }
-    });
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-    console.log("index page showing up");
-
-    // 更新颜色
-    updateColor();
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
+  onShow() {},
   onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
   onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
   onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
   onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-    logEvent("Share App");
-    return {
-      title: "快来一起低碳出街~",
-      path: `/pages/index/index?sharedFromID=${app.globalData.openID}`,
-      imageUrl:
-        "https://696c-iluvcarb-0gzvs45g82b57f98-1315168954.tcb.qcloud.la/logo/WechatIMG778.jpg?sign=c7c5732217972f1c9393850e9e040d70&t=1713096313",
-      success: function (res) {
-        console.log(res.shareTickets[0]);
-      },
-      fail: function (res) {
-        console.log("share failed");
-      }
-    };
-  }
-});
+})

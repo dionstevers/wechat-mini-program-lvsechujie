@@ -1,0 +1,9 @@
+{
+  "name": "logArticleEvent",
+  "version": "1.0.0",
+  "description": "Log article tap and reading time events",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

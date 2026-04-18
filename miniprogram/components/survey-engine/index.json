@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "coin-counter": "../coin-counter/index"
+  }
+}

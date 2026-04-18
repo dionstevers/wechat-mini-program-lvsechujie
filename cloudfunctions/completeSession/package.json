@@ -1,0 +1,9 @@
+{
+  "name": "completeSession",
+  "version": "1.0.0",
+  "description": "Calculate final reward and mark session complete",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}
