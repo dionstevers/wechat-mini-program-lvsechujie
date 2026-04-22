@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "dev-banner": "../../components/dev-banner/dev-banner"
+  }
+}
