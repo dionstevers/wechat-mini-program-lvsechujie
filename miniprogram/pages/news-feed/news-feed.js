@@ -36,10 +36,8 @@ Page({
     const displayArticles = articleIds.map(id => ARTICLES[id]).filter(Boolean)
     this.setData({ displayArticles })
 
-    // Show video overlay for non-control conditions (skipped in DEV_MODE —
-    // <video> src requires network/cloud:// URIs, local package paths fail)
-    const devMode = app.globalData && app.globalData.devMode
-    if (!devMode && condition && condition !== 'control') {
+    // Show video overlay for non-control conditions
+    if (condition && condition !== 'control') {
       const videoConfig = VIDEO_CONFIG[condition]
       if (videoConfig && videoConfig.video_file) {
         this._overlayStartTimestamp = Date.now()
