@@ -3,11 +3,21 @@
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
 
+const app = getApp()
+
 Page({
   data: {
     form: { name: '', phone: '', wechat_id: '' },
     errors: {},
     submitting: false,
+  },
+
+  onLoad() {
+    if (app && app.globalData && app.globalData.devMode) {
+      this.setData({
+        form: { name: '测试用户', phone: '13800138000', wechat_id: 'dev_tester' },
+      })
+    }
   },
 
   onNameInput(e)   { this.setData({ 'form.name': e.detail.value, 'errors.name': '' }) },
