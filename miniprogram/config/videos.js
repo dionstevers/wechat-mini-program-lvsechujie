@@ -5,7 +5,9 @@ const app = getApp()
 const DEV_MODE = !!(app && app.globalData && app.globalData.devMode)
 
 const CLOUD_BASE = 'cloud://iluvcarb-0gzvs45g82b57f98.6c6c-iluvcarb-0gzvs45g82b57f98/treatments/'
-const LOCAL_BASE = '/asset/treatments/'
+// DEV: run `python3 -m http.server 8000` in miniprogram/asset/treatments/
+// and enable "不校验合法域名..." in WeChat DevTools settings.
+const LOCAL_BASE = 'http://127.0.0.1:8000/'
 const BASE = DEV_MODE ? LOCAL_BASE : CLOUD_BASE
 
 const VIDEO_CONFIG = {
