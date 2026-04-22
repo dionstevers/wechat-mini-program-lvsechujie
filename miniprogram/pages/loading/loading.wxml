@@ -1,4 +1,4 @@
-<view class="page-background">
+<view class="loading-background">
   <dev-banner />
   <view class="container">
     <text class="loading-text">加载中...</text>
