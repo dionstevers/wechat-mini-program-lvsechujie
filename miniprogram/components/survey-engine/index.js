@@ -9,6 +9,7 @@
 //   survey-complete — { responses, totalCoins, timestamps: { start, end } }
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
+const app = getApp()
 
 Component({
   properties: {
@@ -85,20 +86,56 @@ Component({
         })
       })
 
+      // DEV_MODE: prefill answers with generic values so tester can click through
+      const devMode = !!(app && app.globalData && app.globalData.devMode)
+      const prefill = devMode ? this._buildDevPrefill(blocks) : null
+
       this.setData({
         blocks,
         totalBlocks,
         currentBlockIndex: 0,
         surveyStartTimestamp: Date.now(),
         totalCoins: 0,
-        answers: {},
-        multiAnswers: {},
-        matrixAnswers: {},
-        dropdownIndices: {},
+        answers: prefill ? prefill.answers : {},
+        multiAnswers: prefill ? prefill.multiAnswers : {},
+        matrixAnswers: prefill ? prefill.matrixAnswers : {},
+        dropdownIndices: prefill ? prefill.dropdownIndices : {},
         pickerDefaults,
         answeredThisBlock: {},
       })
       this._loadBlock(0, blocks)
+    },
+
+    _buildDevPrefill(blocks) {
+      const answers = {}
+      const multiAnswers = {}
+      const matrixAnswers = {}
+      const dropdownIndices = {}
+      blocks.forEach(block => {
+        ;(block.questions || []).forEach(q => {
+          if (q.type === 'single_select' && q.options && q.options.length) {
+            answers[q.field] = q.options[0].value
+          } else if (q.type === 'multi_select' && q.options && q.options.length) {
+            const first = q.options.find(o => !o.exclusive) || q.options[0]
+            multiAnswers[q.field] = { [first.value]: true }
+          } else if (q.type === 'slider') {
+            answers[q.field] = Math.round((q.min + q.max) / 2)
+          } else if (q.type === 'matrix' && q.rows && q.scaleValues) {
+            const mid = q.scaleValues[Math.floor(q.scaleValues.length / 2)]
+            q.rows.forEach(row => { matrixAnswers[row.field] = mid })
+          } else if (q.type === 'dropdown' && q.options && q.options.length) {
+            const idx = q.defaultValue !== undefined
+              ? Math.max(0, q.options.indexOf(q.defaultValue))
+              : 0
+            const val = q.options[idx]
+            dropdownIndices[q.field] = idx
+            answers[q.field] = q.nullValue && val === q.nullValue ? null : val
+          } else if (q.type === 'open_text') {
+            answers[q.field] = '测试回答'
+          }
+        })
+      })
+      return { answers, multiAnswers, matrixAnswers, dropdownIndices }
     },
 
     _loadBlock(index, blocks) {
