@@ -32,10 +32,10 @@
       <view wx:elif="{{item.type === 'single_select'}}" class="question-card">
         <text class="question-text">{{item.text}}</text>
         <radio-group bindchange="onSingleSelect" data-field="{{item.field}}" data-qid="{{item.id}}">
-          <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row">
+          <label wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row">
             <radio value="{{opt.value}}" checked="{{answers[item.field] === opt.value}}" color="#419f8c"/>
             <text class="option-label">{{opt.label}}</text>
-          </view>
+          </label>
         </radio-group>
       </view>
 
