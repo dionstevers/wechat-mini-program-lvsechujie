@@ -176,24 +176,30 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx 24rpx;
+  height: 60rpx;
+  box-sizing: border-box;
+  padding: 0 24rpx 24rpx 24rpx;
   background: #f7f7f7;
   border-radius: 12rpx;
   border: 1rpx solid #e0e0e0;
 }
 
 .picker-placeholder {
-  font-size: 28rpx;
+  font-size: 26rpx;
+  line-height: 1;
   color: #aaa;
 }
 
 .picker-selected {
-  font-size: 28rpx;
+  font-size: 26rpx;
+  line-height: 1;
   color: #333;
 }
 
 .picker-arrow {
-  font-size: 22rpx;
+  font-size: 20rpx;
+  line-height: 1;
+  margin-top: 20rpx;
   color: #999;
 }
 
