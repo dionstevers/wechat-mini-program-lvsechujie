@@ -37,6 +37,7 @@ Page({
       success: (res) => {
         const result = res.result
         if (result.success) {
+          app.globalData.totalCoins = (app.globalData.totalCoins || 0) + (result.coins_registration || 0)
           const yuan = (result.coins_registration * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
           wx.showModal({
             title: '🎉 获得金币奖励！',

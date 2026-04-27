@@ -11,15 +11,24 @@ Page({
     surveyConfig: null,
     condition: '',
     trigger: '',
+    initialCoins: 0,
   },
 
   onLoad() {
     const trigger = wx.getStorageSync('exit_survey_trigger') || ''
     const condition = app.globalData.condition || ''
-    this.setData({ surveyConfig: EXIT_SURVEY, condition, trigger })
+    this.setData({
+      surveyConfig: EXIT_SURVEY,
+      condition,
+      trigger,
+      initialCoins: app.globalData.totalCoins || 0,
+    })
   },
 
-  onSurveyComplete() {
+  onSurveyComplete(e) {
+    if (e && e.detail && typeof e.detail.totalCoins === 'number') {
+      app.globalData.totalCoins = e.detail.totalCoins
+    }
     wx.redirectTo({ url: '/pages/debriefing/debriefing' })
   },
 

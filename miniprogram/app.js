@@ -98,6 +98,7 @@ App({
     condition: '',
     articleCombination: '',
     articleOrder: '',
+    totalCoins: 0,
     // Dev mode — read by consent page and custom-tab-bar for visual indicator
     devMode: DEV_MODE,
   }

@@ -28,6 +28,10 @@ Component({
       type: Number,
       value: REWARD_CONFIG.coins_to_yuan_rate,
     },
+    initialCoins: {
+      type: Number,
+      value: 0,
+    },
   },
 
   data: {
@@ -106,7 +110,7 @@ Component({
         totalBlocks,
         currentBlockIndex: 0,
         surveyStartTimestamp: Date.now(),
-        totalCoins: 0,
+        totalCoins: this.data.initialCoins || 0,
         answers: prefill ? prefill.answers : {},
         multiAnswers: prefill ? prefill.multiAnswers : {},
         matrixAnswers: prefill ? prefill.matrixAnswers : {},

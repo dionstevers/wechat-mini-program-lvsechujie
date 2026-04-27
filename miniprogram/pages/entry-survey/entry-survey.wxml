@@ -2,5 +2,6 @@
 <survey-engine
   config="{{surveyConfig}}"
   condition="{{condition}}"
+  initialCoins="{{initialCoins}}"
   bind:survey-complete="onSurveyComplete"
 />
