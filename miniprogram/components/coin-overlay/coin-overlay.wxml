@@ -8,5 +8,6 @@
       <text class="coin-overlay-value">{{coins}}</text>
       <text class="coin-overlay-yuan">¥{{yuan}}</text>
     </view>
+    <view wx:if="{{popVisible}}" class="coin-pop" key="{{popKey}}">+{{popValue}} 💰</view>
   </movable-view>
 </movable-area>

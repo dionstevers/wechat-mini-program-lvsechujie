@@ -11,6 +11,9 @@ Component({
     x: 0,
     y: 0,
     pulsing: false,
+    popVisible: false,
+    popValue: 0,
+    popKey: 0,
   },
   lifetimes: {
     attached() {
@@ -28,10 +31,12 @@ Component({
     _update(coins) {
       const prev = this.data.coins
       this.setData({ coins, yuan: (coins * 0.05).toFixed(2) })
-      if (coins > prev) this._triggerPulse()
+      if (coins > prev) {
+        this._triggerPulse()
+        this._triggerPop(coins - prev)
+      }
     },
     _triggerPulse() {
-      // Toggle off first so consecutive bumps re-fire the animation.
       if (this._pulseTimer) clearTimeout(this._pulseTimer)
       this.setData({ pulsing: false })
       setTimeout(() => this.setData({ pulsing: true }), 20)
@@ -39,6 +44,22 @@ Component({
         this.setData({ pulsing: false })
         this._pulseTimer = null
       }, 600)
+    },
+    _triggerPop(delta) {
+      if (this._popTimer) clearTimeout(this._popTimer)
+      // Force re-mount via key bump so consecutive pops re-run the keyframe.
+      this.setData({ popVisible: false })
+      setTimeout(() => {
+        this.setData({
+          popVisible: true,
+          popValue: delta,
+          popKey: (this.data.popKey || 0) + 1,
+        })
+      }, 20)
+      this._popTimer = setTimeout(() => {
+        this.setData({ popVisible: false })
+        this._popTimer = null
+      }, 950)
     },
     _restorePosition() {
       const saved = app && app.globalData && app.globalData.coinOverlayPos

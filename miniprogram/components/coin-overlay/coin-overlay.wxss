@@ -13,6 +13,8 @@
   width: 130rpx;
   height: 130rpx;
   pointer-events: auto;
+  position: relative;
+  overflow: visible;
 }
 
 .coin-bubble {
@@ -57,4 +59,25 @@
 
 .coin-bubble.pulsing {
   animation: coin-pulse 0.55s ease-out;
+}
+
+.coin-pop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #f9bc60;
+  text-shadow: 0 0 10rpx rgba(249, 188, 96, 0.95), 0 2rpx 4rpx rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: coin-rise 0.9s ease-out forwards;
+  z-index: 5;
+}
+
+@keyframes coin-rise {
+  0%   { opacity: 0;   transform: translate(-50%, -40%) scale(0.6); }
+  15%  { opacity: 1;   transform: translate(-50%, -60%) scale(1.25); }
+  60%  { opacity: 1;   transform: translate(-50%, -130%) scale(1.15); }
+  100% { opacity: 0;   transform: translate(-50%, -220%) scale(1.4); }
 }
