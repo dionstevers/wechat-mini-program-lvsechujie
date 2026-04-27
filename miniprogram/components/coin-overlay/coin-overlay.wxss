@@ -9,9 +9,15 @@
   background: transparent;
 }
 
-.coin-overlay {
+.coin-mover {
   width: 130rpx;
   height: 130rpx;
+  pointer-events: auto;
+}
+
+.coin-bubble {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
   border: 3rpx solid #f9bc60;
@@ -20,7 +26,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22);
-  pointer-events: auto;
+  box-sizing: border-box;
 }
 
 .coin-overlay-icon {
@@ -41,4 +47,14 @@
   color: #888;
   line-height: 1;
   margin-top: 4rpx;
+}
+
+@keyframes coin-pulse {
+  0%   { transform: scale(1);    box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+  35%  { transform: scale(1.22); box-shadow: 0 0 32rpx rgba(249, 188, 96, 0.9); }
+  100% { transform: scale(1);    box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+}
+
+.coin-bubble.pulsing {
+  animation: coin-pulse 0.55s ease-out;
 }

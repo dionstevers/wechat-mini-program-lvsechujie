@@ -10,6 +10,7 @@ Component({
     yuan: '0.00',
     x: 0,
     y: 0,
+    pulsing: false,
   },
   lifetimes: {
     attached() {
@@ -25,7 +26,19 @@ Component({
   },
   methods: {
     _update(coins) {
+      const prev = this.data.coins
       this.setData({ coins, yuan: (coins * 0.05).toFixed(2) })
+      if (coins > prev) this._triggerPulse()
+    },
+    _triggerPulse() {
+      // Toggle off first so consecutive bumps re-fire the animation.
+      if (this._pulseTimer) clearTimeout(this._pulseTimer)
+      this.setData({ pulsing: false })
+      setTimeout(() => this.setData({ pulsing: true }), 20)
+      this._pulseTimer = setTimeout(() => {
+        this.setData({ pulsing: false })
+        this._pulseTimer = null
+      }, 600)
     },
     _restorePosition() {
       const saved = app && app.globalData && app.globalData.coinOverlayPos
