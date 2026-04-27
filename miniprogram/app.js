@@ -25,7 +25,8 @@ App({
     if (DEV_MODE) {
       // Patch callFunction synchronously after init call — SDK does not replace
       // this method in its async completion callback, so the mock persists.
-      var CONDITIONS = ['US_better_than_China', 'China_better_than_US', 'no_text', 'control']
+      // DEV: skip 'control' so testers always see a treatment video
+      var CONDITIONS = ['US_better_than_China', 'China_better_than_US', 'no_text']
       var MOCKS = {
         saveConsent:        function() { return { success: true } },
         saveRegistration:   function() { return { success: true, coins_registration: 10 } },
@@ -50,14 +51,20 @@ App({
         if (mockFn) {
           console.log('[DEV] mock cloud:', opts.name, opts.data)
           var result = mockFn(opts.data || {})
+          var resolved = { result: result }
           setTimeout(function() {
-            if (opts.success) opts.success({ result: result })
-            if (opts.complete) opts.complete({ result: result })
+            if (opts.success) opts.success(resolved)
+            if (opts.complete) opts.complete(resolved)
           }, 200)
+          return Promise.resolve(resolved)
         } else {
           console.warn('[DEV] unmocked cloud call:', opts.name)
-          if (opts.fail) opts.fail({ errMsg: 'DEV_MODE: no mock for ' + opts.name })
+          var errMsg = 'DEV_MODE: no mock for ' + opts.name
+          var stub = { result: null, errMsg: errMsg }
+          if (opts.fail) opts.fail({ errMsg: errMsg })
           if (opts.complete) opts.complete({})
+          // Resolve (not reject) so unmocked calls don't crash awaiters during dev.
+          return Promise.resolve(stub)
         }
       }
     }
