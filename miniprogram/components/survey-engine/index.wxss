@@ -51,6 +51,7 @@
 }
 
 .question-card {
+  position: relative;
   background: #fff;
   border-radius: 20rpx;
   padding: 36rpx;
@@ -58,6 +59,19 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   width: 100%;
+}
+
+.coin-badge {
+  position: absolute;
+  top: 16rpx;
+  right: 20rpx;
+  background: #f9bc60;
+  color: #333;
+  font-size: 22rpx;
+  font-weight: bold;
+  padding: 4rpx 14rpx;
+  border-radius: 16rpx;
+  letter-spacing: 1rpx;
 }
 
 .intro-card {

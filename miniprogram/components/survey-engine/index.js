@@ -43,6 +43,7 @@ Component({
     matrixAnswers: {},  // rowField → value
     dropdownIndices: {},// field → index in options array
     pickerDefaults: {}, // field → initial wheel index (used before user picks)
+    coinValues: {},     // qid → coins awarded for that question
     totalCoins: 0,
     canAdvance: false,
     answeredThisBlock: {}, // qid → bool, tracks which questions in current block are answered
@@ -90,6 +91,16 @@ Component({
       const devMode = !!(app && app.globalData && app.globalData.devMode)
       const prefill = devMode ? this._buildDevPrefill(blocks) : null
 
+      // Pre-compute coin badge value per question
+      const coinValues = {}
+      const coinMap = REWARD_CONFIG.coins_per_question
+      blocks.forEach(block => {
+        ;(block.questions || []).forEach(q => {
+          if (q.type === 'intro') return
+          coinValues[q.id] = coinMap[q.type] || coinMap.default || 5
+        })
+      })
+
       this.setData({
         blocks,
         totalBlocks,
@@ -101,6 +112,7 @@ Component({
         matrixAnswers: prefill ? prefill.matrixAnswers : {},
         dropdownIndices: prefill ? prefill.dropdownIndices : {},
         pickerDefaults,
+        coinValues,
         answeredThisBlock: {},
       })
       this._loadBlock(0, blocks)

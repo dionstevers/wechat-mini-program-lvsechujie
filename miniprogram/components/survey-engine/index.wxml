@@ -30,6 +30,7 @@
 
       <!-- SINGLE SELECT -->
       <view wx:elif="{{item.type === 'single_select'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <radio-group bindchange="onSingleSelect" data-field="{{item.field}}" data-qid="{{item.id}}">
           <label wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row">
@@ -41,6 +42,7 @@
 
       <!-- MULTI SELECT -->
       <view wx:elif="{{item.type === 'multi_select'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
               bindtap="onMultiSelect" data-field="{{item.field}}" data-value="{{opt.value}}" data-exclusive="{{opt.exclusive}}">
@@ -53,6 +55,7 @@
 
       <!-- SLIDER -->
       <view wx:elif="{{item.type === 'slider'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <view class="slider-labels">
           <text class="slider-min-label">{{item.minLabel}} ({{item.min}})</text>
@@ -69,6 +72,7 @@
 
       <!-- MATRIX -->
       <view wx:elif="{{item.type === 'matrix'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <view class="matrix-wrap">
           <!-- Header row -->
@@ -91,6 +95,7 @@
 
       <!-- DROPDOWN -->
       <view wx:elif="{{item.type === 'dropdown'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <picker mode="selector" range="{{item.options}}"
                 bindchange="onDropdownChange" data-field="{{item.field}}" data-qid="{{item.id}}"
@@ -106,6 +111,7 @@
 
       <!-- OPEN TEXT -->
       <view wx:elif="{{item.type === 'open_text'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text">{{item.text}}</text>
         <textarea class="open-text-input" placeholder="请在此输入您的回答"
                   bindinput="onTextInput" data-field="{{item.field}}" data-qid="{{item.id}}"
