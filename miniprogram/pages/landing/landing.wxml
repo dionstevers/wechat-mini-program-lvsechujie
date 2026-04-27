@@ -6,12 +6,6 @@
   <view class="landing-decor decor-b"></view>
   <view class="landing-decor decor-c"></view>
 
-  <!-- Floating hongbao -->
-  <text class="float-hongbao hongbao-1">🧧</text>
-  <text class="float-hongbao hongbao-2">🧧</text>
-  <text class="float-hongbao hongbao-3">🧧</text>
-  <text class="float-hongbao hongbao-4">🧧</text>
-
   <view class="landing-content">
     <view class="landing-hero">
       <text class="landing-emoji">🌿</text>
@@ -23,11 +17,15 @@
     </view>
 
     <view class="landing-card landing-card-body">
-      <text wx:for="{{content.paragraphs}}" wx:for-item="p" wx:key="*this" class="landing-paragraph">{{p}}</text>
+      <view wx:for="{{content.paragraphs}}" wx:for-item="para" wx:key="pi" class="landing-paragraph">
+        <text wx:for="{{para}}" wx:for-item="seg" wx:key="si" class="seg-{{seg.bold ? 'bold' : 'normal'}}">{{seg.text}}</text>
+      </view>
     </view>
   </view>
 
   <view class="landing-footer">
+    <text class="btn-hongbao btn-hongbao-left">🧧</text>
+    <text class="btn-hongbao btn-hongbao-right">🧧</text>
     <button class="landing-btn" bindtap="onNext" loading="{{submitting}}">{{content.buttonText}}</button>
   </view>
 
