@@ -91,9 +91,9 @@ Component({
         })
       })
 
-      // DEV_MODE: prefill answers with generic values so tester can click through
-      const devMode = !!(app && app.globalData && app.globalData.devMode)
-      const prefill = devMode ? this._buildDevPrefill(blocks) : null
+      // DEV: only prefill answers when DEV_MODE_OPTION is 'prefilled'
+      const prefillEnabled = !!(app && app.globalData && app.globalData.devPrefillSurveys)
+      const prefill = prefillEnabled ? this._buildDevPrefill(blocks) : null
 
       // Pre-compute coin badge value per question
       const coinValues = {}

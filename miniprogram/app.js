@@ -1,9 +1,14 @@
 //app.js
 
 // ─── DEV MODE ────────────────────────────────────────────────────────────────
-// Set to true to bypass all cloud function calls with mock responses.
-// Set to false (or delete this block) before launching the real version.
-const DEV_MODE = true
+// 'off'       → real cloud calls, no shortcuts. Use for production builds.
+// 'empty'     → mock cloud calls + registration prefill, but surveys are blank.
+// 'prefilled' → mock cloud calls + registration prefill + every survey question
+//               pre-answered so tester can click through.
+const DEV_MODE_OPTION = 'prefilled'
+
+const DEV_MODE = DEV_MODE_OPTION !== 'off'
+const DEV_PREFILL_SURVEYS = DEV_MODE_OPTION === 'prefilled'
 // ─── END DEV MODE ─────────────────────────────────────────────────────────────
 
 App({
@@ -132,5 +137,7 @@ App({
     totalCoins: 0,
     // Dev mode — read by consent page and custom-tab-bar for visual indicator
     devMode: DEV_MODE,
+    devPrefillSurveys: DEV_PREFILL_SURVEYS,
+    devModeOption: DEV_MODE_OPTION,
   }
 })
