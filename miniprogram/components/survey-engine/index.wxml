@@ -3,7 +3,7 @@
 
 <view class="survey-container">
 
-  <!-- Progress bar + coin counter -->
+  <!-- Progress bar -->
   <view class="survey-header">
     <view class="progress-bar-wrap">
       <view class="progress-bar-fill" style="width: {{progressPct}}%"></view>
@@ -11,7 +11,6 @@
     <view class="progress-label">
       <text>{{currentBlockIndex + 1}} / {{totalBlocks}}</text>
     </view>
-    <coin-counter coins="{{totalCoins}}" rate="{{coinRate}}" />
   </view>
 
   <!-- Block intro text (optional) -->
