@@ -3,9 +3,9 @@
 // from the survey configs so the per-type values always sum to SURVEY_BUDGET.
 
 const TOTAL_REWARD_YUAN = 8        // total payout for the experiment
-const COINS_PER_YUAN    = 100      // 100 coins = ¥1
-const COINS_REGISTRATION = 100     // ¥1 at registration
-const COINS_ARTICLE_READ = 100     // ¥1 for reading the news article
+const COINS_PER_YUAN    = 88      // 88 coins = ¥1
+const COINS_REGISTRATION = 88     // ¥1 at registration
+const COINS_ARTICLE_READ = 88     // ¥1 for reading the news article
 
 // Relative effort weights — higher = more coins per question of that type.
 // Only the ratios matter; absolute scale is normalised by SURVEY_BUDGET.

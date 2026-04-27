@@ -74,8 +74,8 @@ Component({
         const rpxToPx = info.windowWidth / 750
         const sizePx = SIZE_RPX * rpxToPx
         this.setData({
-          x: (info.windowWidth - sizePx) / 2,
-          y: info.windowHeight * 0.8 - sizePx / 2,
+          x: info.windowWidth * 0.8 - sizePx / 2,
+          y: info.windowHeight * 0.7 - sizePx / 2,
         })
       } catch (e) {
         this.setData({ x: 150, y: 400 })

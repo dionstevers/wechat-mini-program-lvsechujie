@@ -2,9 +2,29 @@
   <dev-banner />
   <coin-overlay />
 
-  <view class="landing-body">
-    <text class="landing-header">{{content.header}}</text>
-    <text wx:for="{{content.paragraphs}}" wx:for-item="p" wx:key="*this" class="landing-paragraph">{{p}}</text>
+  <view class="landing-decor decor-a"></view>
+  <view class="landing-decor decor-b"></view>
+  <view class="landing-decor decor-c"></view>
+
+  <!-- Floating hongbao -->
+  <text class="float-hongbao hongbao-1">🧧</text>
+  <text class="float-hongbao hongbao-2">🧧</text>
+  <text class="float-hongbao hongbao-3">🧧</text>
+  <text class="float-hongbao hongbao-4">🧧</text>
+
+  <view class="landing-content">
+    <view class="landing-hero">
+      <text class="landing-emoji">🌿</text>
+    </view>
+
+    <view class="landing-card landing-card-header">
+      <text class="landing-header">{{content.header}}</text>
+      <view class="landing-accent"></view>
+    </view>
+
+    <view class="landing-card landing-card-body">
+      <text wx:for="{{content.paragraphs}}" wx:for-item="p" wx:key="*this" class="landing-paragraph">{{p}}</text>
+    </view>
   </view>
 
   <view class="landing-footer">
