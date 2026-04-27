@@ -110,7 +110,7 @@ Component({
         totalBlocks,
         currentBlockIndex: 0,
         surveyStartTimestamp: Date.now(),
-        totalCoins: this.data.initialCoins || 0,
+        totalCoins: (this.data.initialCoins || 0) + (prefill ? prefill.coins : 0),
         answers: prefill ? prefill.answers : {},
         multiAnswers: prefill ? prefill.multiAnswers : {},
         matrixAnswers: prefill ? prefill.matrixAnswers : {},
@@ -127,8 +127,12 @@ Component({
       const multiAnswers = {}
       const matrixAnswers = {}
       const dropdownIndices = {}
+      const coinMap = REWARD_CONFIG.coins_per_question
+      let coins = 0
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
+          if (q.type === 'intro') return
+          coins += coinMap[q.type] || coinMap.default || 5
           if (q.type === 'single_select' && q.options && q.options.length) {
             answers[q.field] = q.options[0].value
           } else if (q.type === 'multi_select' && q.options && q.options.length) {
@@ -151,7 +155,7 @@ Component({
           }
         })
       })
-      return { answers, multiAnswers, matrixAnswers, dropdownIndices }
+      return { answers, multiAnswers, matrixAnswers, dropdownIndices, coins }
     },
 
     _loadBlock(index, blocks) {

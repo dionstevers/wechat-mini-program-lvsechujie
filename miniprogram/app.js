@@ -43,7 +43,11 @@ App({
         },
         logArticleEvent:    function() { return { success: true } },
         logDebriefing:      function() { return { success: true } },
-        completeSession:    function() { return { success: true, coins_total: 120, reward_yuan: 6.00 } },
+        completeSession:    function() {
+          var inst = getApp()
+          var coins = (inst && inst.globalData && inst.globalData.totalCoins) || 0
+          return { success: true, coins_total: coins, reward_yuan: +(coins * 0.05).toFixed(2) }
+        },
       }
 
       wx.cloud.callFunction = function (opts) {
