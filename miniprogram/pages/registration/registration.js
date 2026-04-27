@@ -10,6 +10,7 @@ Page({
     form: { name: '', phone: '', wechat_id: '' },
     errors: {},
     submitting: false,
+    rewardModal: { show: false, coins: 0, yuan: '0.00' },
   },
 
   onLoad() {
@@ -39,15 +40,7 @@ Page({
         if (result.success) {
           app.globalData.totalCoins = (app.globalData.totalCoins || 0) + (result.coins_registration || 0)
           const yuan = (result.coins_registration * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
-          wx.showModal({
-            title: '🎉 获得金币奖励！',
-            content: `您已获得 ${result.coins_registration} 金币，相当于 ¥${yuan}`,
-            showCancel: false,
-            confirmText: '好的',
-            success: () => {
-              wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
-            },
-          })
+          this.setData({ rewardModal: { show: true, coins: result.coins_registration, yuan } })
         } else {
           this._showError()
         }
@@ -65,6 +58,11 @@ Page({
     else if (!/^1\d{10}$/.test(phone.trim())) errors.phone = '请输入有效的手机号码'
     this.setData({ errors })
     return Object.keys(errors).length === 0
+  },
+
+  onRewardConfirm() {
+    this.setData({ 'rewardModal.show': false })
+    wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
   },
 
   _showError() {

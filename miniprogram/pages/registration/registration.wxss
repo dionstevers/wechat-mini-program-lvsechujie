@@ -89,3 +89,47 @@
   text-align: center;
   padding: 0;
 }
+
+.reward-modal-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.reward-modal-box {
+  width: 560rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.reward-modal-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 28rpx;
+  text-align: center;
+}
+.reward-modal-line {
+  display: block;
+  font-size: 28rpx;
+  color: #444;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+.reward-modal-btn {
+  margin-top: 32rpx;
+  width: 320rpx;
+  background: #f9bc60;
+  color: #333;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  border: none;
+}

@@ -39,4 +39,14 @@
 
   <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交注册</button>
 
+  <view wx:if="{{rewardModal.show}}" class="reward-modal-mask">
+    <view class="reward-modal-box">
+      <text class="reward-modal-title">🎉 获得金币奖励！</text>
+      <text class="reward-modal-line">您已获得 {{rewardModal.coins}} 金币，相当于 ¥{{rewardModal.yuan}}</text>
+      <text class="reward-modal-line reward-modal-spacer"> </text>
+      <text class="reward-modal-line">继续使用小程序，赚更多金币吧！🧧</text>
+      <button class="reward-modal-btn" bindtap="onRewardConfirm">好的</button>
+    </view>
+  </view>
+
 </view>
