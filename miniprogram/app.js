@@ -5,7 +5,7 @@
 // 'empty'     → mock cloud calls + registration prefill, but surveys are blank.
 // 'prefilled' → mock cloud calls + registration prefill + every survey question
 //               pre-answered so tester can click through.
-const DEV_MODE_OPTION = 'prefilled'
+const DEV_MODE_OPTION = 'empty'
 
 const DEV_MODE = DEV_MODE_OPTION !== 'off'
 const DEV_PREFILL_SURVEYS = DEV_MODE_OPTION === 'prefilled'
@@ -52,9 +52,10 @@ App({
       // this method in its async completion callback, so the mock persists.
       // DEV: skip 'control' so testers always see a treatment video
       var CONDITIONS = ['US_better_than_China', 'China_better_than_US', 'no_text']
+      var REWARD_CONFIG = require('./config/reward.js').REWARD_CONFIG
       var MOCKS = {
         saveConsent:        function() { return { success: true } },
-        saveRegistration:   function() { return { success: true, coins_registration: 10 } },
+        saveRegistration:   function() { return { success: true, coins_registration: REWARD_CONFIG.coins_registration } },
         saveSurveyResponse: function() { return { success: true } },
         assignCondition:    function() {
           var combo = Math.random() < 0.5 ? 'combo_A' : 'combo_B'
@@ -71,7 +72,7 @@ App({
         completeSession:    function() {
           var inst = getApp()
           var coins = (inst && inst.globalData && inst.globalData.totalCoins) || 0
-          return { success: true, coins_total: coins, reward_yuan: +(coins * 0.05).toFixed(2) }
+          return { success: true, coins_total: coins, reward_yuan: +(coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2) }
         },
       }
 

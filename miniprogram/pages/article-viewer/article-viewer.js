@@ -3,6 +3,9 @@
 // Sets article_read_trigger in storage if reading time ≥ 5s.
 
 const { ARTICLES } = require('../../config/articles.js')
+const { REWARD_CONFIG } = require('../../config/reward.js')
+
+const app = getApp()
 
 const READ_THRESHOLD_MS = 5000 // 5 seconds
 
@@ -53,9 +56,15 @@ Page({
       },
     })
 
-    // Set exit trigger if reading time threshold met
+    // Set exit trigger if reading time threshold met + award read coins (once per session)
     if (durationMs >= READ_THRESHOLD_MS) {
       wx.setStorageSync('article_read_trigger', true)
+      if (!wx.getStorageSync('article_read_awarded')) {
+        wx.setStorageSync('article_read_awarded', true)
+        if (app && typeof app.addTotalCoins === 'function') {
+          app.addTotalCoins(REWARD_CONFIG.coins_article_read || 0)
+        }
+      }
     }
   },
 })

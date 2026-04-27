@@ -1,4 +1,5 @@
 const app = getApp()
+const { REWARD_CONFIG } = require('../../config/reward.js')
 
 // movable-view uses px, not rpx. Convert via system info: windowWidth(px) ÷ 750(rpx).
 const SIZE_RPX = 130
@@ -30,7 +31,7 @@ Component({
   methods: {
     _update(coins) {
       const prev = this.data.coins
-      this.setData({ coins, yuan: (coins * 0.05).toFixed(2) })
+      this.setData({ coins, yuan: (coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2) })
       if (coins > prev) {
         this._triggerPulse()
         this._triggerPop(coins - prev)
@@ -67,18 +68,17 @@ Component({
         this.setData({ x: saved.x, y: saved.y })
         return
       }
-      // Default: top-right corner
+      // Default: roughly screen-centre (horizontal centre, ~60% down)
       try {
         const info = wx.getSystemInfoSync()
         const rpxToPx = info.windowWidth / 750
         const sizePx = SIZE_RPX * rpxToPx
-        const marginPx = MARGIN_RPX * rpxToPx
         this.setData({
-          x: info.windowWidth - sizePx - marginPx,
-          y: marginPx + 35, // approx safe area
+          x: (info.windowWidth - sizePx) / 2,
+          y: info.windowHeight * 0.8 - sizePx / 2,
         })
       } catch (e) {
-        this.setData({ x: 280, y: 60 })
+        this.setData({ x: 150, y: 400 })
       }
     },
     onMove(e) {
