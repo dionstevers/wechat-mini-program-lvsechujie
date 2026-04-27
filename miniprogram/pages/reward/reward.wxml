@@ -1,5 +1,6 @@
 <view class="reward-page">
   <dev-banner />
+  <coin-overlay />
 
   <view wx:if="{{loading}}" class="loading-wrap">
     <view class="loading-spinner"></view>

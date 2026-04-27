@@ -1,5 +1,6 @@
 <view class="feed-page">
   <dev-banner />
+  <coin-overlay />
 
   <!-- ── Full-screen video overlay (conditions 1–3) ───────────────────── -->
   <view wx:if="{{showOverlay}}" class="video-overlay">

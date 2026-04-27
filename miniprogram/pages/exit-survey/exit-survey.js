@@ -27,7 +27,7 @@ Page({
 
   onSurveyComplete(e) {
     if (e && e.detail && typeof e.detail.totalCoins === 'number') {
-      app.globalData.totalCoins = e.detail.totalCoins
+      app.setTotalCoins(e.detail.totalCoins)
     }
     wx.redirectTo({ url: '/pages/debriefing/debriefing' })
   },

@@ -38,7 +38,7 @@ Page({
       success: (res) => {
         const result = res.result
         if (result.success) {
-          app.globalData.totalCoins = (app.globalData.totalCoins || 0) + (result.coins_registration || 0)
+          app.addTotalCoins(result.coins_registration || 0)
           const yuan = (result.coins_registration * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
           this.setData({ rewardModal: { show: true, coins: result.coins_registration, yuan } })
         } else {

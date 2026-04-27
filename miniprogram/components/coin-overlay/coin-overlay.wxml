@@ -1,0 +1,5 @@
+<view class="coin-overlay">
+  <text class="coin-overlay-icon">🪙</text>
+  <text class="coin-overlay-value">{{coins}}</text>
+  <text class="coin-overlay-yuan">¥{{yuan}}</text>
+</view>

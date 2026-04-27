@@ -4,6 +4,7 @@
   "navigationBarTextStyle": "white",
   "usingComponents": {
     "survey-engine": "../../components/survey-engine/index",
-    "dev-banner": "../../components/dev-banner/dev-banner"
+    "dev-banner": "../../components/dev-banner/dev-banner",
+    "coin-overlay": "../../components/coin-overlay/coin-overlay"
   }
 }

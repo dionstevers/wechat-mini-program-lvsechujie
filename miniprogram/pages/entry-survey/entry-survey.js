@@ -22,7 +22,7 @@ Page({
   onSurveyComplete(e) {
     // Persist running coin total before navigating
     if (e && e.detail && typeof e.detail.totalCoins === 'number') {
-      app.globalData.totalCoins = e.detail.totalCoins
+      app.setTotalCoins(e.detail.totalCoins)
     }
     // Entry survey submitted — now assign condition server-side
     wx.showLoading({ title: '请稍候...', mask: true })

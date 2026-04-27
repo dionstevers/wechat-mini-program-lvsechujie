@@ -1,5 +1,6 @@
 <view class="reg-page">
   <dev-banner />
+  <coin-overlay />
 
   <view class="reg-header">
     <text class="reg-title">感谢您同意参与本实验！</text>

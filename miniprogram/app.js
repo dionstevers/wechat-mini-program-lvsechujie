@@ -7,6 +7,26 @@ const DEV_MODE = true
 // ─── END DEV MODE ─────────────────────────────────────────────────────────────
 
 App({
+  // ── Coin store: tiny pub/sub so the floating coin-overlay component can
+  //    react to coin changes without polling. ────────────────────────────
+  _coinListeners: [],
+  setTotalCoins: function(n) {
+    this.globalData.totalCoins = n
+    for (var i = 0; i < this._coinListeners.length; i++) {
+      try { this._coinListeners[i](n) } catch (e) { console.error(e) }
+    }
+  },
+  addTotalCoins: function(delta) {
+    this.setTotalCoins((this.globalData.totalCoins || 0) + (delta || 0))
+  },
+  subscribeTotalCoins: function(fn) {
+    this._coinListeners.push(fn)
+    var self = this
+    return function() {
+      self._coinListeners = self._coinListeners.filter(function(f) { return f !== fn })
+    }
+  },
+
   onLaunch: function () {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')

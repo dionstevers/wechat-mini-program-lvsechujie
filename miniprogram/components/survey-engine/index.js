@@ -105,12 +105,15 @@ Component({
         })
       })
 
+      const startingCoins = (this.data.initialCoins || 0) + (prefill ? prefill.coins : 0)
+      if (app && typeof app.setTotalCoins === 'function') app.setTotalCoins(startingCoins)
+
       this.setData({
         blocks,
         totalBlocks,
         currentBlockIndex: 0,
         surveyStartTimestamp: Date.now(),
-        totalCoins: (this.data.initialCoins || 0) + (prefill ? prefill.coins : 0),
+        totalCoins: startingCoins,
         answers: prefill ? prefill.answers : {},
         multiAnswers: prefill ? prefill.multiAnswers : {},
         matrixAnswers: prefill ? prefill.matrixAnswers : {},
@@ -337,7 +340,9 @@ Component({
     _awardCoin(questionType) {
       const coinMap = REWARD_CONFIG.coins_per_question
       const coins = coinMap[questionType] || coinMap.default || 5
-      this.setData({ totalCoins: this.data.totalCoins + coins })
+      const next = this.data.totalCoins + coins
+      this.setData({ totalCoins: next })
+      if (app && typeof app.setTotalCoins === 'function') app.setTotalCoins(next)
     },
 
     onNextBlock() {
