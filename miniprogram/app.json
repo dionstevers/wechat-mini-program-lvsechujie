@@ -2,6 +2,7 @@
   
   "pages": [
     "pages/loading/loading",
+    "pages/landing/landing",
     "pages/consent/consent",
     "pages/registration/registration",
     "pages/entry-survey/entry-survey",

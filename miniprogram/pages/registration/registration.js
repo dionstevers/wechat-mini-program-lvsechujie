@@ -1,7 +1,6 @@
 // Screen 2 — Registration
-// Collects name, phone, wechat_id; awards registration coins.
-
-const { REWARD_CONFIG } = require('../../config/reward.js')
+// Collects name, phone, wechat_id. Reward coins are awarded earlier on the
+// landing page; this page only persists the contact info.
 
 const app = getApp()
 
@@ -10,7 +9,6 @@ Page({
     form: { name: '', phone: '', wechat_id: '' },
     errors: {},
     submitting: false,
-    rewardModal: { show: false, coins: 0, yuan: '0.00' },
   },
 
   onLoad() {
@@ -37,10 +35,8 @@ Page({
       data: { name, phone, wechat_id },
       success: (res) => {
         const result = res.result
-        if (result.success) {
-          app.addTotalCoins(result.coins_registration || 0)
-          const yuan = (result.coins_registration * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
-          this.setData({ rewardModal: { show: true, coins: result.coins_registration, yuan } })
+        if (result && result.success) {
+          wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
         } else {
           this._showError()
         }
@@ -58,11 +54,6 @@ Page({
     else if (!/^1\d{10}$/.test(phone.trim())) errors.phone = '请输入有效的手机号码'
     this.setData({ errors })
     return Object.keys(errors).length === 0
-  },
-
-  onRewardConfirm() {
-    this.setData({ 'rewardModal.show': false })
-    wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
   },
 
   _showError() {

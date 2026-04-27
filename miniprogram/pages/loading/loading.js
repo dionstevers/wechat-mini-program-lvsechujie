@@ -1,7 +1,7 @@
 Page({
   onLoad() {
     setTimeout(() => {
-      wx.redirectTo({ url: '/pages/consent/consent' })
+      wx.redirectTo({ url: '/pages/landing/landing' })
     }, 2000)
   },
 })

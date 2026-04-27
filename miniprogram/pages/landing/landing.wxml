@@ -1,0 +1,23 @@
+<view class="landing-page">
+  <dev-banner />
+  <coin-overlay />
+
+  <view class="landing-body">
+    <text class="landing-header">{{content.header}}</text>
+    <text wx:for="{{content.paragraphs}}" wx:for-item="p" wx:key="*this" class="landing-paragraph">{{p}}</text>
+  </view>
+
+  <view class="landing-footer">
+    <button class="landing-btn" bindtap="onNext" loading="{{submitting}}">{{content.buttonText}}</button>
+  </view>
+
+  <view wx:if="{{rewardModal.show}}" class="reward-modal-mask">
+    <view class="reward-modal-box">
+      <text class="reward-modal-title">🎉 获得金币奖励！</text>
+      <text class="reward-modal-line">您已获得 {{rewardModal.coins}} 金币，相当于 ¥{{rewardModal.yuan}}</text>
+      <text class="reward-modal-line reward-modal-spacer"> </text>
+      <text class="reward-modal-line">继续使用小程序，赚更多金币吧！🧧</text>
+      <button class="reward-modal-btn" bindtap="onRewardConfirm">好的</button>
+    </view>
+  </view>
+</view>
