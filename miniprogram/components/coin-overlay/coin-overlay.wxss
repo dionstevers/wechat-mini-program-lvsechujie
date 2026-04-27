@@ -1,35 +1,44 @@
-.coin-overlay {
+.coin-area {
   position: fixed;
-  top: 80rpx;
-  right: 24rpx;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 950;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2rpx solid #f9bc60;
-  border-radius: 50rpx;
-  padding: 8rpx 22rpx;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.18);
   pointer-events: none;
+  background: transparent;
+}
+
+.coin-overlay {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 3rpx solid #f9bc60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22);
+  pointer-events: auto;
 }
 
 .coin-overlay-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
+  font-size: 32rpx;
   line-height: 1;
+  margin-bottom: 4rpx;
 }
 
 .coin-overlay-value {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: bold;
   color: #333;
   line-height: 1;
 }
 
 .coin-overlay-yuan {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #888;
-  margin-left: 12rpx;
   line-height: 1;
+  margin-top: 4rpx;
 }

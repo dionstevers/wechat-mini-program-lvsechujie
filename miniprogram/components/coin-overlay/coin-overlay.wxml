@@ -1,5 +1,10 @@
-<view class="coin-overlay">
-  <text class="coin-overlay-icon">🪙</text>
-  <text class="coin-overlay-value">{{coins}}</text>
-  <text class="coin-overlay-yuan">¥{{yuan}}</text>
-</view>
+<movable-area class="coin-area">
+  <movable-view class="coin-overlay"
+                x="{{x}}" y="{{y}}"
+                direction="all" damping="40"
+                bindchange="onMove">
+    <text class="coin-overlay-icon">💰</text>
+    <text class="coin-overlay-value">{{coins}}</text>
+    <text class="coin-overlay-yuan">¥{{yuan}}</text>
+  </movable-view>
+</movable-area>
