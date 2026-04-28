@@ -3,7 +3,7 @@
                 x="{{x}}" y="{{y}}"
                 direction="all" damping="40"
                 bindchange="onMove">
-    <view class="coin-bubble {{pulsing ? 'pulsing' : ''}}">
+    <view class="coin-bubble {{pulsing ? 'pulsing' : ''}} {{idleGlow ? 'idle-glow' : ''}}">
       <text class="coin-overlay-icon">💰</text>
       <text class="coin-overlay-value">{{coins}}</text>
       <text class="coin-overlay-yuan">¥{{yuan}}</text>

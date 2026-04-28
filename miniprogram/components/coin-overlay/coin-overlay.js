@@ -15,6 +15,7 @@ Component({
     popVisible: false,
     popValue: 0,
     popKey: 0,
+    idleGlow: false,
   },
   lifetimes: {
     attached() {
@@ -23,9 +24,12 @@ Component({
       if (app && typeof app.subscribeTotalCoins === 'function') {
         this._unsub = app.subscribeTotalCoins((v) => this._update(v))
       }
+      this._scheduleIdleGlow()
     },
     detached() {
       if (this._unsub) this._unsub()
+      if (this._idleGlowTimer) clearTimeout(this._idleGlowTimer)
+      if (this._idleGlowOffTimer) clearTimeout(this._idleGlowOffTimer)
     },
   },
   methods: {
@@ -80,6 +84,19 @@ Component({
       } catch (e) {
         this.setData({ x: 150, y: 400 })
       }
+    },
+    _scheduleIdleGlow() {
+      // Random 4–8s, restart after each glow finishes.
+      const wait = 4000 + Math.floor(Math.random() * 4000)
+      this._idleGlowTimer = setTimeout(() => {
+        // Off→on toggle so consecutive glows re-trigger the keyframe
+        this.setData({ idleGlow: false })
+        setTimeout(() => this.setData({ idleGlow: true }), 20)
+        this._idleGlowOffTimer = setTimeout(() => {
+          this.setData({ idleGlow: false })
+          this._scheduleIdleGlow()
+        }, 1700)
+      }, wait)
     },
     onMove(e) {
       // bindchange fires during drag and on release. Persist only the final touch position.

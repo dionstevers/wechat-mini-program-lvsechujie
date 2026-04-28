@@ -29,6 +29,22 @@
   justify-content: center;
   box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22);
   box-sizing: border-box;
+  animation: coin-idle-float 4.2s ease-in-out infinite;
+}
+
+@keyframes coin-idle-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(0); }
+}
+
+@keyframes coin-idle-glow {
+  0%   { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+  50%  { box-shadow: 0 0 56rpx 14rpx rgba(249, 188, 96, 1); }
+  100% { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+}
+
+.coin-bubble.idle-glow {
+  animation: coin-idle-float 4.2s ease-in-out infinite, coin-idle-glow 1.6s ease-out;
 }
 
 .coin-overlay-icon {
