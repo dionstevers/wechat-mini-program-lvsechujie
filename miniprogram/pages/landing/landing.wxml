@@ -24,9 +24,12 @@
   </view>
 
   <view class="landing-footer">
-    <text class="btn-hongbao btn-hongbao-left">🧧</text>
-    <text class="btn-hongbao btn-hongbao-right">🧧</text>
-    <button class="landing-btn" bindtap="onNext" loading="{{submitting}}">{{content.buttonText}}</button>
+    <!-- <text class="btn-hongbao btn-hongbao-left">🧧</text>
+    <text class="btn-hongbao btn-hongbao-right">🧧</text> -->
+    <view class="coin-badge-wrap">
+      <button class="landing-btn" bindtap="onNext" loading="{{submitting}}">{{content.buttonText}}</button>
+      <view class="coin-badge">+{{btnCoins}} 💴</view>
+    </view>
   </view>
 
   <view wx:if="{{rewardModal.show}}" class="reward-modal-mask">

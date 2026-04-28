@@ -1,10 +1,12 @@
 const app = getApp()
 const { CONSENT_RENDER } = require('../../config/consent.js')
+const { REWARD_CONFIG } = require('../../config/reward.js')
 
 Page({
   data: {
     devMode: false,
     content: CONSENT_RENDER,
+    btnCoins: REWARD_CONFIG.coins_consent || 0,
   },
 
   onLoad() {
@@ -16,6 +18,9 @@ Page({
       name: 'saveConsent',
       data: { consent_given: true },
       success: () => {
+        if (app && typeof app.addTotalCoins === 'function') {
+          app.addTotalCoins(REWARD_CONFIG.coins_consent || 0)
+        }
         wx.redirectTo({ url: '/pages/registration/registration' })
       },
       fail: (err) => {

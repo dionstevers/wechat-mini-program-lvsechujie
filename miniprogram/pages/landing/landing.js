@@ -8,13 +8,14 @@ Page({
     content: LANDING_CONFIG,
     rewardModal: { show: false, coins: 0, yuan: '0.00' },
     submitting: false,
+    btnCoins: REWARD_CONFIG.coins_landing || 0,
   },
 
   onNext() {
     if (this.data.submitting) return
     this.setData({ submitting: true })
 
-    const coins = REWARD_CONFIG.coins_registration || 0
+    const coins = REWARD_CONFIG.coins_landing || 0
     const yuan = (coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2)
     if (app && typeof app.addTotalCoins === 'function') {
       app.addTotalCoins(coins)

@@ -1,7 +1,7 @@
 // Screen 2 — Registration
-// Collects name, phone, wechat_id. Reward coins are awarded earlier on the
-// landing page; this page only persists the contact info.
+// Collects name, phone, wechat_id. Awards COINS_REGISTRATION on submit.
 
+const { REWARD_CONFIG } = require('../../config/reward.js')
 const app = getApp()
 
 Page({
@@ -9,6 +9,7 @@ Page({
     form: { name: '', phone: '', wechat_id: '' },
     errors: {},
     submitting: false,
+    btnCoins: REWARD_CONFIG.coins_registration || 0,
   },
 
   onLoad() {
@@ -36,6 +37,9 @@ Page({
       success: (res) => {
         const result = res.result
         if (result && result.success) {
+          if (app && typeof app.addTotalCoins === 'function') {
+            app.addTotalCoins(REWARD_CONFIG.coins_registration || 0)
+          }
           wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
         } else {
           this._showError()

@@ -12,6 +12,9 @@ const { REWARD_CONFIG } = require('../../config/reward.js')
 const app = getApp()
 
 Component({
+  options: {
+    addGlobalClass: true,
+  },
   properties: {
     config: {
       type: Object,

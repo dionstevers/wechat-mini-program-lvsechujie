@@ -61,18 +61,7 @@
   width: 100%;
 }
 
-.coin-badge {
-  position: absolute;
-  top: 16rpx;
-  right: 20rpx;
-  background: #f9bc60;
-  color: #333;
-  font-size: 22rpx;
-  font-weight: bold;
-  padding: 4rpx 14rpx;
-  border-radius: 16rpx;
-  letter-spacing: 1rpx;
-}
+/* .coin-badge style now lives in app.wxss (shared with button badges). */
 
 .intro-card {
   background: rgba(255, 255, 255, 0.12);

@@ -17,3 +17,39 @@
   color: white;
 
 }
+
+/* ── Reward coin badge ────────────────────────────────────────────────────
+   Shared pill used on buttons and question cards to show how many coins
+   the action awards. Wrap target in .coin-badge-wrap (position: relative)
+   and place .coin-badge alongside.
+
+   Usage on a button:
+     <view class="coin-badge-wrap">
+       <button>...</button>
+       <view class="coin-badge">+88 💰</view>
+     </view>
+
+   Usage on a question card: card sets position: relative, just drop
+   <view class="coin-badge">+5 💰</view> inside.
+   ─────────────────────────────────────────────────────────────────────── */
+.coin-badge-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.coin-badge {
+  position: absolute;
+  top: -18rpx;
+  right: -10rpx;
+  background: #f9bc60;
+  color: #2a1a00;
+  font-size: 24rpx;
+  font-weight: bold;
+  padding: 6rpx 16rpx;
+  border-radius: 30rpx;
+  border: 2rpx solid #fff;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.3);
+  letter-spacing: 1rpx;
+  z-index: 2;
+  white-space: nowrap;
+}

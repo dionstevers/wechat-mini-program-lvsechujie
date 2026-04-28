@@ -103,8 +103,13 @@
   padding: 0;
 }
 
-.btn-agree {
+.btn-agree-wrap {
   flex: 2;
+  width: auto;
+}
+
+.btn-agree {
+  width: 100%;
   background: #f9bc60;
   color: #333;
   border-radius: 50rpx;
