@@ -40,7 +40,7 @@
 
   <view class="coin-badge-wrap">
     <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交注册</button>
-    <view class="coin-badge">+{{btnCoins}} 💴</view>
+    <view class="coin-badge">+{{btnCoins}}</view>
   </view>
 
 </view>

@@ -29,7 +29,7 @@
     <button class="btn-disagree" bindtap="onDisagree">{{content.buttons.disagree}}</button>
     <view class="coin-badge-wrap btn-agree-wrap">
       <button class="btn-agree" bindtap="onAgree">{{content.buttons.agree}}</button>
-      <view class="coin-badge">+{{btnCoins}} 💴</view>
+      <view class="coin-badge">+{{btnCoins}}</view>
     </view>
   </view>
 </view>

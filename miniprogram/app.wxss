@@ -34,13 +34,20 @@
    ─────────────────────────────────────────────────────────────────────── */
 .coin-badge-wrap {
   position: relative;
+  display: flex;
   width: 100%;
+}
+/* Stretch the wrapped button so the badge sits flush with its right edge,
+   regardless of the button's intrinsic mini-program styling. */
+.coin-badge-wrap > button {
+  flex: 1;
+  width: auto;
 }
 
 .coin-badge {
   position: absolute;
   top: -18rpx;
-  right: -10rpx;
+  right: 12rpx;
   background: #f9bc60;
   color: #2a1a00;
   font-size: 24rpx;
