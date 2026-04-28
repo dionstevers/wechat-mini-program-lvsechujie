@@ -86,8 +86,8 @@ Component({
       }
     },
     _scheduleIdleGlow() {
-      // Random 4–8s, restart after each glow finishes.
-      const wait = 4000 + Math.floor(Math.random() * 4000)
+      // Random 2–8s, restart after each glow finishes.
+      const wait = 2000 + Math.floor(Math.random() * 6000)
       this._idleGlowTimer = setTimeout(() => {
         // Off→on toggle so consecutive glows re-trigger the keyframe
         this.setData({ idleGlow: false })
@@ -95,7 +95,7 @@ Component({
         this._idleGlowOffTimer = setTimeout(() => {
           this.setData({ idleGlow: false })
           this._scheduleIdleGlow()
-        }, 1700)
+        }, 350)
       }, wait)
     },
     onMove(e) {

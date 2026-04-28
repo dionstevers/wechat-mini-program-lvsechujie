@@ -29,6 +29,8 @@
   justify-content: center;
   box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22);
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
   animation: coin-idle-float 4.2s ease-in-out infinite;
 }
 
@@ -37,14 +39,54 @@
   50%      { transform: translateY(0); }
 }
 
+/* Glow halo on the bubble itself */
 @keyframes coin-idle-glow {
-  0%   { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
-  50%  { box-shadow: 0 0 56rpx 14rpx rgba(249, 188, 96, 1); }
-  100% { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+  0%, 100% { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
+  50%      { box-shadow: 0 0 60rpx 16rpx rgba(249, 188, 96, 1); }
 }
 
 .coin-bubble.idle-glow {
-  animation: coin-idle-float 4.2s ease-in-out infinite, coin-idle-glow 1.6s ease-out;
+  animation: coin-idle-float 4.2s ease-in-out infinite, coin-idle-glow 0.9s ease-out;
+}
+
+/* Sparkle (currently inactive — gate flag in wxml is `false`).
+   Bright spot orbiting along the bubble edge from 1 to 2 o'clock.
+   Outer .coin-sparkle-orbit rotates around bubble center; inner .coin-sparkle
+   sits at the orbit's top edge so rotation traces an arc along the rim. */
+.coin-sparkle-orbit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: coin-orbit 0.3s ease-out;
+}
+
+.coin-sparkle {
+  position: absolute;
+  top: -8rpx;
+  left: 50%;
+  width: 64rpx;
+  height: 64rpx;
+  margin-left: -32rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 245, 200, 0.95) 45%, rgba(255, 230, 140, 0) 85%);
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 0 50rpx 18rpx rgba(255, 245, 200, 1);
+  animation: coin-sparkle 0.3s ease-out;
+}
+
+@keyframes coin-orbit {
+  0%   { transform: rotate(30deg); }
+  100% { transform: rotate(60deg); }
+}
+
+@keyframes coin-sparkle {
+  0%, 100% { opacity: 0; }
+  30%, 70% { opacity: 1; }
 }
 
 .coin-overlay-icon {
