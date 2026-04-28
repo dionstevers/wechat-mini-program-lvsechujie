@@ -1,25 +1,32 @@
 <view class="consent-page">
   <dev-banner />
+  <coin-overlay />
+
+  <view class="landing-decor decor-a"></view>
+  <view class="landing-decor decor-b"></view>
+  <view class="landing-decor decor-c"></view>
 
   <view class="consent-body">
-    <view class="welcome-banner">
-      <text class="app-name">{{content.welcome.appName}}</text>
-      <text class="welcome-text">{{content.welcome.welcomeText}}</text>
+    <view class="consent-hero">
+      <text class="consent-emoji">📋</text>
     </view>
 
-    <view class="consent-text">
-      <view class="section-body" wx:for="{{content.intro}}" wx:for-item="para" wx:for-index="pi" wx:key="pi">
-        <text wx:for="{{para.segments}}" wx:for-item="seg" wx:for-index="si" wx:key="si" class="seg-{{seg.style}}">{{seg.text}}</text>
+    <view class="consent-card consent-card-header">
+      <text class="consent-header">在使用程序之前，我们需要征得您的知情同意。请阅读下方的同意书，并点击「我同意」参与本调查：</text>
+      <view class="consent-accent"></view>
+    </view>
+
+    <view class="consent-card consent-card-body">
+      <view class="consent-text">
+        <text class="section-title">{{content.title}}</text>
+
+        <block wx:for="{{content.sections}}" wx:for-item="section" wx:for-index="si" wx:key="si">
+          <text class="section-heading">{{section.heading}}</text>
+          <view class="section-body" wx:for="{{section.paragraphs}}" wx:for-item="para" wx:for-index="pi" wx:key="pi">
+            <text wx:for="{{para.segments}}" wx:for-item="seg" wx:for-index="gi" wx:key="gi" class="seg-{{seg.style}}">{{seg.text}}</text>
+          </view>
+        </block>
       </view>
-
-      <text class="section-title">{{content.title}}</text>
-
-      <block wx:for="{{content.sections}}" wx:for-item="section" wx:for-index="si" wx:key="si">
-        <text class="section-heading">{{section.heading}}</text>
-        <view class="section-body" wx:for="{{section.paragraphs}}" wx:for-item="para" wx:for-index="pi" wx:key="pi">
-          <text wx:for="{{para.segments}}" wx:for-item="seg" wx:for-index="gi" wx:key="gi" class="seg-{{seg.style}}">{{seg.text}}</text>
-        </view>
-      </block>
     </view>
 
     <view class="bottom-spacer"></view>
