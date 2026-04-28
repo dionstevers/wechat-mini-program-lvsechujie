@@ -7,23 +7,14 @@
 //   ==text==   → highlight gold
 //
 // Structure:
-//   welcome.appName / welcome.welcomeText  — top banner
-//   intro                                  — intro paragraphs (before title)
-//   title                                  — main section title
+//   topHeader                              — large header on glass card at top of page
+//   title                                  — main section title (centered)
 //   sections[].heading / .paragraphs       — each labelled sub-section
 //   buttons.agree / .disagree              — bottom button labels
 //   disagreeModal.*                        — pop-up shown when user taps 不同意
 
 const CONSENT_CONFIG = {
-  welcome: {
-    appName: '低碳出街小助手',
-    welcomeText: '很高兴你加入，一起开启低碳出街之旅 🌿',
-  },
-
-  intro: [
-    '请阅读以下信息，了解本小程序的内容和目的。阅读完毕后，您可以选择是否同意知情同意书，并注册使用该程序，从而参与一项科学实验。',
-    '注册==即可获得1元==奖励，整个实验过程中您将==累计获得20元==奖励！**向下滑动**，注册并开始领取您的奖励吧！',
-  ],
+  topHeader: '在使用程序之前，我们需要征得您的知情同意。请阅读下方的同意书，并==点击「我同意」==参与本调查：',
 
   title: '知情同意书',
 
@@ -113,8 +104,7 @@ function normalizeParagraphs(arr) {
 }
 
 const CONSENT_RENDER = {
-  welcome: CONSENT_CONFIG.welcome,
-  intro: normalizeParagraphs(CONSENT_CONFIG.intro),
+  topHeader: parseSegments(CONSENT_CONFIG.topHeader),
   title: CONSENT_CONFIG.title,
   sections: CONSENT_CONFIG.sections.map(function (s) {
     return { heading: s.heading, paragraphs: normalizeParagraphs(s.paragraphs) }

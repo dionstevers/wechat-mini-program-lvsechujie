@@ -12,7 +12,9 @@
     </view>
 
     <view class="consent-card consent-card-header">
-      <text class="consent-header">在使用程序之前，我们需要征得您的知情同意。请阅读下方的同意书，并点击「我同意」参与本调查：</text>
+      <text class="consent-header">
+        <text wx:for="{{content.topHeader.segments}}" wx:for-item="seg" wx:key="*this" class="seg-{{seg.style}}">{{seg.text}}</text>
+      </text>
       <view class="consent-accent"></view>
     </view>
 
