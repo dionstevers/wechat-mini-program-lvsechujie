@@ -95,7 +95,7 @@ Component({
         this._idleGlowOffTimer = setTimeout(() => {
           this.setData({ idleGlow: false })
           this._scheduleIdleGlow()
-        }, 350)
+        }, 2050)
       }, wait)
     },
     onMove(e) {

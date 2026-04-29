@@ -42,11 +42,11 @@
 /* Glow halo on the bubble itself */
 @keyframes coin-idle-glow {
   0%, 100% { box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.22); }
-  50%      { box-shadow: 0 0 60rpx 16rpx rgba(249, 188, 96, 1); }
+  50%      { box-shadow: 0 0 56rpx 14rpx rgba(249, 188, 96, 0.95); }
 }
 
 .coin-bubble.idle-glow {
-  animation: coin-idle-float 4.2s ease-in-out infinite, coin-idle-glow 0.9s ease-out;
+  animation: coin-idle-glow 2.0s ease-in-out;
 }
 
 /* Sparkle (currently inactive — gate flag in wxml is `false`).
