@@ -3,6 +3,10 @@
 
 <view class="survey-container">
 
+  <view class="landing-decor decor-a"></view>
+  <view class="landing-decor decor-b"></view>
+  <view class="landing-decor decor-c"></view>
+
   <!-- Progress bar -->
   <view class="survey-header">
     <view class="progress-bar-wrap">
@@ -11,6 +15,12 @@
     <view class="progress-label">
       <text>{{currentBlockIndex + 1}} / {{totalBlocks}}</text>
     </view>
+  </view>
+
+  <!-- Page header card (from config.header) -->
+  <view wx:if="{{config.header}}" class="survey-header-card">
+    <text class="survey-header-text">{{config.header}}</text>
+    <view class="survey-header-accent"></view>
   </view>
 
   <!-- Block intro text (optional) -->

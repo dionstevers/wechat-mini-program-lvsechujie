@@ -1,17 +1,73 @@
 .survey-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #00022a 0%, #009797 100%);
+  background: linear-gradient(180deg, #00022a 0%, #0a4f6e 55%, #009797 100%);
   padding-bottom: 40rpx;
   overflow-x: hidden;
 }
 
+/* Decor blobs (mirrors landing/consent/registration) */
+.landing-decor {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(40rpx);
+  opacity: 0.55;
+  z-index: 0;
+}
+.decor-a {
+  width: 360rpx; height: 360rpx;
+  top: -120rpx; left: -100rpx;
+  background: radial-gradient(circle, rgba(249, 188, 96, 0.45), transparent 70%);
+}
+.decor-b {
+  width: 420rpx; height: 420rpx;
+  top: 200rpx; right: -160rpx;
+  background: radial-gradient(circle, rgba(65, 159, 140, 0.55), transparent 70%);
+}
+.decor-c {
+  width: 320rpx; height: 320rpx;
+  bottom: 220rpx; left: -120rpx;
+  background: radial-gradient(circle, rgba(120, 210, 230, 0.4), transparent 70%);
+}
+
 .survey-header {
+  position: relative;
+  z-index: 1;
   padding: 30rpx 30rpx 20rpx;
   background: rgba(0, 0, 0, 0.2);
+}
+
+.survey-header-card {
+  position: relative;
+  z-index: 1;
+  margin: 24rpx 30rpx 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1rpx solid rgba(255, 255, 255, 0.18);
+  border-radius: 32rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.35);
+}
+
+.survey-header-text {
+  display: block;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: bold;
+  line-height: 1.55;
+  letter-spacing: 1rpx;
+}
+
+.survey-header-accent {
+  width: 96rpx;
+  height: 6rpx;
+  background: #f9bc60;
+  border-radius: 4rpx;
+  margin-top: 20rpx;
 }
 
 .progress-bar-wrap {
@@ -44,10 +100,12 @@
 }
 
 .questions-scroll {
+  position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
   box-sizing: border-box;
-  padding: 20rpx 30rpx;
+  padding: 36rpx 30rpx 20rpx;
 }
 
 .question-card {
@@ -59,6 +117,12 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   width: 100%;
+}
+
+/* scroll-view clips children at its own edge — keep badge inside the card top. */
+.question-card .coin-badge {
+  top: 12rpx;
+  right: 12rpx;
 }
 
 /* .coin-badge style now lives in app.wxss (shared with button badges). */
@@ -78,6 +142,7 @@
   color: #333;
   line-height: 1.6;
   margin-bottom: 28rpx;
+  padding-right: 100rpx;
   display: block;
 }
 
@@ -220,7 +285,9 @@
 
 /* Navigation buttons */
 .nav-buttons {
-  padding: 20rpx 30rpx 40rpx;
+  position: relative;
+  z-index: 1;
+  padding: 20rpx 30rpx calc(20rpx + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: row;
   gap: 20rpx;
@@ -228,9 +295,11 @@
 
 .btn-back {
   flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
-  border-radius: 50rpx;
+  border-radius: 60rpx;
   font-size: 30rpx;
   border: none;
 }
@@ -238,15 +307,23 @@
 .btn-next,
 .btn-submit {
   flex: 2;
-  background: #f9bc60;
-  color: #333;
-  border-radius: 50rpx;
-  font-size: 30rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: linear-gradient(135deg, #ffd27a 0%, #f9bc60 60%, #e5a23a 100%);
+  color: #2a1a00;
+  border-radius: 60rpx;
+  font-size: 32rpx;
   font-weight: bold;
   border: none;
+  letter-spacing: 4rpx;
+  box-shadow: 0 8rpx 24rpx rgba(249, 188, 96, 0.45), inset 0 -2rpx 0 rgba(0, 0, 0, 0.08);
 }
+.btn-next::after,
+.btn-submit::after,
+.btn-back::after { border: none; }
 
 .btn-disabled {
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: none !important;
 }

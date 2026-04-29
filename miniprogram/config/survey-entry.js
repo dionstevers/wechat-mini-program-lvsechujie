@@ -27,24 +27,18 @@ const LIKERT_4 = [
 
 const ENTRY_SURVEY = {
   surveyId: 'entry',
+  header: '入门问卷 · 我们想简单了解您的基本情况，大约 3–5 分钟。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，请您如实填写。',
   blocks: [
     // ─── Block 1: Introduction + Basic Demographics ───────────────────────
     {
       id: 'block_1',
       questions: [
         {
-          id: 'Q1.1',
-          type: 'intro',
-          text: '感谢您参与我们的实验！问卷里可能有一些不太熟悉的题型，请按照您认为最合适的方式作答。为了确保研究结果准确，请如实填写哦！大约需要 5 分钟，页面顶部有进度条，让您随时了解完成进度。谢谢配合！',
-          field: null,
-          required: false,
-          logsTimestamp: 'entry_survey_start_timestamp',
-        },
-        {
           id: 'Q1.2',
           type: 'dropdown',
           text: '我们先想了解一下您个人的情况。请问您是哪年出生的？',
           field: 'birth_year',
+          logsTimestamp: 'entry_survey_start_timestamp',
           options: BIRTH_YEARS,
           required: true,
           nullValue: '拒绝回答',

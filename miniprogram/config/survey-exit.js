@@ -59,6 +59,7 @@ const MANIPULATION_CHECK_ITEMS = [
 
 const EXIT_SURVEY = {
   surveyId: 'exit',
+  header: '结束问卷 · 最后几道问题，完成后即可领取奖励。',
   blocks: [
     // ─── Block 0: Introduction ────────────────────────────────────────────
     {
