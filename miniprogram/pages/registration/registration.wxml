@@ -2,45 +2,43 @@
   <dev-banner />
   <coin-overlay />
 
-  <view class="reg-header">
-    <text class="reg-title">感谢您同意参与本实验！</text>
-    <text class="reg-subtitle">请填写以下信息完成注册。注册成功后您将立即获得初始金币奖励（相当于 ¥1）。</text>
-  </view>
+  <view class="landing-decor decor-a"></view>
+  <view class="landing-decor decor-b"></view>
+  <view class="landing-decor decor-c"></view>
 
-  <view class="reg-form">
-
-    <view class="field-group">
-      <text class="field-label">姓名 <text class="required">*</text></text>
-      <input class="field-input {{errors.name ? 'input-error' : ''}}"
-             placeholder="请输入您的姓名"
-             bindinput="onNameInput"
-             value="{{form.name}}" />
-      <text wx:if="{{errors.name}}" class="error-msg">{{errors.name}}</text>
+  <view class="reg-body">
+    <view class="reg-card reg-card-header">
+      <text class="reg-header-text">{{cfg.header}}</text>
+      <view class="reg-accent"></view>
     </view>
 
-    <view class="field-group">
-      <text class="field-label">手机号码 <text class="required">*</text></text>
-      <input class="field-input {{errors.phone ? 'input-error' : ''}}"
-             placeholder="请输入您的手机号码"
-             type="number"
-             bindinput="onPhoneInput"
-             value="{{form.phone}}" />
-      <text wx:if="{{errors.phone}}" class="error-msg">{{errors.phone}}</text>
-    </view>
+    <view class="reg-card reg-card-body">
+      <view class="reg-form">
+        <view class="field-group">
+          <text class="field-label">{{cfg.labels.phone}} <text class="required">*</text></text>
+          <input class="field-input {{errors.phone ? 'input-error' : ''}}"
+                 placeholder="{{cfg.placeholders.phone}}"
+                 type="number"
+                 bindinput="onPhoneInput"
+                 value="{{form.phone}}" />
+          <text wx:if="{{errors.phone}}" class="error-msg">{{errors.phone}}</text>
+        </view>
 
-    <view class="field-group">
-      <text class="field-label">微信号 <text class="optional">（选填）</text></text>
-      <input class="field-input"
-             placeholder="请输入您的微信号"
-             bindinput="onWechatInput"
-             value="{{form.wechat_id}}" />
+        <view class="field-group">
+          <text class="field-label">{{cfg.labels.wechat}} <text class="optional">{{cfg.labels.optional}}</text></text>
+          <input class="field-input"
+                 placeholder="{{cfg.placeholders.wechat}}"
+                 bindinput="onWechatInput"
+                 value="{{form.wechat_id}}" />
+        </view>
+      </view>
     </view>
-
   </view>
 
-  <view class="coin-badge-wrap">
-    <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交注册</button>
-    <view class="coin-badge">+{{btnCoins}}</view>
+  <view class="reg-footer">
+    <view class="coin-badge-wrap">
+      <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">{{cfg.buttonText}}</button>
+      <view class="coin-badge">+{{btnCoins}}</view>
+    </view>
   </view>
-
 </view>
