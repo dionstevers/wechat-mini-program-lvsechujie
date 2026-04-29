@@ -297,11 +297,13 @@
   flex: 1;
   height: 96rpx;
   line-height: 96rpx;
+  text-align: center;
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   border-radius: 60rpx;
   font-size: 30rpx;
   border: none;
+  padding: 0;
 }
 
 .btn-next,
@@ -309,12 +311,14 @@
   flex: 2;
   height: 96rpx;
   line-height: 96rpx;
+  text-align: center;
   background: linear-gradient(135deg, #ffd27a 0%, #f9bc60 60%, #e5a23a 100%);
   color: #2a1a00;
   border-radius: 60rpx;
   font-size: 32rpx;
   font-weight: bold;
   border: none;
+  padding: 0;
   letter-spacing: 4rpx;
   box-shadow: 0 8rpx 24rpx rgba(249, 188, 96, 0.45), inset 0 -2rpx 0 rgba(0, 0, 0, 0.08);
 }

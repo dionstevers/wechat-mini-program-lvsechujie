@@ -17,8 +17,8 @@
     </view>
   </view>
 
-  <!-- Page header card (from config.header) -->
-  <view wx:if="{{config.header}}" class="survey-header-card">
+  <!-- Page header card (from config.header) — first block only -->
+  <view wx:if="{{config.header && currentBlockIndex === 0}}" class="survey-header-card">
     <text class="survey-header-text">{{config.header}}</text>
     <view class="survey-header-accent"></view>
   </view>
