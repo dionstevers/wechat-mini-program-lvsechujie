@@ -23,8 +23,8 @@
   </view>
 
   <!-- Page header card (from config.header) — first block only -->
-  <view wx:if="{{config.header && currentBlockIndex === 0}}" class="survey-header-card">
-    <text class="survey-header-text">{{config.header}}</text>
+  <view wx:if="{{surveyHeader && currentBlockIndex === 0}}" class="survey-header-card">
+    <text class="survey-header-text">{{surveyHeader}}</text>
     <view class="survey-header-accent"></view>
   </view>
 

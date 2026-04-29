@@ -85,8 +85,8 @@
 }
 
 .completion-label {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .completion-bar-track {

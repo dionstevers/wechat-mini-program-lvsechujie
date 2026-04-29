@@ -58,6 +58,7 @@ Component({
     totalQCount: 0,        // answerable questions across whole survey
     answeredQCount: 0,     // answered across whole survey
     completionPct: 0,
+    surveyHeader: '',
   },
 
   methods: {
@@ -132,6 +133,7 @@ Component({
         totalQCount,
         answeredQCount: prefill ? totalQCount : 0,
         completionPct: prefill ? 100 : 0,
+        surveyHeader: config.header || '',
       })
       this._loadBlock(0, blocks)
     },

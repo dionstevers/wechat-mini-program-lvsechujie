@@ -4,6 +4,7 @@ Component({
   data: {
     devMode: false,
     devLabel: '',
+    dimmed: false,
   },
   attached() {
     const on = !!(app && app.globalData && app.globalData.devMode)
@@ -12,5 +13,10 @@ Component({
       devMode: on,
       devLabel: opt ? `DEV_MODE [${opt}]` : 'DEV_MODE',
     })
+  },
+  methods: {
+    onTap() {
+      this.setData({ dimmed: !this.data.dimmed })
+    },
   },
 })

@@ -7,6 +7,11 @@
   background: #cc4400;
   padding: 6rpx 20rpx;
   text-align: center;
+  transition: opacity 0.2s ease;
+}
+
+.dev-banner-dimmed {
+  opacity: 0.15;
 }
 
 .dev-banner-text {
