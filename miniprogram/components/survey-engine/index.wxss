@@ -131,6 +131,15 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+.question-card.statement-card {
+  padding: 36rpx 36rpx 24rpx;
+}
+
+.statement-text {
+  margin-bottom: 0;
+  padding-right: 0 !important;
+}
+
 .intro-text {
   font-size: 28rpx;
   color: #fff;

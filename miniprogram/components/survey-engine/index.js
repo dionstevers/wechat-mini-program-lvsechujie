@@ -103,7 +103,7 @@ Component({
       const coinMap = REWARD_CONFIG.coins_per_question
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
-          if (q.type === 'intro') return
+          if (q.type === 'intro' || q.type === 'statement') return
           coinValues[q.id] = coinMap[q.type] || coinMap.default || 5
         })
       })

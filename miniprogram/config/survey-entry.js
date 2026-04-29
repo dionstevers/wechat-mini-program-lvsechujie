@@ -115,9 +115,16 @@ const ENTRY_SURVEY = {
       id: 'block_3',
       questions: [
         {
+          id: 'Q4.0',
+          type: 'statement',
+          text: '现在，我们想了解您对中国环境状况的看法。请问您在多大程度上同意下面的观点？',
+          field: null,
+          required: false,
+        },
+        {
           id: 'Q4.1',
           type: 'single_select',
-          text: '现在，我们想了解您对中国环境状况的看法。请问您在多大程度上同意下面的观点？中国仍然存在许多环境问题。',
+          text: '中国仍然存在许多环境问题。',
           field: 'env_problems',
           options: LIKERT_4,
           required: true,

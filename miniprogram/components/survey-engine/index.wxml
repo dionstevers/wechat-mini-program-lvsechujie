@@ -37,6 +37,11 @@
         <text class="intro-text">{{item.text}}</text>
       </view>
 
+      <!-- STATEMENT type: white card, no options, no coin badge -->
+      <view wx:elif="{{item.type === 'statement'}}" class="question-card statement-card">
+        <text class="question-text statement-text">{{item.text}}</text>
+      </view>
+
       <!-- SINGLE SELECT -->
       <view wx:elif="{{item.type === 'single_select'}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
