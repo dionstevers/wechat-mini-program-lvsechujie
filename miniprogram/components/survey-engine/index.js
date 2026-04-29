@@ -55,6 +55,9 @@ Component({
     canAdvance: false,
     answeredThisBlock: {}, // qid → bool, tracks which questions in current block are answered
     surveyStartTimestamp: null,
+    totalQCount: 0,        // answerable questions across whole survey
+    answeredQCount: 0,     // answered across whole survey
+    completionPct: 0,
   },
 
   methods: {
@@ -101,10 +104,12 @@ Component({
       // Pre-compute coin badge value per question
       const coinValues = {}
       const coinMap = REWARD_CONFIG.coins_per_question
+      let totalQCount = 0
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
           if (q.type === 'intro' || q.type === 'statement') return
           coinValues[q.id] = coinMap[q.type] || coinMap.default || 5
+          if (q.required) totalQCount++
         })
       })
 
@@ -124,6 +129,9 @@ Component({
         pickerDefaults,
         coinValues,
         answeredThisBlock: {},
+        totalQCount,
+        answeredQCount: prefill ? totalQCount : 0,
+        completionPct: prefill ? 100 : 0,
       })
       this._loadBlock(0, blocks)
     },
@@ -218,6 +226,26 @@ Component({
       })
 
       this.setData({ canAdvance })
+      this._updateCompletion()
+    },
+
+    _updateCompletion() {
+      const { blocks, answers, multiAnswers, matrixAnswers, totalQCount } = this.data
+      let answeredQCount = 0
+      blocks.forEach(block => {
+        ;(block.questions || []).forEach(q => {
+          if (!q.required) return
+          if (q.type === 'single_select' || q.type === 'dropdown' || q.type === 'open_text' || q.type === 'slider') {
+            if (answers[q.field] !== undefined && answers[q.field] !== null && answers[q.field] !== '') answeredQCount++
+          } else if (q.type === 'multi_select') {
+            if (Object.values(multiAnswers[q.field] || {}).some(Boolean)) answeredQCount++
+          } else if (q.type === 'matrix') {
+            if (q.rows && q.rows.every(row => matrixAnswers[row.field] !== undefined)) answeredQCount++
+          }
+        })
+      })
+      const completionPct = totalQCount > 0 ? Math.round(answeredQCount / totalQCount * 100) : 0
+      this.setData({ answeredQCount, completionPct })
     },
 
     onSingleSelect(e) {

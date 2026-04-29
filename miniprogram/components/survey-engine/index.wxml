@@ -9,11 +9,16 @@
 
   <!-- Progress bar -->
   <view class="survey-header">
-    <view class="progress-bar-wrap">
-      <view class="progress-bar-fill" style="width: {{progressPct}}%"></view>
-    </view>
-    <view class="progress-label">
-      <text>{{currentBlockIndex + 1}} / {{totalBlocks}}</text>
+    <view class="survey-header-row">
+      <view class="completion-wrap">
+        <text class="completion-label">问卷进度</text>
+        <view class="completion-bar-track">
+          <view class="completion-bar-fill" style="width: {{completionPct}}%"></view>
+        </view>
+      </view>
+      <view class="progress-label">
+        <text>{{currentBlockIndex + 1}} / {{totalBlocks}}</text>
+      </view>
     </view>
   </view>
 
