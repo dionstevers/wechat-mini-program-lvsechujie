@@ -5,6 +5,8 @@
 const app = getApp()
 const { ARTICLES, ARTICLE_COMBINATIONS } = require('../../config/articles.js')
 const { VIDEO_CONFIG } = require('../../config/videos.js')
+const { NEWS_FEED_CONFIG } = require('../../config/news-feed.js')
+const { parseSegments } = require('../../utils/parse-segments.js')
 
 // true  → full-screen black background (original)
 // false → modal card over blurred news feed
@@ -26,6 +28,8 @@ Page({
     displayArticles: [],
     feedActive: false,
     videoFullscreen: VIDEO_FULLSCREEN,
+    feedTitle: NEWS_FEED_CONFIG.title,
+    feedSubtitleSegs: parseSegments(NEWS_FEED_CONFIG.subtitle),
   },
 
   _inactivityTimer: null,

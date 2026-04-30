@@ -3,6 +3,7 @@
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
 const { REGISTRATION_CONFIG } = require('../../config/registration.js')
+const { parseSegments } = require('../../utils/parse-segments.js')
 const app = getApp()
 
 Page({
@@ -12,6 +13,7 @@ Page({
     submitting: false,
     btnCoins: REWARD_CONFIG.coins_registration || 0,
     cfg: REGISTRATION_CONFIG,
+    headerSegs: parseSegments(REGISTRATION_CONFIG.header || ''),
   },
 
   onLoad() {

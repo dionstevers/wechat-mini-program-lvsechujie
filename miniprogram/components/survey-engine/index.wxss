@@ -62,9 +62,18 @@
   display: block;
   color: #fff;
   font-size: 30rpx;
-  font-weight: bold;
   line-height: 1.55;
   letter-spacing: 1rpx;
+}
+
+.survey-header-bold {
+  color: #f9bc60;
+  font-weight: bold;
+}
+
+.q-seg-bold {
+  color: #419f8c;
+  font-weight: bold;
 }
 
 .survey-header-accent {

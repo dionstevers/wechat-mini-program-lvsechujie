@@ -8,7 +8,7 @@
 
   <view class="reg-body">
     <view class="reg-card reg-card-header">
-      <text class="reg-header-text">{{cfg.header}}</text>
+      <text class="reg-header-text"><text wx:for="{{headerSegs}}" wx:for-item="seg" wx:key="index" class="{{seg.bold ? 'reg-seg-bold' : ''}}">{{seg.text}}</text></text>
       <view class="reg-accent"></view>
     </view>
 

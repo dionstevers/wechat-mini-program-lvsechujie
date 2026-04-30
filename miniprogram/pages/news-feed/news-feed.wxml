@@ -7,8 +7,8 @@
 
     <scroll-view scroll-y class="feed-scroll" enable-passive>
       <view class="feed-header">
-        <text class="feed-title">信息中心</text>
-        <text class="feed-subtitle">来了解 / 最新的环境资讯和政策信息吧</text>
+        <text class="feed-title">{{feedTitle}}</text>
+        <text class="feed-subtitle"><text wx:for="{{feedSubtitleSegs}}" wx:key="index" class="feed-subtitle-seg {{item.bold ? 'feed-subtitle-bold' : ''}}">{{item.text}}</text></text>
       </view>
       <view class="articles-list">
         <view wx:for="{{displayArticles}}" wx:key="id"

@@ -107,6 +107,11 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
+.feed-subtitle-bold {
+  color: #f9bc60;
+  font-weight: bold;
+}
+
 .articles-list {
   padding: 30rpx;
   display: flex;

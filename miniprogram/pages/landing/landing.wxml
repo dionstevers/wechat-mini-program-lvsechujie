@@ -12,7 +12,7 @@
     </view>
 
     <view class="landing-card landing-card-header">
-      <text class="landing-header">{{content.header}}</text>
+      <text class="landing-header"><text wx:for="{{headerSegs}}" wx:for-item="seg" wx:key="index" class="seg-{{seg.bold ? 'bold' : 'normal'}}">{{seg.text}}</text></text>
       <view class="landing-accent"></view>
     </view>
 

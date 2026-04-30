@@ -9,6 +9,7 @@
 //   survey-complete — { responses, totalCoins, timestamps: { start, end } }
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
+const { parseSegments } = require('../../utils/parse-segments.js')
 const app = getApp()
 
 Component({
@@ -59,6 +60,7 @@ Component({
     answeredQCount: 0,     // answered across whole survey
     completionPct: 0,
     surveyHeader: '',
+    surveyHeaderSegs: [],
     surveyLastBlockCoins: 0,
   },
 
@@ -135,6 +137,7 @@ Component({
         answeredQCount: prefill ? totalQCount : 0,
         completionPct: prefill ? 100 : 0,
         surveyHeader: config.header || '',
+        surveyHeaderSegs: parseSegments(config.header || ''),
         surveyLastBlockCoins: config.lastBlockCoins || 0,
       })
       this._loadBlock(0, blocks)
@@ -183,9 +186,10 @@ Component({
 
       // Filter treatmentOnly questions within a block for control participants
       const isControl = this.data.condition === 'control'
-      const currentQuestions = block.questions
+      const currentQuestions = (block.questions
         ? block.questions.filter(q => !(q.treatmentOnly && isControl))
         : []
+      ).map(q => ({ ...q, textSegs: parseSegments(q.text || '') }))
 
       this.setData({
         currentBlock: block,
