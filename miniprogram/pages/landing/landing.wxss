@@ -197,6 +197,17 @@
   text-align: center;
   margin-bottom: 12rpx;
 }
+
+.reward-seg {
+  font-size: 28rpx;
+  color: #444;
+}
+
+.reward-modal-line .seg-bold {
+  font-size: 28rpx;
+  color: #e5a23a;
+  font-weight: bold;
+}
 .reward-modal-btn {
   margin-top: 32rpx;
   width: 320rpx;
