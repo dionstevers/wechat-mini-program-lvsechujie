@@ -27,10 +27,10 @@ const LIKERT_4 = [
 
 const ENTRY_SURVEY = {
   surveyId: 'entry',
-  header: '入门问卷 · 我们想简单了解您的基本情况，大约 3–5 分钟。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，请您如实填写。',
+  header: '入门问卷 · 我们想简单了解您的基本情况，大约 2-3 分钟。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，请您如实填写。',
   lastBlockCoins: 50,
   blocks: [
-    // ─── Block 1: Introduction + Basic Demographics ───────────────────────
+    // ─── Block 1: Demographics + Attention check ─────────────────────────
     {
       id: 'block_1',
       questions: [
@@ -85,13 +85,6 @@ const ENTRY_SURVEY = {
           ],
           required: true,
         },
-      ],
-    },
-
-    // ─── Block 2: Attention check ─────────────────────────────────────────
-    {
-      id: 'block_2',
-      questions: [
         {
           id: 'Q3.6',
           type: 'single_select',
@@ -108,43 +101,6 @@ const ENTRY_SURVEY = {
           attentionCheck: true,
           correctValue: 4,
         },
-      ],
-    },
-
-    // ─── Block 3: Issue-Specific Beliefs ─────────────────────────────────
-    {
-      id: 'block_3',
-      questions: [
-        {
-          id: 'Q4.0',
-          type: 'statement',
-          text: '现在，我们想了解您对中国环境状况的看法。请问您在多大程度上同意下面的观点？',
-          field: null,
-          required: false,
-        },
-        {
-          id: 'Q4.1',
-          type: 'single_select',
-          text: '中国仍然存在许多环境问题。',
-          field: 'env_problems',
-          options: LIKERT_4,
-          required: true,
-        },
-        {
-          id: 'Q4.2',
-          type: 'single_select',
-          text: '中国的环境保护状况比大多数其他国家都要好。',
-          field: 'env_better_than_others',
-          options: LIKERT_4,
-          required: true,
-        },
-      ],
-    },
-
-    // ─── Block 4: Additional Demographics ────────────────────────────────
-    {
-      id: 'block_4',
-      questions: [
         {
           id: 'Q6.2',
           type: 'dropdown',
@@ -208,6 +164,37 @@ const ENTRY_SURVEY = {
         },
       ],
     },
+
+    // ─── Block 2: Issue-Specific Beliefs ─────────────────────────────────
+    {
+      id: 'block_3',
+      questions: [
+        {
+          id: 'Q4.0',
+          type: 'statement',
+          text: '现在，我们想了解您对中国环境状况的看法。请问您在多大程度上同意下面的观点？',
+          field: null,
+          required: false,
+        },
+        {
+          id: 'Q4.1',
+          type: 'single_select',
+          text: '中国仍然存在许多环境问题。',
+          field: 'env_problems',
+          options: LIKERT_4,
+          required: true,
+        },
+        {
+          id: 'Q4.2',
+          type: 'single_select',
+          text: '中国的环境保护状况比大多数其他国家都要好。',
+          field: 'env_better_than_others',
+          options: LIKERT_4,
+          required: true,
+        },
+      ],
+    },
+
     // ─── Block 5: Video notice (treatment conditions only) ───────────────
     {
       id: 'block_5',
