@@ -59,6 +59,7 @@ Component({
     answeredQCount: 0,     // answered across whole survey
     completionPct: 0,
     surveyHeader: '',
+    surveyLastBlockCoins: 0,
   },
 
   methods: {
@@ -134,6 +135,7 @@ Component({
         answeredQCount: prefill ? totalQCount : 0,
         completionPct: prefill ? 100 : 0,
         surveyHeader: config.header || '',
+        surveyLastBlockCoins: config.lastBlockCoins || 0,
       })
       this._loadBlock(0, blocks)
     },

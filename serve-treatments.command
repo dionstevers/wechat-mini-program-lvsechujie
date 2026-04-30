@@ -14,11 +14,10 @@ if [ ! -d "$DIR" ]; then
   exit 1
 fi
 
-# Guard: only run when DEV_MODE = true in app.js. Production runs serve videos
-# from cloud:// storage and should not need this script.
-if ! grep -qE "^const[[:space:]]+DEV_MODE[[:space:]]*=[[:space:]]*true" "$APP_JS"; then
-  echo "DEV_MODE is not true in app.js — refusing to start."
-  echo "  Edit $APP_JS and set: const DEV_MODE = true"
+# Guard: only run when DEV_MODE_OPTION is 'empty' or 'prefilled' in app.js.
+if ! grep -qE "^const[[:space:]]+DEV_MODE_OPTION[[:space:]]*=[[:space:]]*'(empty|prefilled)'" "$APP_JS"; then
+  echo "DEV_MODE_OPTION is 'off' in app.js — refusing to start."
+  echo "  Edit $APP_JS and set DEV_MODE_OPTION to 'empty' or 'prefilled'."
   read -n 1 -s -r -p "Press any key to close..."
   exit 1
 fi

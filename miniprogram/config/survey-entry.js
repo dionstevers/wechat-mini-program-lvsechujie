@@ -28,6 +28,7 @@ const LIKERT_4 = [
 const ENTRY_SURVEY = {
   surveyId: 'entry',
   header: '入门问卷 · 我们想简单了解您的基本情况，大约 3–5 分钟。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，请您如实填写。',
+  lastBlockCoins: 50,
   blocks: [
     // ─── Block 1: Introduction + Basic Demographics ───────────────────────
     {
@@ -204,6 +205,20 @@ const ENTRY_SURVEY = {
             { label: '拒绝回答',                         value: 18, exclusive: true },
           ],
           required: true,
+        },
+      ],
+    },
+    // ─── Block 5: Video notice (treatment conditions only) ───────────────
+    {
+      id: 'block_5',
+      treatmentOnly: true,
+      questions: [
+        {
+          id: 'Q_video_notice',
+          type: 'statement',
+          text: '点击「提交」后，您将看到一段视频。请仔细观看。',
+          field: null,
+          required: false,
         },
       ],
     },
