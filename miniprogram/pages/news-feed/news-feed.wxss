@@ -89,21 +89,46 @@
 }
 
 .feed-header {
+  position: relative;
   background: #419f8c;
-  padding: 40rpx 40rpx 50rpx;
+  padding: 20rpx 40rpx 24rpx;
 }
 
 .feed-title {
   display: block;
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: bold;
   color: #fff;
-  margin-bottom: 12rpx;
+  margin-bottom: 15rpx;
+}
+
+.article-prompt {
+  position: absolute;
+  top: 0;
+  right: 30rpx;
+  padding: 12rpx 22rpx;
+  background: rgba(249, 188, 96, 0.18);
+  border: 1rpx solid rgba(249, 188, 96, 0.45);
+  border-top: none;
+  border-radius: 0 0 14rpx 14rpx;
+  white-space: nowrap;
+}
+
+.article-prompt-seg {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.article-prompt-bold {
+  color: #f9bc60;
+  font-weight: bold;
 }
 
 .feed-subtitle {
   display: block;
-  font-size: 32rpx;
+  font-size: 40rpx;
   color: rgba(255, 255, 255, 0.85);
 }
 

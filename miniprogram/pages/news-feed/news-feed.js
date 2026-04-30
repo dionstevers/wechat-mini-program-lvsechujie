@@ -1,11 +1,12 @@
 // Screen 4+5 — Video Overlay + News Feed
 // Loads treatment video (if assigned), then shows two article cards.
-// Triggers exit survey after article read (≥5s) or 60s inactivity.
+// Triggers exit survey after article read (≥5s).
 
 const app = getApp()
 const { ARTICLES, ARTICLE_COMBINATIONS } = require('../../config/articles.js')
 const { VIDEO_CONFIG } = require('../../config/videos.js')
 const { NEWS_FEED_CONFIG } = require('../../config/news-feed.js')
+const { REWARD_CONFIG } = require('../../config/reward.js')
 const { parseSegments } = require('../../utils/parse-segments.js')
 
 // true  → full-screen black background (original)
@@ -30,6 +31,10 @@ Page({
     videoFullscreen: VIDEO_FULLSCREEN,
     feedTitle: NEWS_FEED_CONFIG.title,
     feedSubtitleSegs: parseSegments(NEWS_FEED_CONFIG.subtitle),
+    articleCoins: REWARD_CONFIG.coins_article_read || 0,
+    articlePromptSegs: parseSegments(
+      (NEWS_FEED_CONFIG.articlePrompt || '').replace('{{coins}}', REWARD_CONFIG.coins_article_read || 0)
+    ),
   },
 
   _inactivityTimer: null,
@@ -127,18 +132,20 @@ Page({
       },
     })
 
-    // Start 60s inactivity timer
-    this._inactivityTimer = setTimeout(() => {
-      this._triggerExitSurvey('inactivity_timeout')
-    }, 60000)
+    // Start 60s inactivity timer (skipped in dev mode)
+    if (!app.globalData.devMode) {
+      this._inactivityTimer = setTimeout(() => {
+        this._triggerExitSurvey('inactivity_timeout')
+      }, 60000)
+    }
   },
 
   onArticleTap(e) {
     if (!this.data.feedActive) return
     const articleId = e.currentTarget.dataset.articleId
 
-    // Reset inactivity timer on any tap
-    if (this._inactivityTimer) {
+    // Reset inactivity timer on any tap (skipped in dev mode)
+    if (this._inactivityTimer && !app.globalData.devMode) {
       clearTimeout(this._inactivityTimer)
       this._inactivityTimer = setTimeout(() => {
         this._triggerExitSurvey('inactivity_timeout')
