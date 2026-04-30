@@ -6,6 +6,10 @@ const app = getApp()
 const { ARTICLES, ARTICLE_COMBINATIONS } = require('../../config/articles.js')
 const { VIDEO_CONFIG } = require('../../config/videos.js')
 
+// true  → full-screen black background (original)
+// false → modal card over blurred news feed
+const VIDEO_FULLSCREEN = false
+
 // Article display ordering
 const ORDER_MAP = {
   combo_A_order_1: ['article_1_pos', 'article_2_neg'],
@@ -21,6 +25,7 @@ Page({
     videoSrc: '',
     displayArticles: [],
     feedActive: false,
+    videoFullscreen: VIDEO_FULLSCREEN,
   },
 
   _inactivityTimer: null,
@@ -66,6 +71,11 @@ Page({
     this._logVideoEnd(endTs, true)
     this.setData({ showOverlay: false, showContinueBtn: false })
     this._activateFeed()
+    const pending = app.globalData.pendingCoinsAfterVideo || 0
+    if (pending && typeof app.addTotalCoins === 'function') {
+      app.globalData.pendingCoinsAfterVideo = 0
+      setTimeout(() => app.addTotalCoins(pending), 500)
+    }
   },
 
   _logVideoStart() {

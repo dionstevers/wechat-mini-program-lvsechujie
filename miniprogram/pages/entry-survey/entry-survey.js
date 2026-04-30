@@ -24,9 +24,9 @@ Page({
     if (e && e.detail && typeof e.detail.totalCoins === 'number') {
       app.setTotalCoins(e.detail.totalCoins)
     }
-    // Award completion bonus — triggers +N pop animation on overlay
-    if (ENTRY_SURVEY.lastBlockCoins && typeof app.addTotalCoins === 'function') {
-      app.addTotalCoins(ENTRY_SURVEY.lastBlockCoins)
+    // Stash completion bonus — news-feed awards it 0.5s after user clicks 继续
+    if (ENTRY_SURVEY.lastBlockCoins) {
+      app.globalData.pendingCoinsAfterVideo = ENTRY_SURVEY.lastBlockCoins
     }
     // Entry survey submitted — now assign condition server-side
     wx.showLoading({ title: '请稍候...', mask: true })
