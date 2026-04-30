@@ -27,7 +27,7 @@ const LIKERT_4 = [
 
 const ENTRY_SURVEY = {
   surveyId: 'entry',
-  header: '入门问卷 · 我们想简单了解您的基本情况，大约 2-3 分钟。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，请您如实填写。',
+  header: '入门问卷 · 我们想简单了解您的基本情况，大约 **2-3 分钟**。部分题型可能不太熟悉，按您的理解作答即可。为确保结果准确，**请您如实填写**。',
   lastBlockCoins: 50,
   blocks: [
     // ─── Block 1: Demographics + Attention check ─────────────────────────
