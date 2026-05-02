@@ -3,6 +3,7 @@
 // Sets article_read_trigger in storage if reading time ≥ 5s.
 
 const { ARTICLES } = require('../../config/articles.js')
+const { ARTICLES_EN } = require('../../config/articles-en.js')
 const { REWARD_CONFIG } = require('../../config/reward.js')
 
 const app = getApp()
@@ -13,6 +14,8 @@ Page({
   data: {
     article: {},
     articleId: '',
+    devMode: false,
+    articleEn: null,
   },
 
   _openTimestamp: null,
@@ -20,7 +23,9 @@ Page({
   onLoad(options) {
     const articleId = options.id
     const article = ARTICLES[articleId] || {}
-    this.setData({ article, articleId })
+    const devMode = !!(app && app.globalData && app.globalData.devMode)
+    const articleEn = devMode ? (ARTICLES_EN[articleId] || null) : null
+    this.setData({ article, articleId, devMode, articleEn })
     this._openTimestamp = Date.now()
   },
 

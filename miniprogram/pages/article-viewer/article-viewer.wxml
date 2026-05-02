@@ -1,11 +1,21 @@
 <dev-banner />
 <coin-overlay />
 <scroll-view scroll-y class="article-page">
+  <image class="article-hero" src="{{article.thumbnail}}" mode="aspectFill" />
   <view class="article-body">
     <text class="article-title">{{article.title}}</text>
-    <view class="article-divider"></view>
     <text class="article-lead">{{article.lead}}</text>
     <view class="article-divider"></view>
     <text class="article-body-text">{{article.body}}</text>
+
+    <view wx:if="{{devMode && articleEn}}" class="dev-translation">
+      <view class="dev-translation-tag">
+        <text class="dev-translation-tag-text">DEV ONLY · English translation</text>
+      </view>
+      <text class="dev-translation-title">{{articleEn.title}}</text>
+      <text class="dev-translation-lead">{{articleEn.lead}}</text>
+      <view class="article-divider dev-translation-divider"></view>
+      <text class="dev-translation-body">{{articleEn.body}}</text>
+    </view>
   </view>
 </scroll-view>
