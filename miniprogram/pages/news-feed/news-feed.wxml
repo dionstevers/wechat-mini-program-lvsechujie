@@ -45,6 +45,18 @@
 
   </view>
 
+  <!-- ── Exit-survey loading overlay (shown right before redirect) ────── -->
+  <view wx:if="{{showExitLoading}}" class="loading-screen">
+    <view class="loading-decor decor-a"></view>
+    <view class="loading-decor decor-b"></view>
+    <view class="loading-decor decor-c"></view>
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-line">您正在前往结束问卷……</text>
+      <text class="loading-sub">再回答几道问题，即可<text class="loading-highlight">领取您的奖励</text>！</text>
+    </view>
+  </view>
+
   <!-- ── Video overlay (conditions 1–3) ──────────────────────────────── -->
   <view wx:if="{{showOverlay}}" class="video-overlay {{videoFullscreen ? 'video-overlay-fullscreen' : 'video-overlay-modal'}}">
     <view class="{{videoFullscreen ? 'video-fullscreen-inner' : 'video-modal'}}">

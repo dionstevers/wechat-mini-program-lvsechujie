@@ -29,6 +29,7 @@ Page({
     displayArticles: [],
     feedActive: false,
     videoFullscreen: VIDEO_FULLSCREEN,
+    showExitLoading: false,
     feedTitle: NEWS_FEED_CONFIG.title,
     feedSubtitleSegs: parseSegments(NEWS_FEED_CONFIG.subtitle),
     articleCoins: REWARD_CONFIG.coins_article_read || 0,
@@ -178,6 +179,9 @@ Page({
 
   _triggerExitSurvey(trigger) {
     wx.setStorageSync('exit_survey_trigger', trigger)
-    wx.redirectTo({ url: '/pages/exit-survey/exit-survey' })
+    this.setData({ showExitLoading: true })
+    setTimeout(() => {
+      wx.redirectTo({ url: '/pages/exit-survey/exit-survey' })
+    }, 2500)
   },
 })
