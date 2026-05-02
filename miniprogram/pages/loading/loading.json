@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "",
   "usingComponents": {
-    "dev-banner": "../../components/dev-banner/dev-banner"
+    "dev-banner": "../../components/dev-banner/dev-banner",
+    "loading-screen": "../../components/loading-screen/loading-screen"
   }
 }

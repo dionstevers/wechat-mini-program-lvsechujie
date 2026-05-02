@@ -1,0 +1,20 @@
+<view class="ls-screen">
+  <view class="ls-content">
+    <view class="ls-globe">
+      <image class="ls-globe-top" src="/asset/img/loading-earth-top.svg" />
+      <image class="ls-globe-bottom" src="/asset/img/loading-earth-bottom.svg" />
+    </view>
+
+    <view class="ls-title-row">
+      <text class="ls-title">{{title}}</text>
+      <text class="ls-dot ls-dot-1">.</text>
+      <text class="ls-dot ls-dot-2">.</text>
+      <text class="ls-dot ls-dot-3">.</text>
+    </view>
+
+    <text wx:if="{{subSegs.length}}" class="ls-sub">
+      <text wx:for="{{subSegs}}" wx:for-item="seg" wx:key="index" class="{{seg.bold ? 'ls-sub-bold' : ''}}">{{seg.text}}</text>
+    </text>
+    <text wx:elif="{{sub}}" class="ls-sub">{{sub}}</text>
+  </view>
+</view>

@@ -30,6 +30,7 @@ Page({
     feedActive: false,
     videoFullscreen: VIDEO_FULLSCREEN,
     showExitLoading: false,
+    exitLoadingSegs: parseSegments('再回答几道问题，即可**领取您的奖励**！'),
     feedTitle: NEWS_FEED_CONFIG.title,
     feedSubtitleSegs: parseSegments(NEWS_FEED_CONFIG.subtitle),
     articleCoins: REWARD_CONFIG.coins_article_read || 0,

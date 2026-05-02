@@ -6,6 +6,7 @@
   "usingComponents": {
     "dev-banner": "../../components/dev-banner/dev-banner",
     "coin-overlay": "../../components/coin-overlay/coin-overlay",
-    "tab-bar": "../../custom-tab-bar/index"
+    "tab-bar": "../../custom-tab-bar/index",
+    "loading-screen": "../../components/loading-screen/loading-screen"
   }
 }
