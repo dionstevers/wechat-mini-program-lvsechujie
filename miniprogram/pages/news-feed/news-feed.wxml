@@ -28,20 +28,8 @@
       </view>
     </view>
 
-    <view class="bottom-nav">
-      <view class="nav-item">
-        <image src="/asset/img/trip.png" class="nav-icon" />
-        <text>行程记录</text>
-      </view>
-      <view class="nav-item active">
-        <image src="/asset/img/info_highlight.png" class="nav-icon" />
-        <text>信息中心</text>
-      </view>
-      <view class="nav-item">
-        <image src="/asset/img/personal.png" class="nav-icon" />
-        <text>个人积分</text>
-      </view>
-    </view>
+    <tab-bar selected="{{1}}" />
+
 
   </view>
 

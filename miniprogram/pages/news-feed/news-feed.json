@@ -5,6 +5,7 @@
   "disableScroll": false,
   "usingComponents": {
     "dev-banner": "../../components/dev-banner/dev-banner",
-    "coin-overlay": "../../components/coin-overlay/coin-overlay"
+    "coin-overlay": "../../components/coin-overlay/coin-overlay",
+    "tab-bar": "../../custom-tab-bar/index"
   }
 }

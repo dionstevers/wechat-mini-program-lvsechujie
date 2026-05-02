@@ -8,7 +8,6 @@
 <view class="selection-bar">
     <button class="tab {{activeTab === 'trip' ? 'active' : ''}}" bindtap="selectTab" data-tab="trip">出行</button>
     <button class="tab {{activeTab === 'record' ? 'active' : ''}}" bindtap="selectTab" data-tab="record">记录</button>
-    <button class="tab {{activeTab === 'rank' ? 'active' : ''}}" bindtap="selectTab" data-tab="rank">排名</button>
 </view>
 
 <!-- when selectedTab is trip -->
@@ -63,49 +62,6 @@
         </view>
 </view>
 
-<!-- when rank -->
-<view wx:if="{{activeTab === 'rank'}}" class="rank">
-    <view class="legend">本周累计省碳排名</view>
-
-    <!-- Current User Entry -->
-    <view class="user-container">
-        <!-- Rank and Carbon Saving captions -->
-        <view class="user-caption">
-            <text class="caption-text">排名</text>
-            <text class="caption-text">省碳量</text>
-        </view>
-
-        <!-- Display the current user's rank, avatar, nickname, and saving -->
-        <view class="user-item">
-            <text class="user-rank">{{myranking === "未上榜" ? "?" : myranking}}</text>
-            <image class="profile-image" src="{{userInfo.avatar}}" />
-            <view class="user-info">
-                <text class="user-name">{{userInfo.basicInfo.nickname}}</text>
-            </view>
-            <text class="carbon-saving">{{mysaving === "<1" ? "?" : mysaving}}g</text>
-        </view>
-    </view>
-
-    <view class="rank-container">
-        <block wx:for="{{users}}" wx:key="id">
-            <view class="user-item">
-                <!-- Rank on the far left -->
-                <text class="user-rank">{{item.rank}}</text>
-
-                <!-- User avatar -->
-                <image class="profile-image" src="{{item.avatar}}" />
-
-                <!-- User nickname -->
-                <view class="user-info">
-                    <text class="user-name">{{item.basicInfo.nickname}}</text>
-                </view>
-
-                <!-- Carbon saving on the far right -->
-                <text class="carbon-saving">{{item.totalCarbSum}}g</text>
-            </view>
-        </block>
-    </view>
-</view>
 
 <van-dialog
   use-slot
@@ -170,4 +126,4 @@
 </view>
 
 
-<tab-bar id="tabBar"></tab-bar>
+<tab-bar id="tabBar" selected="{{0}}"></tab-bar>

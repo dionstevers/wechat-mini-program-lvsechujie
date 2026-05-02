@@ -2,17 +2,19 @@
 Component({
 
   /**
-   * 组件的属性列表
+   * Properties — pages set `selected` to indicate active tab.
    */
   properties: {
-
+    selected: {
+      type: Number,
+      value: 0,
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-    selected:0,
     color: "#FFFFFF",
     selectedColor: "#f9bc60",
     devMode: false,
@@ -21,25 +23,22 @@ Component({
         "pagePath": "/pages/home/home",
         "iconPath": "/asset/img/trip.png",
         "text": "行程记录",
-        "selectedIconPath": "/asset/img/trip_highlight.png"
+        "selectedIconPath": "/asset/img/trip_highlight.png",
+        "isTab": true
       },
       {
-        "pagePath": "/pages/information/information",
+        "pagePath": "/pages/news-feed/news-feed",
         "text": "信息中心",
         "iconPath": "/asset/img/info.png",
-        "selectedIconPath": "/asset/img/info_highlight.png"
-      },
-      {
-        "pagePath": "/pages/prizeCenter/prizeCenter",
-        "text": "积分兑换",
-        "iconPath": "/asset/img/merch.png",
-        "selectedIconPath": "/asset/img/merch_highlight.png"
+        "selectedIconPath": "/asset/img/info_highlight.png",
+        "isTab": false
       },
       {
         "pagePath":"/pages/center/center",
-        "text": "个人中心",
+        "text": "个人积分",
         "iconPath": "/asset/img/personal.png",
-        "selectedIconPath": "/asset/img/personal_highlight.png"
+        "selectedIconPath": "/asset/img/personal_highlight.png",
+        "isTab": true
       }
     ],
   },
@@ -54,14 +53,18 @@ Component({
 
     switchTab(e) {
       const data = e.currentTarget.dataset
-      const url = data.page
-      wx.switchTab({url})
-      this.setData({
-        selected: data.index
-      });
+      const idx = Number(data.index)
+      if (idx === this.data.selected) return
+      const item = this.data.list[idx]
+      if (!item) return
+      const url = item.pagePath
+      const fail = (err) => console.error('[tab-bar] nav failed', err)
+      // tabbar pages must use switchTab; non-tabbar pages must use redirectTo.
+      if (item.isTab) {
+        wx.switchTab({ url, fail })
+      } else {
+        wx.redirectTo({ url, fail })
+      }
     },
-    updateSelected(index:number){
-
-    }
   }
 })

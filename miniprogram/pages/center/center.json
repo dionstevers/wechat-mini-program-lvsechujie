@@ -1,6 +1,8 @@
 {
+  "navigationBarTitleText": "个人积分",
+  "navigationBarBackgroundColor": "#419f8c",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
-    "ec-canvas": "../../asset/ec-canvas/ec-canvas"
-  },
-  "disableScroll": true
+    "tab-bar": "../../custom-tab-bar/index"
+  }
 }

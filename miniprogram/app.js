@@ -98,6 +98,30 @@ App({
         }
       }
     }
+
+    // Pre-fetch recent trip records so 行程记录 / 个人积分 render instantly when
+    // the user first taps those tabs. Best-effort — failures are non-fatal.
+    var self = this
+    setTimeout(function () {
+      try {
+        var db = wx.cloud.database()
+        db.collection('track')
+          .orderBy('endTime', 'desc')
+          .limit(20)
+          .get()
+          .then(function (res) {
+            self.globalData.recentTracksCache = {
+              ts: Date.now(),
+              records: (res && res.data) || [],
+            }
+          })
+          .catch(function (err) {
+            console.warn('[app] track prefetch failed', err)
+          })
+      } catch (e) {
+        console.warn('[app] track prefetch threw', e)
+      }
+    }, 0)
   },
 
   onShow: function(e) {
@@ -136,6 +160,9 @@ App({
     articleCombination: '',
     articleOrder: '',
     totalCoins: 0,
+    // Recent trip records cache shared between home (行程记录) and center (个人积分).
+    // Populated lazily by either page; pre-fetched on launch when not in dev mode.
+    recentTracksCache: null,
     // Dev mode — read by consent page and custom-tab-bar for visual indicator
     devMode: DEV_MODE,
     devPrefillSurveys: DEV_PREFILL_SURVEYS,

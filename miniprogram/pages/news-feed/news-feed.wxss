@@ -10,6 +10,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding-bottom: calc(96rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
   transition: filter 0.3s ease;
 }
 
