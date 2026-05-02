@@ -36,7 +36,7 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  animation: ls-grayscale 1.5s infinite;
+  animation: ls-grayscale 1.6s steps(2, end) infinite;
 }
 
 .ls-globe-top {
@@ -46,12 +46,13 @@
   width: 100%;
   height: 100%;
   z-index: 2;
-  animation: ls-grayscale 1.5s infinite;
+  animation: ls-grayscale 1.6s steps(2, end) infinite;
 }
 
 @keyframes ls-grayscale {
-  0%, 100% { filter: grayscale(0%); }
-  50%      { filter: grayscale(100%); }
+  0%   { filter: grayscale(0%); }
+  50%  { filter: grayscale(100%); }
+  100% { filter: grayscale(0%); }
 }
 
 /* ── Title + dots ──────────────────────────────────────────────────────── */
@@ -76,17 +77,29 @@
   color: #fff;
   margin-left: 4rpx;
   opacity: 0;
-  animation: ls-dot-cycle 1.4s infinite;
 }
 
-.ls-dot-1 { animation-delay: 0s; }
-.ls-dot-2 { animation-delay: 0.2s; }
-.ls-dot-3 { animation-delay: 0.4s; }
+/* All three dots share one 1.6s cycle. Dot N snaps on at N/4 of the cycle
+   and stays on through the end; at the cycle boundary they all snap off at
+   once. steps(1, end) ensures hard, robotic transitions. */
+.ls-dot-1 { animation: ls-dot-1 1.6s steps(1, end) infinite; }
+.ls-dot-2 { animation: ls-dot-2 1.6s steps(1, end) infinite; }
+.ls-dot-3 { animation: ls-dot-3 1.6s steps(1, end) infinite; }
 
-@keyframes ls-dot-cycle {
+@keyframes ls-dot-1 {
   0%   { opacity: 0; }
-  20%  { opacity: 1; }
-  100% { opacity: 0; }
+  25%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes ls-dot-2 {
+  0%   { opacity: 0; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes ls-dot-3 {
+  0%   { opacity: 0; }
+  75%  { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 /* ── Subtitle ──────────────────────────────────────────────────────────── */

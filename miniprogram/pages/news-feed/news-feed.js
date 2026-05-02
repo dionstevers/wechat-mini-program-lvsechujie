@@ -190,6 +190,6 @@ Page({
     this.setData({ showExitLoading: true })
     setTimeout(() => {
       wx.redirectTo({ url: '/pages/exit-survey/exit-survey' })
-    }, 2500)
+    }, 4000)
   },
 })
