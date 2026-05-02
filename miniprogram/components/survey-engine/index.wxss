@@ -5,7 +5,7 @@
   min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #00022a 0%, #0a4f6e 55%, #009797 100%);
+  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
   padding-top: 100rpx;
   padding-bottom: 40rpx;
   overflow-x: hidden;
@@ -43,7 +43,7 @@
   right: 0;
   z-index: 100;
   padding: 30rpx 30rpx 20rpx;
-  background: #00022a;
+  background: #2e7d6f;
   border-bottom: 1rpx solid rgba(255, 255, 255, 0.12);
 }
 

@@ -1,7 +1,7 @@
 .consent-page {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, #00022a 0%, #0a4f6e 55%, #009797 100%);
+  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
   overflow: hidden;
 }
 
