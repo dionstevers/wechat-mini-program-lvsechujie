@@ -56,7 +56,7 @@
 
 .video-modal {
   width: 100%;
-  background: #000;
+  background: transparent;
   border-radius: 24rpx;
   overflow: hidden;
   position: relative;
@@ -71,7 +71,7 @@
 
 .btn-continue {
   display: block;
-  margin: 24rpx auto 0;
+  margin: 32rpx auto 0;
   background: #f9bc60;
   color: #2a1a00;
   border-radius: 50rpx;
@@ -80,6 +80,16 @@
   padding: 20rpx 80rpx;
   border: none;
   width: auto;
+  opacity: 0;
+  transform: translateY(12rpx);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.btn-continue.btn-continue-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* ── Feed ──────────────────────────────────────────────────────────────── */

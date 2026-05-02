@@ -19,8 +19,9 @@ const LANDING_CONFIG = {
   buttonText: '继续',
   // Reward modal lines. Use **text** for gold highlight. {{coins}} and {{yuan}} are replaced at runtime.
   rewardLines: [
-    '🎉 您已获得 **{{coins}} 金币**，相当于 **¥{{yuan}}**！',
-    '继续使用小程序，赚更多金币吧！',
+    '🎉 您已获得金币' ,
+    '**{{coins}} 金币** 相当于 **¥{{yuan}}**！',
+    '来赚更多金币吧！',
   ],
 }
 

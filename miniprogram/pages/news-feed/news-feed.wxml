@@ -62,8 +62,8 @@
         bindended="onVideoEnded"
         binderror="onVideoError"
       />
-      <button wx:if="{{showContinueBtn}}" class="btn-continue" bindtap="onContinue">继续</button>
     </view>
+    <button class="btn-continue {{showContinueBtn ? 'btn-continue-visible' : ''}}" bindtap="onContinue" disabled="{{!showContinueBtn}}">继续</button>
   </view>
 
 </view>
