@@ -126,4 +126,4 @@
 </view>
 
 
-<tab-bar id="tabBar" selected="{{0}}"></tab-bar>
+<tab-bar id="tabBar"></tab-bar>

@@ -100,28 +100,31 @@ App({
     }
 
     // Pre-fetch recent trip records so 行程记录 / 个人积分 render instantly when
-    // the user first taps those tabs. Best-effort — failures are non-fatal.
-    var self = this
-    setTimeout(function () {
-      try {
-        var db = wx.cloud.database()
-        db.collection('track')
-          .orderBy('endTime', 'desc')
-          .limit(20)
-          .get()
-          .then(function (res) {
-            self.globalData.recentTracksCache = {
-              ts: Date.now(),
-              records: (res && res.data) || [],
-            }
-          })
-          .catch(function (err) {
-            console.warn('[app] track prefetch failed', err)
-          })
-      } catch (e) {
-        console.warn('[app] track prefetch threw', e)
-      }
-    }, 0)
+    // the user first taps those tabs. Skipped in dev mode where the cloud env
+    // is not deployed; trip data lives in local storage only.
+    if (!DEV_MODE) {
+      var self = this
+      setTimeout(function () {
+        try {
+          var db = wx.cloud.database()
+          db.collection('track')
+            .orderBy('endTime', 'desc')
+            .limit(20)
+            .get()
+            .then(function (res) {
+              self.globalData.recentTracksCache = {
+                ts: Date.now(),
+                records: (res && res.data) || [],
+              }
+            })
+            .catch(function (err) {
+              console.warn('[app] track prefetch failed', err)
+            })
+        } catch (e) {
+          console.warn('[app] track prefetch threw', e)
+        }
+      }, 0)
+    }
   },
 
   onShow: function(e) {

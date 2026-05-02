@@ -2,19 +2,17 @@
 Component({
 
   /**
-   * Properties — pages set `selected` to indicate active tab.
+   * Each page calls this.getTabBar().setData({ selected }) in onShow to mark
+   * its tab active. Keeping `selected` as data (not a property) avoids the
+   * declarative/imperative collision that caused stale highlights.
    */
-  properties: {
-    selected: {
-      type: Number,
-      value: 0,
-    },
-  },
+  properties: {},
 
   /**
    * 组件的初始数据
    */
   data: {
+    selected: 0,
     color: "#FFFFFF",
     selectedColor: "#f9bc60",
     devMode: false,

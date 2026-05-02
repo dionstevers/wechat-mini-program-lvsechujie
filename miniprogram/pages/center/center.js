@@ -1,13 +1,14 @@
 // Center page (个人积分) — shows current reward (coins) + recent trip records.
 // No location prompt, no login modal, no chart canvas. Reads coins from the
-// shared globalData pub/sub and trip records from db.collection('track').
+// shared globalData pub/sub and trip records from local storage (written by
+// the home page). No cloud round-trip — works in dev mode without a deployed
+// cloud env.
 
 const app = getApp();
-const db = wx.cloud.database();
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const RECENT_DAYS = 7;
-const CACHE_TTL_MS = 30_000;
+const TRIP_STORAGE_KEY = "trip_records";
 
 Page({
   data: {
@@ -41,12 +42,8 @@ Page({
       });
     }
 
-    // Render from cache if fresh.
-    const cache = app.globalData && app.globalData.recentTracksCache;
-    if (cache && cache.records && Date.now() - cache.ts < CACHE_TTL_MS) {
-      this._applyRecords(cache.records);
-    }
-    setTimeout(() => this._fetchRecords(), 0);
+    // Read trips from local storage. Synchronous, instant — no spinner needed.
+    this._fetchRecords();
   },
 
   onHide() {
@@ -70,13 +67,11 @@ Page({
     return ((coins || 0) / 88).toFixed(2);
   },
 
-  async _fetchRecords() {
+  _fetchRecords() {
+    // Local first — instant.
     try {
-      const openid = app.globalData && app.globalData.openID;
-      let q = db.collection("track");
-      if (openid) q = q.where({ _openid: openid });
-      const res = await q.orderBy("endTime", "desc").limit(20).get();
-      const list = (res.data || []).filter(
+      const all = wx.getStorageSync(TRIP_STORAGE_KEY) || [];
+      const list = all.filter(
         (r) => r.endTime && Date.now() - r.endTime < RECENT_DAYS * ONE_DAY_MS
       );
       this._applyRecords(list);
@@ -84,9 +79,39 @@ Page({
         app.globalData.recentTracksCache = { ts: Date.now(), records: list };
       }
     } catch (e) {
-      console.error("[center] fetch tracks failed", e);
+      console.error("[center] read tracks failed", e);
       this.setData({ loaded: true });
     }
+
+    // Production: enrich with cloud records.
+    if (app.globalData && app.globalData.devMode) return;
+    const openid = app.globalData && app.globalData.openID;
+    let q = wx.cloud.database().collection("track");
+    if (openid) q = q.where({ _openid: openid });
+    q.orderBy("endTime", "desc")
+      .limit(20)
+      .get()
+      .then((res) => {
+        const cloudList = (res && res.data) || [];
+        const localList = wx.getStorageSync(TRIP_STORAGE_KEY) || [];
+        const seen = new Set();
+        const merged = [...localList, ...cloudList]
+          .filter((r) => {
+            const key = r._id || `${r.date}_${r.endTime}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .filter(
+            (r) => r.endTime && Date.now() - r.endTime < RECENT_DAYS * ONE_DAY_MS
+          )
+          .sort((a, b) => (b.endTime || 0) - (a.endTime || 0));
+        this._applyRecords(merged);
+        if (app.globalData) {
+          app.globalData.recentTracksCache = { ts: Date.now(), records: merged };
+        }
+      })
+      .catch((e) => console.warn("[center] cloud fetch failed", e));
   },
 
   _applyRecords(list) {

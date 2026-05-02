@@ -168,6 +168,9 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
     // Check if article_read trigger was set by article-viewer
     const trigger = wx.getStorageSync('article_read_trigger')
     if (trigger && this.data.feedActive) {

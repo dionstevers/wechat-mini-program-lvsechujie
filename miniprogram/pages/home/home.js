@@ -1,12 +1,35 @@
 // Home page (行程记录) — simplified self-reported trip tracking.
 // Location data collection is OFF: trips are timed locally and the user
-// self-reports the transport mode + purpose. Records persist to
-// db.collection('track') so the center page (个人积分) can show them too.
+// self-reports the transport mode + purpose.
+//
+// Storage:
+// - In dev mode (no cloud env), records persist to wx.setStorageSync.
+// - In production, records also write to db.collection('track').
 
 import data from "./data";
 
 const app = getApp();
-const db = wx.cloud.database();
+const TRIP_STORAGE_KEY = "trip_records";
+const TRIP_MAX_RECORDS = 100;
+
+function isDevMode() {
+  return !!(app.globalData && app.globalData.devMode);
+}
+
+function readLocalTrips() {
+  try {
+    return wx.getStorageSync(TRIP_STORAGE_KEY) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function writeLocalTrip(record) {
+  const existing = readLocalTrips();
+  const updated = [record, ...existing].slice(0, TRIP_MAX_RECORDS);
+  wx.setStorageSync(TRIP_STORAGE_KEY, updated);
+  return updated;
+}
 
 // Approximate carbon-saving factor (g CO₂ per minute) per transport mode.
 // Used only for display; not a precise calculation.
@@ -178,6 +201,7 @@ Page({
     });
 
     const record = {
+      _id: `${startTime}_${Math.random().toString(36).slice(2, 8)}`,
       transport: transports.join("、"),
       purpose: purposes.join("、"),
       calcTransport: transports[0] || "",
@@ -187,7 +211,14 @@ Page({
     };
 
     try {
-      await db.collection("track").add({ data: record });
+      writeLocalTrip(record);
+      if (!isDevMode()) {
+        // Best-effort cloud write in prod; failure already logged in dev mode.
+        const db = wx.cloud.database();
+        db.collection("track")
+          .add({ data: record })
+          .catch((e) => console.warn("[home] cloud save failed", e));
+      }
     } catch (e) {
       console.error("[home] save track failed", e);
       wx.showToast({ icon: "none", title: "保存失败，请重试" });
@@ -201,22 +232,51 @@ Page({
 
   // ── Records query ─────────────────────────────────────────────────────────
 
-  async _refreshTodayRecords() {
+  _refreshTodayRecords() {
+    // Always render local first for instant paint.
+    this._applyLocalRecords();
+    if (isDevMode()) return;
+
+    // Production: refresh from cloud and merge into the local view.
+    const openid = app.globalData && app.globalData.openID;
+    let q = wx.cloud.database().collection("track");
+    if (openid) q = q.where({ _openid: openid });
+    q.orderBy("endTime", "desc")
+      .limit(20)
+      .get()
+      .then((res) => {
+        const cloudList = (res && res.data) || [];
+        const local = readLocalTrips();
+        // Merge by _id, dedupe, sort by endTime desc.
+        const seen = new Set();
+        const merged = [...local, ...cloudList]
+          .filter((r) => {
+            const key = r._id || `${r.date}_${r.endTime}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .sort((a, b) => (b.endTime || 0) - (a.endTime || 0))
+          .slice(0, 20);
+        this.setData({ todayRecordList: merged, isRecordEmpty: merged.length === 0 });
+        if (app.globalData) {
+          app.globalData.recentTracksCache = { ts: Date.now(), records: merged };
+        }
+      })
+      .catch((e) => console.warn("[home] cloud fetch failed, keeping local", e));
+  },
+
+  _applyLocalRecords() {
     try {
-      const openid = app.globalData && app.globalData.openID;
-      let q = db.collection("track");
-      if (openid) q = q.where({ _openid: openid });
-      const res = await q.orderBy("endTime", "desc").limit(20).get();
-      const list = (res.data || []).filter(
+      const list = readLocalTrips().filter(
         (r) => r.endTime && Date.now() - r.endTime < 7 * ONE_DAY_MS
       );
       this.setData({ todayRecordList: list, isRecordEmpty: list.length === 0 });
-      // Update shared cache so center page can render instantly.
       if (app.globalData) {
         app.globalData.recentTracksCache = { ts: Date.now(), records: list };
       }
     } catch (e) {
-      console.error("[home] fetch tracks failed", e);
+      console.error("[home] read tracks failed", e);
     }
   },
 
