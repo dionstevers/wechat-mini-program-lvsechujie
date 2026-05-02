@@ -5,7 +5,7 @@
   <!-- ── Feed content (blurred when video overlay active) ─────────────── -->
   <view class="feed-content {{showOverlay && !videoFullscreen ? 'feed-blurred' : ''}}">
 
-    <scroll-view scroll-y class="feed-scroll" enable-passive>
+    <view class="feed-scroll">
       <view class="feed-header">
         <view class="article-prompt">
           <text wx:for="{{articlePromptSegs}}" wx:for-item="seg" wx:key="index" class="article-prompt-seg {{seg.bold ? 'article-prompt-bold' : ''}}">{{seg.text}}</text>
@@ -26,7 +26,7 @@
           </view>
         </view>
       </view>
-    </scroll-view>
+    </view>
 
     <view class="bottom-nav">
       <view class="nav-item">

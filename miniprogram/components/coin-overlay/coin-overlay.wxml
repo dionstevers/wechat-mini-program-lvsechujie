@@ -6,7 +6,8 @@
     <view class="coin-bubble {{pulsing ? 'pulsing' : ''}} {{idleGlow ? 'idle-glow' : ''}}">
       <text class="coin-overlay-icon">💰</text>
       <text class="coin-overlay-value">{{coins}}</text>
-      <text class="coin-overlay-yuan">¥{{yuan}}</text>
+      <!-- <text class="coin-overlay-yuan">¥{{yuan}}</text> -->
+
       <view wx:if="{{idleGlow && false}}" class="coin-sparkle-orbit">
         <view class="coin-sparkle"></view>
       </view>
