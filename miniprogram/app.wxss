@@ -6,7 +6,7 @@
   height: calc(100vh - 48px - env(safe-area-inset-bottom));
   width: 100vw;
   overflow: scroll;
-  background: linear-gradient(180deg, #97baaf 0%, #419f8c 100%);
+  background: #97baaf;
 }
 
 .page-introduction{

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(180deg, #97baaf 0%, #419f8c 100%);
+  background: #97baaf;
 }
 
 .debrief-scroll {

@@ -1,4 +1,4 @@
 /* Survey engine provides all styling via its own wxss */
 page {
-  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
+  background: #97baaf;
 }

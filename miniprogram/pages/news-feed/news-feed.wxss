@@ -249,7 +249,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
+  background: #97baaf;
   overflow: hidden;
   z-index: 1000;
 }

@@ -1,6 +1,6 @@
 .reward-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #97baaf 0%, #419f8c 100%);
+  background: #97baaf;
   display: flex;
   flex-direction: column;
   align-items: center;

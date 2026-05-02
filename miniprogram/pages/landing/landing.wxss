@@ -1,7 +1,7 @@
 .landing-page {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
+  background: #97baaf;
   display: flex;
   flex-direction: column;
   padding: 60rpx 50rpx 40rpx;

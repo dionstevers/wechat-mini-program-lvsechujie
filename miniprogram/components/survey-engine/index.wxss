@@ -5,7 +5,7 @@
   min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #97baaf 0%, #5fa897 50%, #419f8c 100%);
+  background: #97baaf;
   padding-top: 100rpx;
   padding-bottom: 40rpx;
   overflow-x: hidden;
