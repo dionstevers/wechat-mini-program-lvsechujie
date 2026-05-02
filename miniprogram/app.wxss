@@ -6,7 +6,7 @@
   height: calc(100vh - 48px - env(safe-area-inset-bottom));
   width: 100vw;
   overflow: scroll;
-  background: #97baaf;
+  background: #419f8c;
 }
 
 .page-introduction{

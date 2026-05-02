@@ -1,7 +1,7 @@
 .landing-page {
   position: relative;
   min-height: 100vh;
-  background: #97baaf;
+  background: #419f8c;
   display: flex;
   flex-direction: column;
   padding: 60rpx 50rpx 40rpx;

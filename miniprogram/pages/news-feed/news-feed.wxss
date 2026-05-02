@@ -249,7 +249,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #97baaf;
+  background: #419f8c;
   overflow: hidden;
   z-index: 1000;
 }

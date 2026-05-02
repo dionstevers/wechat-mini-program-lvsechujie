@@ -1,4 +1,4 @@
 /* Survey engine provides all styling via its own wxss */
 page {
-  background: #97baaf;
+  background: #419f8c;
 }

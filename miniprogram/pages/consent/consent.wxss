@@ -1,7 +1,7 @@
 .consent-page {
   position: relative;
   min-height: 100vh;
-  background: #97baaf;
+  background: #419f8c;
   overflow: hidden;
 }
 

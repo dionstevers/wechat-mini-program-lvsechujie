@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #97baaf;
+  background: #419f8c;
 }
 
 .debrief-scroll {
