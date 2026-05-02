@@ -31,7 +31,7 @@ Component({
         "text": "信息中心",
         "iconPath": "/asset/img/info.png",
         "selectedIconPath": "/asset/img/info_highlight.png",
-        "isTab": false
+        "isTab": true
       },
       {
         "pagePath":"/pages/center/center",

@@ -40,7 +40,7 @@ Page({
           app.globalData.condition = result.condition
           app.globalData.articleCombination = result.article_combination
           app.globalData.articleOrder = result.article_order
-          wx.redirectTo({ url: '/pages/news-feed/news-feed' })
+          wx.switchTab({ url: '/pages/news-feed/news-feed' })
         } else {
           this._showError()
         }

@@ -160,6 +160,9 @@ App({
     articleCombination: '',
     articleOrder: '',
     totalCoins: 0,
+    // True after the participant has watched the treatment video on news-feed
+    // once. Re-entering news-feed via the tab bar should skip the video.
+    videoShown: false,
     // Recent trip records cache shared between home (行程记录) and center (个人积分).
     // Populated lazily by either page; pre-fetched on launch when not in dev mode.
     recentTracksCache: null,

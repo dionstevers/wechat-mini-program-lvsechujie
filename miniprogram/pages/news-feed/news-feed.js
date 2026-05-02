@@ -51,8 +51,11 @@ Page({
     const displayArticles = articleIds.map(id => ARTICLES[id]).filter(Boolean)
     this.setData({ displayArticles })
 
-    // Show video overlay for non-control conditions
-    if (condition && condition !== 'control') {
+    // Show video overlay for non-control conditions, but only the first time
+    // the news-feed is opened in this session. Subsequent visits (e.g. after
+    // navigating away to 行程记录 / 个人积分) skip straight to the feed.
+    const alreadyShown = !!(app.globalData && app.globalData.videoShown)
+    if (!alreadyShown && condition && condition !== 'control') {
       const videoConfig = VIDEO_CONFIG[condition]
       if (videoConfig && videoConfig.video_file) {
         this._overlayStartTimestamp = Date.now()
@@ -62,7 +65,7 @@ Page({
       }
     }
 
-    // Control condition — activate feed immediately
+    // Control condition or video already seen — activate feed immediately
     this._activateFeed()
   },
 
@@ -80,6 +83,7 @@ Page({
     const endTs = Date.now()
     this._logVideoEnd(endTs, true)
     this.setData({ showOverlay: false, showContinueBtn: false })
+    if (app.globalData) app.globalData.videoShown = true
     this._activateFeed()
     const pending = app.globalData.pendingCoinsAfterVideo || 0
     if (pending && typeof app.addTotalCoins === 'function') {

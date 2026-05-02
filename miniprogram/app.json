@@ -43,20 +43,14 @@
         "selectedIconPath": "asset/img/trip_highlight.png"
       },
       {
-        "pagePath": "pages/information/information",
+        "pagePath": "pages/news-feed/news-feed",
         "text": "信息中心",
         "iconPath": "asset/img/info.png",
         "selectedIconPath": "asset/img/info_highlight.png"
       },
       {
-        "pagePath": "pages/prizeCenter/prizeCenter",
-        "text": "积分兑换",
-        "iconPath": "asset/img/merch.png",
-        "selectedIconPath": "asset/img/merch_highlight.png"
-      },
-      {
         "pagePath":"pages/center/center",
-        "text": "个人中心",
+        "text": "个人积分",
         "iconPath": "asset/img/personal.png",
         "selectedIconPath": "asset/img/personal_highlight.png"
       }
