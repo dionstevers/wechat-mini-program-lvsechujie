@@ -87,8 +87,13 @@
 .survey-header-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   gap: 20rpx;
+}
+
+.progress-label {
+  padding-bottom: 0;
+  line-height: 1;
 }
 
 .completion-wrap {
