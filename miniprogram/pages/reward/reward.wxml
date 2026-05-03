@@ -20,9 +20,35 @@
       <text class="yuan-equiv">可兑换 ¥{{rewardYuan}}</text>
     </view>
 
-    <view class="instructions-card">
-      <text class="instructions-title">如何领取奖励</text>
-      <text class="instructions-body">请联系研究团队领取您的奖励。请保存您的确认编号，以便我们核实您的参与记录。</text>
+    <!-- payState: idle — primary claim button -->
+    <view wx:if="{{payState === 'idle'}}" class="pay-section">
+      <text class="pay-instructions">点击下方按钮即可领取您的红包奖励，红包将发放至您的微信钱包。</text>
+      <view class="coin-badge-wrap pay-btn-wrap">
+        <button class="pay-btn" bindtap="onClaim">领取奖励 ¥{{rewardYuan}}</button>
+        <view class="coin-badge">+{{coinsTotal}}</view>
+      </view>
+    </view>
+
+    <!-- payState: paying — disabled with spinner -->
+    <view wx:elif="{{payState === 'paying'}}" class="pay-section">
+      <text class="pay-instructions">正在发放红包，请稍候...</text>
+      <button class="pay-btn" disabled loading="true">处理中</button>
+    </view>
+
+    <!-- payState: paid — success -->
+    <view wx:elif="{{payState === 'paid'}}" class="pay-section pay-success">
+      <text class="pay-success-icon">✅</text>
+      <text class="pay-success-title">红包已发放</text>
+      <text class="pay-success-body">¥{{rewardYuan}} 已发放至您的微信钱包，请稍后查收。</text>
+      <text wx:if="{{transactionId}}" class="pay-success-txn">订单号：{{transactionId}}</text>
+    </view>
+
+    <!-- payState: error — retryable -->
+    <view wx:elif="{{payState === 'error'}}" class="pay-section pay-error">
+      <text class="pay-error-icon">⚠️</text>
+      <text class="pay-error-title">发放失败</text>
+      <text class="pay-error-body">{{errorMsg}}</text>
+      <button class="pay-btn pay-btn-retry" bindtap="onClaim">重试</button>
     </view>
 
     <view class="confirmation-card">

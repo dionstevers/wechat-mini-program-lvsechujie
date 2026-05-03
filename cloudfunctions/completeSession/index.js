@@ -23,13 +23,17 @@ exports.main = async (event, context) => {
 
     const participant = existing.data[0]
 
-    // If already complete, just return the totals
+    // If already complete, just return the totals + payment status (so the
+    // reward screen can come up in 'paid' state on reload).
     if (participant.session_complete) {
       return {
         success: true,
         coins_total: participant.coins_total,
         reward_yuan: participant.reward_yuan,
         already_complete: true,
+        reward_paid: participant.reward_paid === true,
+        reward_paid_timestamp: participant.reward_paid_timestamp || null,
+        reward_transaction_id: participant.reward_transaction_id || null,
       }
     }
 
@@ -49,7 +53,14 @@ exports.main = async (event, context) => {
       },
     })
 
-    return { success: true, coins_total, reward_yuan }
+    return {
+      success: true,
+      coins_total,
+      reward_yuan,
+      reward_paid: false,
+      reward_paid_timestamp: null,
+      reward_transaction_id: null,
+    }
   } catch (err) {
     return { success: false, error: String(err) }
   }

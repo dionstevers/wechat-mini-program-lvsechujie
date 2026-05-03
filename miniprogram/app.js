@@ -72,7 +72,24 @@ App({
         completeSession:    function() {
           var inst = getApp()
           var coins = (inst && inst.globalData && inst.globalData.totalCoins) || 0
-          return { success: true, coins_total: coins, reward_yuan: +(coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2) }
+          return {
+            success: true,
+            coins_total: coins,
+            reward_yuan: +(coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2),
+            reward_paid: false,
+            reward_paid_timestamp: null,
+            reward_transaction_id: null,
+          }
+        },
+        claimReward: function() {
+          var inst = getApp()
+          var coins = (inst && inst.globalData && inst.globalData.totalCoins) || 0
+          return {
+            success: true,
+            reward_yuan: +(coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2),
+            transaction_id: 'DEV-' + Date.now(),
+            dev: true,
+          }
         },
       }
 

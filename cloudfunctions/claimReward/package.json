@@ -1,0 +1,9 @@
+{
+  "name": "claimReward",
+  "version": "1.0.0",
+  "description": "Disburse the participant's reward via the sendCashReward red-packet API. Idempotent on reward_paid flag.",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}
