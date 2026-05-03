@@ -2,7 +2,6 @@
 
 
 .page-background{
-  font-family:'Times New Roman', Times, serif;
   height: calc(100vh - 48px - env(safe-area-inset-bottom));
   width: 100vw;
   overflow: scroll;

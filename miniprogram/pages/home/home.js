@@ -75,7 +75,7 @@ Page({
     if (typeof this.getTabBar === "function" && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 });
     }
-    wx.setNavigationBarTitle({ title: "碳行家｜行程记录" });
+    wx.setNavigationBarTitle({ title: "行程记录" });
     // Render from cache if available, then refresh in background.
     const cache = app.globalData && app.globalData.recentTracksCache;
     if (cache && cache.records) {
