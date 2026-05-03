@@ -601,24 +601,29 @@ Component({
       })
     },
 
-    // Modal: warn the participant about unanswered questions. On confirm,
-    // proceed. On cancel, scroll to the first empty card.
+    // Modal: warn about unanswered questions. The first empty card is
+    // scrolled into view *before* the modal opens, using setData callbacks
+    // so WeChat actually flushes the scroll-into-view change. Toggling
+    // through '' first guarantees the second value is treated as a change
+    // even if the same id was set earlier.
     _warnEmpties(empties, proceedFn) {
-      wx.showModal({
-        title: '还有问题未填',
-        content: '本页有 ' + empties.length + ' 道题尚未作答，是否仍要继续？',
-        confirmText: '继续',
-        cancelText: '返回填写',
-        success: (res) => {
-          if (res.confirm) {
-            proceedFn()
-          } else {
-            const firstId = 'q-' + empties[0].id
-            // Toggle to force scroll-into-view to re-fire even if same id.
-            this.setData({ scrollIntoView: '' })
-            setTimeout(() => this.setData({ scrollIntoView: firstId }), 0)
-          }
-        },
+      const firstId = 'q-' + empties[0].id
+      const showModal = () => {
+        wx.showModal({
+          title: '还有问题未填',
+          content: '本页有 ' + empties.length + ' 道题尚未作答，是否仍要继续？',
+          confirmText: '继续',
+          cancelText: '返回填写',
+          success: (res) => {
+            if (res.confirm) proceedFn()
+            // On cancel, the page is already scrolled to the empty card.
+          },
+        })
+      }
+      this.setData({ scrollIntoView: '' }, () => {
+        this.setData({ scrollIntoView: firstId }, () => {
+          showModal()
+        })
       })
     },
 

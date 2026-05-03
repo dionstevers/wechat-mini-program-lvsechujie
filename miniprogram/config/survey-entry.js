@@ -101,7 +101,7 @@ const ENTRY_SURVEY = {
           textAppendIf: {
             field: 'is_student',
             equals: 1,
-            text: '如果您是住在宿舍的学生，请按您家庭住所的情况回答。',
+            text: '如果您是住校的大学生，请按照您父母家中的情况回答。',
           },
           field: 'household_assets',
           randomiseOptions: true,

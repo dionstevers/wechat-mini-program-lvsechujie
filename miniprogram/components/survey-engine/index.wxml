@@ -71,6 +71,7 @@
                     color="#419f8c" />
           <text class="option-label">{{opt.label}}</text>
           <text wx:if="{{devMode && opt._randomised}}" class="alloc-rand-tag option-rand-tag">🔀</text>
+          <text wx:if="{{devMode && opt.exclusive}}" class="alloc-rand-tag alloc-pin-tag option-rand-tag">📌</text>
         </view>
       </view>
 
@@ -147,8 +148,8 @@
           <view wx:for="{{item.categories}}" wx:for-item="cat" wx:key="id" class="alloc-row">
             <view class="alloc-label-wrap">
               <text class="alloc-label">{{cat.label}}</text>
-              <text wx:if="{{devMode && item.randomiseCategories && !cat.pinBottom}}" class="alloc-rand-tag">🔀 随机</text>
-              <text wx:if="{{devMode && cat.pinBottom}}" class="alloc-rand-tag alloc-pin-tag">📌 固定</text>
+              <text wx:if="{{devMode && item.randomiseCategories && !cat.pinBottom}}" class="alloc-rand-tag">🔀</text>
+              <text wx:if="{{devMode && cat.pinBottom}}" class="alloc-rand-tag alloc-pin-tag">📌</text>
             </view>
             <view class="alloc-controls">
               <view class="alloc-btn {{(allocAnswers[item.id][cat.field] || 0) === 0 ? 'alloc-btn-disabled' : ''}}"
