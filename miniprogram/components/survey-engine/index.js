@@ -51,6 +51,9 @@ Component({
     answers: {},        // field → scalar value (single_select, slider, dropdown, open_text)
     multiAnswers: {},   // field → { value: bool } for multi_select
     matrixAnswers: {},  // rowField → value
+    allocAnswers: {},   // qid → { categoryField: count } for token_allocation
+    allocTotals: {},    // qid → sum of counts across categories
+    devMode: false,     // surfaces dev-only visual markers (e.g. randomised badges)
     dropdownIndices: {},// field → index in options array
     pickerDefaults: {}, // field → initial wheel index (used before user picks)
     coinValues: {},     // qid → coins awarded for that question
@@ -101,6 +104,13 @@ Component({
           if (q.randomiseRows && q.rows) {
             q.rows = this._shuffle([...q.rows])
           }
+          // Randomise token-allocation categories. Categories with pinBottom
+          // stay anchored at the end (e.g. "其他" must always be last).
+          if (q.type === 'token_allocation' && q.randomiseCategories && q.categories) {
+            const fixed = q.categories.filter(c => c.pinBottom)
+            const movable = q.categories.filter(c => !c.pinBottom)
+            q.categories = [...this._shuffle(movable), ...fixed]
+          }
         })
       })
 
@@ -126,15 +136,22 @@ Component({
       const prefillEnabled = !!(app && app.globalData && app.globalData.devPrefillSurveys)
       const prefill = prefillEnabled ? this._buildDevPrefill(blocks) : null
 
-      // Pre-compute coin badge value per question
+      // Pre-compute coin badge value per question + initial allocation maps
       const coinValues = {}
       const coinMap = REWARD_CONFIG.coins_per_question
       let totalQCount = 0
+      const allocAnswers = {}
+      const allocTotals = {}
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
           if (q.type === 'intro' || q.type === 'statement') return
           coinValues[q.id] = coinMap[q.type] || coinMap.default || 5
           if (q.required) totalQCount++
+          if (q.type === 'token_allocation' && q.categories) {
+            allocAnswers[q.id] = {}
+            q.categories.forEach(c => { allocAnswers[q.id][c.field] = 0 })
+            allocTotals[q.id] = 0
+          }
         })
       })
 
@@ -150,6 +167,9 @@ Component({
         answers: prefill ? prefill.answers : {},
         multiAnswers: prefill ? prefill.multiAnswers : {},
         matrixAnswers: prefill ? prefill.matrixAnswers : {},
+        allocAnswers: prefill ? prefill.allocAnswers : allocAnswers,
+        allocTotals: prefill ? prefill.allocTotals : allocTotals,
+        devMode: !!(app && app.globalData && app.globalData.devMode),
         dropdownIndices: prefill ? prefill.dropdownIndices : {},
         pickerDefaults,
         coinValues,
@@ -169,6 +189,8 @@ Component({
       const multiAnswers = {}
       const matrixAnswers = {}
       const dropdownIndices = {}
+      const allocAnswers = {}
+      const allocTotals = {}
       const coinMap = REWARD_CONFIG.coins_per_question
       let coins = 0
       blocks.forEach(block => {
@@ -194,10 +216,21 @@ Component({
             answers[q.field] = q.nullValue && val === q.nullValue ? null : val
           } else if (q.type === 'open_text') {
             answers[q.field] = '测试回答'
+          } else if (q.type === 'token_allocation' && q.categories && q.totalTokens) {
+            // Distribute tokens evenly (remainder lands on first category).
+            const map = {}
+            const baseShare = Math.floor(q.totalTokens / q.categories.length)
+            let remainder = q.totalTokens - baseShare * q.categories.length
+            q.categories.forEach((c, i) => {
+              map[c.field] = baseShare + (remainder > 0 ? 1 : 0)
+              if (remainder > 0) remainder--
+            })
+            allocAnswers[q.id] = map
+            allocTotals[q.id] = q.totalTokens
           }
         })
       })
-      return { answers, multiAnswers, matrixAnswers, dropdownIndices, coins }
+      return { answers, multiAnswers, matrixAnswers, dropdownIndices, allocAnswers, allocTotals, coins }
     },
 
     _loadBlock(index, blocks) {
@@ -251,7 +284,7 @@ Component({
 
     _checkCanAdvance() {
       this._recomputeVisible()
-      const { visibleQuestions, answers, multiAnswers, matrixAnswers } = this.data
+      const { visibleQuestions, answers, multiAnswers, matrixAnswers, allocTotals } = this.data
       let canAdvance = true
 
       visibleQuestions.forEach(q => {
@@ -269,6 +302,8 @@ Component({
         } else if (q.type === 'matrix') {
           const allRowsAnswered = q.rows.every(row => matrixAnswers[row.field] !== undefined)
           if (!allRowsAnswered) canAdvance = false
+        } else if (q.type === 'token_allocation') {
+          if ((allocTotals[q.id] || 0) !== (q.totalTokens || 0)) canAdvance = false
         }
       })
 
@@ -277,7 +312,7 @@ Component({
     },
 
     _updateCompletion() {
-      const { blocks, answers, multiAnswers, matrixAnswers } = this.data
+      const { blocks, answers, multiAnswers, matrixAnswers, allocTotals } = this.data
       let totalQCount = 0
       let answeredQCount = 0
       blocks.forEach(block => {
@@ -292,6 +327,8 @@ Component({
             if (Object.values(multiAnswers[q.field] || {}).some(Boolean)) answeredQCount++
           } else if (q.type === 'matrix') {
             if (q.rows && q.rows.every(row => matrixAnswers[row.field] !== undefined)) answeredQCount++
+          } else if (q.type === 'token_allocation') {
+            if ((allocTotals[q.id] || 0) === (q.totalTokens || 0)) answeredQCount++
           }
         })
       })
@@ -404,6 +441,39 @@ Component({
       this._checkCanAdvance()
     },
 
+    onAllocPlus(e) {
+      const { qid, cat } = e.currentTarget.dataset
+      const q = this.data.currentQuestions.find(qq => qq.id === qid)
+      if (!q) return
+      const total = this.data.allocTotals[qid] || 0
+      if (total >= (q.totalTokens || 0)) return
+      const map = { ...(this.data.allocAnswers[qid] || {}) }
+      map[cat] = (map[cat] || 0) + 1
+      const allocAnswers = { ...this.data.allocAnswers, [qid]: map }
+      const allocTotals = { ...this.data.allocTotals, [qid]: total + 1 }
+      // First touch awards the type coin (mirrors single_select pattern).
+      const answeredThisBlock = { ...this.data.answeredThisBlock }
+      if (!answeredThisBlock[qid]) {
+        answeredThisBlock[qid] = true
+        this._awardCoin('token_allocation')
+      }
+      this.setData({ allocAnswers, allocTotals, answeredThisBlock })
+      this._checkCanAdvance()
+    },
+
+    onAllocMinus(e) {
+      const { qid, cat } = e.currentTarget.dataset
+      const map = { ...(this.data.allocAnswers[qid] || {}) }
+      const current = map[cat] || 0
+      if (current <= 0) return
+      map[cat] = current - 1
+      const allocAnswers = { ...this.data.allocAnswers, [qid]: map }
+      const total = (this.data.allocTotals[qid] || 0) - 1
+      const allocTotals = { ...this.data.allocTotals, [qid]: total < 0 ? 0 : total }
+      this.setData({ allocAnswers, allocTotals })
+      this._checkCanAdvance()
+    },
+
     onTextInput(e) {
       const { field, qid } = e.currentTarget.dataset
       const value = e.detail.value
@@ -460,7 +530,7 @@ Component({
 
     _saveBlockToCloud(isFinal = false) {
       // Collect responses for this block
-      const { answers, multiAnswers, matrixAnswers, config } = this.data
+      const { answers, multiAnswers, matrixAnswers, allocAnswers, config } = this.data
       const responses = {}
 
       this.data.currentQuestions.forEach(q => {
@@ -478,6 +548,14 @@ Component({
           // Also store row order for randomised matrices
           if (q.randomiseRows) {
             responses.emotion_battery_order = q.rows.map(r => r.id)
+          }
+        } else if (q.type === 'token_allocation') {
+          const map = allocAnswers[q.id] || {}
+          q.categories.forEach(c => {
+            responses[c.field] = map[c.field] || 0
+          })
+          if (q.randomiseCategories) {
+            responses[(q.field || q.id) + '_order'] = q.categories.map(c => c.id)
           }
         } else if (answers[q.field] !== undefined) {
           responses[q.field] = answers[q.field]

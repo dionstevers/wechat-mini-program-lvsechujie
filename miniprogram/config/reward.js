@@ -19,6 +19,8 @@ const TYPE_WEIGHTS = {
   matrix:        2.5,
   dropdown:      1.0,
   open_text:     2.0,
+  statement:     0,
+  token_allocation: 2.0,
 }
 
 const TOTAL_COINS    = TOTAL_REWARD_YUAN * COINS_PER_YUAN

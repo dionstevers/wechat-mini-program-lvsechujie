@@ -192,6 +192,23 @@ const ENTRY_SURVEY = {
           options: LIKERT_4,
           required: true,
         },
+        {
+          id: 'Q8',
+          type: 'token_allocation',
+          text: '现在，我们想进一步了解一下你如何看待自己。\n假设这里有 6 个圆圈，每个圆圈代表"你是谁"的一个不同部分。你一共有 10 个代币。请将这些代币分配到各个圆圈中，以表示每个部分在你对自我认知中的重要程度。你可以把所有代币都放在一个圆圈里，也可以分散放在几个圆圈里，或者让某些圆圈保持空白。这里没有对错之分。框内数字代表代币数量。',
+          field: 'identity_allocation',
+          totalTokens: 10,
+          randomiseCategories: true,
+          required: true,
+          categories: [
+            { id: 'nationality', label: '作为中国人',                       field: 'identity_alloc_nationality' },
+            { id: 'career',      label: '我的职业 / 事业',                  field: 'identity_alloc_career' },
+            { id: 'gender',      label: '我的性别',                         field: 'identity_alloc_gender' },
+            { id: 'family',      label: '我的家庭角色（例如：父母、子女、兄弟姐妹）', field: 'identity_alloc_family' },
+            { id: 'religion',    label: '我的宗教或信仰',                   field: 'identity_alloc_religion' },
+            { id: 'other',       label: '其他 / 就是我自己 / 没有特别看法', field: 'identity_alloc_other', pinBottom: true },
+          ],
+        },
       ],
     },
 

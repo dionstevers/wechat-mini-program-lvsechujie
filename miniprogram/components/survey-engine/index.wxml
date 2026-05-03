@@ -137,6 +137,31 @@
                   value="{{answers[item.field] || ''}}" auto-height />
       </view>
 
+      <!-- TOKEN ALLOCATION -->
+      <view wx:elif="{{item.type === 'token_allocation'}}" class="question-card">
+        <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
+        <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
+        <view class="alloc-rows">
+          <view wx:for="{{item.categories}}" wx:for-item="cat" wx:key="id" class="alloc-row">
+            <view class="alloc-label-wrap">
+              <text class="alloc-label">{{cat.label}}</text>
+              <text wx:if="{{devMode && item.randomiseCategories && !cat.pinBottom}}" class="alloc-rand-tag">🔀 随机</text>
+              <text wx:if="{{devMode && cat.pinBottom}}" class="alloc-rand-tag alloc-pin-tag">📌 固定</text>
+            </view>
+            <view class="alloc-controls">
+              <view class="alloc-btn {{(allocAnswers[item.id][cat.field] || 0) === 0 ? 'alloc-btn-disabled' : ''}}"
+                    bindtap="onAllocMinus" data-qid="{{item.id}}" data-cat="{{cat.field}}">−</view>
+              <text class="alloc-count">{{allocAnswers[item.id][cat.field] || 0}}</text>
+              <view class="alloc-btn {{(allocTotals[item.id] || 0) >= item.totalTokens ? 'alloc-btn-disabled' : ''}}"
+                    bindtap="onAllocPlus" data-qid="{{item.id}}" data-cat="{{cat.field}}">+</view>
+            </view>
+          </view>
+        </view>
+        <view class="alloc-total-row {{(allocTotals[item.id] || 0) === item.totalTokens ? 'alloc-total-done' : ''}}">
+          <text>已分配 {{allocTotals[item.id] || 0}} / {{item.totalTokens}}</text>
+        </view>
+      </view>
+
     </block>
   </scroll-view>
 
