@@ -5,7 +5,6 @@
     <image class="tab-bar-icon" src="{{selected === index ? item.selectedIconPath : item.iconPath}}"></image>
     <view class="tab-bar-label" style="color: {{selected === index ? selectedColor : color}}">{{item.text}}</view>
   </view>
-  <view wx:if="{{devMode}}" class="dev-badge">DEV</view>
 </view>
 
 

@@ -70,10 +70,29 @@ Component({
       const isControl = this.data.condition === 'control'
       const blocks = config.blocks.filter(b => !(b.treatmentOnly && isControl))
 
-      // Randomise manipulation check order if needed
+      // Randomise manipulation check order if needed.
+      // Statement questions stay in place — they're context cards, not items
+      // to shuffle. Only the answerable questions between statements rotate.
       blocks.forEach(block => {
         if (block.randomiseOrder && block.questions) {
-          block.questions = this._shuffle([...block.questions])
+          const out = []
+          let buffer = []
+          const flush = () => {
+            if (buffer.length) {
+              this._shuffle(buffer).forEach(q => out.push(q))
+              buffer = []
+            }
+          }
+          block.questions.forEach(q => {
+            if (q.type === 'statement' || q.type === 'intro') {
+              flush()
+              out.push(q)
+            } else {
+              buffer.push(q)
+            }
+          })
+          flush()
+          block.questions = out
         }
         // Randomise matrix rows if needed
         block.questions && block.questions.forEach(q => {
@@ -431,9 +450,11 @@ Component({
         if (q.attentionCheck && answers[q.field] !== undefined) {
           responses.attention_check_response = answers[q.field]
         }
-        // Store manipulation check order
+        // Store manipulation check order (exclude non-answerable statements)
         if (this.data.currentBlock.randomiseOrder) {
-          responses.manipulation_check_order = this.data.currentQuestions.map(q => q.id)
+          responses.manipulation_check_order = this.data.currentQuestions
+            .filter(qq => qq.type !== 'statement' && qq.type !== 'intro')
+            .map(qq => qq.id)
         }
       })
 

@@ -1,6 +1,7 @@
 <wxs src="../home/home.wxs" module="m1"></wxs>
 
 <view class="center-page">
+  <coin-overlay />
   <view class="landing-decor decor-a"></view>
   <view class="landing-decor decor-b"></view>
   <view class="landing-decor decor-c"></view>

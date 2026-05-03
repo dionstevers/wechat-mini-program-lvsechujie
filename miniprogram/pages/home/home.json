@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "van-dialog": "@vant/weapp/dialog/index",
-    "tab-bar":"../../custom-tab-bar/index"
+    "tab-bar":"../../custom-tab-bar/index",
+    "coin-overlay": "../../components/coin-overlay/coin-overlay"
   },
   "disableScroll": true
 }

@@ -59,22 +59,22 @@ const MANIPULATION_CHECK_ITEMS = [
 
 const EXIT_SURVEY = {
   surveyId: 'exit',
-  header: '结束问卷 · 最后几道问题，完成后即可领取奖励。',
+  header: '结束问卷 · 最后几道问题，完成后即可领取奖励。部分题目可能不太常见，请按照您认为最合适的方式作答即可。谢谢您的配合！',
   blocks: [
-    // ─── Block 0: Introduction ────────────────────────────────────────────
-    {
-      id: 'block_exit_0',
-      questions: [
-        {
-          id: 'Q_exit_intro',
-          type: 'intro',
-          text: '再次感谢您参与我们的研究！我们还有最后几道问题想请您回答，完成后即可领取您的奖励。部分题目可能不太常见，请按照您认为最合适的方式作答即可。谢谢您的配合！',
-          field: null,
-          required: false,
-          logsTimestamp: 'exit_survey_start_timestamp',
-        },
-      ],
-    },
+    // // ─── Block 0: Introduction ────────────────────────────────────────────
+    // {
+    //   id: 'block_exit_0',
+    //   questions: [
+    //     {
+    //       id: 'Q_exit_intro',
+    //       type: 'statement',
+    //       text: '再次感谢您参与我们的研究！我们还有最后几道问题想请您回答，完成后即可领取您的奖励。部分题目可能不太常见，请按照您认为最合适的方式作答即可。谢谢您的配合！',
+    //       field: null,
+    //       required: false,
+    //       logsTimestamp: 'exit_survey_start_timestamp',
+    //     },
+    //   ],
+    // },
 
     // ─── Block 1: Video viewing confirmation (treatment only) ─────────────
     {
@@ -117,8 +117,16 @@ const EXIT_SURVEY = {
     {
       id: 'block_exit_2',
       randomiseOrder: true,
-      introText: '在使用我们的小程序之后，我们想了解您对一些相关议题的看法。请问您在多大程度上同意下面的观点？',
-      questions: MANIPULATION_CHECK_ITEMS,
+      questions: [
+        {
+          id: 'Q_exit_block2_intro',
+          type: 'statement',
+          text: '在使用我们的小程序之后，我们想了解您对一些相关议题的看法。请问您在多大程度上同意下面的观点？',
+          field: null,
+          required: false,
+        },
+        ...MANIPULATION_CHECK_ITEMS,
+      ],
     },
 
     // ─── Block 3: Emotions battery (order randomised at runtime) ──────────
