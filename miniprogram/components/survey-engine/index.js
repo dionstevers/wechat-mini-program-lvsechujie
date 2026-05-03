@@ -44,6 +44,7 @@ Component({
     totalBlocks: 0,
     currentBlock: {},
     currentQuestions: [],
+    visibleQuestions: [],
     isLastBlock: false,
     progressPct: 0,
     answers: {},        // field → scalar value (single_select, slider, dropdown, open_text)
@@ -213,6 +214,7 @@ Component({
       this.setData({
         currentBlock: block,
         currentQuestions,
+        visibleQuestions: currentQuestions.filter(q => this._isVisible(q)),
         isLastBlock,
         progressPct,
         answeredThisBlock: {},
@@ -230,13 +232,30 @@ Component({
       this._checkCanAdvance()
     },
 
+    // Evaluates a question's showIf rule against current answer state.
+    // Format: showIf: { field: 'video_watched', equals: 1 }
+    _isVisible(q) {
+      if (!q || !q.showIf) return true
+      const { field, equals } = q.showIf
+      if (!field) return true
+      const { answers } = this.data
+      return answers[field] === equals
+    },
+
+    // Recomputes visibleQuestions from currentQuestions × current answers.
+    _recomputeVisible() {
+      const visibleQuestions = (this.data.currentQuestions || []).filter(q => this._isVisible(q))
+      this.setData({ visibleQuestions })
+    },
+
     _checkCanAdvance() {
-      const { currentQuestions, answers, multiAnswers, matrixAnswers } = this.data
+      this._recomputeVisible()
+      const { visibleQuestions, answers, multiAnswers, matrixAnswers } = this.data
       let canAdvance = true
 
-      currentQuestions.forEach(q => {
+      visibleQuestions.forEach(q => {
         if (!q.required) return
-        if (q.type === 'intro') return
+        if (q.type === 'intro' || q.type === 'statement') return
 
         if (q.type === 'single_select' || q.type === 'dropdown' || q.type === 'open_text' || q.type === 'slider') {
           if (answers[q.field] === undefined || answers[q.field] === null || answers[q.field] === '') {
@@ -257,11 +276,15 @@ Component({
     },
 
     _updateCompletion() {
-      const { blocks, answers, multiAnswers, matrixAnswers, totalQCount } = this.data
+      const { blocks, answers, multiAnswers, matrixAnswers } = this.data
+      let totalQCount = 0
       let answeredQCount = 0
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
           if (!q.required) return
+          if (q.type === 'intro' || q.type === 'statement') return
+          if (!this._isVisible(q)) return
+          totalQCount++
           if (q.type === 'single_select' || q.type === 'dropdown' || q.type === 'open_text' || q.type === 'slider') {
             if (answers[q.field] !== undefined && answers[q.field] !== null && answers[q.field] !== '') answeredQCount++
           } else if (q.type === 'multi_select') {
@@ -272,7 +295,7 @@ Component({
         })
       })
       const completionPct = totalQCount > 0 ? Math.round(answeredQCount / totalQCount * 100) : 0
-      this.setData({ answeredQCount, completionPct })
+      this.setData({ totalQCount, answeredQCount, completionPct })
     },
 
     onSingleSelect(e) {

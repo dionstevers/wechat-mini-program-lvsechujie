@@ -59,7 +59,7 @@ const MANIPULATION_CHECK_ITEMS = [
 
 const EXIT_SURVEY = {
   surveyId: 'exit',
-  header: '结束问卷 · 最后几道问题，完成后即可领取奖励。部分题目可能不太常见，请按照您认为最合适的方式作答即可。谢谢您的配合！',
+  header: '结束问卷 · 最后几道问题，完成后即可领取奖励。部分题目可能不太常见，请按您的理解如实作答即可。谢谢您的配合！',
   blocks: [
     // // ─── Block 0: Introduction ────────────────────────────────────────────
     // {
@@ -84,7 +84,7 @@ const EXIT_SURVEY = {
         {
           id: 'Q2.2',
           type: 'single_select',
-          text: '您是否在上一页观看过该视频？如果未向您展示视频，请填写"未展示视频"。',
+          text: '此前我们向您展示了一段视频。您是否观看过该视频？如果未向您展示视频，请填写"未展示视频"。',
           field: 'video_watched',
           treatmentOnly: true,
           options: [
@@ -96,19 +96,33 @@ const EXIT_SURVEY = {
         },
         {
           id: 'Q2.3',
-          type: 'open_text',
-          text: '当您看到这个短视频时，您首先想到的是什么？您喜欢这个内容吗？为什么？',
-          field: 'video_reaction_1',
+          type: 'single_select',
+          text: '您在多大程度上喜欢这段视频的内容？',
+          field: 'video_liking',
           treatmentOnly: true,
-          required: false,
+          showIf: { field: 'video_watched', equals: 1 },
+          options: [
+            { label: '非常不喜欢', value: 1 },
+            { label: '不太喜欢',   value: 2 },
+            { label: '比较喜欢',   value: 3 },
+            { label: '非常喜欢',   value: 4 },
+          ],
+          required: true,
         },
         {
           id: 'Q2.4',
-          type: 'open_text',
-          text: '在您看来，视频中的内容反映了真实情况吗？请说明理由。',
-          field: 'video_reaction_2',
+          type: 'single_select',
+          text: '您在多大程度上认为视频中的内容反映了真实情况？',
+          field: 'video_truthfulness',
           treatmentOnly: true,
-          required: false,
+          showIf: { field: 'video_watched', equals: 1 },
+          options: [
+            { label: '完全不真实', value: 1 },
+            { label: '不太真实',   value: 2 },
+            { label: '比较真实',   value: 3 },
+            { label: '非常真实',   value: 4 },
+          ],
+          required: true,
         },
       ],
     },

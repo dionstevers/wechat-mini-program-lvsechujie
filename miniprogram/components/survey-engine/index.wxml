@@ -35,7 +35,7 @@
 
   <!-- Questions in current block -->
   <scroll-view scroll-y class="questions-scroll">
-    <block wx:for="{{currentQuestions}}" wx:key="id">
+    <block wx:for="{{visibleQuestions}}" wx:key="id">
 
       <!-- INTRO type -->
       <view wx:if="{{item.type === 'intro'}}" class="question-card intro-card">
