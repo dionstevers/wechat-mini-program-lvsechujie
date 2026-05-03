@@ -1,8 +1,13 @@
 {
+  "navigationBarTitleText": "行程记录",
+  "navigationBarBackgroundColor": "#419f8c",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "van-dialog": "@vant/weapp/dialog/index",
-    "tab-bar":"../../custom-tab-bar/index",
-    "coin-overlay": "../../components/coin-overlay/coin-overlay"
+    "tab-bar": "../../custom-tab-bar/index",
+    "coin-overlay": "../../components/coin-overlay/coin-overlay",
+    "dev-banner": "../../components/dev-banner/dev-banner",
+    "exit-timer": "../../components/exit-timer/exit-timer"
   },
   "disableScroll": true
 }

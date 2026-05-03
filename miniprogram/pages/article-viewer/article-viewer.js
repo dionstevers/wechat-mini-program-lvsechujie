@@ -1,14 +1,12 @@
 // Screen 5a — Article Viewer
-// Tracks open/close timestamps and reading time.
-// Sets article_read_trigger in storage if reading time ≥ 5s.
+// Tracks open/close timestamps and reading time. Reading no longer awards
+// coins or triggers the exit survey — the global 2-minute news-feed timer
+// owns those concerns now.
 
 const { ARTICLES } = require('../../config/articles.js')
 const { ARTICLES_EN } = require('../../config/articles-en.js')
-const { REWARD_CONFIG } = require('../../config/reward.js')
 
 const app = getApp()
-
-const READ_THRESHOLD_MS = 5000 // 5 seconds
 
 Page({
   data: {
@@ -48,9 +46,7 @@ Page({
     const openTs = this._openTimestamp
     if (!openTs) return
 
-    const durationMs = closeTs - openTs
-
-    // Log to cloud
+    // Cloud-side reading-time accumulator stays for analytics.
     wx.cloud.callFunction({
       name: 'logArticleEvent',
       data: {
@@ -60,16 +56,5 @@ Page({
         closeTimestamp: closeTs,
       },
     })
-
-    // Set exit trigger if reading time threshold met + award read coins (once per session)
-    if (durationMs >= READ_THRESHOLD_MS) {
-      wx.setStorageSync('article_read_trigger', true)
-      if (!wx.getStorageSync('article_read_awarded')) {
-        wx.setStorageSync('article_read_awarded', true)
-        if (app && typeof app.addTotalCoins === 'function') {
-          app.addTotalCoins(REWARD_CONFIG.coins_article_read || 0)
-        }
-      }
-    }
   },
 })

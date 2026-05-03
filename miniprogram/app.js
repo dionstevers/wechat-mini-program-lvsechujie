@@ -183,6 +183,12 @@ App({
     // True after the participant has watched the treatment video on news-feed
     // once. Re-entering news-feed via the tab bar should skip the video.
     videoShown: false,
+    // 2-minute clock that begins on first arrival at news-feed and triggers
+    // the exit survey on expiry. Shared across home / news-feed / center
+    // tabs so the countdown is consistent regardless of which tab is active.
+    NEWS_TIMER_DURATION_MS: 2 * 60 * 1000,
+    newsTimerStartTs: null,    // ms-since-epoch when the timer began (null = not started)
+    exitSurveyFired: false,    // guard so only one tab's interval fires the redirect
     // Recent trip records cache shared between home (行程记录) and center (个人积分).
     // Populated lazily by either page; pre-fetched on launch when not in dev mode.
     recentTracksCache: null,

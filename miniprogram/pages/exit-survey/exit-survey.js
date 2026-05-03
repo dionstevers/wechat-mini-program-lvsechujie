@@ -1,6 +1,7 @@
 // Screen 6 — Exit Survey
 // Loads EXIT_SURVEY config and delegates to survey-engine component.
-// Triggered by article_read (≥5s reading) or inactivity_timeout (60s).
+// Triggered when the global 2-minute news-feed timer expires (or by the
+// dev-skip button on the news-feed page).
 // On completion, navigates to debriefing.
 
 const app = getApp()

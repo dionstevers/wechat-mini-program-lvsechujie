@@ -7,7 +7,7 @@ const COINS_PER_YUAN    = 88      // 88 coins = ¥1
 const COINS_LANDING      = 88     // landing 继续 button
 const COINS_CONSENT      = 50     // consent 同意 button
 const COINS_REGISTRATION = 50     // registration 提交注册 button
-const COINS_ARTICLE_READ = 88     // ¥1 for reading the news article
+const COINS_EXIT_ENTRY   = 88     // ¥1 for entering the exit survey (timer-fired)
 
 // Relative effort weights — higher = more coins per question of that type.
 // Only the ratios matter; absolute scale is normalised by SURVEY_BUDGET.
@@ -24,7 +24,7 @@ const TYPE_WEIGHTS = {
 }
 
 const TOTAL_COINS    = TOTAL_REWARD_YUAN * COINS_PER_YUAN
-const SURVEY_BUDGET  = TOTAL_COINS - COINS_LANDING - COINS_CONSENT - COINS_REGISTRATION - COINS_ARTICLE_READ
+const SURVEY_BUDGET  = TOTAL_COINS - COINS_LANDING - COINS_CONSENT - COINS_REGISTRATION - COINS_EXIT_ENTRY
 
 const { ENTRY_SURVEY } = require('./survey-entry.js')
 const { EXIT_SURVEY }  = require('./survey-exit.js')
@@ -63,7 +63,7 @@ const REWARD_CONFIG = {
   coins_landing:      COINS_LANDING,
   coins_consent:      COINS_CONSENT,
   coins_registration: COINS_REGISTRATION,
-  coins_article_read: COINS_ARTICLE_READ,
+  coins_exit_entry:   COINS_EXIT_ENTRY,
   coins_per_question: _computeCoinsPerQuestion(),
   coins_to_yuan_rate: 1 / COINS_PER_YUAN,
   total_coins: TOTAL_COINS,

@@ -1,6 +1,7 @@
 <view class="feed-page">
   <dev-banner />
   <coin-overlay />
+  <exit-timer />
 
   <!-- ── Feed content (blurred when video overlay active) ─────────────── -->
   <view class="feed-content {{showOverlay && !videoFullscreen ? 'feed-blurred' : ''}}">
@@ -32,13 +33,6 @@
 
 
   </view>
-
-  <!-- ── Exit-survey loading overlay (shown right before redirect) ────── -->
-  <loading-screen
-    wx:if="{{showExitLoading}}"
-    title="您正在前往结束问卷"
-    subSegs="{{exitLoadingSegs}}"
-  />
 
   <!-- ── Video overlay (conditions 1–3) ──────────────────────────────── -->
   <view wx:if="{{showOverlay}}" class="video-overlay {{videoFullscreen ? 'video-overlay-fullscreen' : 'video-overlay-modal'}}">

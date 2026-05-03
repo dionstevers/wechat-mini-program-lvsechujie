@@ -1,6 +1,8 @@
 // Screen 4+5 — Video Overlay + News Feed
-// Loads treatment video (if assigned), then shows two article cards.
-// Triggers exit survey after article read (≥5s).
+// Loads treatment video (if assigned), then shows two article cards. The
+// 2-minute global timer (started here on first arrival, ticked by the
+// shared exit-timer component) is what triggers the exit survey now —
+// no inactivity timer, no article-read trigger.
 
 const app = getApp()
 const { ARTICLES, ARTICLE_COMBINATIONS } = require('../../config/articles.js')
@@ -29,32 +31,29 @@ Page({
     displayArticles: [],
     feedActive: false,
     videoFullscreen: VIDEO_FULLSCREEN,
-    showExitLoading: false,
-    exitLoadingSegs: parseSegments('再回答几道问题，即可领取您的奖励！'),
     feedTitle: NEWS_FEED_CONFIG.title,
     feedSubtitleSegs: parseSegments(NEWS_FEED_CONFIG.subtitle),
-    articleCoins: REWARD_CONFIG.coins_article_read || 0,
+    exitEntryCoins: REWARD_CONFIG.coins_exit_entry || 0,
     articlePromptSegs: parseSegments(
-      (NEWS_FEED_CONFIG.articlePrompt || '').replace('{{coins}}', REWARD_CONFIG.coins_article_read || 0)
+      (NEWS_FEED_CONFIG.articlePrompt || '').replace('{{coins}}', REWARD_CONFIG.coins_exit_entry || 0)
     ),
+    devMode: !!(app.globalData && app.globalData.devMode),
   },
 
-  _inactivityTimer: null,
   _overlayStartTimestamp: null,
 
   onLoad() {
-    // Read condition and article order from globalData (set by entry-survey after assignCondition)
+    // Read condition and article order from globalData (set by entry-survey
+    // after assignCondition).
     const condition = app.globalData.condition || ''
     const articleOrder = app.globalData.articleOrder || ''
 
-    // Build article display list
     const articleIds = ORDER_MAP[articleOrder] || []
     const displayArticles = articleIds.map(id => ARTICLES[id]).filter(Boolean)
     this.setData({ displayArticles })
 
     // Show video overlay for non-control conditions, but only the first time
-    // the news-feed is opened in this session. Subsequent visits (e.g. after
-    // navigating away to 行程记录 / 个人积分) skip straight to the feed.
+    // the news-feed is opened in this session.
     const alreadyShown = !!(app.globalData && app.globalData.videoShown)
     if (!alreadyShown && condition && condition !== 'control') {
       const videoConfig = VIDEO_CONFIG[condition]
@@ -66,7 +65,7 @@ Page({
       }
     }
 
-    // Control condition or video already seen — activate feed immediately
+    // Control condition or video already seen — activate feed immediately.
     this._activateFeed()
   },
 
@@ -76,7 +75,6 @@ Page({
 
   onVideoError(e) {
     console.error('Video error', e)
-    // On error, show continue button so participant isn't stuck
     this.setData({ showContinueBtn: true })
   },
 
@@ -128,7 +126,14 @@ Page({
     const feedActiveTs = Date.now()
     this.setData({ feedActive: true })
 
-    // Log feed activation
+    // Start the global 2-minute clock if it hasn't already begun. Only the
+    // first activation sets it; subsequent visits to this tab leave it
+    // alone so the timer keeps ticking from its original start.
+    if (app.globalData && !app.globalData.newsTimerStartTs) {
+      app.globalData.newsTimerStartTs = Date.now()
+    }
+
+    // Log feed activation.
     wx.cloud.callFunction({
       name: 'saveSurveyResponse',
       data: {
@@ -139,34 +144,17 @@ Page({
         timestamps: null,
       },
     })
-
-    // Start 60s inactivity timer (skipped in dev mode)
-    if (!app.globalData.devMode) {
-      this._inactivityTimer = setTimeout(() => {
-        this._triggerExitSurvey('inactivity_timeout')
-      }, 60000)
-    }
   },
 
   onArticleTap(e) {
     if (!this.data.feedActive) return
     const articleId = e.currentTarget.dataset.articleId
 
-    // Reset inactivity timer on any tap (skipped in dev mode)
-    if (this._inactivityTimer && !app.globalData.devMode) {
-      clearTimeout(this._inactivityTimer)
-      this._inactivityTimer = setTimeout(() => {
-        this._triggerExitSurvey('inactivity_timeout')
-      }, 60000)
-    }
-
-    // Log tap event
     wx.cloud.callFunction({
       name: 'logArticleEvent',
       data: { eventType: 'tap', articleId },
     })
 
-    // Navigate to article viewer
     wx.navigateTo({ url: `/pages/article-viewer/article-viewer?id=${articleId}` })
   },
 
@@ -174,24 +162,11 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 })
     }
-    // Check if article_read trigger was set by article-viewer
-    const trigger = wx.getStorageSync('article_read_trigger')
-    if (trigger && this.data.feedActive) {
-      wx.removeStorageSync('article_read_trigger')
-      if (this._inactivityTimer) clearTimeout(this._inactivityTimer)
-      this._triggerExitSurvey('article_read')
-    }
   },
 
-  onUnload() {
-    if (this._inactivityTimer) clearTimeout(this._inactivityTimer)
-  },
-
-  _triggerExitSurvey(trigger) {
-    wx.setStorageSync('exit_survey_trigger', trigger)
-    this.setData({ showExitLoading: true })
-    setTimeout(() => {
-      wx.redirectTo({ url: '/pages/exit-survey/exit-survey' })
-    }, 4000)
+  onTapNav(e) {
+    const url = e.currentTarget.dataset.url
+    if (!url) return
+    wx.navigateTo({ url })
   },
 })

@@ -14,11 +14,12 @@ const COINS_TO_YUAN_RATE = 1 / COINS_PER_YUAN
 const TOTAL_REWARD_YUAN  = 8
 const TOTAL_COINS_CAP    = TOTAL_REWARD_YUAN * COINS_PER_YUAN  // 704
 
-// Always-earned by anyone who reaches the reward step. Landing 继续 and
-// consent 同意 are mandatory gates upstream, so we book them here without
-// a separate DB write.
-const COINS_LANDING = 88
-const COINS_CONSENT = 50
+// Always-earned by anyone who reaches the reward step. Landing 继续, consent
+// 同意, and entering the exit survey (via the 2-min timer or dev skip) are
+// mandatory upstream gates, so we book them here without separate DB writes.
+const COINS_LANDING    = 88
+const COINS_CONSENT    = 50
+const COINS_EXIT_ENTRY = 88
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -51,14 +52,13 @@ exports.main = async (event, context) => {
 
     const coins_registration = participant.coins_registration || 0
     const coins_entry_survey = participant.coins_entry_survey || 0
-    const coins_article_read = participant.coins_article_read || 0
     const coins_exit_survey  = participant.coins_exit_survey  || 0
     const raw_total =
       COINS_LANDING +
       COINS_CONSENT +
       coins_registration +
       coins_entry_survey +
-      coins_article_read +
+      COINS_EXIT_ENTRY +
       coins_exit_survey
     // Hard cap: even if upstream over-credited, never pay more than the
     // configured experiment budget.

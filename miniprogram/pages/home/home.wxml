@@ -1,6 +1,8 @@
 <wxs src="./home.wxs" module="m1"></wxs>
 <view class="page-background" style="background: #97baaf">
+<dev-banner />
 <coin-overlay />
+<exit-timer />
 
 <view class="header-image">
     <image class="people-image" src="../../asset/img/sus_people.jpg" />

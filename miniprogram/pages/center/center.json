@@ -4,6 +4,8 @@
   "navigationBarTextStyle": "white",
   "usingComponents": {
     "tab-bar": "../../custom-tab-bar/index",
-    "coin-overlay": "../../components/coin-overlay/coin-overlay"
+    "coin-overlay": "../../components/coin-overlay/coin-overlay",
+    "dev-banner": "../../components/dev-banner/dev-banner",
+    "exit-timer": "../../components/exit-timer/exit-timer"
   }
 }
