@@ -59,7 +59,8 @@ Component({
     coinValues: {},     // qid → coins awarded for that question
     totalCoins: 0,
     canAdvance: false,
-    answeredThisBlock: {}, // qid → bool, tracks which questions in current block are answered
+    submitting: false,     // debounces 下一页 / 提交 against rapid double-taps
+    awardedQids: {},       // qid (or field for multi_select) → true once a coin has been awarded for that question across the survey lifetime
     surveyStartTimestamp: null,
     totalQCount: 0,        // answerable questions across whole survey
     answeredQCount: 0,     // answered across whole survey
@@ -173,7 +174,7 @@ Component({
         dropdownIndices: prefill ? prefill.dropdownIndices : {},
         pickerDefaults,
         coinValues,
-        answeredThisBlock: {},
+        awardedQids: prefill ? this._allQidsAwarded(blocks) : {},
         totalQCount,
         answeredQCount: prefill ? totalQCount : 0,
         completionPct: prefill ? 100 : 0,
@@ -182,6 +183,20 @@ Component({
         surveyLastBlockCoins: config.lastBlockCoins || 0,
       })
       this._loadBlock(0, blocks)
+    },
+
+    _allQidsAwarded(blocks) {
+      const map = {}
+      blocks.forEach(block => {
+        ;(block.questions || []).forEach(q => {
+          if (q.type === 'intro' || q.type === 'statement') return
+          // multi_select gates by field; other types gate by qid. Mark both
+          // so re-touching a prefilled answer never double-awards.
+          if (q.id) map[q.id] = true
+          if (q.field) map[q.field] = true
+        })
+      })
+      return map
     },
 
     _buildDevPrefill(blocks) {
@@ -251,7 +266,8 @@ Component({
         visibleQuestions: currentQuestions.filter(q => this._isVisible(q)),
         isLastBlock,
         progressPct,
-        answeredThisBlock: {},
+        // awardedQids is intentionally NOT reset here — it must persist across
+        // blocks so toggling prev/next never re-awards coins for a question.
         canAdvance: false,
       })
 
@@ -340,14 +356,14 @@ Component({
       const { field, qid } = e.currentTarget.dataset
       const value = parseInt(e.detail.value, 10) || e.detail.value
       const answers = { ...this.data.answers, [field]: value }
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
+      const awardedQids = { ...this.data.awardedQids }
 
-      if (!answeredThisBlock[qid]) {
-        answeredThisBlock[qid] = true
+      if (!awardedQids[qid]) {
+        awardedQids[qid] = true
         this._awardCoin('single_select')
       }
 
-      this.setData({ answers, answeredThisBlock })
+      this.setData({ answers, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -372,13 +388,13 @@ Component({
         multiAnswers[field][value] = !currentlySelected
       }
 
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
-      if (!answeredThisBlock[field]) {
-        answeredThisBlock[field] = true
+      const awardedQids = { ...this.data.awardedQids }
+      if (!awardedQids[field]) {
+        awardedQids[field] = true
         this._awardCoin('multi_select')
       }
 
-      this.setData({ multiAnswers, answeredThisBlock })
+      this.setData({ multiAnswers, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -386,14 +402,14 @@ Component({
       const { field, qid } = e.currentTarget.dataset
       const value = e.detail.value
       const answers = { ...this.data.answers, [field]: value }
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
+      const awardedQids = { ...this.data.awardedQids }
 
-      if (!answeredThisBlock[qid]) {
-        answeredThisBlock[qid] = true
+      if (!awardedQids[qid]) {
+        awardedQids[qid] = true
         this._awardCoin('slider')
       }
 
-      this.setData({ answers, answeredThisBlock })
+      this.setData({ answers, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -402,21 +418,21 @@ Component({
       const matrixAnswers = { ...this.data.matrixAnswers, [rowfield]: value }
 
       // Award coin once per matrix question (not per row)
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
-      if (!answeredThisBlock[qid]) {
+      const awardedQids = { ...this.data.awardedQids }
+      if (!awardedQids[qid]) {
         // Check if all rows in this matrix are now answered
         const question = this.data.currentQuestions.find(q => q.id === qid)
         if (question) {
           const updated = { ...matrixAnswers }
           const allDone = question.rows.every(row => updated[row.field] !== undefined)
           if (allDone) {
-            answeredThisBlock[qid] = true
+            awardedQids[qid] = true
             this._awardCoin('matrix')
           }
         }
       }
 
-      this.setData({ matrixAnswers, answeredThisBlock })
+      this.setData({ matrixAnswers, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -431,13 +447,13 @@ Component({
       const answers = { ...this.data.answers, [field]: isNull ? null : rawValue }
       const dropdownIndices = { ...this.data.dropdownIndices, [field]: index }
 
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
-      if (!answeredThisBlock[qid]) {
-        answeredThisBlock[qid] = true
+      const awardedQids = { ...this.data.awardedQids }
+      if (!awardedQids[qid]) {
+        awardedQids[qid] = true
         this._awardCoin('dropdown')
       }
 
-      this.setData({ answers, dropdownIndices, answeredThisBlock })
+      this.setData({ answers, dropdownIndices, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -452,12 +468,12 @@ Component({
       const allocAnswers = { ...this.data.allocAnswers, [qid]: map }
       const allocTotals = { ...this.data.allocTotals, [qid]: total + 1 }
       // First touch awards the type coin (mirrors single_select pattern).
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
-      if (!answeredThisBlock[qid]) {
-        answeredThisBlock[qid] = true
+      const awardedQids = { ...this.data.awardedQids }
+      if (!awardedQids[qid]) {
+        awardedQids[qid] = true
         this._awardCoin('token_allocation')
       }
-      this.setData({ allocAnswers, allocTotals, answeredThisBlock })
+      this.setData({ allocAnswers, allocTotals, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -478,14 +494,14 @@ Component({
       const { field, qid } = e.currentTarget.dataset
       const value = e.detail.value
       const answers = { ...this.data.answers, [field]: value }
-      const answeredThisBlock = { ...this.data.answeredThisBlock }
+      const awardedQids = { ...this.data.awardedQids }
 
-      if (!answeredThisBlock[qid] && value.trim().length > 0) {
-        answeredThisBlock[qid] = true
+      if (!awardedQids[qid] && value.trim().length > 0) {
+        awardedQids[qid] = true
         this._awardCoin('open_text')
       }
 
-      this.setData({ answers, answeredThisBlock })
+      this.setData({ answers, awardedQids })
       this._checkCanAdvance()
     },
 
@@ -498,7 +514,8 @@ Component({
     },
 
     onNextBlock() {
-      if (!this.data.canAdvance) return
+      if (!this.data.canAdvance || this.data.submitting) return
+      this.setData({ submitting: true })
       this._saveBlockToCloud()
       const next = this.data.currentBlockIndex + 1
       this.setData({ currentBlockIndex: next })
@@ -507,6 +524,7 @@ Component({
     },
 
     onPrevBlock() {
+      if (this.data.submitting) return
       const prev = this.data.currentBlockIndex - 1
       this.setData({ currentBlockIndex: prev })
       this._loadBlock(prev)
@@ -524,7 +542,8 @@ Component({
     },
 
     onSubmit() {
-      if (!this.data.canAdvance) return
+      if (!this.data.canAdvance || this.data.submitting) return
+      this.setData({ submitting: true })
       this._saveBlockToCloud(true)
     },
 
@@ -572,7 +591,12 @@ Component({
         }
       })
 
-      const coinsEarned = isFinal ? this.data.totalCoins : 0
+      // Only the coins earned during THIS survey go to the server. The
+      // initial seed (landing/consent/registration coins from previous steps)
+      // is excluded so coins_entry_survey / coins_exit_survey reflect just
+      // the survey's own contribution.
+      const surveyOnlyCoins = Math.max(0, (this.data.totalCoins || 0) - (this.data.initialCoins || 0))
+      const coinsEarned = isFinal ? surveyOnlyCoins : 0
 
       const timestamps = isFinal
         ? { start: this.data.surveyStartTimestamp, end: Date.now() }
@@ -599,6 +623,9 @@ Component({
         fail: (err) => {
           console.error('saveSurveyResponse failed', err)
           wx.showToast({ title: '保存失败，请重试', icon: 'error' })
+        },
+        complete: () => {
+          this.setData({ submitting: false })
         },
       })
     },

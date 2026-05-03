@@ -48,9 +48,9 @@
   </view>
 
   <view class="consent-buttons">
-    <button class="btn-disagree" bindtap="onDisagree">{{content.buttons.disagree}}</button>
+    <button class="btn-disagree" bindtap="onDisagree" disabled="{{submitting}}">{{content.buttons.disagree}}</button>
     <view class="coin-badge-wrap btn-agree-wrap">
-      <button class="btn-agree" bindtap="onAgree">{{content.buttons.agree}}</button>
+      <button class="btn-agree" bindtap="onAgree" disabled="{{submitting}}" loading="{{submitting}}">{{content.buttons.agree}}</button>
       <view class="coin-badge">+{{btnCoins}}</view>
     </view>
   </view>

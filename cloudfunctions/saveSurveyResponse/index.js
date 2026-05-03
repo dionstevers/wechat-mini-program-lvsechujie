@@ -29,9 +29,14 @@ exports.main = async (event, context) => {
     const participant = existing.data[0]
     const updateData = { ...responses }
 
-    // Accumulate coins for this survey type
-    const coinField = surveyType === 'entry' ? 'coins_entry_survey' : 'coins_exit_survey'
-    updateData[coinField] = _.inc(coinsEarned)
+    // Coin total for this survey is written ABSOLUTE on the final submission.
+    // Intermediate per-block calls send coinsEarned=0 and we leave the field
+    // untouched. This makes the operation idempotent: a double-tap on 提交
+    // overwrites the same value instead of incrementing.
+    if (isFinal) {
+      const coinField = surveyType === 'entry' ? 'coins_entry_survey' : 'coins_exit_survey'
+      updateData[coinField] = coinsEarned
+    }
 
     if (isFinal && timestamps) {
       const { start, end } = timestamps

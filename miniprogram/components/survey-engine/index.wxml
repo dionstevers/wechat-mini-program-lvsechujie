@@ -167,12 +167,12 @@
 
   <!-- Navigation buttons -->
   <view class="nav-buttons">
-    <button wx:if="{{currentBlockIndex > 0}}" class="btn-back" bindtap="onPrevBlock">上一页</button>
-    <button wx:if="{{!isLastBlock}}" class="btn-next {{canAdvance ? '' : 'btn-disabled'}}"
-            bindtap="onNextBlock" disabled="{{!canAdvance}}">下一页</button>
+    <button wx:if="{{currentBlockIndex > 0}}" class="btn-back" bindtap="onPrevBlock" disabled="{{submitting}}">上一页</button>
+    <button wx:if="{{!isLastBlock}}" class="btn-next {{(canAdvance && !submitting) ? '' : 'btn-disabled'}}"
+            bindtap="onNextBlock" disabled="{{!canAdvance || submitting}}" loading="{{submitting}}">下一页</button>
     <view wx:if="{{isLastBlock}}" class="coin-badge-wrap btn-submit-wrap">
-      <button class="btn-submit {{canAdvance ? '' : 'btn-disabled'}}"
-              bindtap="onSubmit" disabled="{{!canAdvance}}">提交</button>
+      <button class="btn-submit {{(canAdvance && !submitting) ? '' : 'btn-disabled'}}"
+              bindtap="onSubmit" disabled="{{!canAdvance || submitting}}" loading="{{submitting}}">提交</button>
       <view wx:if="{{surveyLastBlockCoins}}" class="coin-badge">+{{surveyLastBlockCoins}}</view>
     </view>
   </view>

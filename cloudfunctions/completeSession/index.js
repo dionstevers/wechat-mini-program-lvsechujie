@@ -6,7 +6,19 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
-const COINS_TO_YUAN_RATE = 0.05 // keep in sync with miniprogram/config/reward.js
+// Keep these in sync with miniprogram/config/reward.js. The constants are
+// intentionally duplicated here because cloud functions cannot require()
+// modules from the miniprogram folder.
+const COINS_PER_YUAN     = 88
+const COINS_TO_YUAN_RATE = 1 / COINS_PER_YUAN
+const TOTAL_REWARD_YUAN  = 8
+const TOTAL_COINS_CAP    = TOTAL_REWARD_YUAN * COINS_PER_YUAN  // 704
+
+// Always-earned by anyone who reaches the reward step. Landing 继续 and
+// consent 同意 are mandatory gates upstream, so we book them here without
+// a separate DB write.
+const COINS_LANDING = 88
+const COINS_CONSENT = 50
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -39,8 +51,18 @@ exports.main = async (event, context) => {
 
     const coins_registration = participant.coins_registration || 0
     const coins_entry_survey = participant.coins_entry_survey || 0
-    const coins_exit_survey = participant.coins_exit_survey || 0
-    const coins_total = coins_registration + coins_entry_survey + coins_exit_survey
+    const coins_article_read = participant.coins_article_read || 0
+    const coins_exit_survey  = participant.coins_exit_survey  || 0
+    const raw_total =
+      COINS_LANDING +
+      COINS_CONSENT +
+      coins_registration +
+      coins_entry_survey +
+      coins_article_read +
+      coins_exit_survey
+    // Hard cap: even if upstream over-credited, never pay more than the
+    // configured experiment budget.
+    const coins_total = Math.min(raw_total, TOTAL_COINS_CAP)
     const reward_yuan = Math.round(coins_total * COINS_TO_YUAN_RATE * 100) / 100
 
     await db.collection('experiment_participants').doc(participant._id).update({

@@ -8,6 +8,7 @@ Page({
     content: CONSENT_RENDER,
     contentEn: null,
     btnCoins: REWARD_CONFIG.coins_consent || 0,
+    submitting: false,
   },
 
   onLoad() {
@@ -19,6 +20,8 @@ Page({
   },
 
   onAgree() {
+    if (this.data.submitting) return
+    this.setData({ submitting: true })
     wx.cloud.callFunction({
       name: 'saveConsent',
       data: { consent_given: true },
@@ -30,12 +33,14 @@ Page({
       },
       fail: (err) => {
         console.error('saveConsent failed', err)
+        this.setData({ submitting: false })
         wx.showToast({ title: '网络错误，请重试', icon: 'none' })
       },
     })
   },
 
   onDisagree() {
+    if (this.data.submitting) return
     const m = CONSENT_RENDER.disagreeModal
     wx.showModal({
       title: m.title,
@@ -43,6 +48,7 @@ Page({
       showCancel: false,
       confirmText: m.confirmText,
       success: () => {
+        this.setData({ submitting: true })
         wx.cloud.callFunction({
           name: 'saveConsent',
           data: { consent_given: false },
