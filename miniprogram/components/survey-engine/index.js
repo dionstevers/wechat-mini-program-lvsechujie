@@ -86,7 +86,9 @@ Component({
           let buffer = []
           const flush = () => {
             if (buffer.length) {
-              this._shuffle(buffer).forEach(q => out.push(q))
+              // Tag each shuffled question with _randomised so dev mode can
+              // render a 🔀 marker on its card.
+              this._shuffle(buffer).forEach(q => out.push({ ...q, _randomised: true }))
               buffer = []
             }
           }
@@ -267,17 +269,24 @@ Component({
 
       // Filter treatmentOnly questions within a block for control participants
       const isControl = this.data.condition === 'control'
+      const isDev = !!(this.data.devMode || (app && app.globalData && app.globalData.devMode))
       const currentQuestions = (block.questions
         ? block.questions.filter(q => !(q.treatmentOnly && isControl))
         : []
-      ).map(q => ({
-        ...q,
-        textSegs: parseSegments(q.text || ''),
-        // Sanitised id for use in WXML id attributes / selectors. WeChat
-        // CSS selectors treat '.' as a class separator, so a question id
-        // like 'Q4.1' would not resolve via createSelectorQuery('#q-Q4.1').
-        safeId: (q.id || '').replace(/\./g, '_'),
-      }))
+      ).map(q => {
+        const baseSegs = parseSegments(q.text || '')
+        const segs = (isDev && q._randomised)
+          ? [{ text: '🔀 ', bold: false }, ...baseSegs]
+          : baseSegs
+        return {
+          ...q,
+          textSegs: segs,
+          // Sanitised id for use in WXML id attributes / selectors. WeChat
+          // CSS selectors treat '.' as a class separator, so a question id
+          // like 'Q4.1' would not resolve via createSelectorQuery('#q-Q4.1').
+          safeId: (q.id || '').replace(/\./g, '_'),
+        }
+      })
 
       this.setData({
         currentBlock: block,
