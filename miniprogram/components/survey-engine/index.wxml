@@ -106,7 +106,7 @@
           </view>
           <!-- Data rows -->
           <view wx:for="{{item.rows}}" wx:for-item="row" wx:key="id" class="matrix-data-row">
-            <view class="matrix-row-label"><text>{{row.label}}</text></view>
+            <view class="matrix-row-label"><text wx:if="{{devMode && row._randomised}}" class="alloc-rand-tag option-rand-tag">🔀</text><text>{{row.label}}</text></view>
             <view wx:for="{{item.scaleValues}}" wx:for-item="val" wx:key="index" class="matrix-cell"
                   bindtap="onMatrixSelect" data-rowfield="{{row.field}}" data-value="{{val}}" data-qid="{{item.id}}">
               <view class="matrix-radio {{matrixAnswers[row.field] === val ? 'matrix-radio-selected' : ''}}"></view>

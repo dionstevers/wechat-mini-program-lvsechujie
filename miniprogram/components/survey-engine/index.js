@@ -103,10 +103,11 @@ Component({
           flush()
           block.questions = out
         }
-        // Randomise matrix rows if needed
+        // Randomise matrix rows if needed; tag each shuffled row so dev
+        // mode can render a 🔀 marker.
         block.questions && block.questions.forEach(q => {
           if (q.randomiseRows && q.rows) {
-            q.rows = this._shuffle([...q.rows])
+            q.rows = this._shuffle([...q.rows]).map(r => ({ ...r, _randomised: true }))
           }
           // Randomise token-allocation categories. Categories with pinBottom
           // stay anchored at the end (e.g. "其他" must always be last).
