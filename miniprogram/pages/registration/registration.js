@@ -28,9 +28,10 @@ Page({
   onWechatInput(e) { this.setData({ 'form.wechat_id': e.detail.value }) },
 
   onSubmit() {
-    if (this.data.submitting) return
+    if (this._submitting) return
     if (!this._validate()) return
 
+    this._submitting = true
     this.setData({ submitting: true })
     const { phone, wechat_id } = this.data.form
 
@@ -46,9 +47,13 @@ Page({
           wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
         } else {
           this._showError()
+          this._submitting = false
         }
       },
-      fail: () => this._showError(),
+      fail: () => {
+        this._showError()
+        this._submitting = false
+      },
       complete: () => this.setData({ submitting: false }),
     })
   },

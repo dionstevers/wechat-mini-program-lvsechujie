@@ -514,7 +514,9 @@ Component({
     },
 
     onNextBlock() {
-      if (!this.data.canAdvance || this.data.submitting) return
+      if (this._navigating) return
+      if (!this.data.canAdvance) return
+      this._navigating = true
       this.setData({ submitting: true })
       this._saveBlockToCloud()
       const next = this.data.currentBlockIndex + 1
@@ -524,11 +526,14 @@ Component({
     },
 
     onPrevBlock() {
-      if (this.data.submitting) return
+      if (this._navigating) return
+      this._navigating = true
       const prev = this.data.currentBlockIndex - 1
       this.setData({ currentBlockIndex: prev })
       this._loadBlock(prev)
       this._scrollToTop()
+      // Prev nav has no async work; clear lock immediately on next tick.
+      setTimeout(() => { this._navigating = false }, 0)
     },
 
     _scrollToTop() {
@@ -542,7 +547,9 @@ Component({
     },
 
     onSubmit() {
-      if (!this.data.canAdvance || this.data.submitting) return
+      if (this._navigating) return
+      if (!this.data.canAdvance) return
+      this._navigating = true
       this.setData({ submitting: true })
       this._saveBlockToCloud(true)
     },
@@ -625,6 +632,7 @@ Component({
           wx.showToast({ title: '保存失败，请重试', icon: 'error' })
         },
         complete: () => {
+          this._navigating = false
           this.setData({ submitting: false })
         },
       })

@@ -14,7 +14,8 @@ Page({
   },
 
   onNext() {
-    if (this.data.submitting) return
+    if (this._claimed) return
+    this._claimed = true
     this.setData({ submitting: true })
 
     const coins = REWARD_CONFIG.coins_landing || 0
@@ -25,8 +26,10 @@ Page({
     const lines = (LANDING_CONFIG.rewardLines || []).map(t =>
       t.replace('{{coins}}', coins).replace('{{yuan}}', yuan)
     ).map(parseSegments)
+    // Keep submitting true so the button stays disabled while the reward
+    // modal is open. Reset only on modal confirm + redirect — by then the
+    // page is being torn down anyway.
     this.setData({
-      submitting: false,
       rewardModal: { show: true, coins, yuan, lines },
     })
   },

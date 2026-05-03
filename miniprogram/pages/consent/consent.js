@@ -20,7 +20,10 @@ Page({
   },
 
   onAgree() {
-    if (this.data.submitting) return
+    // Synchronous instance-var guard — beats the setData race window where
+    // a second rapid tap lands before WeChat has rendered disabled=true.
+    if (this._consenting) return
+    this._consenting = true
     this.setData({ submitting: true })
     wx.cloud.callFunction({
       name: 'saveConsent',
@@ -33,6 +36,7 @@ Page({
       },
       fail: (err) => {
         console.error('saveConsent failed', err)
+        this._consenting = false
         this.setData({ submitting: false })
         wx.showToast({ title: '网络错误，请重试', icon: 'none' })
       },
@@ -40,7 +44,7 @@ Page({
   },
 
   onDisagree() {
-    if (this.data.submitting) return
+    if (this._consenting) return
     const m = CONSENT_RENDER.disagreeModal
     wx.showModal({
       title: m.title,
@@ -48,6 +52,8 @@ Page({
       showCancel: false,
       confirmText: m.confirmText,
       success: () => {
+        if (this._consenting) return
+        this._consenting = true
         this.setData({ submitting: true })
         wx.cloud.callFunction({
           name: 'saveConsent',

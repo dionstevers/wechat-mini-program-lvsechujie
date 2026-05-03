@@ -81,6 +81,8 @@ Page({
   },
 
   onContinue() {
+    if (this._continued) return
+    this._continued = true
     const endTs = Date.now()
     this._logVideoEnd(endTs, true)
     this.setData({ showOverlay: false, showContinueBtn: false })
