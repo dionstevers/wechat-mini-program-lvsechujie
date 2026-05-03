@@ -48,7 +48,7 @@
       </view>
 
       <!-- SINGLE SELECT — custom radio (tappable to toggle off) -->
-      <view wx:elif="{{item.type === 'single_select'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'single_select'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
@@ -61,7 +61,7 @@
       </view>
 
       <!-- MULTI SELECT -->
-      <view wx:elif="{{item.type === 'multi_select'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'multi_select'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text><text wx:if="{{item.textAppendIf && answers[item.textAppendIf.field] === item.textAppendIf.equals}}" class="q-seg-append"> {{item.textAppendIf.text}}</text></text>
         <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
@@ -76,7 +76,7 @@
       </view>
 
       <!-- SLIDER -->
-      <view wx:elif="{{item.type === 'slider'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'slider'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="slider-labels">
@@ -93,7 +93,7 @@
       </view>
 
       <!-- MATRIX -->
-      <view wx:elif="{{item.type === 'matrix'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'matrix'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="matrix-wrap">
@@ -116,7 +116,7 @@
       </view>
 
       <!-- DROPDOWN -->
-      <view wx:elif="{{item.type === 'dropdown'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'dropdown'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <picker mode="selector" range="{{item.options}}"
@@ -132,7 +132,7 @@
       </view>
 
       <!-- OPEN TEXT -->
-      <view wx:elif="{{item.type === 'open_text'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'open_text'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <textarea class="open-text-input" placeholder="请在此输入您的回答"
@@ -141,7 +141,7 @@
       </view>
 
       <!-- TOKEN ALLOCATION -->
-      <view wx:elif="{{item.type === 'token_allocation'}}" id="q-{{item.id}}" class="question-card">
+      <view wx:elif="{{item.type === 'token_allocation'}}" id="q-{{item.safeId}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="alloc-rows">

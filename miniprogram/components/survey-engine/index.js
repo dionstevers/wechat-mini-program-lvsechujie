@@ -268,7 +268,14 @@ Component({
       const currentQuestions = (block.questions
         ? block.questions.filter(q => !(q.treatmentOnly && isControl))
         : []
-      ).map(q => ({ ...q, textSegs: parseSegments(q.text || '') }))
+      ).map(q => ({
+        ...q,
+        textSegs: parseSegments(q.text || ''),
+        // Sanitised id for use in WXML id attributes / selectors. WeChat
+        // CSS selectors treat '.' as a class separator, so a question id
+        // like 'Q4.1' would not resolve via createSelectorQuery('#q-Q4.1').
+        safeId: (q.id || '').replace(/\./g, '_'),
+      }))
 
       this.setData({
         currentBlock: block,
@@ -602,12 +609,13 @@ Component({
     },
 
     // Modal: warn about unanswered questions. The first empty card is
-    // scrolled into view *before* the modal opens, using setData callbacks
-    // so WeChat actually flushes the scroll-into-view change. Toggling
-    // through '' first guarantees the second value is treated as a change
-    // even if the same id was set earlier.
+    // scrolled to programmatically (via createSelectorQuery to compute the
+    // exact scrollTop) *before* the modal opens, so the participant sees
+    // the empty card behind the dialog. scroll-into-view is unreliable when
+    // setData hasn't yet flushed, so we set scrollTop directly.
     _warnEmpties(empties, proceedFn) {
-      const firstId = 'q-' + empties[0].id
+      const target = empties[0]
+      const safeId = target && target.safeId
       const showModal = () => {
         wx.showModal({
           title: '还有问题未填',
@@ -616,14 +624,33 @@ Component({
           cancelText: '返回填写',
           success: (res) => {
             if (res.confirm) proceedFn()
-            // On cancel, the page is already scrolled to the empty card.
           },
         })
       }
-      this.setData({ scrollIntoView: '' }, () => {
-        this.setData({ scrollIntoView: firstId }, () => {
+      if (!safeId) {
+        showModal()
+        return
+      }
+      const query = this.createSelectorQuery()
+      query.select('#q-' + safeId).boundingClientRect()
+      query.select('.questions-scroll').boundingClientRect()
+      query.select('.questions-scroll').scrollOffset()
+      query.exec((res) => {
+        const cardRect = res[0]
+        const containerRect = res[1]
+        const offset = res[2]
+        if (cardRect && containerRect && offset) {
+          // pixel space: card.top - container.top is the card's offset from
+          // the visible top of the scroll-view; add current scrollTop to
+          // get its absolute scroll-y, minus a small breathing margin.
+          const targetTop = Math.max(0, offset.scrollTop + cardRect.top - containerRect.top - 24)
+          // Force change detection by toggling through an off-by-one value.
+          this.setData({ scrollTop: targetTop + 1 }, () => {
+            this.setData({ scrollTop: targetTop }, showModal)
+          })
+        } else {
           showModal()
-        })
+        }
       })
     },
 
