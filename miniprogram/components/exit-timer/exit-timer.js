@@ -1,10 +1,13 @@
-// exit-timer — floating pill that runs the global 2-minute news-feed clock.
-// Mounts on home / news-feed / center. Reads start time from app.globalData
-// (so all three tabs share the same clock). On expiry, awards +88 and
-// reLaunches into the exit-survey. In dev mode, tappable to skip.
+// exit-timer — draggable floating pill that runs the global 2-minute
+// news-feed clock. Mounts on home / news-feed / center; reads start time
+// from app.globalData (so all three tabs share the same clock). On expiry,
+// awards +88 and reLaunches into the exit-survey. Tap once to skip in dev
+// mode. Drag to reposition (movable-view).
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
 const app = getApp()
+
+const STORAGE_KEY = 'exit_timer_pos'
 
 function pad2(n) { return n < 10 ? '0' + n : '' + n }
 
@@ -14,11 +17,32 @@ Component({
     devMode: false,
     mmss: '',
     expired: false,
+    rewardCoins: 0,
+    x: 0,
+    y: 0,
   },
 
   lifetimes: {
     attached() {
-      this.setData({ devMode: !!(app.globalData && app.globalData.devMode) })
+      const saved = (function () {
+        try { return wx.getStorageSync(STORAGE_KEY) || null } catch (e) { return null }
+      })()
+      // movable-view uses px, not rpx. Compute the right-edge default from
+      // the system window so the pill lands top-right on first mount.
+      let initialX = 0
+      let initialY = 20
+      try {
+        const info = wx.getSystemInfoSync()
+        const screenW = info.windowWidth
+        const pillW = screenW * 360 / 750  // 360rpx → px
+        initialX = Math.max(0, screenW - pillW - 12)
+      } catch (e) {}
+      this.setData({
+        devMode: !!(app.globalData && app.globalData.devMode),
+        rewardCoins: REWARD_CONFIG.coins_exit_entry || 0,
+        x: saved && typeof saved.x === 'number' ? saved.x : initialX,
+        y: saved && typeof saved.y === 'number' ? saved.y : initialY,
+      })
       this._tick()
       this._interval = setInterval(() => this._tick(), 1000)
     },
@@ -48,6 +72,14 @@ Component({
       else if (this.data.mmss !== mmss) this.setData({ mmss })
     },
 
+    onMove(e) {
+      // Persist position only on user-driven drags so the pill returns to
+      // wherever the participant last left it across tab switches.
+      if (e.detail.source !== 'touch' && e.detail.source !== 'touch-out-of-bounds') return
+      const { x, y } = e.detail
+      try { wx.setStorageSync(STORAGE_KEY, { x, y }) } catch (e2) {}
+    },
+
     onTap() {
       // Dev-mode shortcut: skip the timer immediately.
       if (!this.data.devMode) return
@@ -62,9 +94,6 @@ Component({
         clearInterval(this._interval)
         this._interval = null
       }
-      // Award the entry-to-exit-survey coin on the client for the overlay
-      // pulse. Server-side completeSession adds COINS_EXIT_ENTRY as a flat
-      // constant, so the client tally and the payout stay aligned.
       if (typeof app.addTotalCoins === 'function') {
         app.addTotalCoins(REWARD_CONFIG.coins_exit_entry || 0)
       }

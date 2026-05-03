@@ -20,11 +20,16 @@ Component({
   lifetimes: {
     attached() {
       this._restorePosition()
-      this._update(app && app.globalData ? (app.globalData.totalCoins || 0) : 0)
+      // Hydrate silently — first mount on a tab page must not pulse just
+      // because totalCoins jumped from 0 (component default) to whatever
+      // globalData currently holds.
+      this._update(app && app.globalData ? (app.globalData.totalCoins || 0) : 0, { silent: true })
+      this._hydrated = true
       if (app && typeof app.subscribeTotalCoins === 'function') {
         this._unsub = app.subscribeTotalCoins((v) => this._update(v))
       }
-      this._scheduleIdleGlow()
+      // Idle-glow animation intentionally not scheduled — researcher finds
+      // it distracting on tab switches.
     },
     detached() {
       if (this._unsub) this._unsub()
@@ -33,9 +38,10 @@ Component({
     },
   },
   methods: {
-    _update(coins) {
+    _update(coins, options) {
       const prev = this.data.coins
       this.setData({ coins, yuan: (coins * REWARD_CONFIG.coins_to_yuan_rate).toFixed(2) })
+      if ((options && options.silent) || !this._hydrated) return
       if (coins > prev) {
         this._triggerPulse()
         this._triggerPop(coins - prev)

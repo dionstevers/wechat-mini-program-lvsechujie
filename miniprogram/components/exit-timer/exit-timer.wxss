@@ -1,18 +1,37 @@
-.exit-timer-pill {
+/* movable-area must be position:fixed and full viewport for the
+   movable-view to be draggable across the whole screen. */
+.exit-timer-area {
   position: fixed;
-  top: calc(20rpx + env(safe-area-inset-top));
-  right: 20rpx;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 950;
-  display: flex;
+  pointer-events: none;
+  background: transparent;
+}
+
+.exit-timer-mover {
+  /* Width grows with content (DEV chip is conditional); pill itself decides
+     how wide via inline-flex. */
+  width: 460rpx;
+  height: 80rpx;
+  pointer-events: auto;
+}
+
+.exit-timer-pill {
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 12rpx;
-  padding: 12rpx 20rpx;
-  background: rgba(0, 0, 0, 0.55);
+  height: 100%;
+  padding: 0 18rpx;
+  background: rgba(0, 0, 0, 0.6);
   border: 1rpx solid rgba(249, 188, 96, 0.6);
   border-radius: 40rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.25);
-  pointer-events: auto;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .exit-timer-icon {
@@ -41,13 +60,21 @@
   letter-spacing: 2rpx;
 }
 
+/* Inline chip — same slot for +88 and the dev-skip indicator. */
+.exit-timer-chip {
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  font-weight: bold;
+  border-radius: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.exit-timer-reward {
+  background: #f9bc60;
+  color: #2a1a00;
+}
+
 .exit-timer-dev {
-  margin-left: 6rpx;
-  padding: 2rpx 10rpx;
   background: rgba(249, 188, 96, 0.85);
   color: #2a1a00;
-  font-size: 18rpx;
-  font-weight: bold;
-  border-radius: 6rpx;
-  letter-spacing: 1rpx;
 }

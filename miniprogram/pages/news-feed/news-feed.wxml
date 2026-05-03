@@ -8,9 +8,6 @@
 
     <view class="feed-scroll">
       <view class="feed-header">
-        <view class="article-prompt">
-          <text wx:for="{{articlePromptSegs}}" wx:for-item="seg" wx:key="index" class="article-prompt-seg {{seg.bold ? 'article-prompt-bold' : ''}}">{{seg.text}}</text>
-        </view>
         <text class="feed-title">{{feedTitle}}</text>
         <text class="feed-subtitle"><text wx:for="{{feedSubtitleSegs}}" wx:key="index" class="feed-subtitle-seg {{item.bold ? 'feed-subtitle-bold' : ''}}">{{item.text}}</text></text>
       </view>
