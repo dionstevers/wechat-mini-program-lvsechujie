@@ -521,3 +521,9 @@
   border-radius: 50%;
   background: #fff;
 }
+
+/* Questions flagged noCoin render no badge, so the right-side padding
+   reserved for it can collapse — same layout treatment as statement cards. */
+.question-card.no-coin-card .question-text {
+  padding-right: 0 !important;
+}

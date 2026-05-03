@@ -219,27 +219,21 @@ const ENTRY_SURVEY = {
     },
 
     // ─── Block 5: Final brief shown to all participants ──────────────────
-    // Universal explainer of what follows after the entry survey, gated
-    // behind a single tick that confirms understanding.
+    // Single card combining the explainer text and a 我已理解 tick that
+    // gates the 提交 button.
     {
       id: 'block_5',
       questions: [
         {
           id: 'Q_final_brief',
-          type: 'statement',
-          text: '感谢您完成入门问卷。点击「提交」后，将进行以下流程：\n\n· 部分参与者会先看到一段约 **8 秒** 的短视频，请仔细观看。\n· 接下来您将进入「信息中心」，可自由浏览资讯。\n· 大约 **2 分钟** 后，您会自动进入结束问卷，届时将获得 **+88 金币** 奖励。\n· 完成结束问卷后即可领取最终现金奖励。',
-          field: null,
-          required: false,
-        },
-        {
-          id: 'Q_understood',
           type: 'single_select',
-          text: '请确认您已理解上述说明：',
+          text: '感谢您完成入门问卷。点击「提交」后，部分参与者会先看到一段约 8 秒的短视频，请仔细观看。接下来您将进入「信息中心」自由浏览资讯，约 2 分钟后会自动进入结束问卷，届时将获得 +88 金币奖励。完成结束问卷后即可领取最终现金奖励。',
           field: 'final_brief_understood',
           options: [
             { label: '我已理解上述说明', value: 1 },
           ],
           required: true,
+          noCoin: true,
         },
       ],
     },

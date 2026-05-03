@@ -156,7 +156,9 @@ Component({
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
           if (q.type === 'intro' || q.type === 'statement') return
-          coinValues[q.id] = coinMap[q.type] || coinMap.default || 5
+          // noCoin questions render with no badge and award nothing — used
+          // for gating tick-boxes (e.g. "我已理解" on entry block 5).
+          coinValues[q.id] = q.noCoin ? 0 : (coinMap[q.type] || coinMap.default || 5)
           if (q.required) totalQCount++
           if (q.type === 'token_allocation' && q.categories) {
             allocAnswers[q.id] = {}
@@ -381,13 +383,13 @@ Component({
         delete answers[field]
         if (awardedQids[qid]) {
           delete awardedQids[qid]
-          this._deductCoin('single_select')
+          this._deductCoin('single_select', qid)
         }
       } else {
         answers[field] = v
         if (!awardedQids[qid]) {
           awardedQids[qid] = true
-          this._awardCoin('single_select')
+          this._awardCoin('single_select', qid)
         }
       }
 
@@ -537,7 +539,10 @@ Component({
       this._checkCanAdvance()
     },
 
-    _awardCoin(questionType) {
+    _awardCoin(questionType, qid) {
+      // Per-question opt-out (noCoin flag): coinValues[qid] is set to 0 in
+      // _initSurvey for those questions, so we treat them as zero-credit.
+      if (qid && this.data.coinValues && this.data.coinValues[qid] === 0) return
       const coinMap = REWARD_CONFIG.coins_per_question
       const coins = coinMap[questionType] || coinMap.default || 5
       const next = this.data.totalCoins + coins
@@ -545,7 +550,8 @@ Component({
       if (app && typeof app.setTotalCoins === 'function') app.setTotalCoins(next)
     },
 
-    _deductCoin(questionType) {
+    _deductCoin(questionType, qid) {
+      if (qid && this.data.coinValues && this.data.coinValues[qid] === 0) return
       const coinMap = REWARD_CONFIG.coins_per_question
       const coins = coinMap[questionType] || coinMap.default || 5
       const next = Math.max(0, (this.data.totalCoins || 0) - coins)

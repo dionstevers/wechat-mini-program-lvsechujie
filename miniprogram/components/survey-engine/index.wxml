@@ -48,7 +48,7 @@
       </view>
 
       <!-- SINGLE SELECT — custom radio (tappable to toggle off) -->
-      <view wx:elif="{{item.type === 'single_select'}}" id="q-{{item.safeId}}" class="question-card">
+      <view wx:elif="{{item.type === 'single_select'}}" id="q-{{item.safeId}}" class="question-card {{item.noCoin ? 'no-coin-card' : ''}}">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
