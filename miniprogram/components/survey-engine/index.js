@@ -45,6 +45,7 @@ Component({
     currentBlock: {},
     currentQuestions: [],
     visibleQuestions: [],
+    scrollTop: 0,
     isLastBlock: false,
     progressPct: 0,
     answers: {},        // field → scalar value (single_select, slider, dropdown, open_text)
@@ -432,12 +433,24 @@ Component({
       const next = this.data.currentBlockIndex + 1
       this.setData({ currentBlockIndex: next })
       this._loadBlock(next)
+      this._scrollToTop()
     },
 
     onPrevBlock() {
       const prev = this.data.currentBlockIndex - 1
       this.setData({ currentBlockIndex: prev })
       this._loadBlock(prev)
+      this._scrollToTop()
+    },
+
+    _scrollToTop() {
+      // scroll-view only re-scrolls when scrollTop *changes*. Toggle 1 → 0.
+      this.setData({ scrollTop: 1 })
+      setTimeout(() => this.setData({ scrollTop: 0 }), 0)
+      // Page-level scroll fallback for any device where the body scrolled too.
+      if (typeof wx !== 'undefined' && wx.pageScrollTo) {
+        wx.pageScrollTo({ scrollTop: 0, duration: 0 })
+      }
     },
 
     onSubmit() {

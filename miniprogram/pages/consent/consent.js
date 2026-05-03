@@ -1,16 +1,21 @@
 const app = getApp()
-const { CONSENT_RENDER } = require('../../config/consent.js')
+const { CONSENT_RENDER, CONSENT_RENDER_EN } = require('../../config/consent.js')
 const { REWARD_CONFIG } = require('../../config/reward.js')
 
 Page({
   data: {
     devMode: false,
     content: CONSENT_RENDER,
+    contentEn: null,
     btnCoins: REWARD_CONFIG.coins_consent || 0,
   },
 
   onLoad() {
-    this.setData({ devMode: !!app.globalData.devMode })
+    const devMode = !!app.globalData.devMode
+    this.setData({
+      devMode,
+      contentEn: devMode ? CONSENT_RENDER_EN : null,
+    })
   },
 
   onAgree() {

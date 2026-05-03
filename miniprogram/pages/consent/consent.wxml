@@ -31,6 +31,19 @@
       </view>
     </view>
 
+    <view wx:if="{{devMode && contentEn}}" class="consent-card dev-translation">
+      <view class="dev-translation-tag">
+        <text class="dev-translation-tag-text">DEV ONLY · English translation</text>
+      </view>
+      <text class="section-title dev-translation-title">{{contentEn.title}}</text>
+      <block wx:for="{{contentEn.sections}}" wx:for-item="section" wx:for-index="si" wx:key="si">
+        <text class="section-heading dev-translation-heading">{{section.heading}}</text>
+        <view class="section-body dev-translation-body" wx:for="{{section.paragraphs}}" wx:for-item="para" wx:for-index="pi" wx:key="pi">
+          <text wx:for="{{para.segments}}" wx:for-item="seg" wx:for-index="gi" wx:key="gi" class="seg-{{seg.style}}">{{seg.text}}</text>
+        </view>
+      </block>
+    </view>
+
     <view class="bottom-spacer"></view>
   </view>
 

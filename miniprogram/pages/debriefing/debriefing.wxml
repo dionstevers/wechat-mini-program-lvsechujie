@@ -29,6 +29,14 @@
         <text class="para">如果您对本研究有任何疑问，或希望进一步了解相关内容，欢迎随时与我们联系。再次感谢您的参与与支持。</text>
       </view>
 
+      <view wx:if="{{devMode && debriefEn}}" class="dev-translation">
+        <view class="dev-translation-tag">
+          <text class="dev-translation-tag-text">DEV ONLY · English translation</text>
+        </view>
+        <text class="dev-translation-title">{{debriefEn.title}}</text>
+        <text wx:for="{{debriefEn.paragraphs}}" wx:key="index" class="dev-translation-para">{{item}}</text>
+      </view>
+
       <view class="scroll-hint" wx:if="{{!buttonActive}}">
         <text class="hint-text">↓ 请继续向下滑动以领取奖励</text>
       </view>

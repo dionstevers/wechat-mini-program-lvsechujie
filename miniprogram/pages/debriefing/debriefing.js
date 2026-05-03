@@ -2,15 +2,23 @@
 // Shows Chinese debriefing text. 领取奖励 button activates after scroll to bottom.
 // Logs debrief_shown_timestamp on load and debrief_read_timestamp on button tap.
 
+const app = getApp()
+const { DEBRIEFING_EN } = require('../../config/debriefing-en.js')
+
 Page({
   data: {
     buttonActive: false,
     submitting: false,
+    devMode: false,
+    debriefEn: null,
   },
 
   _pageHeight: 0,
 
   onLoad() {
+    const devMode = !!(app && app.globalData && app.globalData.devMode)
+    this.setData({ devMode, debriefEn: devMode ? DEBRIEFING_EN : null })
+
     wx.cloud.callFunction({ name: 'logDebriefing', data: { event: 'shown' } })
 
     // Measure viewport height for scroll-to-bottom detection

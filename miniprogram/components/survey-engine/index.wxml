@@ -34,7 +34,7 @@
   </view>
 
   <!-- Questions in current block -->
-  <scroll-view scroll-y class="questions-scroll">
+  <scroll-view scroll-y class="questions-scroll" scroll-top="{{scrollTop}}">
     <block wx:for="{{visibleQuestions}}" wx:key="id">
 
       <!-- INTRO type -->

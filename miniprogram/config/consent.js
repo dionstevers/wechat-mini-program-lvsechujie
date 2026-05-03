@@ -103,14 +103,21 @@ function normalizeParagraphs(arr) {
   return arr.map(parseSegments)
 }
 
-const CONSENT_RENDER = {
-  topHeader: parseSegments(CONSENT_CONFIG.topHeader),
-  title: CONSENT_CONFIG.title,
-  sections: CONSENT_CONFIG.sections.map(function (s) {
-    return { heading: s.heading, paragraphs: normalizeParagraphs(s.paragraphs) }
-  }),
-  buttons: CONSENT_CONFIG.buttons,
-  disagreeModal: CONSENT_CONFIG.disagreeModal,
+function buildRender(cfg) {
+  return {
+    topHeader: parseSegments(cfg.topHeader),
+    title: cfg.title,
+    sections: cfg.sections.map(function (s) {
+      return { heading: s.heading, paragraphs: normalizeParagraphs(s.paragraphs) }
+    }),
+    buttons: cfg.buttons,
+    disagreeModal: cfg.disagreeModal,
+  }
 }
 
-module.exports = { CONSENT_CONFIG, CONSENT_RENDER }
+const CONSENT_RENDER = buildRender(CONSENT_CONFIG)
+
+const { CONSENT_CONFIG_EN } = require('./consent-en.js')
+const CONSENT_RENDER_EN = buildRender(CONSENT_CONFIG_EN)
+
+module.exports = { CONSENT_CONFIG, CONSENT_RENDER, CONSENT_RENDER_EN }
