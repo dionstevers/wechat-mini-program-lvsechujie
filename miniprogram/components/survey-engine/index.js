@@ -46,6 +46,7 @@ Component({
     currentQuestions: [],
     visibleQuestions: [],
     scrollTop: 0,
+    scrollIntoView: '',    // id of card to scroll into view (e.g. 'q-Q4.1')
     isLastBlock: false,
     progressPct: 0,
     answers: {},        // field → scalar value (single_select, slider, dropdown, open_text)
@@ -111,6 +112,15 @@ Component({
             const fixed = q.categories.filter(c => c.pinBottom)
             const movable = q.categories.filter(c => !c.pinBottom)
             q.categories = [...this._shuffle(movable), ...fixed]
+          }
+          // Shuffle multi_select options when randomiseOptions is set, but
+          // keep exclusive items (NOTA / PNA) anchored at the end. Mark each
+          // shuffled option with _randomised so dev mode can render a tag.
+          if (q.type === 'multi_select' && q.randomiseOptions && q.options) {
+            const exclusive = q.options.filter(o => o.exclusive)
+            const movable = q.options.filter(o => !o.exclusive)
+            const shuffled = this._shuffle(movable).map(o => ({ ...o, _randomised: true }))
+            q.options = [...shuffled, ...exclusive]
           }
         })
       })
@@ -353,14 +363,25 @@ Component({
     },
 
     onSingleSelect(e) {
-      const { field, qid } = e.currentTarget.dataset
-      const value = parseInt(e.detail.value, 10) || e.detail.value
-      const answers = { ...this.data.answers, [field]: value }
+      const { field, qid, value } = e.currentTarget.dataset
+      const v = typeof value === 'number' ? value : (parseInt(value, 10) || value)
+      const currentVal = this.data.answers[field]
+      const answers = { ...this.data.answers }
       const awardedQids = { ...this.data.awardedQids }
 
-      if (!awardedQids[qid]) {
-        awardedQids[qid] = true
-        this._awardCoin('single_select')
+      if (currentVal === v) {
+        // Tapping the already-selected option deselects it.
+        delete answers[field]
+        if (awardedQids[qid]) {
+          delete awardedQids[qid]
+          this._deductCoin('single_select')
+        }
+      } else {
+        answers[field] = v
+        if (!awardedQids[qid]) {
+          awardedQids[qid] = true
+          this._awardCoin('single_select')
+        }
       }
 
       this.setData({ answers, awardedQids })
@@ -388,10 +409,14 @@ Component({
         multiAnswers[field][value] = !currentlySelected
       }
 
+      const hasAny = Object.values(multiAnswers[field] || {}).some(Boolean)
       const awardedQids = { ...this.data.awardedQids }
-      if (!awardedQids[field]) {
+      if (hasAny && !awardedQids[field]) {
         awardedQids[field] = true
         this._awardCoin('multi_select')
+      } else if (!hasAny && awardedQids[field]) {
+        delete awardedQids[field]
+        this._deductCoin('multi_select')
       }
 
       this.setData({ multiAnswers, awardedQids })
@@ -513,9 +538,25 @@ Component({
       if (app && typeof app.setTotalCoins === 'function') app.setTotalCoins(next)
     },
 
+    _deductCoin(questionType) {
+      const coinMap = REWARD_CONFIG.coins_per_question
+      const coins = coinMap[questionType] || coinMap.default || 5
+      const next = Math.max(0, (this.data.totalCoins || 0) - coins)
+      this.setData({ totalCoins: next })
+      if (app && typeof app.setTotalCoins === 'function') app.setTotalCoins(next)
+    },
+
     onNextBlock() {
       if (this._navigating) return
-      if (!this.data.canAdvance) return
+      const empties = this._findEmpties()
+      if (empties.length > 0) {
+        this._warnEmpties(empties, () => this._proceedNext())
+        return
+      }
+      this._proceedNext()
+    },
+
+    _proceedNext() {
       this._navigating = true
       this.setData({ submitting: true })
       this._saveBlockToCloud()
@@ -536,6 +577,51 @@ Component({
       setTimeout(() => { this._navigating = false }, 0)
     },
 
+    // Returns the list of required visible questions in the current block
+    // that have no answer yet. Used for the next/submit warning + scroll.
+    _findEmpties() {
+      const { visibleQuestions, answers, multiAnswers, matrixAnswers, allocTotals } = this.data
+      return (visibleQuestions || []).filter(q => {
+        if (!q.required) return false
+        if (q.type === 'intro' || q.type === 'statement') return false
+        if (q.type === 'single_select' || q.type === 'dropdown' || q.type === 'open_text' || q.type === 'slider') {
+          const v = answers[q.field]
+          return v === undefined || v === null || v === ''
+        }
+        if (q.type === 'multi_select') {
+          return !Object.values(multiAnswers[q.field] || {}).some(Boolean)
+        }
+        if (q.type === 'matrix') {
+          return q.rows && !q.rows.every(row => matrixAnswers[row.field] !== undefined)
+        }
+        if (q.type === 'token_allocation') {
+          return (allocTotals[q.id] || 0) !== (q.totalTokens || 0)
+        }
+        return false
+      })
+    },
+
+    // Modal: warn the participant about unanswered questions. On confirm,
+    // proceed. On cancel, scroll to the first empty card.
+    _warnEmpties(empties, proceedFn) {
+      wx.showModal({
+        title: '还有问题未填',
+        content: '本页有 ' + empties.length + ' 道题尚未作答，是否仍要继续？',
+        confirmText: '继续',
+        cancelText: '返回填写',
+        success: (res) => {
+          if (res.confirm) {
+            proceedFn()
+          } else {
+            const firstId = 'q-' + empties[0].id
+            // Toggle to force scroll-into-view to re-fire even if same id.
+            this.setData({ scrollIntoView: '' })
+            setTimeout(() => this.setData({ scrollIntoView: firstId }), 0)
+          }
+        },
+      })
+    },
+
     _scrollToTop() {
       // scroll-view only re-scrolls when scrollTop *changes*. Toggle 1 → 0.
       this.setData({ scrollTop: 1 })
@@ -548,7 +634,15 @@ Component({
 
     onSubmit() {
       if (this._navigating) return
-      if (!this.data.canAdvance) return
+      const empties = this._findEmpties()
+      if (empties.length > 0) {
+        this._warnEmpties(empties, () => this._proceedSubmit())
+        return
+      }
+      this._proceedSubmit()
+    },
+
+    _proceedSubmit() {
       this._navigating = true
       this.setData({ submitting: true })
       this._saveBlockToCloud(true)

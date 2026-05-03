@@ -483,3 +483,41 @@
   color: #2e7d6f;
   font-weight: bold;
 }
+
+.option-rand-tag {
+  margin-left: 12rpx;
+  font-size: 18rpx;
+}
+
+.q-seg-append {
+  color: #888;
+  font-size: 26rpx;
+  font-style: italic;
+}
+
+/* Custom radio that supports deselection on re-tap. Visuals mirror native
+   <radio> with color="#419f8c". */
+.single-radio {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #d1d1d1;
+  background: #fff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.single-radio-selected {
+  background: #419f8c;
+  border-color: #419f8c;
+}
+
+.single-radio-inner {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #fff;
+}

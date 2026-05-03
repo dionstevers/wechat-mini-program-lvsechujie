@@ -34,7 +34,7 @@
   </view>
 
   <!-- Questions in current block -->
-  <scroll-view scroll-y class="questions-scroll" scroll-top="{{scrollTop}}">
+  <scroll-view scroll-y class="questions-scroll" scroll-top="{{scrollTop}}" scroll-into-view="{{scrollIntoView}}" scroll-with-animation>
     <block wx:for="{{visibleQuestions}}" wx:key="id">
 
       <!-- INTRO type -->
@@ -47,33 +47,35 @@
         <text class="question-text statement-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
       </view>
 
-      <!-- SINGLE SELECT -->
-      <view wx:elif="{{item.type === 'single_select'}}" class="question-card">
+      <!-- SINGLE SELECT — custom radio (tappable to toggle off) -->
+      <view wx:elif="{{item.type === 'single_select'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
-        <radio-group bindchange="onSingleSelect" data-field="{{item.field}}" data-qid="{{item.id}}">
-          <label wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row">
-            <radio value="{{opt.value}}" checked="{{answers[item.field] === opt.value}}" color="#419f8c"/>
-            <text class="option-label">{{opt.label}}</text>
-          </label>
-        </radio-group>
+        <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
+              bindtap="onSingleSelect" data-field="{{item.field}}" data-qid="{{item.id}}" data-value="{{opt.value}}">
+          <view class="single-radio {{answers[item.field] === opt.value ? 'single-radio-selected' : ''}}">
+            <view wx:if="{{answers[item.field] === opt.value}}" class="single-radio-inner"></view>
+          </view>
+          <text class="option-label">{{opt.label}}</text>
+        </view>
       </view>
 
       <!-- MULTI SELECT -->
-      <view wx:elif="{{item.type === 'multi_select'}}" class="question-card">
+      <view wx:elif="{{item.type === 'multi_select'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
-        <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
+        <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text><text wx:if="{{item.textAppendIf && answers[item.textAppendIf.field] === item.textAppendIf.equals}}" class="q-seg-append"> {{item.textAppendIf.text}}</text></text>
         <view wx:for="{{item.options}}" wx:for-item="opt" wx:key="value" class="option-row"
               bindtap="onMultiSelect" data-field="{{item.field}}" data-value="{{opt.value}}" data-exclusive="{{opt.exclusive}}">
           <checkbox value="{{opt.value}}"
                     checked="{{multiAnswers[item.field][opt.value]}}"
                     color="#419f8c" />
           <text class="option-label">{{opt.label}}</text>
+          <text wx:if="{{devMode && opt._randomised}}" class="alloc-rand-tag option-rand-tag">🔀</text>
         </view>
       </view>
 
       <!-- SLIDER -->
-      <view wx:elif="{{item.type === 'slider'}}" class="question-card">
+      <view wx:elif="{{item.type === 'slider'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="slider-labels">
@@ -90,7 +92,7 @@
       </view>
 
       <!-- MATRIX -->
-      <view wx:elif="{{item.type === 'matrix'}}" class="question-card">
+      <view wx:elif="{{item.type === 'matrix'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="matrix-wrap">
@@ -113,7 +115,7 @@
       </view>
 
       <!-- DROPDOWN -->
-      <view wx:elif="{{item.type === 'dropdown'}}" class="question-card">
+      <view wx:elif="{{item.type === 'dropdown'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <picker mode="selector" range="{{item.options}}"
@@ -129,7 +131,7 @@
       </view>
 
       <!-- OPEN TEXT -->
-      <view wx:elif="{{item.type === 'open_text'}}" class="question-card">
+      <view wx:elif="{{item.type === 'open_text'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <textarea class="open-text-input" placeholder="请在此输入您的回答"
@@ -138,7 +140,7 @@
       </view>
 
       <!-- TOKEN ALLOCATION -->
-      <view wx:elif="{{item.type === 'token_allocation'}}" class="question-card">
+      <view wx:elif="{{item.type === 'token_allocation'}}" id="q-{{item.id}}" class="question-card">
         <view wx:if="{{coinValues[item.id]}}" class="coin-badge">+{{coinValues[item.id]}}</view>
         <text class="question-text"><text wx:for="{{item.textSegs}}" wx:for-item="seg" wx:key="index" class="q-seg {{seg.bold ? 'q-seg-bold' : ''}}">{{seg.text}}</text></text>
         <view class="alloc-rows">
@@ -165,14 +167,15 @@
     </block>
   </scroll-view>
 
-  <!-- Navigation buttons -->
+  <!-- Navigation buttons. Submit/next stay tappable when answers are
+       missing — the engine warns + scrolls to the first empty question. -->
   <view class="nav-buttons">
     <button wx:if="{{currentBlockIndex > 0}}" class="btn-back" bindtap="onPrevBlock" disabled="{{submitting}}">上一页</button>
-    <button wx:if="{{!isLastBlock}}" class="btn-next {{(canAdvance && !submitting) ? '' : 'btn-disabled'}}"
-            bindtap="onNextBlock" disabled="{{!canAdvance || submitting}}" loading="{{submitting}}">下一页</button>
+    <button wx:if="{{!isLastBlock}}" class="btn-next {{submitting ? 'btn-disabled' : ''}}"
+            bindtap="onNextBlock" disabled="{{submitting}}" loading="{{submitting}}">下一页</button>
     <view wx:if="{{isLastBlock}}" class="coin-badge-wrap btn-submit-wrap">
-      <button class="btn-submit {{(canAdvance && !submitting) ? '' : 'btn-disabled'}}"
-              bindtap="onSubmit" disabled="{{!canAdvance || submitting}}" loading="{{submitting}}">提交</button>
+      <button class="btn-submit {{submitting ? 'btn-disabled' : ''}}"
+              bindtap="onSubmit" disabled="{{submitting}}" loading="{{submitting}}">提交</button>
       <view wx:if="{{surveyLastBlockCoins}}" class="coin-badge">+{{surveyLastBlockCoins}}</view>
     </view>
   </view>
