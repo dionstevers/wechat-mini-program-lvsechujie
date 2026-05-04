@@ -77,6 +77,31 @@
         <text class="loading-text">加载中...</text>
       </view>
     </view>
+
+    <!-- Contact us section — visible to all participants regardless of condition or progress -->
+    <view class="records-section">
+      <text class="records-title">联系我们</text>
+      <view class="contact-card">
+        <block wx:if="{{!feedbackSent}}">
+          <text class="contact-blurb">如有任何问题或反馈，欢迎在此留言，我们会尽快查看并回复。</text>
+          <textarea class="contact-input"
+                    placeholder="请输入您的留言..."
+                    maxlength="500"
+                    auto-height
+                    value="{{feedbackText}}"
+                    bindinput="onFeedbackInput"
+                    disabled="{{feedbackSubmitting}}" />
+          <button class="contact-btn"
+                  loading="{{feedbackSubmitting}}"
+                  disabled="{{feedbackSubmitting || !feedbackText}}"
+                  bindtap="onFeedbackSubmit">提交留言</button>
+        </block>
+        <view wx:else class="contact-success">
+          <text class="contact-success-icon">✅</text>
+          <text class="contact-success-text">您的留言已收到，我们会尽快查看并回复。感谢您的反馈！</text>
+        </view>
+      </view>
+    </view>
   </view>
 </view>
 

@@ -49,7 +49,7 @@
       <text class="pay-error-title">发放失败</text>
       <text class="pay-error-body">{{errorMsg}}</text>
       <button class="pay-btn pay-btn-retry" bindtap="onClaim">重试</button>
-      <text class="pay-home-hint">本次研究已记录，您也可以点击下方按钮返回主页。</text>
+      <text class="pay-home-hint">本次研究已记录。如需协助处理奖励发放，请前往「个人积分」页面通过「联系我们」给我们留言。</text>
       <button class="pay-btn pay-btn-home" bindtap="onGoHome">返回主页</button>
     </view>
 

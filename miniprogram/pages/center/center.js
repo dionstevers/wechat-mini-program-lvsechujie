@@ -25,6 +25,9 @@ Page({
     rewardYuan: "0.00",
     rewardTxnShort: "",
     rewardPaidLocal: "",
+    feedbackText: "",
+    feedbackSent: false,
+    feedbackSubmitting: false,
   },
 
   _unsubCoins: null,
@@ -139,6 +142,44 @@ Page({
         }
       })
       .catch((e) => console.warn("[center] cloud fetch failed", e));
+  },
+
+  // ── Contact us / feedback ─────────────────────────────────────────────────
+
+  onFeedbackInput(e) {
+    this.setData({ feedbackText: (e.detail && e.detail.value) || "" });
+  },
+
+  onFeedbackSubmit() {
+    const message = String(this.data.feedbackText || "").trim();
+    if (!message) return;
+    if (this.data.feedbackSubmitting) return;
+    this.setData({ feedbackSubmitting: true });
+
+    if (app.globalData && app.globalData.devMode) {
+      // No cloud env in dev — simulate success.
+      setTimeout(() => {
+        this.setData({ feedbackSent: true, feedbackSubmitting: false, feedbackText: "" });
+      }, 400);
+      return;
+    }
+
+    wx.cloud.database()
+      .collection("participant_feedback")
+      .add({
+        data: {
+          message,
+          submitted_at: new Date(),
+        },
+      })
+      .then(() => {
+        this.setData({ feedbackSent: true, feedbackSubmitting: false, feedbackText: "" });
+      })
+      .catch((err) => {
+        console.warn("[center] feedback submit failed", err);
+        this.setData({ feedbackSubmitting: false });
+        wx.showToast({ icon: "none", title: "提交失败，请稍后重试" });
+      });
   },
 
   _applyRecords(list) {
