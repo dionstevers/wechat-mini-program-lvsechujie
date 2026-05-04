@@ -28,8 +28,7 @@ Component({
       if (app && typeof app.subscribeTotalCoins === 'function') {
         this._unsub = app.subscribeTotalCoins((v) => this._update(v))
       }
-      // Idle-glow animation intentionally not scheduled — researcher finds
-      // it distracting on tab switches.
+      this._scheduleIdleGlow()
     },
     detached() {
       if (this._unsub) this._unsub()
