@@ -1,16 +1,9 @@
-<movable-area wx:if="{{visible}}" class="exit-timer-area">
-  <movable-view class="exit-timer-mover {{devMode ? 'is-dev' : ''}}"
-                x="{{x}}" y="{{y}}"
-                direction="all" damping="40"
-                bindchange="onMove">
-    <view class="exit-timer-pill" bindtap="onTap">
-      <text class="exit-timer-icon">⏳</text>
-      <view class="exit-timer-body">
-        <text class="exit-timer-label">进入结束问卷</text>
-        <text class="exit-timer-time">{{mmss}}</text>
-      </view>
-      <view class="exit-timer-chip exit-timer-reward">+{{rewardCoins}}</view>
-      <view wx:if="{{devMode}}" class="exit-timer-chip exit-timer-dev">DEV 跳过</view>
-    </view>
-  </movable-view>
-</movable-area>
+<view wx:if="{{visible}}" class="exit-timer-pill" bindtap="onTap">
+  <text class="exit-timer-icon">⏳</text>
+  <view class="exit-timer-body">
+    <text class="exit-timer-label">进入结束问卷</text>
+    <text class="exit-timer-time">{{mmss}}</text>
+  </view>
+  <view class="exit-timer-chip exit-timer-reward">+{{rewardCoins}}</view>
+  <view wx:if="{{devMode}}" class="exit-timer-chip exit-timer-dev">DEV 跳过</view>
+</view>

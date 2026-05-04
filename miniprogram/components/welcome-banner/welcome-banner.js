@@ -12,7 +12,12 @@ Component({
   lifetimes: {
     attached() {
       const text = (app && app.globalData && app.globalData.welcomeBackBanner) || ''
-      if (text) this.setData({ visible: true, text })
+      if (text) {
+        this.setData({ visible: true, text })
+        // Consume on first read so the banner doesn't re-surface on the next
+        // page that mounts welcome-banner. Single-shot per re-entry.
+        app.globalData.welcomeBackBanner = ''
+      }
     },
   },
   methods: {

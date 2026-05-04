@@ -1,13 +1,11 @@
-// exit-timer — draggable floating pill that runs the global 2-minute
-// news-feed clock. Mounts on home / news-feed / center; reads start time
-// from app.globalData (so all three tabs share the same clock). On expiry,
+// exit-timer — fixed top-right pill that runs the global 2-minute news-feed
+// clock. Mounts on home / news-feed / center; reads start time from
+// app.globalData (so all three tabs share the same clock). On expiry,
 // awards +88 and reLaunches into the exit-survey. Tap once to skip in dev
-// mode. Drag to reposition (movable-view).
+// mode.
 
 const { REWARD_CONFIG } = require('../../config/reward.js')
 const app = getApp()
-
-const STORAGE_KEY = 'exit_timer_pos'
 
 function pad2(n) { return n < 10 ? '0' + n : '' + n }
 
@@ -18,33 +16,13 @@ Component({
     mmss: '',
     expired: false,
     rewardCoins: 0,
-    x: 0,
-    y: 0,
   },
 
   lifetimes: {
     attached() {
-      const devMode = !!(app.globalData && app.globalData.devMode)
-      // movable-view uses px, not rpx. Compute the right-edge default from
-      // the system window so the pill lands flush-right on first mount.
-      let initialX = 0
-      let initialY = 20
-      try {
-        const info = wx.getSystemInfoSync()
-        const screenW = info.windowWidth
-        const pillW = screenW * (devMode ? 460 : 320) / 750
-        initialX = Math.max(0, screenW - pillW)
-      } catch (e) {}
-      // In production, always snap flush-right; ignore any drag persisted
-      // from prior dev sessions. In dev mode, restore the last drag position.
-      const saved = devMode
-        ? (function () { try { return wx.getStorageSync(STORAGE_KEY) || null } catch (e) { return null } })()
-        : null
       this.setData({
-        devMode,
+        devMode: !!(app.globalData && app.globalData.devMode),
         rewardCoins: REWARD_CONFIG.coins_exit_entry || 0,
-        x: saved && typeof saved.x === 'number' ? saved.x : initialX,
-        y: saved && typeof saved.y === 'number' ? saved.y : initialY,
       })
       this._tick()
       this._interval = setInterval(() => this._tick(), 1000)
@@ -73,14 +51,6 @@ Component({
       const mmss = m + ':' + pad2(s)
       if (!this.data.visible) this.setData({ visible: true, mmss })
       else if (this.data.mmss !== mmss) this.setData({ mmss })
-    },
-
-    onMove(e) {
-      // Persist position only on user-driven drags so the pill returns to
-      // wherever the participant last left it across tab switches.
-      if (e.detail.source !== 'touch' && e.detail.source !== 'touch-out-of-bounds') return
-      const { x, y } = e.detail
-      try { wx.setStorageSync(STORAGE_KEY, { x, y }) } catch (e2) {}
     },
 
     onTap() {

@@ -1,35 +1,13 @@
-/* movable-area must be position:fixed and full viewport for the
-   movable-view to be draggable across the whole screen. */
-.exit-timer-area {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 950;
-  pointer-events: none;
-  background: transparent;
-}
-
-.exit-timer-mover {
-  /* Sized to fit pill content so movable-view's left edge aligns with the
-     pill itself — keeps the flush-right default from leaving an empty gap. */
-  width: 320rpx;
-  height: 80rpx;
-  pointer-events: auto;
-}
-
-.exit-timer-mover.is-dev {
-  /* DEV chip widens the pill; mover follows so drag bounds match. */
-  width: 460rpx;
-}
-
 .exit-timer-pill {
+  position: fixed;
+  top: 8rpx;
+  right: 8rpx;
+  z-index: 950;
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 12rpx;
-  height: 100%;
+  height: 80rpx;
   padding: 0 18rpx;
   background: rgba(0, 0, 0, 0.6);
   border: 1rpx solid rgba(249, 188, 96, 0.6);
