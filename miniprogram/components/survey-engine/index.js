@@ -225,8 +225,8 @@ Component({
       let coins = 0
       blocks.forEach(block => {
         ;(block.questions || []).forEach(q => {
-          if (q.type === 'intro') return
-          coins += coinMap[q.type] || coinMap.default || 5
+          if (q.type === 'intro' || q.type === 'statement') return
+          if (!q.noCoin) coins += coinMap[q.type] || coinMap.default || 5
           if (q.type === 'single_select' && q.options && q.options.length) {
             answers[q.field] = q.options[0].value
           } else if (q.type === 'multi_select' && q.options && q.options.length) {

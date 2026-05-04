@@ -72,6 +72,13 @@ Page({
   },
 
   onShow() {
+    // After payout, the participant is in finished mode — the news-feed
+    // tab is the canonical landing page. Bounce off this tab if they
+    // happen to land on it.
+    if (app.globalData && app.globalData.rewardPaid) {
+      wx.switchTab({ url: "/pages/news-feed/news-feed" });
+      return;
+    }
     if (typeof this.getTabBar === "function" && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 });
     }
