@@ -14,6 +14,7 @@ const ROUTE_TO_URL = {
   entry_survey:    { url: '/pages/entry-survey/entry-survey',       method: 'redirect' },
   news_feed:       { url: '/pages/news-feed/news-feed',             method: 'switchTab' },
   news_feed_free:  { url: '/pages/news-feed/news-feed',             method: 'switchTab' },
+  exit_survey:     { url: '/pages/exit-survey/exit-survey',         method: 'redirect' },
   debriefing:      { url: '/pages/debriefing/debriefing',           method: 'redirect' },
   reward:          { url: '/pages/reward/reward',                   method: 'redirect' },
 }

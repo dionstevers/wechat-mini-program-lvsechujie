@@ -128,6 +128,9 @@ App({
           case 'entry_done_at_news_feed':
             return Object.assign({}, base, { route: 'news_feed', welcomeBack: '欢迎回来！约 2 分钟后将自动进入结束问卷',
               coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200, reward_paid: false })
+          case 'at_exit_survey':
+            return Object.assign({}, base, { route: 'exit_survey', welcomeBack: '欢迎回来！请完成结束问卷',
+              coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200 + COINS_EXIT_ENTRY, reward_paid: false })
           case 'exit_done_no_debrief':
             return Object.assign({}, base, { route: 'debriefing', welcomeBack: '欢迎回来！请阅读说明并领取奖励',
               coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200 + COINS_EXIT_ENTRY + 150, reward_paid: false })
@@ -254,7 +257,7 @@ App({
     // Change to 'fresh' / 'consented_no_registration' / 'registered_no_entry'
     // / 'entry_done_at_news_feed' / 'exit_done_no_debrief' /
     // 'debrief_done_no_reward' / 'reward_paid_free_use' / 'reward_pay_in_flight'.
-    devScenario: 'entry_done_at_news_feed',
+    devScenario: 'fresh',
     // Recent trip records cache shared between home (行程记录) and center (个人积分).
     // Populated lazily by either page; pre-fetched on launch when not in dev mode.
     recentTracksCache: null,

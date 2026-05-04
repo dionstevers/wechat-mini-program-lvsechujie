@@ -145,7 +145,12 @@ Page({
           }
         },
       })
-    } else if (app.globalData && !app.globalData.newsTimerStartTs) {
+    } else if (
+      app.globalData &&
+      !app.globalData.newsTimerStartTs &&
+      !app.globalData.rewardPaid &&
+      !app.globalData.exitSurveyFired
+    ) {
       app.globalData.newsTimerStartTs = Date.now()
     }
 
