@@ -24,18 +24,39 @@ const TYPE_WEIGHTS = {
 }
 
 const TOTAL_COINS    = TOTAL_REWARD_YUAN * COINS_PER_YUAN
-const SURVEY_BUDGET  = TOTAL_COINS - COINS_LANDING - COINS_CONSENT - COINS_REGISTRATION - COINS_EXIT_ENTRY
 
 const { ENTRY_SURVEY } = require('./survey-entry.js')
 const { EXIT_SURVEY }  = require('./survey-exit.js')
 
+// Per-survey post-submit bonuses (e.g. the +50 deferred coin pulse after
+// the entry-survey video). Subtracted from the question budget below so
+// the running coin counter never exceeds TOTAL_COINS.
+const ENTRY_LAST_BLOCK_COINS = (ENTRY_SURVEY && ENTRY_SURVEY.lastBlockCoins) || 0
+const EXIT_LAST_BLOCK_COINS  = (EXIT_SURVEY  && EXIT_SURVEY.lastBlockCoins)  || 0
+
+const SURVEY_BUDGET = TOTAL_COINS
+  - COINS_LANDING
+  - COINS_CONSENT
+  - COINS_REGISTRATION
+  - COINS_EXIT_ENTRY
+  - ENTRY_LAST_BLOCK_COINS
+  - EXIT_LAST_BLOCK_COINS
+
 function _countTypes() {
+  // Count every coin-earning question across both surveys, including
+  // treatmentOnly + showIf-gated ones. Sizing the budget for the worst
+  // case (treatment user who answers every conditional question) means
+  // the client tally never exceeds TOTAL_COINS. Control users + users
+  // who skip showIf branches end up earning slightly less; the
+  // server-side cap then clamps everyone at TOTAL_COINS exactly.
   const counts = {}
   ;[ENTRY_SURVEY, EXIT_SURVEY].forEach(cfg => {
     if (!cfg || !cfg.blocks) return
     cfg.blocks.forEach(block => {
       ;(block.questions || []).forEach(q => {
-        if (!q.type || q.type === 'intro') return
+        if (!q.type) return
+        if (q.type === 'intro' || q.type === 'statement') return
+        if (q.noCoin) return
         counts[q.type] = (counts[q.type] || 0) + 1
       })
     })

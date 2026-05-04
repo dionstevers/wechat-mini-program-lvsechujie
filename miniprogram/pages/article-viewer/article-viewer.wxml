@@ -1,5 +1,6 @@
 <dev-banner />
 <coin-overlay />
+<exit-timer />
 <scroll-view scroll-y class="article-page">
   <image class="article-hero" src="{{article.thumbnail}}" mode="aspectFill" />
   <view class="article-body">
