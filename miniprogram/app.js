@@ -5,7 +5,7 @@
 // 'empty'     → mock cloud calls + registration prefill, but surveys are blank.
 // 'prefilled' → mock cloud calls + registration prefill + every survey question
 //               pre-answered so tester can click through.
-const DEV_MODE_OPTION = 'prefilled'
+const DEV_MODE_OPTION = 'off'
 
 const DEV_MODE = DEV_MODE_OPTION !== 'off'
 const DEV_PREFILL_SURVEYS = DEV_MODE_OPTION === 'prefilled'
