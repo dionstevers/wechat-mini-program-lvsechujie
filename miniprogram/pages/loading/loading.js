@@ -19,6 +19,18 @@ const ROUTE_TO_URL = {
   reward:          { url: '/pages/reward/reward',                   method: 'redirect' },
 }
 
+// Banner copy painted on the destination page when the WeChat home
+// capsule re-bootstraps the mini-program mid-flow. Surfaces feedback so
+// the involuntary platform reLaunch reads as "please finish this step".
+const MID_FLOW_HINT = {
+  registration: '请先完成注册后再返回主页。',
+  entry_survey: '请先完成入门问卷后再返回主页。',
+  news_feed:    '请先在「信息中心」阅读资讯，约 2 分钟后将自动进入结束问卷。',
+  exit_survey:  '请先完成结束问卷后再返回主页。',
+  debriefing:   '请先阅读完研究说明后再返回主页。',
+  reward:       '请先领取奖励后再返回主页。',
+}
+
 Page({
   onLoad() {
     const startedAt = Date.now()
@@ -36,13 +48,24 @@ Page({
   },
 
   _handleResult(result, startedAt) {
+    // First bootstrap of the session vs a mid-flow re-bootstrap: WeChat's
+    // platform home capsule reLaunches the mini-program back to this
+    // page (it's pages[0] in app.json), so we use globalData persistence
+    // to tell a true cold start from a home-capsule bounce.
+    const firstBootstrap = !(app.globalData && app.globalData.hasBootstrapped)
+
     // Hydrate globalData so downstream pages see the resumed state.
     if (app.globalData) {
       if (typeof result.coins_so_far === 'number') {
         if (typeof app.setTotalCoins === 'function') app.setTotalCoins(result.coins_so_far)
         else app.globalData.totalCoins = result.coins_so_far
       }
-      app.globalData.welcomeBackBanner = result.welcomeBack || ''
+      // First bootstrap → server-derived welcome-back copy. Re-bootstrap
+      // (home-capsule tap mid-flow) → swap in a "please finish this
+      // step" hint so the bounce reads as feedback instead of a glitch.
+      app.globalData.welcomeBackBanner = firstBootstrap
+        ? (result.welcomeBack || '')
+        : (MID_FLOW_HINT[result.route] || '')
       app.globalData.rewardPaid = !!result.reward_paid
       app.globalData.rewardAttempted = !!result.reward_attempted
       app.globalData.rewardYuan = Number(result.reward_yuan || 0)
@@ -61,11 +84,15 @@ Page({
       // For news_feed (resumed entry done, exit not done), the news-feed
       // page starts the timer after the participant dismisses the welcome
       // modal — not here. Leaving newsTimerStartTs null on entry.
+      app.globalData.hasBootstrapped = true
     }
 
     const route = ROUTE_TO_URL[result.route] || ROUTE_TO_URL.fresh
     const elapsed = Date.now() - startedAt
-    const wait = Math.max(0, MIN_LOADING_MS - elapsed)
+    // Skip the spinner delay on a home-capsule re-bootstrap so the user
+    // doesn't see the loading screen — they didn't ask for one, the
+    // platform forced one on them.
+    const wait = firstBootstrap ? Math.max(0, MIN_LOADING_MS - elapsed) : 0
     setTimeout(() => {
       if (route.method === 'switchTab') {
         wx.switchTab({ url: route.url })
