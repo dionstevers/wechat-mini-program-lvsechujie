@@ -25,5 +25,11 @@ Component({
       this.setData({ visible: false })
       if (app && app.globalData) app.globalData.welcomeBackBanner = ''
     },
+    // Imperative paint — host pages call this from the home-cap-btn nudge
+    // handler to surface a hint without going through globalData.
+    showText(text) {
+      if (!text) return
+      this.setData({ visible: true, text })
+    },
   },
 })

@@ -1,6 +1,7 @@
 <view class="reward-page">
   <dev-banner />
-  <welcome-banner />
+  <welcome-banner class="welcome-banner-host" />
+  <home-cap-btn bind:nudge="onHomeNudge" />
   <coin-overlay />
 
   <view wx:if="{{loading}}" class="loading-wrap">

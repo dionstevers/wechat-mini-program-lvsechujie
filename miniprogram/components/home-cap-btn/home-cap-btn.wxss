@@ -1,0 +1,28 @@
+/* Custom replacement for the WeChat platform home capsule. Mid-flow pages
+   call wx.hideHomeButton() to suppress the default and mount this view in
+   the same on-screen slot so the swap is transparent to the participant. */
+.home-cap-btn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 16rpx);
+  left: 24rpx;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.home-cap-btn-hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.home-cap-icon {
+  font-size: 40rpx;
+  color: #fff;
+  line-height: 1;
+  font-weight: bold;
+}

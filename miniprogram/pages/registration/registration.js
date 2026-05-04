@@ -4,6 +4,7 @@
 const { REWARD_CONFIG } = require('../../config/reward.js')
 const { REGISTRATION_CONFIG } = require('../../config/registration.js')
 const { parseSegments } = require('../../utils/parse-segments.js')
+const { onHomeNudge } = require('../../utils/home-nudge.js')
 const app = getApp()
 
 Page({
@@ -17,12 +18,15 @@ Page({
   },
 
   onLoad() {
+    if (wx.hideHomeButton) wx.hideHomeButton()
     if (app && app.globalData && app.globalData.devMode) {
       this.setData({
         form: { phone: '13800138000', wechat_id: 'dev_tester' },
       })
     }
   },
+
+  onHomeNudge,
 
   onPhoneInput(e)  { this.setData({ 'form.phone': e.detail.value, 'errors.phone': '' }) },
   onWechatInput(e) { this.setData({ 'form.wechat_id': e.detail.value }) },

@@ -247,6 +247,12 @@ App({
     // pages/loading. Pages read these to render welcome banners and the
     // 已领取奖励 badge in 个人积分.
     welcomeBackBanner: '',
+    // Bootstrap-derived participant route (one of: fresh, registration,
+    // entry_survey, news_feed, news_feed_free, exit_survey, debriefing,
+    // reward). Hydrated by pages/loading from getParticipantState; read by
+    // home-cap-btn to decide between mid-flow nudge vs session-complete
+    // reLaunch.
+    experimentRoute: 'fresh',
     rewardPaid: false,
     // True once the participant has clicked 领取奖励 at least once. Combined
     // with rewardPaid for "session closed" gating — once attempted, the

@@ -4,6 +4,7 @@
 
 const app = getApp()
 const { DEBRIEFING_EN } = require('../../config/debriefing-en.js')
+const { onHomeNudge } = require('../../utils/home-nudge.js')
 
 Page({
   data: {
@@ -16,6 +17,7 @@ Page({
   _pageHeight: 0,
 
   onLoad() {
+    if (wx.hideHomeButton) wx.hideHomeButton()
     const devMode = !!(app && app.globalData && app.globalData.devMode)
     this.setData({ devMode, debriefEn: devMode ? DEBRIEFING_EN : null })
 
@@ -26,6 +28,8 @@ Page({
       success: (res) => { this._pageHeight = res.windowHeight },
     })
   },
+
+  onHomeNudge,
 
   onScroll(e) {
     if (this.data.buttonActive) return

@@ -1,5 +1,6 @@
 <dev-banner />
-<welcome-banner />
+<welcome-banner class="welcome-banner-host" />
+<home-cap-btn bind:nudge="onHomeNudge" />
 <coin-overlay />
 <survey-engine
   config="{{surveyConfig}}"
