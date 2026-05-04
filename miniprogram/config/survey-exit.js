@@ -153,8 +153,8 @@ const EXIT_SURVEY = {
           text: '当您想到中国当前的环境状况时，您在多大程度上有以下这些情绪？',
           field: 'emotions',
           randomiseRows: true,
-          scaleLabels: ['非常', '比较', '有点', '完全不'],
-          scaleValues: [1, 2, 3, 4],
+          scaleLabels: ['非常', '比较', '有点', '完全不', '不知道'],
+          scaleValues: [1, 2, 3, 4, 5],
           rows: [
             { id: 'Q5.1a', label: '紧张（即不安）', field: 'emotion_anxious' },
             { id: 'Q5.1b', label: '骄傲',           field: 'emotion_proud' },

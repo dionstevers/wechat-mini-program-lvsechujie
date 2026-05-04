@@ -92,10 +92,13 @@ App({
           }
         },
         getParticipantState: function() {
-          // Dev mode: use the in-memory devScenario (set by the dev picker
-          // via setDevState). Default to 'fresh' on cold start.
+          // Dev mode: in-session progress markers take precedence over the
+          // static devScenario so the home / capsule button reLaunches the
+          // app to the right page after the user has progressed.
           var inst = getApp()
-          var scenario = (inst && inst.globalData && inst.globalData.devScenario) || 'fresh'
+          var g = (inst && inst.globalData) || {}
+          if (g.rewardPaid) return _devStateForScenario('reward_paid_free_use')
+          var scenario = g.devScenario || 'fresh'
           return _devStateForScenario(scenario)
         },
         setDevState: function(data) {

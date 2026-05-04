@@ -57,13 +57,8 @@ Page({
       success: (res) => {
         const result = res.result || {}
         if (result.success) {
-          this.setData({
-            payState: 'paid',
-            transactionId: result.transaction_id || '',
-            paidAt: result.paid_at || Date.now(),
-          })
+          this._markPaid(result)
         } else if (result.error === 'in_flight') {
-          // Another tap is mid-flight on the server; retry once after 2s.
           setTimeout(() => this._retryAfterInFlight(), 2000)
         } else {
           this._enterError(result.error || 'unknown_error')
@@ -78,6 +73,21 @@ Page({
     })
   },
 
+  _markPaid(result) {
+    const txn = result.transaction_id || ''
+    const ts = result.paid_at || Date.now()
+    this.setData({ payState: 'paid', transactionId: txn, paidAt: ts })
+    // Hydrate globalData so the loading dispatcher (and 个人积分 banner)
+    // route the participant to the finished-state news-feed on every
+    // subsequent re-launch.
+    if (app && app.globalData) {
+      app.globalData.rewardPaid = true
+      app.globalData.rewardYuan = Number(this.data.rewardYuan || 0)
+      app.globalData.rewardTransactionId = txn
+      app.globalData.rewardPaidTimestamp = ts
+    }
+  },
+
   _retryAfterInFlight() {
     if (this.data.payState !== 'paying') return
     wx.cloud.callFunction({
@@ -85,11 +95,7 @@ Page({
       success: (res) => {
         const result = res.result || {}
         if (result.success) {
-          this.setData({
-            payState: 'paid',
-            transactionId: result.transaction_id || '',
-            paidAt: result.paid_at || Date.now(),
-          })
+          this._markPaid(result)
         } else {
           this._enterError(result.error || 'in_flight_timeout')
         }
