@@ -6,7 +6,6 @@
     "survey-engine": "../../components/survey-engine/index",
     "dev-banner": "../../components/dev-banner/dev-banner",
     "coin-overlay": "../../components/coin-overlay/coin-overlay",
-    "welcome-banner": "../../components/welcome-banner/welcome-banner",
-    "home-cap-btn": "../../components/home-cap-btn/home-cap-btn"
+    "welcome-banner": "../../components/welcome-banner/welcome-banner"
   }
 }

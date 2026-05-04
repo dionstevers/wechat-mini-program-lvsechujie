@@ -6,7 +6,6 @@
 
 const app = getApp()
 const { EXIT_SURVEY } = require('../../config/survey-exit.js')
-const { onHomeNudge } = require('../../utils/home-nudge.js')
 
 Page({
   data: {
@@ -17,7 +16,6 @@ Page({
   },
 
   onLoad() {
-    if (wx.hideHomeButton) wx.hideHomeButton()
     const trigger = wx.getStorageSync('exit_survey_trigger') || ''
     const condition = app.globalData.condition || ''
     this.setData({
@@ -27,8 +25,6 @@ Page({
       initialCoins: app.globalData.totalCoins || 0,
     })
   },
-
-  onHomeNudge,
 
   onSurveyComplete(e) {
     if (e && e.detail && typeof e.detail.totalCoins === 'number') {

@@ -1,7 +1,6 @@
 <view class="reg-page">
   <dev-banner />
-  <welcome-banner class="welcome-banner-host" />
-  <home-cap-btn bind:nudge="onHomeNudge" />
+  <welcome-banner />
   <coin-overlay />
 
   <view class="landing-decor decor-a"></view>

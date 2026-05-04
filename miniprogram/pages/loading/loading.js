@@ -43,7 +43,6 @@ Page({
         else app.globalData.totalCoins = result.coins_so_far
       }
       app.globalData.welcomeBackBanner = result.welcomeBack || ''
-      app.globalData.experimentRoute = result.route || 'fresh'
       app.globalData.rewardPaid = !!result.reward_paid
       app.globalData.rewardAttempted = !!result.reward_attempted
       app.globalData.rewardYuan = Number(result.reward_yuan || 0)

@@ -4,7 +4,6 @@
 
 const app = getApp()
 const { ENTRY_SURVEY } = require('../../config/survey-entry.js')
-const { onHomeNudge } = require('../../utils/home-nudge.js')
 
 Page({
   data: {
@@ -14,14 +13,11 @@ Page({
   },
 
   onLoad() {
-    if (wx.hideHomeButton) wx.hideHomeButton()
     this.setData({
       surveyConfig: ENTRY_SURVEY,
       initialCoins: app.globalData.totalCoins || 0,
     })
   },
-
-  onHomeNudge,
 
   onSurveyComplete(e) {
     // Persist running coin total before navigating

@@ -4,7 +4,6 @@
 // red packet via sendCashReward server-side). Idempotent on reward_paid.
 
 const app = getApp()
-const { onHomeNudge } = require('../../utils/home-nudge.js')
 
 Page({
   data: {
@@ -20,10 +19,7 @@ Page({
 
   _claiming: false,
 
-  onHomeNudge,
-
   onLoad() {
-    if (wx.hideHomeButton) wx.hideHomeButton()
     wx.cloud.callFunction({
       name: 'completeSession',
       success: (res) => {

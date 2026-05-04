@@ -1,7 +1,6 @@
 const app = getApp()
 const { CONSENT_RENDER, CONSENT_RENDER_EN } = require('../../config/consent.js')
 const { REWARD_CONFIG } = require('../../config/reward.js')
-const { onHomeNudge } = require('../../utils/home-nudge.js')
 
 Page({
   data: {
@@ -13,15 +12,12 @@ Page({
   },
 
   onLoad() {
-    if (wx.hideHomeButton) wx.hideHomeButton()
     const devMode = !!app.globalData.devMode
     this.setData({
       devMode,
       contentEn: devMode ? CONSENT_RENDER_EN : null,
     })
   },
-
-  onHomeNudge,
 
   onAgree() {
     // Synchronous instance-var guard — beats the setData race window where

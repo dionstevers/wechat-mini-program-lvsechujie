@@ -1,3 +1,0 @@
-<view class="home-cap-btn" bindtap="onTap" hover-class="home-cap-btn-hover">
-  <text class="home-cap-icon">⌂</text>
-</view>
