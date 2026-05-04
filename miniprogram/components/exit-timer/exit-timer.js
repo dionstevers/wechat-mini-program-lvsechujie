@@ -24,21 +24,24 @@ Component({
 
   lifetimes: {
     attached() {
-      const saved = (function () {
-        try { return wx.getStorageSync(STORAGE_KEY) || null } catch (e) { return null }
-      })()
+      const devMode = !!(app.globalData && app.globalData.devMode)
       // movable-view uses px, not rpx. Compute the right-edge default from
-      // the system window so the pill lands top-right on first mount.
+      // the system window so the pill lands flush-right on first mount.
       let initialX = 0
       let initialY = 20
       try {
         const info = wx.getSystemInfoSync()
         const screenW = info.windowWidth
-        const pillW = screenW * 360 / 750  // 360rpx → px
-        initialX = Math.max(0, screenW - pillW - 12)
+        const pillW = screenW * (devMode ? 460 : 320) / 750
+        initialX = Math.max(0, screenW - pillW)
       } catch (e) {}
+      // In production, always snap flush-right; ignore any drag persisted
+      // from prior dev sessions. In dev mode, restore the last drag position.
+      const saved = devMode
+        ? (function () { try { return wx.getStorageSync(STORAGE_KEY) || null } catch (e) { return null } })()
+        : null
       this.setData({
-        devMode: !!(app.globalData && app.globalData.devMode),
+        devMode,
         rewardCoins: REWARD_CONFIG.coins_exit_entry || 0,
         x: saved && typeof saved.x === 'number' ? saved.x : initialX,
         y: saved && typeof saved.y === 'number' ? saved.y : initialY,

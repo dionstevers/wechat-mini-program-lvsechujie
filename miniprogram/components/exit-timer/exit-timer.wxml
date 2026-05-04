@@ -1,5 +1,5 @@
 <movable-area wx:if="{{visible}}" class="exit-timer-area">
-  <movable-view class="exit-timer-mover"
+  <movable-view class="exit-timer-mover {{devMode ? 'is-dev' : ''}}"
                 x="{{x}}" y="{{y}}"
                 direction="all" damping="40"
                 bindchange="onMove">

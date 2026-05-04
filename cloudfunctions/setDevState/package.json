@@ -1,9 +1,0 @@
-{
-  "name": "setDevState",
-  "version": "1.0.0",
-  "description": "Dev-only: stamp a participant doc with the right field set so the bootstrap router lands on a chosen scenario page.",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.4.0"
-  }
-}

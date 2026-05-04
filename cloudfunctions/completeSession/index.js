@@ -17,9 +17,13 @@ const TOTAL_COINS_CAP    = TOTAL_REWARD_YUAN * COINS_PER_YUAN  // 704
 // Always-earned by anyone who reaches the reward step. Landing 继续, consent
 // 同意, and entering the exit survey (via the 2-min timer or dev skip) are
 // mandatory upstream gates, so we book them here without separate DB writes.
-const COINS_LANDING    = 88
-const COINS_CONSENT    = 50
-const COINS_EXIT_ENTRY = 88
+const COINS_LANDING     = 88
+const COINS_CONSENT     = 50
+const COINS_EXIT_ENTRY  = 88
+// Treatment users see a video overlay before the news feed; clicking 继续
+// awards the entry-survey "last block" bonus locally. Mirror it server-side
+// so DB totals match the on-screen coin counter. Control has no video.
+const COINS_VIDEO_BONUS = 50
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -53,13 +57,17 @@ exports.main = async (event, context) => {
     const coins_registration = participant.coins_registration || 0
     const coins_entry_survey = participant.coins_entry_survey || 0
     const coins_exit_survey  = participant.coins_exit_survey  || 0
+    const video_bonus = participant.condition && participant.condition !== 'control'
+      ? COINS_VIDEO_BONUS
+      : 0
     const raw_total =
       COINS_LANDING +
       COINS_CONSENT +
       coins_registration +
       coins_entry_survey +
       COINS_EXIT_ENTRY +
-      coins_exit_survey
+      coins_exit_survey +
+      video_bonus
     // Hard cap: even if upstream over-credited, never pay more than the
     // configured experiment budget.
     const coins_total = Math.min(raw_total, TOTAL_COINS_CAP)

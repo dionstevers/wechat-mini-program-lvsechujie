@@ -1,3 +1,3 @@
-<view wx:if="{{devMode}}" class="dev-banner {{dimmed ? 'dev-banner-dimmed' : ''}}" bindtap="onTap" bindlongpress="onLongPress">
+<view wx:if="{{devMode}}" class="dev-banner {{dimmed ? 'dev-banner-dimmed' : ''}}" bindtap="onTap">
   <text class="dev-banner-text">{{devLabel}}</text>
 </view>

@@ -12,11 +12,16 @@
 }
 
 .exit-timer-mover {
-  /* Width grows with content (DEV chip is conditional); pill itself decides
-     how wide via inline-flex. */
-  width: 460rpx;
+  /* Sized to fit pill content so movable-view's left edge aligns with the
+     pill itself — keeps the flush-right default from leaving an empty gap. */
+  width: 320rpx;
   height: 80rpx;
   pointer-events: auto;
+}
+
+.exit-timer-mover.is-dev {
+  /* DEV chip widens the pill; mover follows so drag bounds match. */
+  width: 460rpx;
 }
 
 .exit-timer-pill {

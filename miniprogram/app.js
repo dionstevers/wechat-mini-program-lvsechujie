@@ -101,11 +101,6 @@ App({
           var scenario = g.devScenario || 'fresh'
           return _devStateForScenario(scenario)
         },
-        setDevState: function(data) {
-          var inst = getApp()
-          if (inst && inst.globalData) inst.globalData.devScenario = (data && data.scenario) || 'fresh'
-          return { success: true, scenario: (data && data.scenario) || 'fresh' }
-        },
       }
 
       // Mirror the cloud-side scenario routing for dev mode (no DB).
