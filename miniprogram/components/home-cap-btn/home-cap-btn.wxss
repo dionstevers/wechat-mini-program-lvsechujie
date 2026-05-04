@@ -3,7 +3,10 @@
    the same on-screen slot so the swap is transparent to the participant. */
 .home-cap-btn {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 16rpx);
+  /* Sit at the very top of the page content area — as close as a
+     mini-program element can get to the platform-rendered nav bar where
+     the original WeChat capsule lived. */
+  top: 16rpx;
   left: 24rpx;
   width: 64rpx;
   height: 64rpx;
