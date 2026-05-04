@@ -126,10 +126,26 @@ Page({
     const feedActiveTs = Date.now()
     this.setData({ feedActive: true })
 
-    // Start the global 2-minute clock if it hasn't already begun. Only the
-    // first activation sets it; subsequent visits to this tab leave it
-    // alone so the timer keeps ticking from its original start.
-    if (app.globalData && !app.globalData.newsTimerStartTs) {
+    // If a welcome-back message is queued (re-entry), gate the timer on
+    // the participant tapping 知道了. Otherwise (first visit) start it now.
+    const banner = app.globalData && app.globalData.welcomeBackBanner
+    if (banner && !this._welcomeShown) {
+      this._welcomeShown = true
+      wx.showModal({
+        title: '欢迎回来',
+        content: banner,
+        showCancel: false,
+        confirmText: '知道了',
+        success: () => {
+          if (app.globalData) {
+            app.globalData.welcomeBackBanner = ''
+            if (!app.globalData.newsTimerStartTs) {
+              app.globalData.newsTimerStartTs = Date.now()
+            }
+          }
+        },
+      })
+    } else if (app.globalData && !app.globalData.newsTimerStartTs) {
       app.globalData.newsTimerStartTs = Date.now()
     }
 

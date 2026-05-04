@@ -1,0 +1,5 @@
+<view wx:if="{{visible}}" class="wb-bar">
+  <text class="wb-icon">👋</text>
+  <text class="wb-text">{{text}}</text>
+  <view class="wb-dismiss" bindtap="onDismiss">知道了</view>
+</view>

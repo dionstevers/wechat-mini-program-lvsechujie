@@ -1,0 +1,9 @@
+{
+  "name": "getParticipantState",
+  "version": "1.0.0",
+  "description": "Look up the current participant's progress and return the route + coin total + payout flags so the client can resume mid-flow.",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

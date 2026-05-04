@@ -4,6 +4,7 @@
   "navigationBarTextStyle": "white",
   "usingComponents": {
     "dev-banner": "../../components/dev-banner/dev-banner",
-    "coin-overlay": "../../components/coin-overlay/coin-overlay"
+    "coin-overlay": "../../components/coin-overlay/coin-overlay",
+    "welcome-banner": "../../components/welcome-banner/welcome-banner"
   }
 }

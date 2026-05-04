@@ -1,5 +1,6 @@
 <view class="reg-page">
   <dev-banner />
+  <welcome-banner />
   <coin-overlay />
 
   <view class="landing-decor decor-a"></view>

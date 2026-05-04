@@ -91,6 +91,59 @@ App({
             dev: true,
           }
         },
+        getParticipantState: function() {
+          // Dev mode: use the in-memory devScenario (set by the dev picker
+          // via setDevState). Default to 'fresh' on cold start.
+          var inst = getApp()
+          var scenario = (inst && inst.globalData && inst.globalData.devScenario) || 'fresh'
+          return _devStateForScenario(scenario)
+        },
+        setDevState: function(data) {
+          var inst = getApp()
+          if (inst && inst.globalData) inst.globalData.devScenario = (data && data.scenario) || 'fresh'
+          return { success: true, scenario: (data && data.scenario) || 'fresh' }
+        },
+      }
+
+      // Mirror the cloud-side scenario routing for dev mode (no DB).
+      function _devStateForScenario(scenario) {
+        var fresh = {
+          success: true, exists: false, route: 'fresh', welcomeBack: '',
+          coins_so_far: 0, reward_paid: false, reward_pay_in_flight: false,
+          reward_yuan: 0, reward_paid_timestamp: null, reward_transaction_id: null,
+          condition: null, article_combination: null, article_order: null,
+        }
+        if (scenario === 'fresh' || !scenario) return fresh
+        var COINS_LANDING = 88, COINS_CONSENT = 50, COINS_EXIT_ENTRY = 88
+        var base = { success: true, exists: true, reward_pay_in_flight: false, reward_yuan: 0,
+          reward_paid_timestamp: null, reward_transaction_id: null,
+          condition: 'control', article_combination: 'combo_A', article_order: 'combo_A_order_1' }
+        switch (scenario) {
+          case 'consented_no_registration':
+            return Object.assign({}, base, { route: 'registration', welcomeBack: '欢迎回来！请完成注册以继续',
+              coins_so_far: COINS_LANDING + COINS_CONSENT, reward_paid: false })
+          case 'registered_no_entry':
+            return Object.assign({}, base, { route: 'entry_survey', welcomeBack: '欢迎回来！请完成入门问卷',
+              coins_so_far: COINS_LANDING + COINS_CONSENT + 50, reward_paid: false })
+          case 'entry_done_at_news_feed':
+            return Object.assign({}, base, { route: 'news_feed', welcomeBack: '欢迎回来！约 2 分钟后将自动进入结束问卷',
+              coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200, reward_paid: false })
+          case 'exit_done_no_debrief':
+            return Object.assign({}, base, { route: 'debriefing', welcomeBack: '欢迎回来！请阅读说明并领取奖励',
+              coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200 + COINS_EXIT_ENTRY + 150, reward_paid: false })
+          case 'debrief_done_no_reward':
+            return Object.assign({}, base, { route: 'reward', welcomeBack: '欢迎回来！请领取您的奖励',
+              coins_so_far: 626, reward_paid: false, reward_yuan: 7.11 })
+          case 'reward_paid_free_use':
+            return Object.assign({}, base, { route: 'news_feed_free', welcomeBack: '',
+              coins_so_far: 704, reward_paid: true, reward_yuan: 8.00,
+              reward_paid_timestamp: Date.now(), reward_transaction_id: 'DEV-' + Date.now() })
+          case 'reward_pay_in_flight':
+            return Object.assign({}, base, { route: 'reward', welcomeBack: '您的奖励正在发放，请稍候或重试',
+              coins_so_far: 704, reward_paid: false, reward_pay_in_flight: true, reward_yuan: 8.00 })
+          default:
+            return fresh
+        }
       }
 
       wx.cloud.callFunction = function (opts) {
@@ -189,6 +242,19 @@ App({
     NEWS_TIMER_DURATION_MS: 2 * 60 * 1000,
     newsTimerStartTs: null,    // ms-since-epoch when the timer began (null = not started)
     exitSurveyFired: false,    // guard so only one tab's interval fires the redirect
+    // Re-entry routing state — populated by getParticipantState in
+    // pages/loading. Pages read these to render welcome banners and the
+    // 已领取奖励 badge in 个人积分.
+    welcomeBackBanner: '',
+    rewardPaid: false,
+    rewardYuan: 0,
+    rewardPaidTimestamp: null,
+    rewardTransactionId: null,
+    // Dev-mode case the bootstrap router lands on without picker interaction.
+    // Change to 'fresh' / 'consented_no_registration' / 'registered_no_entry'
+    // / 'entry_done_at_news_feed' / 'exit_done_no_debrief' /
+    // 'debrief_done_no_reward' / 'reward_paid_free_use' / 'reward_pay_in_flight'.
+    devScenario: 'entry_done_at_news_feed',
     // Recent trip records cache shared between home (行程记录) and center (个人积分).
     // Populated lazily by either page; pre-fetched on launch when not in dev mode.
     recentTracksCache: null,

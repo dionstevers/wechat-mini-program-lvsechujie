@@ -9,6 +9,16 @@
   <view class="landing-decor decor-c"></view>
 
   <view class="center-content">
+    <!-- Reward-paid status banner — only after claimReward succeeded -->
+    <view wx:if="{{rewardPaid}}" class="reward-paid-card">
+      <text class="reward-paid-icon">✅</text>
+      <view class="reward-paid-body">
+        <text class="reward-paid-title">已领取奖励 ¥{{rewardYuan}}</text>
+        <text wx:if="{{rewardTxnShort}}" class="reward-paid-txn">订单号：{{rewardTxnShort}}</text>
+        <text wx:if="{{rewardPaidLocal}}" class="reward-paid-when">领取时间：{{rewardPaidLocal}}</text>
+      </view>
+    </view>
+
     <!-- Reward card -->
     <view class="reward-card">
       <text class="reward-emoji">💰</text>

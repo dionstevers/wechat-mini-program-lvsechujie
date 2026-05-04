@@ -1,5 +1,6 @@
 <view class="debrief-page">
   <dev-banner />
+  <welcome-banner />
   <coin-overlay />
 
   <scroll-view

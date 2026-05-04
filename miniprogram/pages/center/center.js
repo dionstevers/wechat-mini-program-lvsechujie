@@ -10,6 +10,8 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const RECENT_DAYS = 7;
 const TRIP_STORAGE_KEY = "trip_records";
 
+function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
 Page({
   data: {
     coins: 0,
@@ -19,6 +21,10 @@ Page({
     totalTrips: 0,
     totalCarbG: 0,
     totalDurationMin: 0,
+    rewardPaid: false,
+    rewardYuan: "0.00",
+    rewardTxnShort: "",
+    rewardPaidLocal: "",
   },
 
   _unsubCoins: null,
@@ -35,15 +41,36 @@ Page({
     }
     wx.setNavigationBarTitle({ title: "个人积分" });
 
-    // Subscribe to coin updates so the counter stays live.
     if (typeof app.subscribeTotalCoins === "function") {
       this._unsubCoins = app.subscribeTotalCoins((coins) => {
         this.setData({ coins, yuan: this._yuanFromCoins(coins) });
       });
     }
 
-    // Read trips from local storage. Synchronous, instant — no spinner needed.
     this._fetchRecords();
+    this._refreshRewardStatus();
+  },
+
+  _refreshRewardStatus() {
+    const paid = !!(app.globalData && app.globalData.rewardPaid);
+    const yuan = Number((app.globalData && app.globalData.rewardYuan) || 0);
+    const txn = (app.globalData && app.globalData.rewardTransactionId) || "";
+    const ts = (app.globalData && app.globalData.rewardPaidTimestamp) || null;
+    let local = "";
+    if (ts) {
+      try {
+        const d = new Date(typeof ts === "number" ? ts : Date.parse(ts));
+        if (!isNaN(d.getTime())) {
+          local = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+      } catch (e) {}
+    }
+    this.setData({
+      rewardPaid: paid,
+      rewardYuan: yuan.toFixed(2),
+      rewardTxnShort: txn ? String(txn).slice(-8).toUpperCase() : "",
+      rewardPaidLocal: local,
+    });
   },
 
   onHide() {
