@@ -5,7 +5,7 @@
 
 PORT=8000
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-DIR="$ROOT/miniprogram/asset/treatments"
+DIR="$ROOT/dev-assets/treatments"
 APP_JS="$ROOT/miniprogram/app.js"
 
 if [ ! -d "$DIR" ]; then

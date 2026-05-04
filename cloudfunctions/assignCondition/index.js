@@ -7,7 +7,7 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
-const CONDITIONS = ['US_better_than_China', 'China_better_than_US', 'no_text', 'control']
+const CONDITIONS = ['treatment_neg', 'treatment_pos', 'no_text', 'control']
 const COMBINATIONS = ['combo_A', 'combo_B']
 
 // Article display orders per combination

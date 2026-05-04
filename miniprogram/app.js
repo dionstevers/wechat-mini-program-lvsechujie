@@ -43,7 +43,7 @@ App({
     // init to have been *called* (sync), not *completed* (async). In tourist mode
     // init fails server-side but the sync registration still happens.
     wx.cloud.init({
-      env: 'iluvcarb-0gzvs45g82b57f98',
+      env: 'cloudbase-d4ghbgqhq17d3a271',
       traceUser: !DEV_MODE,   // traceUser:true fetches openID — fails in tourist mode → 4x secinfo + timeout
     })
 
@@ -51,7 +51,7 @@ App({
       // Patch callFunction synchronously after init call — SDK does not replace
       // this method in its async completion callback, so the mock persists.
       // DEV: skip 'control' so testers always see a treatment video
-      var CONDITIONS = ['US_better_than_China', 'China_better_than_US', 'no_text']
+      var CONDITIONS = ['treatment_neg', 'treatment_pos', 'no_text']
       var REWARD_CONFIG = require('./config/reward.js').REWARD_CONFIG
       var MOCKS = {
         saveConsent:        function() { return { success: true } },
