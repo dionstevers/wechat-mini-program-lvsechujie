@@ -21,9 +21,11 @@ function deriveRoute(p) {
   if (!p.entry_survey_end_timestamp) return 'entry_survey'
   if (!p.exit_survey_end_timestamp) return 'news_feed'
   if (!p.debrief_read_timestamp) return 'debriefing'
-  if (p.reward_pay_in_flight === true) return 'reward'
-  if (!p.reward_paid) return 'reward'
-  return 'news_feed_free'
+  // Once a claim has been attempted (success or failure), the session is
+  // closed. Re-entry lands on the news-feed in finished state, never back
+  // on the reward page. Operator handles failed payouts out-of-band.
+  if (p.reward_paid || p.reward_attempted) return 'news_feed_free'
+  return 'reward'
 }
 
 function deriveBanner(p, route) {
@@ -91,6 +93,7 @@ exports.main = async (event, context) => {
       welcomeBack: deriveBanner(p, route),
       coins_so_far: deriveCoinsSoFar(p),
       reward_paid: !!p.reward_paid,
+      reward_attempted: !!p.reward_attempted,
       reward_pay_in_flight: !!p.reward_pay_in_flight,
       reward_yuan: Number(p.reward_yuan || 0),
       reward_paid_timestamp: p.reward_paid_timestamp || null,
@@ -98,6 +101,9 @@ exports.main = async (event, context) => {
       condition: p.condition || null,
       article_combination: p.article_combination || null,
       article_order: p.article_order || null,
+      // Surfaces whether the entry-flow video overlay has already been
+      // played, so news-feed can suppress re-playing it on tab re-entry.
+      video_played: !!(p.video_overlay_end_timestamp || p.video_overlay_start_timestamp),
     }
   } catch (err) {
     return { success: false, error: String(err) }

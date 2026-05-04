@@ -248,9 +248,16 @@ App({
     // 已领取奖励 badge in 个人积分.
     welcomeBackBanner: '',
     rewardPaid: false,
+    // True once the participant has clicked 领取奖励 at least once. Combined
+    // with rewardPaid for "session closed" gating — once attempted, the
+    // timer/video should never resurface, regardless of payout outcome.
+    rewardAttempted: false,
     rewardYuan: 0,
     rewardPaidTimestamp: null,
     rewardTransactionId: null,
+    // Hydrated from getParticipantState (`video_played`); pre-empts the
+    // news-feed video overlay when the participant has already watched it.
+    videoShown: false,
     // Dev-mode case the bootstrap router lands on without picker interaction.
     // Change to 'fresh' / 'consented_no_registration' / 'registered_no_entry'
     // / 'entry_done_at_news_feed' / 'exit_done_no_debrief' /

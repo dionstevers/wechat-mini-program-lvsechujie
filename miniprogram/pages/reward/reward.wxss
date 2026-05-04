@@ -176,6 +176,20 @@
   box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.18);
 }
 
+.pay-btn-home {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f5b50;
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.15);
+  margin-top: 8rpx;
+}
+
+.pay-home-hint {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  margin-top: 12rpx;
+}
+
 /* paid */
 .pay-success {
   background: rgba(95, 168, 151, 0.18);

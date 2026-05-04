@@ -5,5 +5,5 @@
     <text class="exit-timer-time">{{mmss}}</text>
   </view>
   <view class="exit-timer-chip exit-timer-reward">+{{rewardCoins}}</view>
-  <view wx:if="{{devMode}}" class="exit-timer-chip exit-timer-dev">DEV 跳过</view>
+  <view class="exit-timer-chip exit-timer-skip">跳过</view>
 </view>

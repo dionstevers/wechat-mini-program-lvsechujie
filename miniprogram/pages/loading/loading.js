@@ -44,13 +44,16 @@ Page({
       }
       app.globalData.welcomeBackBanner = result.welcomeBack || ''
       app.globalData.rewardPaid = !!result.reward_paid
+      app.globalData.rewardAttempted = !!result.reward_attempted
       app.globalData.rewardYuan = Number(result.reward_yuan || 0)
       app.globalData.rewardPaidTimestamp = result.reward_paid_timestamp || null
       app.globalData.rewardTransactionId = result.reward_transaction_id || null
+      app.globalData.videoShown = !!result.video_played
       if (result.condition) app.globalData.condition = result.condition
       if (result.article_combination) app.globalData.articleCombination = result.article_combination
       if (result.article_order) app.globalData.articleOrder = result.article_order
-      // For news_feed_free (post-payout), make the timer self-hide.
+      // Once the session is closed (claim attempted), make the timer
+      // self-hide regardless of payout outcome.
       if (result.route === 'news_feed_free') {
         app.globalData.newsTimerStartTs = null
         app.globalData.exitSurveyFired = true

@@ -52,9 +52,13 @@ Page({
     const displayArticles = articleIds.map(id => ARTICLES[id]).filter(Boolean)
     this.setData({ displayArticles })
 
-    // Show video overlay for non-control conditions, but only the first time
-    // the news-feed is opened in this session.
-    const alreadyShown = !!(app.globalData && app.globalData.videoShown)
+    // Show video overlay for non-control conditions, but only the very
+    // first time the news-feed is opened. videoShown is hydrated by the
+    // bootstrap dispatcher from getParticipantState's video_played flag,
+    // so a re-launch after the participant has already watched the video
+    // doesn't replay it.
+    const finished = !!(app.globalData && (app.globalData.rewardPaid || app.globalData.rewardAttempted))
+    const alreadyShown = !!(app.globalData && app.globalData.videoShown) || finished
     if (!alreadyShown && condition && condition !== 'control') {
       const videoConfig = VIDEO_CONFIG[condition]
       if (videoConfig && videoConfig.video_file) {
@@ -139,7 +143,11 @@ Page({
         success: () => {
           if (app.globalData) {
             app.globalData.welcomeBackBanner = ''
-            if (!app.globalData.newsTimerStartTs) {
+            if (
+              !app.globalData.newsTimerStartTs &&
+              !app.globalData.rewardPaid &&
+              !app.globalData.exitSurveyFired
+            ) {
               app.globalData.newsTimerStartTs = Date.now()
             }
           }

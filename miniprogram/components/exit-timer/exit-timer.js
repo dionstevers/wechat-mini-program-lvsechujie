@@ -34,6 +34,19 @@ Component({
 
   methods: {
     _tick() {
+      // Hide the pill once the session is closed (claim attempted, payout
+      // succeeded, or exit-survey already fired in this app session) — even
+      // if a stale newsTimerStartTs is still hanging around in globalData.
+      const finished = !!(app.globalData && (
+        app.globalData.rewardPaid ||
+        app.globalData.rewardAttempted ||
+        app.globalData.exitSurveyFired
+      ))
+      if (finished) {
+        if (this.data.visible) this.setData({ visible: false })
+        if (this._interval) { clearInterval(this._interval); this._interval = null }
+        return
+      }
       const start = app.globalData && app.globalData.newsTimerStartTs
       if (!start) {
         if (this.data.visible) this.setData({ visible: false })
@@ -54,8 +67,7 @@ Component({
     },
 
     onTap() {
-      // Dev-mode shortcut: skip the timer immediately.
-      if (!this.data.devMode) return
+      // Tap pill to skip the 2-min wait — temporary affordance for piloting.
       this._fireExitSurvey()
     },
 

@@ -61,3 +61,8 @@
   background: rgba(249, 188, 96, 0.85);
   color: #2a1a00;
 }
+
+.exit-timer-skip {
+  background: rgba(255, 255, 255, 0.9);
+  color: #2a1a00;
+}

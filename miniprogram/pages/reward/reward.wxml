@@ -39,6 +39,8 @@
       <text class="pay-success-title">红包已发放</text>
       <text class="pay-success-body">¥{{rewardYuan}} 已发放至您的微信钱包，请稍后查收。</text>
       <text wx:if="{{transactionId}}" class="pay-success-txn">订单号：{{transactionId}}</text>
+      <text class="pay-home-hint">您已完成本次研究，点击下方按钮返回主页继续使用。</text>
+      <button class="pay-btn pay-btn-home" bindtap="onGoHome">返回主页</button>
     </view>
 
     <!-- payState: error — retryable -->
@@ -47,6 +49,8 @@
       <text class="pay-error-title">发放失败</text>
       <text class="pay-error-body">{{errorMsg}}</text>
       <button class="pay-btn pay-btn-retry" bindtap="onClaim">重试</button>
+      <text class="pay-home-hint">本次研究已记录，您也可以点击下方按钮返回主页。</text>
+      <button class="pay-btn pay-btn-home" bindtap="onGoHome">返回主页</button>
     </view>
 
     <view class="confirmation-card">

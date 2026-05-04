@@ -41,6 +41,12 @@ Page({
           transactionId: result.reward_transaction_id || '',
           paidAt: result.reward_paid_timestamp || null,
         })
+        // Reconcile the running counter to the server-side total. Catches
+        // any drift from local-only awards (e.g. control conditions that
+        // skip the post-video pulse, or fields the client didn't increment).
+        if (app && typeof app.setTotalCoins === 'function') {
+          app.setTotalCoins(result.coins_total || 0)
+        }
       },
       fail: () => this._showError(),
     })
@@ -51,6 +57,15 @@ Page({
     if (this.data.payState === 'paid' || this.data.payState === 'paying') return
     this._claiming = true
     this.setData({ payState: 'paying', errorMsg: '' })
+    // Once the claim is in flight, the session is closed (payout outcome
+    // doesn't matter for re-entry routing). Update globalData so a tab
+    // switch back to news-feed in this same session won't resurface the
+    // exit-timer or replay the video overlay.
+    if (app && app.globalData) {
+      app.globalData.rewardAttempted = true
+      app.globalData.newsTimerStartTs = null
+      app.globalData.exitSurveyFired = true
+    }
 
     wx.cloud.callFunction({
       name: 'claimReward',
@@ -111,5 +126,9 @@ Page({
   _showError() {
     this.setData({ loading: false })
     wx.showModal({ title: '出错了', content: '请检查网络连接后重试', showCancel: false })
+  },
+
+  onGoHome() {
+    wx.switchTab({ url: '/pages/news-feed/news-feed' })
   },
 })

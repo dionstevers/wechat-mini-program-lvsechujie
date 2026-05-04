@@ -74,6 +74,12 @@ exports.main = async (event, context) => {
         data: {
           reward_pay_in_flight: true,
           reward_pay_started_timestamp: now,
+          // Once a claim attempt acquires the lock, mark the session as
+          // "claim attempted" so the bootstrap router never sends the
+          // participant back to the reward page — even if the payout API
+          // call fails. They can revisit later via center / a follow-up
+          // message; the reward page is one-shot.
+          reward_attempted: true,
         },
       })
   } catch (err) {
