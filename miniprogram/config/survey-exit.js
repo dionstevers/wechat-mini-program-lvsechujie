@@ -76,21 +76,22 @@ const EXIT_SURVEY = {
     //   ],
     // },
 
-    // ─── Block 1: Video viewing confirmation (treatment only) ─────────────
+    // ─── Block 1: Video viewing confirmation (asked of all participants) ──
+    // Phrased so the "no video shown" path is a first-class option for
+    // control participants. Q2.3 / Q2.4 only render when the participant
+    // actually watched a video (video_watched === 1).
     {
       id: 'block_exit_1',
-      treatmentOnly: true,
       questions: [
         {
           id: 'Q2.2',
           type: 'single_select',
-          text: '此前我们向您展示了一段视频。您是否观看过该视频？如果未向您展示视频，请填写"未展示视频"。',
+          text: '在进入「信息中心」之前，您是否看到过一段视频？',
           field: 'video_watched',
-          treatmentOnly: true,
           options: [
-            { label: '观看过',    value: 1 },
-            { label: '未观看过',  value: 2 },
-            { label: '未展示视频', value: 3 },
+            { label: '看到过并观看了',    value: 1 },
+            { label: '看到过但未观看',    value: 2 },
+            { label: '没有看到过视频',    value: 3 },
           ],
           required: true,
         },
@@ -99,7 +100,6 @@ const EXIT_SURVEY = {
           type: 'single_select',
           text: '您在多大程度上喜欢这段视频的内容？',
           field: 'video_liking',
-          treatmentOnly: true,
           showIf: { field: 'video_watched', equals: 1 },
           options: [
             { label: '非常不喜欢', value: 1 },
@@ -114,7 +114,6 @@ const EXIT_SURVEY = {
           type: 'single_select',
           text: '您在多大程度上认为视频中的内容反映了真实情况？',
           field: 'video_truthfulness',
-          treatmentOnly: true,
           showIf: { field: 'video_watched', equals: 1 },
           options: [
             { label: '完全不真实', value: 1 },

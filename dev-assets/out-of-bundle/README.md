@@ -1,27 +1,38 @@
-# Trimmed assets
+# Out-of-bundle source
 
-Files relocated out of `miniprogram/` to keep the upload bundle under the WeChat 2 MB main-package cap. Nothing here is referenced by the experiment flow. Restore by moving back if needed.
+Source files kept under git but **excluded from the WeChat upload bundle**. Reasons range from "legacy carbon-tracking holdover never reached by the experiment flow" to "asset too heavy for the 2 MB main-package cap with no on-screen consumer". Each cleanup that removes code from `miniprogram/` should drop the source here rather than deleting it, so the file's history stays inspectable + restorable.
 
 ## Contents
 
-| Path here | Original location | Size | Why removed |
-|---|---|---|---|
-| `ec-canvas/` | `miniprogram/asset/ec-canvas/` | 1.0 MB | echarts charting lib + wrapper component. No `usingComponents` entry references `ec-canvas`. Only consumer was `utils/chart.js` (also removed). Legacy from the carbon-tracking app's chart screens, none of which are in the experiment routing tree. |
-| `privacyPopup/` | `miniprogram/asset/privacyPopup/` | 172 KB | Custom privacy popup component (.js/.json/.wxml/.wxss). No page registers it in `usingComponents` and no template imports it. Mini-program privacy is handled by `app.json` `requiredPrivateInfos` + WeChat's built-in modal, not this component. |
-| `chart.js` | `miniprogram/utils/chart.js` | <8 KB | Helper that imports `../asset/ec-canvas/echarts` and configures a chart instance. No file in `pages/` or `components/` imports it (verified with grep). |
+| Path here | Original location | Why excluded |
+|---|---|---|
+| `pages/` (16 dirs) | `miniprogram/pages/<name>/` | Legacy carbon-tracking pages: `aboutus`, `detail`, `index`, `information`, `journal`, `login`, `merchDetail`, `myprize`, `notification`, `picUp`, `prizeCenter`, `privacy`, `quiz`, `store`, `track`, `triphistory`. None reachable from the experiment routing tree (loading → landing → consent → registration → entry-survey → news-feed → article-viewer → exit-survey → debriefing → reward, plus tab pages home / center). DevTools' Code Quality scan flagged them as "no-dependency files" and they bloated the package. |
+| `utils/` (8 files) | `miniprogram/utils/<name>` | Utility modules with zero remaining importers in the experiment bundle: `colorschema.ts`, `home.util.ts` (calls `wx.getLocation` — only consumer was the legacy home), `log.ts`, `login.ts` (only consumer was `pages/login/`), `md5.js`, `requestSubs.ts`, `time.ts`, `transfer.ts`. Only `parse-segments.js` stays in-bundle (used by survey-engine, registration, landing, news-feed). |
+| `ec-canvas/` | `miniprogram/asset/ec-canvas/` | echarts charting lib + wrapper (≈ 1.0 MB). No `usingComponents` entry references it; only consumer was `utils/chart.js` (also out-of-bundle). |
+| `privacyPopup/` | `miniprogram/asset/privacyPopup/` | Custom privacy popup component (172 KB). No page registered it; mini-program privacy is handled by the platform's built-in modal. |
+| `chart.js` | `miniprogram/utils/chart.js` | Helper that imported `../asset/ec-canvas/echarts`. No remaining caller. |
 
-## Verification before move
+## Verification before each move
 
-- `grep -rn "ec-canvas" miniprogram/{pages,components,app.json}` → no hits
-- `grep -rn "privacyPopup" miniprogram/{pages,components,app.json}` → no hits
-- `grep -rn "utils/chart" miniprogram/{pages,components}` → no hits
+Every entry above was preceded by a grep against the in-bundle source tree confirming zero importers:
 
-`asset/img/clean.jpg` and `asset/img/polluted.png` were considered but are LIVE — used as article thumbnails in [`config/articles.js`](../../miniprogram/config/articles.js). Kept in bundle.
+```
+grep -rn '<symbol>' miniprogram/{pages,components,utils,custom-tab-bar,app.json}
+```
+
+If a grep returns hits, the file is still in-bundle and must NOT be moved here.
 
 ## Restore
 
+`git mv` preserves history, so to restore any file run:
+
 ```bash
-mv dev-assets/trimmed/ec-canvas miniprogram/asset/
-mv dev-assets/trimmed/privacyPopup miniprogram/asset/
-mv dev-assets/trimmed/chart.js miniprogram/utils/
+git mv dev-assets/out-of-bundle/pages/<name> miniprogram/pages/<name>
+git mv dev-assets/out-of-bundle/utils/<name> miniprogram/utils/<name>
 ```
+
+…then re-add the page entry to `miniprogram/app.json#pages` if applicable.
+
+## History
+
+This folder was previously called `dev-assets/trimmed/` (renamed for clarity — "out-of-bundle" reads as an ongoing category, "trimmed" suggested a one-time event). `git log --follow` on any file inside still walks back through the original `miniprogram/` location.

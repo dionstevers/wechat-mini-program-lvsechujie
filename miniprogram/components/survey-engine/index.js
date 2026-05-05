@@ -275,7 +275,11 @@ Component({
         ? block.questions.filter(q => !(q.treatmentOnly && isControl))
         : []
       ).map(q => {
-        const baseSegs = parseSegments(q.text || '')
+        // Per-question control-condition text override. Lets a single
+        // question swap copy when the participant is in control without
+        // duplicating the entire question definition.
+        const baseText = (isControl && q.textIfControl) ? q.textIfControl : (q.text || '')
+        const baseSegs = parseSegments(baseText)
         const segs = (isDev && q._randomised)
           ? [{ text: '🔀 ', bold: false }, ...baseSegs]
           : baseSegs

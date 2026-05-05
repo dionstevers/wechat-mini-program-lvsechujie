@@ -1,5 +1,4 @@
 {
-  
   "pages": [
     "pages/loading/loading",
     "pages/landing/landing",
@@ -11,25 +10,8 @@
     "pages/exit-survey/exit-survey",
     "pages/debriefing/debriefing",
     "pages/reward/reward",
-    "pages/index/index",
     "pages/home/home",
-    "pages/center/center",
-    "pages/information/information",
-    "pages/login/login",
-    "pages/journal/journal",
-    "pages/triphistory/triphistory",
-    "pages/store/store",
-    "pages/myprize/myprize",
-    "pages/privacy/privacy",
-    "pages/picUp/picUp",
-    "pages/detail/detail",
-    "pages/quiz/quiz",
-    "pages/notification/notification",
-    "pages/prizeCenter/prizeCenter",
-    "pages/merchDetail/merchDetail",
-    "pages/aboutus/aboutus",
-    "pages/track/track"
-
+    "pages/center/center"
   ],
   "tabBar": {
     "custom": true,
@@ -71,24 +53,9 @@
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
-  "permission": {
-    "scope.userLocation": {
-      "desc": "你的位置信息将用于小程序位置接口的效果展示"
-    }
-  },
-  "requiredBackgroundModes": [
-    "location"
-  ],
   "embeddedAppIdList": [
     "wxebadf544ddae62cb"
   ],
-  "requiredPrivateInfos": [
-    "onLocationChange",
-    "startLocationUpdateBackground",
-    "getLocation",
-    "startLocationUpdate"
-  ],
-  
   "useExtendedLib": {
   }
 }

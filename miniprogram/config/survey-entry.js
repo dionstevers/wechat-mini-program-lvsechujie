@@ -228,6 +228,9 @@ const ENTRY_SURVEY = {
           id: 'Q_final_brief',
           type: 'single_select',
           text: '感谢您完成入门问卷。点击「提交」后，部分参与者会先看到一段约 8 秒的短视频，请仔细观看。接下来您将进入「信息中心」自由浏览资讯，约 2 分钟后会自动进入结束问卷，届时将获得 +88 金币奖励。完成结束问卷后即可领取最终现金奖励。',
+          // Control participants don't see the video; drop the middle
+          // sentence so the brief stays accurate for them.
+          textIfControl: '感谢您完成入门问卷。点击「提交」后，您将进入「信息中心」自由浏览资讯，约 2 分钟后会自动进入结束问卷，届时将获得 +88 金币奖励。完成结束问卷后即可领取最终现金奖励。',
           field: 'final_brief_understood',
           options: [
             { label: '我已理解上述说明', value: 1 },
