@@ -24,6 +24,21 @@ Page({
       trigger,
       initialCoins: app.globalData.totalCoins || 0,
     })
+    // Mark the exit survey as started server-side so a mid-survey
+    // re-entry routes back here instead of to the news-feed. Idempotent
+    // — saveSurveyResponse spreads responses into the participant doc;
+    // re-writes to the same field are no-ops semantically. Fire and
+    // forget.
+    wx.cloud.callFunction({
+      name: 'saveSurveyResponse',
+      data: {
+        surveyType: 'exit',
+        responses: { exit_survey_started_timestamp: new Date() },
+        coinsEarned: 0,
+        isFinal: false,
+        timestamps: null,
+      },
+    })
   },
 
   onSurveyComplete(e) {

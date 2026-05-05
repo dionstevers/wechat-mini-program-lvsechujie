@@ -19,7 +19,14 @@ function deriveRoute(p) {
   if (!p.consent_given) return 'fresh'
   if (!p.registration_timestamp) return 'registration'
   if (!p.entry_survey_end_timestamp) return 'entry_survey'
-  if (!p.exit_survey_end_timestamp) return 'news_feed'
+  if (!p.exit_survey_end_timestamp) {
+    // If the participant has already started the exit survey, route
+    // them back to it on re-entry instead of bouncing them to the
+    // news-feed (which would re-run the 2-min timer they already
+    // cleared).
+    if (p.exit_survey_started_timestamp) return 'exit_survey'
+    return 'news_feed'
+  }
   if (!p.debrief_read_timestamp) return 'debriefing'
   // Once a claim has been attempted (success or failure), the session is
   // closed. Re-entry lands on the news-feed in finished state, never back
@@ -45,6 +52,8 @@ function deriveBanner(p, route) {
       }
       return '欢迎回来！点击「知道了」后请继续阅读资讯，约 2 分钟后将自动进入结束问卷。'
     }
+    case 'exit_survey':
+      return '欢迎回来！请继续完成结束问卷。'
     case 'debriefing':
       return '欢迎回来！请阅读说明并领取奖励'
     case 'reward':
