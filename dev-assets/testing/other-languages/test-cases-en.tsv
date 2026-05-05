@@ -1,0 +1,97 @@
+﻿ID	Module	Test Case	Pre-conditions	Steps	Expected	Result	Notes
+TC-001	Bootstrap	Fresh user cold launch	No prior steps; no document for this openid in experiment_participants	1) Scan QR or open the mini-program	Loading page shows ~1.2s spinner then routes to landing; no errors		
+TC-002	Bootstrap	Cold launch for user who has registered but not started entry survey	Participant doc has registration_timestamp set, entry_survey_end_timestamp empty	1) Fully close mini-program; 2) Reopen	Loading routes to entry-survey; welcome-back banner shows 'Welcome back! Please complete the entry survey'		
+TC-003	Bootstrap	Cold launch for user who finished exit survey but hasn't read debriefing	exit_survey_end_timestamp set, debrief_read_timestamp empty	1) Fully close mini-program; 2) Reopen	Loading routes to debriefing; banner shows 'Welcome back! Please read the briefing and claim reward'		
+TC-004	Bootstrap	Cold launch for user who read debriefing but hasn't attempted reward	debrief_read_timestamp set, reward_attempted=false, reward_paid=false	1) Fully close mini-program; 2) Reopen	Loading routes to reward page; banner shows 'Please claim your reward'		
+TC-005	Bootstrap	Cold launch for user who attempted reward (paid or errored)	reward_attempted=true OR reward_paid=true	1) Fully close mini-program; 2) Reopen	Loading switchTabs to news-feed (free-use state); never returns to reward; exit-timer hidden		
+TC-006	Bootstrap	First-bootstrap minimum loading screen duration	First cold start; globalData.hasBootstrapped = false	1) Open via QR; 2) Time the loading page visibility	Loading page stays visible at least 1200ms (MIN_LOADING_MS) to avoid flash		
+TC-007	Landing 落地页	Landing page renders all elements	Reached landing via loading dispatch	1) Observe the page	Welcome text, 继续 button, and +88 coin badge on button corner all visible		
+TC-008	Landing 落地页	继续 button awards 88 coins and navigates	Landing page in idle state	1) Tap 继续; 2) Observe coin overlay animation and next page	Coin counter rises 0→88, +88 pop animation visible; redirects to consent		
+TC-009	Landing 落地页	继续 button double-tap guard	Landing page in idle state	1) Rapidly tap 继续 twice or more	Coins increment by 88 only once (not 176); single navigation		
+TC-010	Consent 知情同意	Consent text renders	Arrived at consent from landing	1) Scroll through the full text	Chinese consent text fully renders; both 同意 and 我不同意 buttons visible at bottom		
+TC-011	Consent 知情同意	同意 button awards 50 coins and navigates	Consent page idle	1) Tap 同意	saveConsent cloud function fires and returns success; +50 coin pop animation; routes to registration		
+TC-012	Consent 知情同意	我不同意 triggers confirmation modal	Consent page idle	1) Tap 我不同意	Modal appears; title + body sourced from CONSENT_RENDER.disagreeModal		
+TC-013	Consent 知情同意	Confirming disagree exits the mini-program	Disagree-confirm modal showing	1) Tap confirm in the modal	saveConsent(consent_given=false) fires; then wx.exitMiniProgram or navigateBack		
+TC-014	Consent 知情同意	同意 button double-tap guard	Consent page idle	1) Rapidly tap 同意 twice	saveConsent fires once; coins +50 once; single navigation		
+TC-015	Registration 注册	Empty phone field blocks submit	Registration page idle, phone field empty	1) Leave phone empty; 2) Tap 提交注册	Red error label below the field; saveRegistration is not called		
+TC-016	Registration 注册	Invalid phone format rejected	Registration page idle	1) Enter '12345' or 'abcdefg'; 2) Tap 提交注册	11-digit format starting with 1 fails validation; red error shown; saveRegistration not called		
+TC-017	Registration 注册	Valid phone + optional WeChat ID submit succeeds	Registration page idle	1) Enter 13800138000; 2) Leave WeChat ID blank or type text; 3) Tap 提交注册	saveRegistration returns success; +50 coin pop; routes to entry-survey		
+TC-018	Registration 注册	Submit double-tap guard	Valid phone entered	1) Rapidly tap 提交注册 twice	saveRegistration fires once; coins +50 once; single navigation		
+TC-019	Registration 注册	Dev mode auto-fills the form	DEV_MODE_OPTION = 'prefilled' or 'empty'	1) Open registration page	Phone auto-fills 13800138000, WeChat dev_tester (dev mode only)		
+TC-020	Entry Survey 入门问卷	Survey loads and required indicators show	Reached entry-survey from registration	1) Scroll through every question	Red * shown next to required questions; +N coin badges on buttons correct		
+TC-021	Entry Survey 入门问卷	Missing required answer blocks submit, scrolls to first empty	At least one required question left unanswered	1) Tap 下一区块 or 提交	Page scrolls to first empty question; reminder text appears; does not advance		
+TC-022	Entry Survey 入门问卷	Untoggling an answer deducts the credited coins	Question answered, coins already credited	1) Tap the same option again to deselect; 2) Watch coin counter	Counter decreases by that question's reward; re-selecting re-credits (single award per question)		
+TC-023	Entry Survey 入门问卷	assignCondition fires on completion	All required answered, final block's '我已理解' ticked	1) Tap 提交问卷; 2) Watch network panel	saveSurveyResponse(isFinal=true) then assignCondition fire; latter returns condition + article_combination + article_order		
+TC-024	Entry Survey 入门问卷	Loading overlay during assignCondition call	Survey submitted	1) Observe page state after submit	Full-screen 请稍候... mask shown until assignCondition resolves		
+TC-025	Entry Survey 入门问卷	Successful assignment routes to news-feed	assignCondition returned success	1) Wait for navigation	switchTab to news-feed; globalData hydrated with condition + article_combination + article_order		
+TC-026	News Feed 视频	Treatment first-mount shows video overlay	condition is treatment_pos / treatment_neg / no_text; first time on news-feed	1) Finish entry survey, land on news-feed	Fullscreen video overlay auto-plays; src from VIDEO_CONFIG[condition].video_file		
+TC-027	News Feed 视频	Control bypasses video, lands on feed	condition = 'control'	1) Finish entry survey, land on news-feed	No video overlay; article cards visible immediately; exit-timer starts ticking		
+TC-028	News Feed 视频	End-of-video reveals 继续 button	Video overlay playing	1) Wait for video to finish naturally (~8s)	Continue button appears at bottom/right after video ends		
+TC-029	News Feed 视频	继续 awards 50 video bonus, opens feed	Video ended, 继续 visible	1) Tap 继续; 2) Watch coin counter	After ~500ms, +50 coin pop animation; overlay closes; exit-timer starts; feed visible		
+TC-030	News Feed 视频	Video does NOT replay across re-launches in same flow	Treatment user already watched video; relaunch but session not closed	1) Fully close; 2) Reopen and let loading route back to news-feed	Server returns video_played=true; globalData.videoShown hydrated true; video overlay suppressed		
+TC-031	News Feed 定时器	exit-timer pill position + style	On news-feed / center / home tab	1) Observe top-right	Rounded pill fixed at top-right 8rpx; ⏳ icon, MM:SS, +88 reward chip, 跳过 skip chip		
+TC-032	News Feed 定时器	Countdown updates every 1s	exit-timer visible	1) Watch the MM:SS digits	Digits tick down once per second; starts 2:00, ends 0:00		
+TC-033	News Feed 定时器	Timer expiry fires exit-survey	exit-timer running ~2 min	1) Wait for countdown to reach zero	+88 coin pop; reLaunch to exit-survey; globalData.exitSurveyFired=true		
+TC-034	News Feed 定时器	Tap 跳过 chip skips immediately	exit-timer visible	1) Tap 跳过 chip or anywhere on the pill	Immediately fires _fireExitSurvey; +88 coins; navigates to exit-survey		
+TC-035	News Feed 定时器	Welcome-back modal gates timer start	Mid-flow relaunch into news-feed with welcomeBackBanner set	1) Land on news-feed; 2) Observe modal and exit-timer	wx.showModal 'Welcome back' appears; newsTimerStartTs NOT set until 知道了 tapped; timer starts after		
+TC-036	Article Viewer 文章	Tap article card opens viewer	On news-feed	1) Tap any article card	navigateTo article-viewer; logArticleEvent(open) fires		
+TC-037	Article Viewer 文章	Article renders title, body, image	Article open	1) Scroll through	Title, lead, body, thumbnail render per ARTICLES config; English version visible dev-mode only		
+TC-038	Article Viewer 文章	Back navigation logs close event	On article detail	1) Tap system back; 2) Inspect logArticleEvent	logArticleEvent(close, articleId, openTs, closeTs) fires; reading_time_seconds.<articleId> written		
+TC-039	Article Viewer 文章	exit-timer continues on article page	Article open	1) Watch top-right exit-timer	MM:SS continues to count down; shares newsTimerStartTs with news-feed		
+TC-040	Exit Survey 结束问卷	Treatment users see video-confirmation block	condition != control	1) Open exit-survey	block_exit_1 shows Q2.2 / Q2.3 / Q2.4; latter two only when video_watched=1		
+TC-041	Exit Survey 结束问卷	Control skips video-confirmation block	condition = 'control'	1) Open exit-survey	block_exit_1 (treatmentOnly) skipped by engine; Q2.2-Q2.4 hidden		
+TC-042	Exit Survey 结束问卷	Manipulation-check block randomised	block_exit_2	1) Compare Q3.1-Q3.5 order across two attempts	Order varies per participant (randomiseOrder=true); statement intro stays anchored		
+TC-043	Exit Survey 结束问卷	Submit routes to debriefing	All required answered; block_5 ticked	1) Tap submit	saveSurveyResponse(isFinal=true) writes absolute coins_exit_survey; redirectTo debriefing		
+TC-044	Debriefing 事后说明	Briefing text renders fully	Reached debriefing from exit-survey	1) Observe first screen; 2) Scroll to bottom	Chinese debriefing fully visible; 领取奖励 button at bottom, disabled initially		
+TC-045	Debriefing 事后说明	Button enables after scroll near bottom	Not yet scrolled to bottom	1) Scroll until ≤20px from bottom; 2) Check button state	Button becomes active (buttonActive=true); clickable		
+TC-046	Debriefing 事后说明	Tap active button logs read + navigates	Button active	1) Tap 领取奖励	logDebriefing(event='read') fires; redirectTo reward		
+TC-047	Reward 领奖（正常）	Reward page loads, shows total	Reached reward from debriefing	1) Wait for completeSession to finish	Coin total displayed (≤704 treatment, ≤654 control) and yuan equivalent; payState='idle'		
+TC-048	Reward 领奖（正常）	completeSession caps total at 704	Upstream cumulative coins may exceed 704 (anomaly)	1) Inspect coins_total on reward page	Return value never exceeds TOTAL_COINS_CAP=704; reward_yuan ≤ 8.00		
+TC-049	Reward 领奖（正常）	Tap 领取奖励 fires claimReward	payState='idle'	1) Tap 领取奖励	payState becomes 'paying' with spinner; claimReward fires and sets reward_attempted=true		
+TC-050	Reward 领奖（正常）	Success state shows transaction id + 返回主页	claimReward returned success	1) Wait for paying → paid transition	✅ '红包已发放', last-8-of transaction id, hint text, clickable 返回主页 button		
+TC-051	Reward 领奖（错误）	yaoyaola DNS failure shows error state	claimReward fails due to DNS/network	1) Tap 领取奖励; 2) Watch for error state	payState='error'; ⚠️ '发放失败' shown along with raw error (e.g. getaddrinfo ENOTFOUND mp001.yaoyaola.net)		
+TC-052	Reward 领奖（错误）	重试 button re-triggers claim	In error state	1) Tap 重试	claimReward fires again; payState returns to 'paying'		
+TC-053	Reward 领奖（错误）	返回主页 button switchTabs to news-feed	In error state	1) Tap 返回主页	wx.switchTab to news-feed; reward_attempted=true persisted, future routing skips reward		
+TC-054	Reward 领奖（错误）	Error state hints at contact-us form	In error state	1) Read text below error	Hint reads '研究已记录...' and points participant to feedback form on 个人积分		
+TC-055	Coin Overlay	Counter shows current coins + yuan equivalent	Current globalData.totalCoins = N	1) Read the coin pill display	Number equals N; ¥ part is (N/88).toFixed(2)		
+TC-056	Coin Overlay	Coin increase triggers pulse	Overlay attached and hydrated	1) Trigger any addTotalCoins / setTotalCoins (answer a question, tap consent)	Outer pill runs 600ms scale-up pulse		
+TC-057	Coin Overlay	+N pop animation floats up	Counter just increased by N	1) Watch the +N 💴 text above the pill	+N text appears, floats up ~950ms, then fades; popKey bumps so consecutive pops re-run		
+TC-058	Coin Overlay	Random idle-glow halo pulses	Overlay attached	1) Watch for 5-30 seconds; 2) Observe outer shadow	Every 2-8s random interval, ~2s gold halo pulse (coin-idle-glow keyframe)		
+TC-059	Coin Overlay	Drag persists position	On a page with overlay	1) Drag pill elsewhere; 2) Switch tab and come back	Pill stays at last released position (globalData.coinOverlayPos)		
+TC-060	Welcome Banner 欢迎回来横幅	Mid-flow relaunch shows welcome-back banner	Registered/surveyed user cold launch	1) Close fully; 2) Reopen	Destination page (e.g. entry-survey) shows '👋 Welcome back! Please complete X' banner with '知道了' dismiss		
+TC-061	Welcome Banner 欢迎回来横幅	知道了 dismisses + clears state	Banner showing	1) Tap 知道了	Banner hides; app.globalData.welcomeBackBanner cleared to ''		
+TC-062	Welcome Banner 欢迎回来横幅	Banner is single-shot per re-entry	Banner already consumed on one page	1) Navigate to another page that mounts welcome-banner	Banner does NOT re-appear on the new page; cleared on first read		
+TC-063	Home Capsule 主页胶囊	Mid-flow home tap returns to current step	On any mid-flow page	1) Tap the gray house capsule top-left	Loading flashes (no 1.2s delay); routes back to current step; destination shows MID_FLOW_HINT banner		
+TC-064	Home Capsule 主页胶囊	Banner copy matches current step	Re-bootstrap detects mid-flow route	1) Tap home capsule from each mid-flow page in turn	registration → '请先完成注册', entry_survey → '请先完成入门问卷', exit_survey → '请先完成结束问卷', debriefing → '请先阅读完研究说明', reward → '请先领取奖励'		
+TC-065	Home Capsule 主页胶囊	Re-bootstrap skips spinner delay	globalData.hasBootstrapped=true	1) Tap home capsule; 2) Time loading visibility	Loading page visible far less than 1200ms (only network RTT)		
+TC-066	Home Capsule 主页胶囊	Post-reward home tap routes to news-feed	reward_paid=true OR reward_attempted=true	1) Tap home capsule from a finished-state page	Loading routes to news-feed (news_feed_free); never returns to reward		
+TC-067	Tab Bar 导航栏	Tab bar only visible on tab pages	On tab pages vs non-tab pages	1) Navigate between pages and watch the bottom	Tab pages show bottom bar with 3 entries; non-tab pages have no bar		
+TC-068	Tab Bar 导航栏	Selected tab highlights	On a tab page	1) Observe current tab icon colour	Active tab uses selectedColor (#f9bc60) + selectedIconPath; others use default		
+TC-069	Tab Bar 导航栏	Tapping a tab calls switchTab	On any tab page	1) Tap a different tab	Routes to target tab; selected index updates; page not duplicated		
+TC-070	Tab Bar 导航栏	Post-reward, news-feed is canonical landing	reward_paid=true	1) Land on home tab by mistake; 2) Wait	home.onShow detects rewardPaid and switchTabs to news-feed		
+TC-071	Trip Records	Start tracking opens transport modal	Not currently tracking	1) On home tab tap 开始记录	Transport multi-select modal opens (walk / bike / subway etc.)		
+TC-072	Trip Records	Confirming transport starts timer	At least one transport selected	1) Tap confirm	Modal closes; isTracking=true; second-level timer visible; button now reads 结束记录		
+TC-073	Trip Records	Stop → purpose modal → save	Currently tracking	1) Tap 结束记录; 2) Confirm; 3) Pick purpose; 4) Confirm	Record written to local cache + cloud track collection; toast '行程记录成功!'		
+TC-074	Trip Records	Last 7 days listed desc by endTime	Multiple records exist	1) Scroll through the list	Local + cloud merged + deduped; sorted by endTime desc; max 20 entries		
+TC-075	Trip Records	Missing transport / purpose toasts	Transport or purpose not chosen	1) Tap confirm without selection	wx.showToast '请选择出行方式' / '请选择出行目的'		
+TC-076	Personal Centre	Coins + yuan display sync	Some coins accrued	1) Open center tab	Top reward card shows current coins + ≈¥X.XX matching globalData.totalCoins		
+TC-077	Personal Centre	Reward-paid banner shown when paid	rewardPaid=true	1) Open center tab	Above recent trips: ✅ '已领取奖励 ¥X.XX' with last-8 of transaction id + time		
+TC-078	Personal Centre	Last 7 days trip records	Multiple track records	1) Browse the 最近行程 section	Records show transport mode, duration, carbon saved; empty state copy when none		
+TC-079	Personal Centre	Coin counter live-subscribes	On center tab	1) Trigger addTotalCoins from elsewhere; 2) Return to center	Card updates live via pub/sub, no manual refresh needed		
+TC-080	Contact-Us	Contact card visible to all participants	Any user, any progress	1) Scroll to bottom of center page	'联系我们' header + textarea + '提交留言' button visible, no conditional gating		
+TC-081	Contact-Us	Empty submit disabled	Textarea empty	1) Type nothing; 2) Observe button	Submit button disabled; tap is no-op		
+TC-082	Contact-Us	Successful submit writes to cloud	Message typed	1) Type message; 2) Tap 提交留言	Calls wx.cloud.database().collection('participant_feedback').add(...); on success swaps to thank-you state		
+TC-083	Contact-Us	Thank-you state on success	Submit succeeded	1) Observe card after submit	Card swaps to ✅ '您的留言已收到，我们会尽快查看并回复。感谢您的反馈！'		
+TC-084	Re-Entry	Consented, not registered	consent_given=true, registration_timestamp empty	1) Fully close and reopen	Loading routes to registration; banner '请完成注册以继续'		
+TC-085	Re-Entry	Registered, no entry survey	registration_timestamp set, entry_survey_end_timestamp empty	1) Fully close and reopen	Loading routes to entry-survey; banner '请完成入门问卷'		
+TC-086	Re-Entry	Entry done, timer running on news-feed	entry_survey_end_timestamp set, exitSurveyFired false	1) Fully close and reopen	Loading switchTabs to news-feed; after welcome modal, 2-min timer starts		
+TC-087	Re-Entry	Exit survey done, debrief not read	exit_survey_end_timestamp set, debrief_read_timestamp empty	1) Fully close and reopen	Loading routes to debriefing; banner '请阅读说明并领取奖励'		
+TC-088	Re-Entry	Debrief read, reward not attempted	debrief_read_timestamp set, reward_attempted=false	1) Fully close and reopen	Loading routes to reward; banner '请领取您的奖励'		
+TC-089	Re-Entry	Reward paid (red packet succeeded)	reward_paid=true	1) Fully close and reopen	Loading switchTabs to news-feed (news_feed_free); center shows paid banner; timer never starts		
+TC-090	Re-Entry	Reward attempted but failed	reward_attempted=true AND reward_paid=false	1) Fully close and reopen	Same as 'paid': switchTabs to news-feed (news_feed_free); never returns to reward		
+TC-091	Edge Cases	Cloud function failure when offline	DevTools simulator: throttle to offline	1) Trigger any cloud call (e.g. saveConsent)	wx.showToast '网络错误，请重试'; page does not freeze		
+TC-092	Edge Cases	Force-kill mid-flow then resume	On entry-survey with partial answers	1) Force-close; 2) Reopen	Loading routes back to entry-survey; survey resets (no auto-save); banner shown		
+TC-093	Edge Cases	Reward double-tap idempotent	Reward page idle	1) Rapidly tap 领取奖励 twice	Server-side reward_pay_in_flight soft-mutex; second call returns 'in_flight'; no double payout		
+TC-094	Edge Cases	Storage permission error blocks video	treatments folder permission not set to 所有用户可读	1) Treatment user lands on news-feed; 2) Observe video overlay	Video fails to load; onVideoError fires; 继续 still tappable so user can proceed		
+TC-095	Edge Cases	yaoyaola DNS unreachable	Vendor endpoint unreachable	1) Trigger claimReward	Cloud function returns send_failed + detail 'getaddrinfo ENOTFOUND mp001.yaoyaola.net'; client enters error state		
+TC-096	Edge Cases	Cloud function timeout	High-latency network	1) Trigger saveSurveyResponse or similar	Client shows loading state; on timeout shows friendly error (not stack trace); user can retry		

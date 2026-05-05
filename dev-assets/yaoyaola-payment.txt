@@ -1,0 +1,77 @@
+Yaoyaola Red-Packet Payment — Reference Snippets
+==================================================
+
+ENDPOINT
+--------
+  https://mp001.yaoyaola.net/exapi/SendRedPackToOpenid
+
+
+CREDENTIALS  (cloudfunctions/sendCashReward/index.js:23-24)
+-----------------------------------------------------------
+  apikey = 'carbclever'
+  uid    = '10815051'
+
+
+SIGNATURE  (cloudfunctions/sendCashReward/index.js:28)
+------------------------------------------------------
+  sig = md5(`${uid}${type}${orderid}${money}${reqtick}${openid}${apikey}`)
+       (hex digest)
+
+
+QUERY PARAMS SENT  (cloudfunctions/sendCashReward/index.js:31-42)
+-----------------------------------------------------------------
+  uid       = '10815051'
+  type      = 1                                    // RED_PACKET_TYPE
+  orderid   = `${Date.now()}${u_openid}`
+  money     = fen (yuan × 100)
+  reqtick   = Math.floor(Date.now() / 1000)
+  openid    = participant openid (from cloud.getWXContext())
+  sign      = md5 hex of concatenated string above
+  title     = '现金发奖'
+  sendname  = '碳行家'
+  wishing   = '心想事成'
+
+
+CALLER CHAIN
+------------
+  pages/reward/reward.js  →  claimReward (cloud function)
+  cloudfunctions/claimReward/index.js:99-103
+    wx.cloud.callFunction({
+      name: 'sendCashReward',
+      data: { u_openid: OPENID, type: 1, money }
+    })
+
+  money = Math.round(rewardYuan * 100)   // fen
+  RED_PACKET_TYPE = 1                    // claimReward/index.js:23
+
+
+CURRENT ERROR  (live test 2026-05-04)
+-------------------------------------
+  getaddrinfo ENOTFOUND mp001.yaoyaola.net
+
+  DNS resolution failure from Tencent cloud-function runtime. Either
+  domain wrong, vendor account dead, or yaoyaola endpoint moved.
+  Confirm with vendor before going live.
+
+
+SERVER DOMAIN WHITELIST  (if required)
+--------------------------------------
+  mp.weixin.qq.com
+    → 设置
+    → 开发管理
+    → 开发设置
+    → 服务器域名 → 服务器域名 (request)
+    → add  https://mp001.yaoyaola.net
+
+  NOTE: cloud functions reach external URLs without this whitelist
+  (server-side outbound). Whitelist is only required for direct
+  wx.request() calls from the mini-program client. Adding it anyway
+  is harmless and may pre-empt review questions.
+
+
+FILE INDEX
+----------
+  cloudfunctions/sendCashReward/index.js   — main API caller
+  cloudfunctions/sendCashReward/package.json   — declares axios dep
+  cloudfunctions/claimReward/index.js      — invokes sendCashReward
+                                              with idempotency lock
