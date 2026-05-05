@@ -4,7 +4,8 @@
 # In WeChat DevTools enable: 详情 → 本地设置 → 不校验合法域名...
 
 PORT=8000
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+# Script lives in dev-assets/; resolve repo root one level up.
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIR="$ROOT/dev-assets/treatments"
 APP_JS="$ROOT/miniprogram/app.js"
 

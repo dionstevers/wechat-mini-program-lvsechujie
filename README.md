@@ -79,11 +79,10 @@ dev-assets/                  files NOT shipped to WeChat
 │   ├── other-languages/     bilingual + English-only
 │   ├── legacy/              legacy xlsx test plans
 │   └── build_test_tsv.py    authoring script — single source of truth
-├── treatments/              raw mp4s for video treatments
-└── plans/                   archived design plans
-
-PRE_UPLOAD_CHECKLIST.md      pre-upload sanity list
-serve-treatments.command     macOS double-click helper to host treatments locally in dev mode
+├── treatments/              raw mp4s for video treatments (served locally in dev)
+├── plans/                   archived design plans
+├── PRE_UPLOAD_CHECKLIST.md  pre-upload sanity list
+└── serve-treatments.command macOS double-click helper to host treatments locally
 ```
 
 ---
@@ -102,7 +101,7 @@ const DEV_MODE_OPTION = 'off' | 'empty' | 'prefilled'
 | `'empty'` | mocked in-memory | blank | UI dev with no cloud roundtrip |
 | `'prefilled'` | mocked in-memory | every question pre-answered | rapid click-through testing |
 
-Must be `'off'` before upload. Verified in [`PRE_UPLOAD_CHECKLIST.md`](PRE_UPLOAD_CHECKLIST.md).
+Must be `'off'` before upload. Verified in [`dev-assets/PRE_UPLOAD_CHECKLIST.md`](dev-assets/PRE_UPLOAD_CHECKLIST.md).
 
 There's also a `TEST_CONDITION_OVERRIDE` constant in [`miniprogram/pages/entry-survey/entry-survey.js`](miniprogram/pages/entry-survey/entry-survey.js) — set to a condition string to force every participant into that condition regardless of `assignCondition`. Empty string = real randomisation. **Must be empty before review.**
 
@@ -131,7 +130,7 @@ Prerequisites: WeChat DevTools (Stable channel), this repo cloned, AppID `wx3adf
 
 1. **Clone + open** in DevTools. The project root is the dir containing `project.config.json`.
 2. **Set DEV_MODE** in [`miniprogram/app.js:8`](miniprogram/app.js#L8). For day-to-day: `'prefilled'`.
-3. **Treatment videos in dev**: double-click `serve-treatments.command` (macOS) — runs a local HTTP server on `:8000` serving `dev-assets/treatments/*.mp4`. [`miniprogram/config/videos.js`](miniprogram/config/videos.js) auto-routes to `localhost` when `DEV_MODE !== 'off'`.
+3. **Treatment videos in dev**: double-click [`dev-assets/serve-treatments.command`](dev-assets/serve-treatments.command) (macOS) — runs a local HTTP server on `:8000` serving `dev-assets/treatments/*.mp4`. [`miniprogram/config/videos.js`](miniprogram/config/videos.js) auto-routes to `localhost` when `DEV_MODE !== 'off'`.
 4. **Cloud env** — confirm DevTools 云开发 panel binds to `cloudbase-d4ghbgqhq17d3a271`. Wrong env binding = silent FUNCTION_NOT_FOUND.
 5. **Compile** + use the simulator. The custom tab-bar surfaces only on home / news-feed / center.
 
@@ -154,7 +153,7 @@ Cloud storage: treatment videos under `treatments/` in the cloud env. Permission
 
 ## Publish workflow
 
-1. Run [`PRE_UPLOAD_CHECKLIST.md`](PRE_UPLOAD_CHECKLIST.md) end-to-end.
+1. Run [`dev-assets/PRE_UPLOAD_CHECKLIST.md`](dev-assets/PRE_UPLOAD_CHECKLIST.md) end-to-end.
 2. DevTools → 上传 → bump version (e.g. `1.0.x`).
 3. mp.weixin.qq.com → 管理 → 版本管理 → 开发版本 → 选为体验版.
 4. mp.weixin.qq.com → 成员管理 → 体验成员 → add tester WeChat IDs.
