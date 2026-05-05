@@ -2,7 +2,7 @@
 
 ## What's current
 
-Three flavours of the same 96 test cases covering the experiment mini-program as of master `97082db`. All are tab-separated, UTF-8 with BOM, and identical in scope — pick whichever matches the tester's language preference. Chinese (the team's working language) sits at the root; the other two languages are tucked under [`other-languages/`](other-languages/).
+Three flavours of the same 113 test cases covering the experiment mini-program. All are tab-separated, UTF-8 with BOM, and identical in scope — pick whichever matches the tester's language preference. Chinese (the team's working language) sits at the root; the other two languages are tucked under [`other-languages/`](other-languages/).
 
 | File | Columns | Use when |
 |---|---|---|
@@ -15,10 +15,11 @@ Modules covered:
 - Bootstrap & re-entry routing (loading dispatcher)
 - Landing / consent / registration
 - Entry survey (incl. assignCondition)
-- News-feed video overlay (treatment vs control)
+- News-feed video overlay (treatment vs control, cold-launch replay, loading spinner)
+- News-feed mid-flow re-entry (welcome modal first → video → feed)
 - News-feed exit-timer (2-min countdown + skip)
 - Article viewer
-- Exit survey (incl. block randomisation)
+- Exit survey (Q2.2 visible to all, block randomisation, video-watch gating)
 - Debriefing (scroll-to-bottom gate)
 - Reward — happy path + error path (yaoyaola)
 - Coin overlay (pulse, pop, idle-glow, drag)
@@ -28,7 +29,8 @@ Modules covered:
 - Trip records (home tab)
 - Personal centre (个人积分)
 - Contact-us form (participant_feedback)
-- Re-entry scenarios (one row per route in getParticipantState)
+- Randomisation (4 conditions, 2 article combos × 2 orders, in-survey shuffles, idempotency)
+- Re-entry scenarios (one row per route in getParticipantState, including mid-exit-survey resume)
 - Edge cases (network drop, force-kill, double-tap, vendor DNS fail, timeout)
 
 ## How to use
@@ -41,7 +43,7 @@ Double-click the `.tsv`. Excel auto-detects tab-delimited; BOM ensures Chinese c
 
 1. Open the file in any text editor; select all; copy.
 2. In Excel/Sheets, click cell **A1**.
-3. Paste — all 12 columns + 97 rows (header + 96 cases) populate correctly.
+3. Paste — all 12 columns + 114 rows (header + 113 cases) populate correctly.
 
 ### Column layouts
 
