@@ -63,9 +63,17 @@ Lives under [`legacy/`](legacy/):
 
 All describe the **previous** carbon-tracking app: trip-recording APIs, location permissions, points-exchange, friend-add — features that no longer exist in the experiment routing tree. Kept for historical reference only, not as the active test plan.
 
-## Updating the bilingual TSV
+## Updating the test cases
 
-Re-run [`/tmp/build_test_tsv.py`](../../tmp/build_test_tsv.py) (the authoring script is one-shot and lives outside the repo by default). To make permanent changes:
+The authoring script [`build_test_tsv.py`](build_test_tsv.py) is the source of truth. The three TSVs are emitted from a single `ROWS` list inside it.
 
-1. Either edit cells directly in Excel/Sheets and re-save as TSV (UTF-8, tab-delimited, BOM).
-2. Or update the `ROWS` list in the Python script and re-run — the script re-emits the full file.
+To add / remove / edit cases:
+
+1. Edit the `ROWS` list in [`build_test_tsv.py`](build_test_tsv.py) — each entry is a tuple of `(module, case_zh, case_en, pre_zh, pre_en, steps_zh, steps_en, exp_zh, exp_en)`.
+2. Run `python3 build_test_tsv.py` from this directory (or anywhere — paths are absolute).
+3. All three TSVs (`test-cases-cn.tsv`, `other-languages/test-cases-bilingual.tsv`, `other-languages/test-cases-en.tsv`) regenerate.
+4. Commit the script + TSV diffs together.
+
+Avoid editing the TSVs by hand — drift between languages and accidental column-shift are the typical failure modes.
+
+To send to testers: open the relevant TSV in Excel and **File → Save As → `.xlsx`** (or use Google Sheets' import + download flow). The xlsx is the artifact that goes to QA; the TSV is what lives under git.
