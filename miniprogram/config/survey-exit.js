@@ -86,12 +86,12 @@ const EXIT_SURVEY = {
         {
           id: 'Q2.2',
           type: 'single_select',
-          text: '在进入「信息中心」之前，您是否看到过一段视频？',
+          text: '在进入信息中心之前，我们可能向您展示了一段视频。如果是，您是否观看了？',
           field: 'video_watched',
           options: [
-            { label: '看到过并观看了',    value: 1 },
-            { label: '看到过但未观看',    value: 2 },
-            { label: '没有看到过视频',    value: 3 },
+            { label: '是，观看了',         value: 1 },
+            { label: '是，但未观看',       value: 2 },
+            { label: '没有看到视频',       value: 3 },
           ],
           required: true,
         },
