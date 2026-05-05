@@ -11,7 +11,7 @@ const { ENTRY_SURVEY } = require('../../config/survey-entry.js')
 // TEST-ONLY override — forces every participant into the chosen condition
 // regardless of what assignCondition returns. Set to '' to re-enable the
 // real random assignment. Remove before review submission.
-const TEST_CONDITION_OVERRIDE = 'control'
+const TEST_CONDITION_OVERRIDE = ''
 
 Page({
   data: {
