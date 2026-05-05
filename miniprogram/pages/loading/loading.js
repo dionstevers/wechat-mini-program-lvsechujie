@@ -71,7 +71,11 @@ Page({
       app.globalData.rewardYuan = Number(result.reward_yuan || 0)
       app.globalData.rewardPaidTimestamp = result.reward_paid_timestamp || null
       app.globalData.rewardTransactionId = result.reward_transaction_id || null
-      app.globalData.videoShown = !!result.video_played
+      // Intentionally do NOT hydrate videoShown from the server-side
+      // video_played flag — we want the video to replay on cold-launch
+      // re-entry mid-flow. videoShown stays false on every fresh
+      // bootstrap; only the rewardPaid / rewardAttempted finished flags
+      // suppress the overlay long-term.
       if (result.condition) app.globalData.condition = result.condition
       if (result.article_combination) app.globalData.articleCombination = result.article_combination
       if (result.article_order) app.globalData.articleOrder = result.article_order

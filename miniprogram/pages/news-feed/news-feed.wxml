@@ -34,6 +34,7 @@
   <!-- ── Video overlay (conditions 1–3) ──────────────────────────────── -->
   <view wx:if="{{showOverlay}}" class="video-overlay {{videoFullscreen ? 'video-overlay-fullscreen' : 'video-overlay-modal'}}">
     <view class="{{videoFullscreen ? 'video-fullscreen-inner' : 'video-modal'}}">
+      <view wx:if="{{!videoStarted}}" class="video-loading-spinner"></view>
       <video
         id="treatment-video"
         src="{{videoSrc}}"
@@ -45,6 +46,7 @@
         show-fullscreen-btn="{{false}}"
         objectFit="contain"
         class="treatment-video"
+        bindplay="onVideoPlay"
         bindended="onVideoEnded"
         binderror="onVideoError"
       />

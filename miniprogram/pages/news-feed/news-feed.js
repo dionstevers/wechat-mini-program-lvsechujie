@@ -27,6 +27,7 @@ Page({
   data: {
     showOverlay: false,
     showContinueBtn: false,
+    videoStarted: false,    // flips true on first <video> bindplay; fades out the loading hint
     videoSrc: '',
     displayArticles: [],
     feedActive: false,
@@ -52,11 +53,31 @@ Page({
     const displayArticles = articleIds.map(id => ARTICLES[id]).filter(Boolean)
     this.setData({ displayArticles })
 
-    // Show video overlay for non-control conditions, but only the very
-    // first time the news-feed is opened. videoShown is hydrated by the
-    // bootstrap dispatcher from getParticipantState's video_played flag,
-    // so a re-launch after the participant has already watched the video
-    // doesn't replay it.
+    // Re-entry path: surface the welcome-back modal FIRST (telling the
+    // participant what's about to happen), then route into the video
+    // overlay or directly into the feed once they tap 知道了.
+    const banner = app.globalData && app.globalData.welcomeBackBanner
+    if (banner && !this._welcomeShown) {
+      this._welcomeShown = true
+      wx.showModal({
+        title: '欢迎回来',
+        content: banner,
+        showCancel: false,
+        confirmText: '知道了',
+        success: () => {
+          if (app.globalData) app.globalData.welcomeBackBanner = ''
+          this._showVideoOrFeed(condition)
+        },
+      })
+      return
+    }
+    this._showVideoOrFeed(condition)
+  },
+
+  // Decide between video overlay vs going straight into the feed.
+  // Treatment participants on a fresh app session see the video overlay;
+  // control participants and post-claim free-use participants skip it.
+  _showVideoOrFeed(condition) {
     const finished = !!(app.globalData && (app.globalData.rewardPaid || app.globalData.rewardAttempted))
     const alreadyShown = !!(app.globalData && app.globalData.videoShown) || finished
     if (!alreadyShown && condition && condition !== 'control') {
@@ -68,9 +89,11 @@ Page({
         return
       }
     }
-
-    // Control condition or video already seen — activate feed immediately.
     this._activateFeed()
+  },
+
+  onVideoPlay() {
+    if (!this.data.videoStarted) this.setData({ videoStarted: true })
   },
 
   onVideoEnded() {
@@ -130,30 +153,9 @@ Page({
     const feedActiveTs = Date.now()
     this.setData({ feedActive: true })
 
-    // If a welcome-back message is queued (re-entry), gate the timer on
-    // the participant tapping 知道了. Otherwise (first visit) start it now.
-    const banner = app.globalData && app.globalData.welcomeBackBanner
-    if (banner && !this._welcomeShown) {
-      this._welcomeShown = true
-      wx.showModal({
-        title: '欢迎回来',
-        content: banner,
-        showCancel: false,
-        confirmText: '知道了',
-        success: () => {
-          if (app.globalData) {
-            app.globalData.welcomeBackBanner = ''
-            if (
-              !app.globalData.newsTimerStartTs &&
-              !app.globalData.rewardPaid &&
-              !app.globalData.exitSurveyFired
-            ) {
-              app.globalData.newsTimerStartTs = Date.now()
-            }
-          }
-        },
-      })
-    } else if (
+    // Welcome modal already shown upstream in onLoad (before video). Just
+    // start the 2-min countdown if the session is still open.
+    if (
       app.globalData &&
       !app.globalData.newsTimerStartTs &&
       !app.globalData.rewardPaid &&

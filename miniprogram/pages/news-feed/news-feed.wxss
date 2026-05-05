@@ -50,6 +50,30 @@
   height: 100%;
 }
 
+/* Loading spinner overlaid INSIDE the video frame — sits centred over the
+   black video area while the file streams in, then disappears the moment
+   the first frame plays. Both modal + fullscreen wrappers are already
+   position:relative, so absolute positioning anchors to them. */
+.video-loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56rpx;
+  height: 56rpx;
+  margin-left: -28rpx;
+  margin-top: -28rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  z-index: 5;
+  pointer-events: none;
+  animation: video-spinner-rotate 0.85s linear infinite;
+}
+
+@keyframes video-spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
 /* Modal (overlay) mode */
 .video-overlay-modal {
   background: rgba(0, 0, 0, 0.55);

@@ -34,8 +34,17 @@ function deriveBanner(p, route) {
       return '欢迎回来！请完成注册以继续'
     case 'entry_survey':
       return '欢迎回来！请完成入门问卷'
-    case 'news_feed':
-      return '欢迎回来！约 2 分钟后将自动进入结束问卷'
+    case 'news_feed': {
+      // Re-entry to news-feed mid-flow. The client shows this modal
+      // BEFORE the video overlay (treatment) or before the article feed
+      // (control), so the copy explains what happens next.
+      const isTreatment = p && p.condition && p.condition !== 'control'
+      const watchedBefore = p && (p.video_overlay_end_timestamp || p.video_overlay_start_timestamp)
+      if (isTreatment && watchedBefore) {
+        return '欢迎回来！点击「知道了」后将再次播放视频，观看完毕后请继续阅读资讯，约 2 分钟后将自动进入结束问卷。'
+      }
+      return '欢迎回来！点击「知道了」后请继续阅读资讯，约 2 分钟后将自动进入结束问卷。'
+    }
     case 'debriefing':
       return '欢迎回来！请阅读说明并领取奖励'
     case 'reward':
