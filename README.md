@@ -1,6 +1,6 @@
 # 低碳出街小助手 — Experiment Mini-Program
 
-WeChat mini-program implementing a between-subjects experiment on environmental communication. Originally forked from a carbon-footprint tracking app (Hengyu Du, 2022); the current code base re-uses the page shell + cloud-development scaffolding but the participant flow, surveys, condition assignment, video treatments, payout, and analytics are new.
+WeChat mini-program implementing a between-subjects experiment on environmental communication. Originally forked from [Hengyu-DU/Carbon-Footprint-Mini-Program](https://github.com/Hengyu-DU/Carbon-Footprint-Mini-Program) (Hengyu Du, 2022); the current code base re-uses the page shell + cloud-development scaffolding but the participant flow, surveys, condition assignment, video treatments, payout, and analytics are new.
 
 Operator: Duke Kunshan University. AppID `wx3adf1829016e6695`. Cloud env `cloudbase-d4ghbgqhq17d3a271`.
 
