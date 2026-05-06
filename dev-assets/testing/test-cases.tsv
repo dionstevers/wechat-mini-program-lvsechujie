@@ -1,0 +1,114 @@
+﻿编号	模块	测试用例	预设条件	操作步骤	预期结果	测试结果	备注
+TC-001	启动与路由	全新用户冷启动	未做过任何步骤；experiment_participants 无该 openid 记录	1) 扫码或打开小程序	loading 页停留约 1.2 秒后跳转到 landing 页；无错误提示		
+TC-002	启动与路由	已注册未做入门问卷的用户冷启动	experiment_participants 中 registration_timestamp 已写入，entry_survey_end_timestamp 为空	1) 完全关闭小程序；2) 重新打开	loading 跳转到 entry-survey 页；welcome-back 横幅显示「欢迎回来！请完成入门问卷」		
+TC-003	启动与路由	已完成结束问卷未阅读说明的用户冷启动	exit_survey_end_timestamp 已写入，debrief_read_timestamp 为空	1) 完全关闭小程序；2) 重新打开	loading 跳转到 debriefing 页；welcome-back 横幅显示「欢迎回来！请阅读说明并领取奖励」		
+TC-004	启动与路由	已读说明未领奖的用户冷启动	debrief_read_timestamp 已写入，reward_attempted=false，reward_paid=false	1) 完全关闭小程序；2) 重新打开	loading 跳转到 reward 页；显示「请领取您的奖励」横幅		
+TC-005	启动与路由	已尝试领奖（成功或失败）的用户冷启动	reward_attempted=true 或 reward_paid=true	1) 完全关闭小程序；2) 重新打开	loading 切换到信息中心 tab（news_feed_free 状态）；不再返回 reward 页；不显示 exit-timer		
+TC-006	启动与路由	首次启动加载页最短停留时间	首次冷启动；globalData.hasBootstrapped 为 false	1) 扫码打开；2) 用秒表计时 loading 页可见时间	loading 页至少停留 1200ms（即 MIN_LOADING_MS）防止闪屏		
+TC-007	Landing 落地页	落地页元素显示	已通过 loading 跳转到 landing	1) 观察页面	显示欢迎文字、继续按钮、按钮右上角 +88 金币徽章		
+TC-008	Landing 落地页	继续按钮奖励 88 金币并跳转	落地页 idle 状态	1) 点击「继续」；2) 观察金币溢出动画与下一页	金币计数器从 0 增加到 88，显示 +88 浮起动画；跳转到 consent 页		
+TC-009	Landing 落地页	继续按钮防双击	落地页 idle 状态	1) 快速连续点击「继续」两次或多次	金币只增加一次 88（不会变成 176）；只跳转一次		
+TC-010	Consent 知情同意	同意页文字渲染	从 landing 进入 consent 页	1) 滚动浏览全文	显示中文知情同意书全文；底部有「同意」与「我不同意」两个按钮		
+TC-011	Consent 知情同意	同意按钮奖励 50 金币并跳转	consent 页 idle 状态	1) 点击「同意」	saveConsent 云函数被调用并返回 success；金币 +50 浮起动画；跳转到 registration 页		
+TC-012	Consent 知情同意	我不同意触发确认弹窗	consent 页 idle 状态	1) 点击「我不同意」	弹出确认 wx.showModal；标题与内容来自 CONSENT_RENDER.disagreeModal		
+TC-013	Consent 知情同意	确认不同意后退出小程序	已弹出不同意确认弹窗	1) 在弹窗中点击确认按钮	saveConsent(consent_given=false) 上传后调用 wx.exitMiniProgram 或 navigateBack		
+TC-014	Consent 知情同意	同意按钮防双击	consent 页 idle 状态	1) 快速连续点击「同意」两次	saveConsent 只调用一次；金币只增加 50 一次；只跳转一次		
+TC-015	Registration 注册	空手机号提交受阻	registration 页 idle，手机号字段为空	1) 不填手机号；2) 点击「提交注册」	字段下方显示红色错误提示；不调用 saveRegistration		
+TC-016	Registration 注册	格式错误的手机号被拒绝	registration 页 idle	1) 输入「12345」或「abcdefg」；2) 点击「提交注册」	11 位以 1 开头的格式校验失败，显示红色错误提示；不调用 saveRegistration		
+TC-017	Registration 注册	有效手机号 + 可选微信号成功提交	registration 页 idle	1) 输入 13800138000；2) 微信号留空或输入文本；3) 点击「提交注册」	saveRegistration 返回 success；金币 +50 浮起；跳转到 entry-survey		
+TC-018	Registration 注册	提交按钮防双击	已填入有效手机号	1) 快速连续点击「提交注册」两次	saveRegistration 只调用一次；金币只增加 50 一次；只跳转一次		
+TC-019	Registration 注册	Dev 模式自动填充表单	DEV_MODE_OPTION='prefilled' 或 'empty'	1) 进入 registration 页	手机号自动填入 13800138000，微信号填入 dev_tester（仅 dev 模式）		
+TC-020	Entry Survey 入门问卷	问卷加载与必填提示	从 registration 跳转到 entry-survey	1) 滚动浏览所有问题	每个必填问题旁显示红色 * 标识；按钮右上角 +N 金币徽章正确		
+TC-021	Entry Survey 入门问卷	未答必填项受阻并定位空题	在某区块中至少留一道必填题未答	1) 点击「下一区块」或「提交」	页面自动滚动到首个空题位置；显示提示「请回答以下问题」；不进入下一区块		
+TC-022	Entry Survey 入门问卷	取消选项扣除已得金币	已选过某题答案，金币已加	1) 再次点击同一选项取消选择；2) 观察金币计数	金币计数器减去该题对应的奖励数；可再次选择获得奖励（一次性额度，非重复）		
+TC-023	Entry Survey 入门问卷	进入问卷时调用 assignCondition	首次进入入门问卷页	1) 观察网络面板与页面 loading 状态	「请稍候...」全屏遮罩显示；assignCondition 调用一次并返回 condition / article_combination / article_order；condition 写入 globalData		
+TC-024	Entry Survey 入门问卷	Block 5 文案根据 condition 变化	已分配 condition；进入到 block_5	1) 翻到最后一区块；2) 阅读 Q_final_brief 文案；3) 对比处理组与对照组	处理组（treatment_pos / treatment_neg / no_text）显示包含「部分参与者会先看到一段约 8 秒的短视频」的版本；对照组（control）显示去掉该句的 textIfControl 版本		
+TC-025	Entry Survey 入门问卷	完成问卷后跳转到信息中心	所有必填题已答；block_5「我已理解」已勾选	1) 点击「提交问卷」	saveSurveyResponse(isFinal=true) 写入；不再二次调用 assignCondition；wx.switchTab 进入信息中心		
+TC-026	News Feed 视频	处理组首次进入显示视频遮罩	condition 为 treatment_pos / treatment_neg / no_text；首次进入信息中心	1) 完成入门问卷进入信息中心	全屏视频遮罩自动播放；视频文件来自 VIDEO_CONFIG[condition].video_file		
+TC-027	News Feed 视频	对照组无视频直接进入资讯流	condition='control'	1) 完成入门问卷进入信息中心	无视频遮罩；资讯卡片直接显示；exit-timer 立即开始倒计时		
+TC-028	News Feed 视频	视频播放结束显示继续按钮	视频遮罩正在播放	1) 等待视频自然播放结束（约 8 秒）	视频结束后右下/底部出现「继续」按钮可点击		
+TC-029	News Feed 视频	继续按钮发放视频奖励 50 金币	视频结束，继续按钮可见	1) 点击「继续」；2) 观察金币计数	约 500ms 后金币 +50 浮起动画；遮罩消失；exit-timer 开始倒计时；进入资讯流		
+TC-030	News Feed 视频	同一会话内切 tab 视频不再重播	已观看视频并点击 继续；当前会话仍开启	1) 切换到行程记录或个人积分 tab；2) 切回信息中心	globalData.videoShown=true 抑制重播；资讯流直接显示		
+TC-031	News Feed 视频	冷启动中途回到信息中心视频重播	处理组用户已观看过视频但未完成会话（reward_attempted=false）；强制关闭并重启	1) 完全关闭小程序；2) 重新打开	loading 不再水合 videoShown；globalData.videoShown=false；视频遮罩重新出现并播放（先经过欢迎弹窗）		
+TC-032	News Feed 视频	已领奖状态视频不再播放	rewardPaid=true 或 reward_attempted=true	1) 在 news_feed_free 状态下重新进入信息中心	finished 标志触发 alreadyShown=true；视频遮罩不显示；exit-timer 也不显示		
+TC-033	News Feed 视频	加载中显示旋转 spinner	视频遮罩刚出现，视频文件尚未加载完毕	1) 进入处理组的视频遮罩；2) 在视频开始播放前观察	视频帧中央显示白色旋转圆环（CSS 动画 0.85 秒/转）；无文字说明		
+TC-034	News Feed 视频	视频开始播放后 spinner 立即消失	视频遮罩中 spinner 显示中	1) 等待视频开始播放（首帧渲染）	bindplay 触发 onVideoPlay → videoStarted=true → wx:if 立即移除 spinner（无淡出动画）		
+TC-035	News Feed 视频	三种处理组分别加载对应视频文件	通过多次刷新 / 多次冷启动 / 服务器端模拟覆盖 condition 字段	1) 分别在 condition='treatment_pos'、'treatment_neg'、'no_text' 下进入信息中心；2) 检查视频源 URL	videoSrc 等于 VIDEO_CONFIG[condition].video_file（cloud:// 路径），三种条件加载不同的 mp4		
+TC-036	News Feed 定时器	exit-timer 胶囊位置与样式	在信息中心 / 个人积分 / 行程记录任一 tab	1) 观察右上角	灰底圆角胶囊固定在屏幕右上 8rpx 位置；含⏳图标、MM:SS 倒计时、+88 金币徽章、跳过 chip		
+TC-037	News Feed 定时器	倒计时每秒更新	exit-timer 显示中	1) 观察 MM:SS 数字	数字每秒变化一次；初始 2:00 倒计到 0:00		
+TC-038	News Feed 定时器	倒计时归零自动跳转结束问卷	exit-timer 显示中且已运行约 2 分钟	1) 等待倒计时归零	金币 +88 浮起；reLaunch 到 exit-survey；globalData.exitSurveyFired=true		
+TC-039	News Feed 定时器	点击跳过 chip 立即跳转	exit-timer 显示中	1) 点击「跳过」chip 或胶囊任意位置	立即触发 _fireExitSurvey；金币 +88；跳转到 exit-survey		
+TC-040	News Feed 重启	中途重启先弹欢迎回来弹窗，再播视频	处理组用户已完成入门问卷，曾观看过视频；强制关闭并重新打开	1) 完全关闭并重新打开；2) 观察 loading → news-feed 过程	弹窗内容：「欢迎回来！点击「知道了」后将再次播放视频...」；点击「知道了」后视频遮罩出现并自动播放；视频结束后才进入资讯流并启动 2 分钟计时		
+TC-041	News Feed 重启	对照组中途重启文案不提视频	对照组用户已完成入门问卷；强制关闭并重新打开	1) 完全关闭并重新打开	弹窗内容：「欢迎回来！点击「知道了」后请继续阅读资讯，约 2 分钟后将自动进入结束问卷。」；不显示视频遮罩；点击「知道了」后直接进入资讯流并启动计时		
+TC-042	News Feed 重启	对照组首次进入信息中心立即显示资讯	对照组用户刚完成入门问卷	1) 提交入门问卷；2) 落地信息中心	无欢迎弹窗、无视频；资讯流直接显示；exit-timer 立即开始 2 分钟倒计时		
+TC-043	Article Viewer 文章	点击资讯卡片打开文章	在信息中心资讯流中	1) 点击任一资讯卡片	navigateTo 到 article-viewer；logArticleEvent(open) 触发		
+TC-044	Article Viewer 文章	文章正确渲染标题、正文、配图	已打开文章	1) 滚动浏览	标题、引言、正文、缩略图按 ARTICLES 配置正确显示；处理组英文版本仅 dev 模式可见		
+TC-045	Article Viewer 文章	返回时记录关闭事件	在文章详情页	1) 点击系统返回；2) 观察 logArticleEvent	logArticleEvent(close, articleId, openTs, closeTs) 调用；阅读时长写入 reading_time_seconds.<articleId>		
+TC-046	Article Viewer 文章	exit-timer 在文章页继续运行	已打开文章	1) 观察右上角 exit-timer	MM:SS 持续倒计时；与信息中心共享 newsTimerStartTs		
+TC-047	Exit Survey 结束问卷	Q2.2 视频确认题对所有条件可见且文案中性	block_exit_1 不再有 treatmentOnly 标记	1) 在每种 condition 下进入 exit-survey；2) 阅读 Q2.2 文案与选项	Q2.2 始终显示；文案：「在进入信息中心之前，我们可能向您展示了一段视频。如果是，您是否观看了？」选项：是，观看了 / 是，但未观看 / 没有看到视频		
+TC-048	Exit Survey 结束问卷	Q2.3 / Q2.4 仅在选择「是，观看了」时显示	Q2.2 已答	1) 选择不同 Q2.2 选项分别观察	video_watched=1 时 Q2.3 + Q2.4 通过 showIf 条件渲染；其他选项时两题隐藏		
+TC-049	Exit Survey 结束问卷	操控检验题区块顺序随机化	exit-survey block_exit_2	1) 比较两次进入 exit-survey 时 Q3.1-Q3.5 的顺序	题目顺序每位参与者不同（randomiseOrder=true）；说明语句锚定不动		
+TC-050	Exit Survey 结束问卷	提交后跳转 debriefing	全部必填已答；block_5 已勾选	1) 点击提交	saveSurveyResponse(isFinal=true) 写入 coins_exit_survey 绝对值；redirectTo 到 debriefing		
+TC-051	Debriefing 事后说明	说明文本完整渲染	从 exit-survey 进入 debriefing	1) 不滚动观察首屏；2) 滚动到底部	Chinese debriefing 文字完整可见；底部有「领取奖励」按钮，初始为禁用态		
+TC-052	Debriefing 事后说明	滚动至底部后启用按钮	未滚动到底部	1) 滚动文本直至距底部 ≤20px；2) 检查按钮状态	按钮变为启用态（buttonActive=true）；可点击		
+TC-053	Debriefing 事后说明	点击启用按钮记录已读并跳转	按钮已启用	1) 点击「领取奖励」	logDebriefing(event='read') 调用；redirectTo 到 reward 页		
+TC-054	Reward 领奖（正常）	奖励页加载并显示总额	从 debriefing 跳到 reward	1) 等待 completeSession 完成	显示金币总数（处理组 ≤704，对照组 ≤654）与对应人民币金额；payState='idle'		
+TC-055	Reward 领奖（正常）	completeSession 截顶限额 704	上游金币累计可能超过 704（异常情形）	1) 观察 reward 页 coins_total	返回值不会超过 TOTAL_COINS_CAP=704；reward_yuan ≤ 8.00		
+TC-056	Reward 领奖（正常）	点击领取奖励触发 claimReward	payState='idle'	1) 点击「领取奖励」	payState 转为 'paying'，显示加载态；claimReward 云函数被调用并设置 reward_attempted=true		
+TC-057	Reward 领奖（正常）	成功状态展示交易号与返回主页按钮	claimReward 返回 success	1) 等待 paying → paid 转换	显示 ✅「红包已发放」、订单号末 8 位、提示文案、「返回主页」按钮可点击		
+TC-058	Reward 领奖（错误）	yaoyaola DNS 失败显示错误	claimReward 因网络/DNS 失败	1) 点击领取奖励；2) 观察错误状态	payState='error'；显示 ⚠️「发放失败」与具体错误（如 getaddrinfo ENOTFOUND mp001.yaoyaola.net）		
+TC-059	Reward 领奖（错误）	重试按钮重新触发 claimReward	处于 error 状态	1) 点击「重试」	重新调用 claimReward；payState 回到 'paying'		
+TC-060	Reward 领奖（错误）	返回主页按钮跳转信息中心	处于 error 状态	1) 点击「返回主页」	wx.switchTab 切换到信息中心；reward_attempted=true 已写入，路由跳过 reward		
+TC-061	Reward 领奖（错误）	错误状态显示联系我们提示	处于 error 状态	1) 阅读错误下方文字	提示「本次研究已记录，您也可以点击下方按钮返回主页」并引导前往个人积分留言		
+TC-062	金币溢出	金币计数与金额同步	当前 globalData.totalCoins=N	1) 观察金币胶囊显示数字与 ¥	数字等于 N；¥ 部分为 (N/88).toFixed(2)		
+TC-063	金币溢出	金币增加触发脉动动画	金币溢出已附着且已水合	1) 触发任意 addTotalCoins / setTotalCoins（如答题、点击同意）	胶囊外层执行 600ms scale-up 脉动动画		
+TC-064	金币溢出	增量 +N 浮起动画	金币计数刚刚增加 N	1) 观察胶囊上方的 +N 💴 文字	+N 文字出现并向上漂浮约 950ms 后消失；popKey 自增以重放动画		
+TC-065	金币溢出	随机闲时光晕脉冲	胶囊已挂载	1) 观察 5-30 秒；2) 查看胶囊外阴影	随机 2-8 秒间隔触发 ~2 秒的金色光晕（coin-idle-glow keyframe）		
+TC-066	金币溢出	拖动持久化位置	在带胶囊的 tab 页	1) 拖动胶囊到屏幕另一位置；2) 切换 tab 后返回	胶囊保持在用户上次释放的位置（globalData.coinOverlayPos）		
+TC-067	Welcome Banner 欢迎回来横幅	中途重启显示欢迎回来横幅	已注册或已做问卷的用户冷启动	1) 完全关闭小程序；2) 重新打开	目标页（如 entry-survey）顶部出现「👋 欢迎回来！请完成 X」横幅，含「知道了」按钮		
+TC-068	Welcome Banner 欢迎回来横幅	知道了按钮关闭并清空	横幅显示中	1) 点击「知道了」	横幅消失；app.globalData.welcomeBackBanner 设为空字符串		
+TC-069	Welcome Banner 欢迎回来横幅	横幅单次显示不重复	已在某页消费过横幅	1) 切换到另一挂载 welcome-banner 的页面	新页面上不再重复出现横幅；首次读后即清空		
+TC-070	Home Capsule 主页胶囊	中途点击主页胶囊回到原页面	在 registration / entry-survey / exit-survey / debriefing / reward 任一页	1) 点击屏幕左上角灰色房屋胶囊	loading 闪过（无 1.2 秒延迟）；自动跳回原步骤；目的页显示 MID_FLOW_HINT 横幅		
+TC-071	Home Capsule 主页胶囊	横幅文本与当前步骤匹配	重启路由识别为某 mid-flow route	1) 在不同 mid-flow 页面分别点击主页胶囊	registration→「请先完成注册」、entry_survey→「请先完成入门问卷」、exit_survey→「请先完成结束问卷」、debriefing→「请先阅读完研究说明」、reward→「请先领取奖励」		
+TC-072	Home Capsule 主页胶囊	重启不显示加载延迟	globalData.hasBootstrapped=true	1) 点击主页胶囊；2) 用秒表计时 loading 可见时长	loading 页可见时长应远小于 1200ms（仅网络 RTT）		
+TC-073	Home Capsule 主页胶囊	已领奖状态点击主页跳转信息中心	reward_paid=true 或 reward_attempted=true	1) 在反馈表单或其他终态页面点击主页胶囊（如有）	loading 跳转到信息中心 tab（news_feed_free）；不再尝试 reward 路由		
+TC-074	Tab Bar 导航栏	导航栏只在 tab 页显示	在 tab 页（home / news-feed / center）vs 非 tab 页（registration / debriefing 等）	1) 切换页面观察底部	tab 页底部显示三栏（行程记录 / 信息中心 / 个人积分）；非 tab 页不显示		
+TC-075	Tab Bar 导航栏	当前页对应 tab 高亮	在某 tab 页	1) 观察当前 tab 图标颜色	对应 tab 图标使用 selectedColor (#f9bc60) 与 selectedIconPath；其余使用默认色		
+TC-076	Tab Bar 导航栏	切换 tab 调用 switchTab	在任意 tab 页	1) 点击底部其他 tab	正确路由到目标 tab；selected 索引更新；不重复加载页面		
+TC-077	Tab Bar 导航栏	已领奖状态信息中心默认 landing	reward_paid=true	1) 误进 home tab；2) 等待自动跳转	home.onShow 检测 rewardPaid 后切换到信息中心 tab		
+TC-078	行程记录	开始记录打开交通方式选择	未在记录中	1) 在 home tab 点击「开始记录」	弹出交通方式多选弹窗（步行 / 自行车 / 地铁等）		
+TC-079	行程记录	确认交通方式后进入计时	已选择至少一种交通方式	1) 点击确认	弹窗关闭；isTracking=true；屏幕显示秒级计时；按钮变为「结束记录」		
+TC-080	行程记录	结束后选择目的并保存	正在记录中	1) 点击「结束记录」；2) 确认；3) 选择出行目的；4) 确认	记录写入本地缓存与 cloud track 集合；toast「行程记录成功!」		
+TC-081	行程记录	近 7 天记录按时间倒序显示	已有多条记录	1) 滚动浏览今日列表	本地与云端记录合并去重；按 endTime 倒序排列；最多 20 条		
+TC-082	行程记录	缺失目的或交通弹出提示	未选择交通或目的	1) 点击确认时未选择	wx.showToast「请选择出行方式」/「请选择出行目的」		
+TC-083	个人积分	金币与人民币显示同步	已积累若干金币	1) 进入个人积分 tab	顶部金币卡片显示当前金币与 ≈¥X.XX，与全局 totalCoins 一致		
+TC-084	个人积分	已领奖状态显示成功横幅	rewardPaid=true	1) 进入个人积分 tab	近期行程上方显示 ✅「已领取奖励 ¥X.XX」并展示订单号末 8 位与领取时间		
+TC-085	个人积分	近 7 天行程合并展示	已存在多条 track 记录	1) 浏览「最近行程」区块	记录条目正确显示交通方式、时长、省碳量；空数据时显示空态文案		
+TC-086	个人积分	金币计数订阅实时更新	在个人积分 tab	1) 在另一面板触发 addTotalCoins；2) 切回个人积分	卡片金币数立即更新（pub/sub），无需手动刷新		
+TC-087	联系我们	联系我们卡片对所有用户可见	任意用户、任意进度	1) 滚动到个人积分页底部	「联系我们」标题 + 留言文本框 + 「提交留言」按钮可见，无条件门控		
+TC-088	联系我们	空提交按钮被禁用	文本框为空	1) 不输入；2) 观察按钮	「提交留言」按钮为禁用态；点击无反应		
+TC-089	联系我们	成功提交写入云端集合	已输入留言	1) 输入文本；2) 点击「提交留言」	调用 wx.cloud.database().collection('participant_feedback').add({message, submitted_at})；成功后切到感谢状态		
+TC-090	联系我们	成功状态显示感谢信息	提交成功	1) 提交后观察卡片	卡片切换为 ✅「您的留言已收到，我们会尽快查看并回复。感谢您的反馈！」		
+TC-091	随机化	assignCondition 在四种 condition 中均匀采样	多次重置参与者并触发 entry-survey	1) 至少跑 20 次完整 entry-survey；2) 每次记录返回的 condition；3) 校验四种值全部出现	condition 应均匀分布在 treatment_pos / treatment_neg / no_text / control（每种 ~25%）；样本量小允许偏差，但四种均应出现		
+TC-092	随机化	assignCondition 在两种 article_combination 中均匀采样	同上	1) 在每次跑里记录 article_combination；2) 校验 combo_A 与 combo_B 均出现	article_combination 在 combo_A / combo_B 之间均匀分布（~50% 每种）；与 condition 独立		
+TC-093	随机化	article_order 在两种顺序中均匀采样	已分配 article_combination	1) 记录每次的 article_order；2) 分别在 combo_A 与 combo_B 下都跑足样本	combo_A 时 order 从 {combo_A_order_1, combo_A_order_2} 中等概率选；combo_B 同理；与 condition 独立		
+TC-094	随机化	信息中心按 article_order 渲染对应文章	已知 article_combination + article_order	1) 在每种 (combo, order) 组合下进入信息中心；2) 检查资讯卡片标题与顺序	ORDER_MAP[article_order] 决定 articleIds 列表；displayArticles 按该顺序渲染；同一 combo 的两个 order 显示同一篇文章但顺序不同		
+TC-095	随机化	入门问卷 Q6.5 选项随机化	进入 Q6.5 题（multi_select with randomiseOptions）	1) 多次重置后进入 Q6.5；2) 比较选项顺序	可移动选项随机洗牌；exclusive 选项（NOTA / PNA 类）始终锚定在底部；dev 模式可见 🔀 标记		
+TC-096	随机化	入门问卷 Q8 token allocation 类别随机化	进入 Q8（token_allocation with randomiseCategories）	1) 比较多次进入时类别的排列	可移动类别随机洗牌；pinBottom 类别（如「其他」）始终在底部；dev 模式可见 🔀 与 📌 标记		
+TC-097	随机化	结束问卷 Q3.1-Q3.5 操控检验题随机化	进入 block_exit_2（randomiseOrder=true）	1) 多次进入 exit-survey 比较 Q3.1-Q3.5 顺序	题目顺序每位参与者不同；statement 类型的引言锚定不动		
+TC-098	随机化	结束问卷 Q5.1 情绪矩阵行随机化	进入 Q5.1 矩阵题（randomiseRows=true）	1) 多次进入 exit-survey 比较矩阵行顺序	六种情绪行随机排列；每种条件下分布独立；列标签（非常/比较/有点/完全不/不知道）始终固定		
+TC-099	随机化	服务端再次调用 assignCondition 幂等	已分配 condition 的参与者再次触发 assignCondition	1) 在 entry-survey 多次重启 / 多次刷新；2) 对比 DB 中 condition 字段	首次写入后不再重新随机；后续调用返回原值（already_assigned=true）；DB condition_assigned_timestamp 不再更新		
+TC-100	重启场景	已同意未注册场景	consent_given=true，registration_timestamp 为空	1) 完全关闭并重新打开	loading 跳到 registration；横幅「请完成注册以继续」		
+TC-101	重启场景	已注册未做入门问卷场景	registration_timestamp 已写入，entry_survey_end_timestamp 为空	1) 完全关闭并重新打开	loading 跳到 entry-survey；横幅「请完成入门问卷」		
+TC-102	重启场景	入门完成在信息中心计时未触发	entry_survey_end_timestamp 已写入，exitSurveyFired 未触发	1) 完全关闭并重新打开	loading switchTab 到信息中心；welcome-back 弹窗后开始 2 分钟计时		
+TC-103	重启场景	结束问卷已开始未提交	已点开过 exit-survey 页（exit_survey_started_timestamp 已写）；exit_survey_end_timestamp 仍空	1) 在 exit-survey 中途强制关闭；2) 重新打开	loading 路由到 exit_survey（不再跳回 news-feed 让用户重新计时 2 分钟）；横幅「欢迎回来！请继续完成结束问卷。」；问卷重置至首区块（无自动续答）		
+TC-104	重启场景	结束问卷完成未阅读说明	exit_survey_end_timestamp 已写，debrief_read_timestamp 空	1) 完全关闭并重新打开	loading 跳到 debriefing；横幅「欢迎回来！请阅读说明并领取奖励」		
+TC-105	重启场景	已读说明未领奖	debrief_read_timestamp 已写，reward_attempted=false	1) 完全关闭并重新打开	loading 跳到 reward；横幅「请领取您的奖励」		
+TC-106	重启场景	已领奖（红包成功）	reward_paid=true	1) 完全关闭并重新打开	loading 切到信息中心（news_feed_free）；个人积分显示已领取横幅；timer 不再启动		
+TC-107	重启场景	已尝试领奖但失败	reward_attempted=true 且 reward_paid=false	1) 完全关闭并重新打开	与「已领奖」相同：loading 切到信息中心（news_feed_free）；不再返回 reward 页		
+TC-108	边缘场景	网络断开时云函数失败处理	DevTools 模拟器开启「弱网」或断网	1) 在某步骤触发云函数（如 saveConsent）	wx.showToast 友好错误提示「网络错误，请重试」；不卡死页面		
+TC-109	边缘场景	中途强杀小程序后恢复	在 entry-survey 页输入了部分答案	1) 强制关闭；2) 重新打开	loading 路由回 entry-survey；问卷重置（未自动保存）；横幅提示请完成入门问卷		
+TC-110	边缘场景	奖励页双击领取按钮幂等	reward 页 idle	1) 快速连续点击「领取奖励」	claimReward 服务端 reward_pay_in_flight 软锁；第二次返回 'in_flight'；不会重复发包		
+TC-111	边缘场景	云存储权限错误致视频无法播放	treatments 文件夹权限非「所有用户可读」	1) 处理组用户进入信息中心；2) 观察视频遮罩	视频无法加载；onVideoError 触发；继续按钮仍可点击让用户进入资讯流		
+TC-112	边缘场景	yaoyaola 域名 DNS 解析失败	vendor 终端不可达	1) 触发 claimReward	云函数返回 send_failed 与详情 getaddrinfo ENOTFOUND mp001.yaoyaola.net；客户端进入 error 状态		
+TC-113	边缘场景	云函数超时处理	网络高延迟	1) 触发 saveSurveyResponse 等长操作	客户端展示加载态；超时后显示友好错误而非堆栈；用户可重试		
