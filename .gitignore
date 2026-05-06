@@ -9,16 +9,40 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .TemporaryItems
 .Trashes
+.AppleDouble
+.LSOverride
 
-# Node.js
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node.js / package managers
 node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log*
+
+# WeChat DevTools — local-only
 project.private.config.json
-cloudfunctions/transfer/apiclient_cert.pem
-cloudfunctions/testTransfer/apiclient_key.pem
-cloudfunctions/testTransfer/platform_certificate.pem
-cloudfunctions/testTransfer/apiclient_cert.pem
-cloudfunctions/transfer/platform_certificate.pem
-cloudfunctions/transfer/apiclient_key.pem
+miniprogram/project.config.json
+
+# Cloud-function payment certs (per-vendor secrets, never commit)
+# cloudfunctions/transfer/apiclient_cert.pem
+# cloudfunctions/transfer/apiclient_key.pem
+# cloudfunctions/transfer/platform_certificate.pem
+# cloudfunctions/testTransfer/apiclient_cert.pem
+# cloudfunctions/testTransfer/apiclient_key.pem
+# cloudfunctions/testTransfer/platform_certificate.pem
+
+# Python (build_test_tsv.py + ad-hoc filter scripts)
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
 
 # Local Template
 /Template
