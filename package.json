@@ -1,17 +1,15 @@
 {
-  "dependencies": {
-    "@vant/weapp": "^1.11.6",
-    "axios": "^1.7.2",
-    "request-promise": "^4.2.6"
-  },
-  "name": "carbon-footprint-mini-program",
+  "name": "wechat-mini-program",
   "version": "1.0.0",
-  "description": "## Intro",
+  "description": "WeChat mini-program for research study",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "@vant/weapp": "^1.11.6"
+  },
+  "devDependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC"
