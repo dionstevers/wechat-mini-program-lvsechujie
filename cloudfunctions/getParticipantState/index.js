@@ -17,7 +17,6 @@ const TOTAL_COINS_CAP   = 8 * 88   // 704
 function deriveRoute(p) {
   if (!p) return 'fresh'
   if (!p.consent_given) return 'fresh'
-  if (!p.registration_timestamp) return 'registration'
   if (!p.entry_survey_end_timestamp) return 'entry_survey'
   if (!p.exit_survey_end_timestamp) {
     // If the participant has already started the exit survey, route
@@ -37,8 +36,6 @@ function deriveRoute(p) {
 
 function deriveBanner(p, route) {
   switch (route) {
-    case 'registration':
-      return '欢迎回来！请完成注册以继续'
     case 'entry_survey':
       return '欢迎回来！请完成入门问卷'
     case 'news_feed': {

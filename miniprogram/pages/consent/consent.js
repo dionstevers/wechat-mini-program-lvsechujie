@@ -7,7 +7,6 @@ Page({
     devMode: false,
     content: CONSENT_RENDER,
     contentEn: null,
-    btnCoins: REWARD_CONFIG.coins_consent || 0,
     submitting: false,
   },
 
@@ -32,7 +31,7 @@ Page({
         if (app && typeof app.addTotalCoins === 'function') {
           app.addTotalCoins(REWARD_CONFIG.coins_consent || 0)
         }
-        wx.redirectTo({ url: '/pages/registration/registration' })
+        wx.redirectTo({ url: '/pages/entry-survey/entry-survey' })
       },
       fail: (err) => {
         console.error('saveConsent failed', err)

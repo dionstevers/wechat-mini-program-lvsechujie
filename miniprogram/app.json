@@ -3,7 +3,6 @@
     "pages/loading/loading",
     "pages/landing/landing",
     "pages/consent/consent",
-    "pages/registration/registration",
     "pages/entry-survey/entry-survey",
     "pages/news-feed/news-feed",
     "pages/article-viewer/article-viewer",

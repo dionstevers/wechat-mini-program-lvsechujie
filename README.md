@@ -12,7 +12,6 @@ Operator: Duke Kunshan University. AppID `wx3adf1829016e6695`. Cloud env `cloudb
 loading        bootstrap router (calls getParticipantState)
   → landing      welcome screen, +88 coin reward for tapping 继续
   → consent      knowledge-and-consent text, +50 on agree
-  → registration phone (required) + WeChat ID (optional), +50 on submit
   → entry-survey survey-engine renders ENTRY_SURVEY config
                  [assignCondition fires here, on page LOAD, idempotent]
   → news-feed    treatment: video overlay → continue → article cards
@@ -48,7 +47,7 @@ Each participant gets three independent randomisations from `assignCondition`:
 miniprogram/                client mini-program source (only file shipped to WeChat)
 ├── app.js                   globalData, dev-mode mocks, coin pub/sub
 ├── app.json                 page registry, custom tab-bar config
-├── pages/                   12 pages — see flow above
+├── pages/                   11 pages — see flow above
 ├── components/              survey-engine, exit-timer, welcome-banner,
 │                            coin-overlay, dev-banner
 ├── config/                  surveys (entry/exit), articles, videos, reward,
@@ -59,8 +58,7 @@ miniprogram/                client mini-program source (only file shipped to WeC
 
 cloudfunctions/              wx-server-sdk Node functions, deployed to TCB
 ├── saveConsent              Screen 1
-├── saveRegistration         Screen 2
-├── saveSurveyResponse       Screens 3 + 6 — block-by-block survey writes
+├── saveSurveyResponse       Screens 2 + 5 — block-by-block survey writes
 ├── assignCondition          fires at entry-survey START; idempotent
 ├── logArticleEvent          news-feed + article-viewer reading-time logs
 ├── logDebriefing            shown / read events
@@ -112,7 +110,6 @@ There's also a `TEST_CONDITION_OVERRIDE` constant in [`miniprogram/pages/entry-s
 Coin budget = 704 (= ¥8 at 88 coins/yuan). Awarded across:
 - Landing 继续: 88
 - Consent 同意: 50
-- Registration 提交: 50
 - Entry survey: distributed per `coins_per_question` weights (computed from `TYPE_WEIGHTS` in [`miniprogram/config/reward.js`](miniprogram/config/reward.js))
 - News-feed video continue: +50 (treatment only)
 - Exit-timer expiry / 跳过: +88

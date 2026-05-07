@@ -31,7 +31,7 @@ exports.main = async (event, context) => {
           data: {
             consent_given: true,
             consent_timestamp: now,
-            current_step: 'registration',
+            current_step: 'entry_survey',
           },
         })
       return { success: true, consent_given: true, participant_id: existing.data[0]._id }
@@ -43,7 +43,7 @@ exports.main = async (event, context) => {
         _openid: OPENID,
         consent_given: true,
         consent_timestamp: now,
-        current_step: 'registration',
+        current_step: 'entry_survey',
         session_complete: false,
       },
     })

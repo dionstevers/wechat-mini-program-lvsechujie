@@ -2,9 +2,9 @@
 
 // ─── DEV MODE ────────────────────────────────────────────────────────────────
 // 'off'       → real cloud calls, no shortcuts. Use for production builds.
-// 'empty'     → mock cloud calls + registration prefill, but surveys are blank.
-// 'prefilled' → mock cloud calls + registration prefill + every survey question
-//               pre-answered so tester can click through.
+// 'empty'     → mock cloud calls, surveys are blank.
+// 'prefilled' → mock cloud calls + every survey question pre-answered so tester
+//               can click through.
 const DEV_MODE_OPTION = 'off'
 
 const DEV_MODE = DEV_MODE_OPTION !== 'off'
@@ -55,7 +55,6 @@ App({
       var REWARD_CONFIG = require('./config/reward.js').REWARD_CONFIG
       var MOCKS = {
         saveConsent:        function() { return { success: true } },
-        saveRegistration:   function() { return { success: true, coins_registration: REWARD_CONFIG.coins_registration } },
         saveSurveyResponse: function() { return { success: true } },
         assignCondition:    function() {
           var combo = Math.random() < 0.5 ? 'combo_A' : 'combo_B'
@@ -117,12 +116,9 @@ App({
           reward_paid_timestamp: null, reward_transaction_id: null,
           condition: 'control', article_combination: 'combo_A', article_order: 'combo_A_order_1' }
         switch (scenario) {
-          case 'consented_no_registration':
-            return Object.assign({}, base, { route: 'registration', welcomeBack: '欢迎回来！请完成注册以继续',
-              coins_so_far: COINS_LANDING + COINS_CONSENT, reward_paid: false })
-          case 'registered_no_entry':
+          case 'consented_no_entry':
             return Object.assign({}, base, { route: 'entry_survey', welcomeBack: '欢迎回来！请完成入门问卷',
-              coins_so_far: COINS_LANDING + COINS_CONSENT + 50, reward_paid: false })
+              coins_so_far: COINS_LANDING + COINS_CONSENT, reward_paid: false })
           case 'entry_done_at_news_feed':
             return Object.assign({}, base, { route: 'news_feed', welcomeBack: '欢迎回来！约 2 分钟后将自动进入结束问卷',
               coins_so_far: COINS_LANDING + COINS_CONSENT + 50 + 200, reward_paid: false })
@@ -259,9 +255,9 @@ App({
     // news-feed video overlay when the participant has already watched it.
     videoShown: false,
     // Dev-mode case the bootstrap router lands on without picker interaction.
-    // Change to 'fresh' / 'consented_no_registration' / 'registered_no_entry'
-    // / 'entry_done_at_news_feed' / 'exit_done_no_debrief' /
-    // 'debrief_done_no_reward' / 'reward_paid_free_use' / 'reward_pay_in_flight'.
+    // Change to 'fresh' / 'consented_no_entry' / 'entry_done_at_news_feed' /
+    // 'exit_done_no_debrief' / 'debrief_done_no_reward' / 'reward_paid_free_use' /
+    // 'reward_pay_in_flight'.
     devScenario: 'fresh',
     // Recent trip records cache shared between home (行程记录) and center (个人积分).
     // Populated lazily by either page; pre-fetched on launch when not in dev mode.

@@ -10,7 +10,6 @@ const MIN_LOADING_MS = 1200
 
 const ROUTE_TO_URL = {
   fresh:           { url: '/pages/landing/landing',                 method: 'redirect' },
-  registration:    { url: '/pages/registration/registration',       method: 'redirect' },
   entry_survey:    { url: '/pages/entry-survey/entry-survey',       method: 'redirect' },
   news_feed:       { url: '/pages/news-feed/news-feed',             method: 'switchTab' },
   news_feed_free:  { url: '/pages/news-feed/news-feed',             method: 'switchTab' },
@@ -23,7 +22,6 @@ const ROUTE_TO_URL = {
 // capsule re-bootstraps the mini-program mid-flow. Surfaces feedback so
 // the involuntary platform reLaunch reads as "please finish this step".
 const MID_FLOW_HINT = {
-  registration: '请先完成注册后再返回主页。',
   entry_survey: '请先完成入门问卷后再返回主页。',
   news_feed:    '请先在「信息中心」阅读资讯，约 2 分钟后将自动进入结束问卷。',
   exit_survey:  '请先完成结束问卷后再返回主页。',
